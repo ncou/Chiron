@@ -1,0 +1,36 @@
+{
+    "name": "chiron/chiron",
+    "type": "library",
+    "description": "Chiron is a PHP micro framework",
+    "keywords": ["framework","micro","microframework","router"],
+    "homepage": "https://github.com/ncou/Chiron",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.1.3",
+        "psr/http-message": "^1.0",
+        "psr/container": "^1.0",
+        "psr/http-server-middleware": "^1.0",
+        "psr/log": "^1.0",
+        "http-interop/http-factory": "^0.3"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.0",
+        "phpunit/phpunit": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Chiron\\": "src/Chiron"
+        }
+    },
+    "autoload-dev" : {
+        "psr-4": { "Chiron\\Tests\\" : "tests/Chiron/Tests" }
+    },
+    "scripts": {
+        "test": [
+            "@phpunit",
+            "@phpcs"
+        ],
+        "phpunit": "php vendor/bin/phpunit",
+        "phpcs": "php vendor/bin/phpcs"
+    }
+}
