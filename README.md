@@ -32,12 +32,12 @@ You can then run it with PHP's built-in webserver:
 
     $ cd [my-app-name]; php -S localhost:8080 -t public public/index.php
 
-Or using the Composer shortcut :
+>Or using the Composer shortcut :
+>
+>$ composer start
 
-    $ composer start
+If you want more flexibility, and install only the framework, use this Composer command instead:
 
->If you want more flexibility, and install only the framework, use this Composer command instead:
-
->$ composer require chiron/chiron
+    $ composer require chiron/chiron
 
 
