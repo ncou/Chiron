@@ -36,8 +36,8 @@ Or using the Composer shortcut :
 
     $ composer start
 
-If you want more flexibility, and install only the framework, use this Composer command instead:
+>If you want more flexibility, and install only the framework, use this Composer command instead:
 
-    $ composer require chiron/chiron
+>$ composer require chiron/chiron
 
 
