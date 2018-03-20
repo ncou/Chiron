@@ -32,7 +32,7 @@ You can then run it with PHP's built-in webserver:
 
     $ cd [my-app-name]; php -S localhost:8080 -t public public/index.php
 
-YOr using the Composer shortcut :
+Or using the Composer shortcut :
 
     $ composer start
 
