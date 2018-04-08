@@ -1,3 +1,10 @@
+[![Build Status](https://travis-ci.org/ncou/Chiron.svg?branch=master)](https://travis-ci.org/ncou/Chiron)
+[![Coverage Status](https://coveralls.io/repos/github/ncou/Chiron/badge.svg?branch=master)](https://coveralls.io/github/ncou/Chiron?branch=master)
+[![CodeCov](https://codecov.io/gh/ncou/Chiron/branch/master/graph/badge.svg)](https://codecov.io/gh/ncou/Chiron)
+
+[![Total Downloads](https://img.shields.io/packagist/dt/chiron/chiron.svg?style=flat-square)](https://packagist.org/packages/chiron/chiron/stats)
+[![Monthly Downloads](https://img.shields.io/packagist/dm/chiron/chiron.svg?style=flat-square)](https://packagist.org/packages/chiron/chiron/stats)
+
 Micro-Framework
 ---------------
 
@@ -39,5 +46,3 @@ You can then run it with PHP's built-in webserver:
 If you want more flexibility, and install only the framework, use this Composer command instead:
 
     $ composer require chiron/chiron
-
-
