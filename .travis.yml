@@ -14,7 +14,7 @@ install:
 
 script:
   - composer test-coverage
-  - composer phpstan
+  #- composer phpstan
 
 after_script:
   # Submit coverage report to Coveralls servers, see .coveralls.yml
