@@ -2,7 +2,7 @@ language: php
 
 php:
   - 7.1
-  - 7.2
+  #- 7.2
 
 # Note: Code coverage requires php-xDebug extension enabled on CI server
 
@@ -14,7 +14,7 @@ install:
 
 script:
   - composer test-coverage
-  #- composer phpstan
+  - composer phpstan
 
 after_script:
   # Submit coverage report to Coveralls servers, see .coveralls.yml
