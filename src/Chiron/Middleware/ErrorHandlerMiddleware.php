@@ -94,9 +94,10 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
             //throw new \Chiron\Exception\NotFoundHttpException();
 
             // TODO : je ne pense pas que ce cas peut arriver !!!! à tester mais le dispacher (quand le stackHandler est executé) doit faire cette vérif de mémoire !!!!
-            //if (! $response instanceof ResponseInterface) {
-            //    throw new \LogicException('Application did not return a response');
-            //}
+            /*
+            if (! $response instanceof ResponseInterface) {
+                throw new \LogicException('Application did not return a response');
+            }*/
         } catch (Throwable $exception) {
             $response = $this->handleThrowable($request, $exception);
 //        } catch (Throwable $exception) {

@@ -232,7 +232,7 @@ EOT;
             
             $html .= '<table><tbody>';
             foreach ($traces as $index => $trace) {
-                $html .= sprintf('<tr><td>#%d</td><td>%s</td><td>%s</td></tr>', count($traces) - $index, $this->escapeHtml($trace['function']), $this->escapeHtml($trace['file']));
+                $html .= sprintf('<tr><td>#%d</td><td>%s</td><td>%s</td></tr>', count($traces) - $index, $this->escapeHtml($trace['function']), $this->escapeHtml($trace['file'] ?: ''));
             }
             $html .= '</table></tbody>';
         }

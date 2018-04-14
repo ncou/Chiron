@@ -1,6 +1,8 @@
 <?php
 
 
+// TODO : regarder ici : https://gist.github.com/harini-ua/51d577023c7e8e7b6413a717b69c5dc5
+
 // TODO : regarder ici comment c'est fait, on vire le cache si on n'a pas de valeur pour "Retry-After" ou un "Expires" header !!!! https://github.com/juliangut/janitor/blob/master/src/Handler/Render.php
 
 //https://github.com/dappur/framework/blob/master/app/src/Middleware/Maintenance.php

@@ -200,6 +200,36 @@ class ClientIp implements MiddlewareInterface
     }
 
 
+    /**
+     * Gets the client IP.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request Request used.
+     * @return string IP of the client.
+     */
+    /*
+    protected function getClientIp($request)
+    {
+        if (method_exists($request, 'clientIp')) {
+            return $request->clientIp();
+        }
+        // @codeCoverageIgnoreStart
+        if ($request instanceof ServerRequestInterface) {
+            $ip = '';
+            $serverParams = $request->getServerParams();
+            if (!empty($serverParams['HTTP_CLIENT_IP'])) {
+                $ip = $serverParams['HTTP_CLIENT_IP'];
+            } elseif (!empty($serverParams['HTTP_X_FORWARDED_FOR'])) {
+                $ip = $serverParams['HTTP_X_FORWARDED_FOR'];
+            } elseif (!empty($serverParams['REMOTE_ADDR'])) {
+                $ip = $serverParams['REMOTE_ADDR'];
+            }
+            return $ip;
+        }
+        // @codeCoverageIgnoreEnd
+        return '';
+    }*/
+
+
 
 
 
