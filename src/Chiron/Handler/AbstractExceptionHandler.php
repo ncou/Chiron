@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Chiron\ErrorHandler;
+namespace Chiron\Handler;
 
 // TODO : regarder ici pour gérer les formater pour les messages : https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Error/ExceptionHandlerManager.php
 

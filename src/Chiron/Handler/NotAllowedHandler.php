@@ -3,7 +3,7 @@ declare(strict_types = 1);
 
 //https://github.com/slimphp/Slim/blob/3.x/Slim/Handlers/NotAllowed.php
 
-namespace Chiron\ErrorHandler;
+namespace Chiron\Handler;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

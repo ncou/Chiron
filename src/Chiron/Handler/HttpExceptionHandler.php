@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace Chiron\ErrorHandler;
+namespace Chiron\Handler;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
