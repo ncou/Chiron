@@ -20,7 +20,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-use Chiron\Handlers\Strategies\RouteInvocationStrategy;
+use Chiron\Handler\Strategies\RouteInvocationStrategy;
 
 class DeferredRequestHandler implements RequestHandlerInterface
 {
