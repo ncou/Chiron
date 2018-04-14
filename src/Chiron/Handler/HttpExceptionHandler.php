@@ -15,44 +15,8 @@ use Throwable;
 use ErrorException;
 
 // TODO : utiliser des renderer : https://github.com/userfrosting/UserFrosting/tree/master/app/sprinkles/core/src/Error/Renderer
-
-
 class HttpExceptionHandler extends AbstractExceptionHandler
 {
-
-    /**
-     * Execute the error handler.
-     */
-    /*
-        public function handle(ServerRequestInterface $request): ResponseInterface
-        {
-            $error = $request->getAttribute('error');
-            $accept = $request->getHeaderLine('Accept');
-
-            $response = new Response($error->getStatusCode());
-
-            $headers = $error->getHeaders();
-            foreach ($headers as $header => $value) {
-                $response = $response->withAddedHeader($header, $value);
-            }
-
-            foreach ($this->handlers as $method => $types) {
-                foreach ($types as $type) {
-                    if (stripos($accept, $type) !== false) {
-                        $response->getBody()->write(call_user_func(__CLASS__.'::'.$method, $error));
-
-                        return $response->withHeader('Content-Type', $type);
-                    }
-                }
-            }
-
-            //$response->getBody()->write(static::html($error));
-            $response->write(static::html($error));
-
-            return $response->withHeader('Content-Type', 'text/html');
-        }
-    */
-
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         /*
@@ -73,7 +37,9 @@ class HttpExceptionHandler extends AbstractExceptionHandler
         }*/
 
         $contentType = $this->determineContentType($request);
-        $body = $this->formatException($exception, $contentType);
+
+        $displayErrorDetails = $this->shouldDisplayDetails($request);
+        $body = $this->formatException($exception, $contentType, $displayErrorDetails);
 
         $response = $this->createResponseFromException($exception);
 
@@ -82,89 +48,26 @@ class HttpExceptionHandler extends AbstractExceptionHandler
         return $response->withHeader('Content-type', $contentType)->write($body);
     }
 
-    private function formatException(Throwable $exception, string $contentType): string
+    private function formatException(Throwable $exception, string $contentType, bool $displayErrorDetails): string
     {
         switch ($contentType) {
             case 'application/json':
-                $body = $this->renderJsonErrorMessage($exception);
+                $body = $this->renderJsonBody($exception);
                 break;
             case 'text/xml':
             case 'application/xml':
-                $body = $this->renderXmlErrorMessage($exception);
+                $body = $this->renderXmlBody($exception);
                 break;
             case 'text/html':
-                $body = $this->renderHtmlErrorMessage($exception);
+                $body = $this->renderHtmlBody($exception, $displayErrorDetails);
                 break;
+                // TODO : gérer le cas : 'text/plain' avec la même chose que le html mais sans les balises html...
             default:
                 throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType);
         }
 
-//        $this->writeToErrorLog($error);
-
         return $body;
     }
-
-
-    
-
-    /**
-     * Return the error as html.
-     */
-    /*
-    public static function html(HttpException $error): string
-    {
-        return <<<EOT
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Error {$error->getStatusCode()}</title>
-    <style>html{font-family: sans-serif;}</style>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-    <h1>Error {$error->getStatusCode()}</h1>
-    {$error->getMessage()}
-</body>
-</html>
-EOT;
-    }*/
-
-    /**
-     * Return the error as json.
-     */
-    /*
-    public static function json(HttpException $error): string
-    {
-        return json_encode([
-            'error' => [
-                'code' => $error->getStatusCode(),
-                'message' => $error->getMessage(),
-            ],
-        ]);
-    }*/
-
-    /**
-     * Return the error as xml.
-     */
-    /*
-    public static function xml(HttpException $error): string
-    {
-        return <<<EOT
-<?xml version="1.0" encoding="UTF-8"?>
-<error>
-    <code>{$error->getStatusCode()}</code>
-    <message>{$error->getMessage()}</message>
-</error>
-EOT;
-    }*/
-
-
-
-
-
-
-
 
     /**
      * Render HTML error page
@@ -173,34 +76,45 @@ EOT;
      *
      * @return string
      */
-    private function renderHtmlErrorMessage(Throwable $error)
+    private function renderHtmlBody(Throwable $error, bool $displayErrorDetails)
     {
-
-        /*
-        switch ($error->getStatusCode()) {
-            case 404:
-                $title = 'Sorry, the page you are looking for could not be found.';
-                break;
-            default:
-                $title = 'Whoops, looks like something went wrong.';
-        }*/
-
         $title = 'Chiron Error';
-//        if ($this->displayErrorDetails) {
-        $html = '<h1>' . $title . '</h1>';
-        $html .= '<p class="lead">Whoops, looks like something went wrong.</p>';
-        $html .= '<h2>&bull; Error Details</h2>';
-        $html .= $this->renderHtmlError($error);
-        while ($error = $error->getPrevious()) {
-            $html .= '<h2>&bull; Previous Error</h2>';
-            $html .= $this->renderHtmlError($error);
-        }
-//        } else {
-//            $html = '<p>A website error has occurred. Sorry for the temporary inconvenience.</p>';
-//        }
-        $output = "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'><title>{$title}</title><style>body{margin:0;padding:20px;font-family:Helvetica,Arial,Verdana,sans-serif;font-size:15px;line-height:150%}h1{margin:0;font-size:40px;font-weight:normal;line-height:40px;padding-bottom: 10px;border-bottom:1px solid #eee}p.lead{font-size:22px}strong{display:inline-block;width:85px}table{border-spacing:0;border-collapse:collapse;width:100%}table tbody tr td{padding:8px;line-height:1.42857143;vertical-align:top;border-top:1px solid #ddd;font-family:monospace}table>tbody>tr:nth-child(odd)>td{background-color:#f9f9f9}</style></head><body>{$html}</body></html>";
+        $html = '<p class="lead">Whoops, looks like something went wrong.</p>';
 
-        return $output;
+        if ($displayErrorDetails) {
+            $html .= '<h2>&bull; Error Details</h2>';
+            $html .= $this->renderThrowableFragment($error);
+            while ($error = $error->getPrevious()) {
+                $html .= '<h2>&bull; Previous Error</h2>';
+                $html .= $this->renderThrowableFragment($error);
+            }
+        }
+
+        return sprintf(
+            "<html>" .
+            "   <head>" .
+            "       <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>" .
+            "       <title>%s</title>" .
+            "       <style>" .
+            "           body{margin:0;padding:20px;font-family:Helvetica,Arial,Verdana,sans-serif;font-size:15px;line-height:1.5em}" .
+            "           h1{margin:0;font-size:40px;font-weight:normal;line-height:40px;padding-bottom: 10px;border-bottom:1px solid #eee}" .
+            "           p.lead{font-size:22px}" .
+            "           strong{display:inline-block;width:85px}" .
+            "           table{border-spacing:0;border-collapse:collapse}" .
+            "           table tbody tr td{padding:8px;line-height:1.5em;vertical-align:middle;border-top:1px solid #ddd;font-family:monospace}" .
+            "           table>tbody>tr:nth-child(odd)>td{background-color:#f9f9f9}" .
+            "       </style>" .
+            "   </head>" .
+            "   <body>" .
+            "       <h1>%s</h1>" .
+            "       <div>%s</div>" .
+            "       <a href='#' onClick='window.history.go(-1)'>Go Back</a>" .
+            "   </body>" .
+            "</html>",
+            $title,
+            $title,
+            $html
+        );
     }
     /**
      * Render error as HTML.
@@ -209,7 +123,7 @@ EOT;
      *
      * @return string
      */
-    private function renderHtmlError(Throwable $error): string
+    private function renderThrowableFragment(Throwable $error): string
     {
         $html = sprintf('<div><strong>Type:</strong> %s (%s)</div>', get_class($error), $this->getExceptionCode($error));
 
@@ -220,7 +134,7 @@ EOT;
             $html .= sprintf('<div><strong>Message:</strong> %s</div>', $this->escapeHtml($message));
         }
         if (($file = $error->getFile())) {
-            $html .= sprintf('<div><strong>File:</strong> %s</div>', $this->escapeHtml($this->replaceRoot($file)));
+            $html .= sprintf('<div><strong>File:</strong> %s</div>', $this->replaceRoot($file));
         }
         if (($line = $error->getLine())) {
             $html .= sprintf('<div><strong>Line:</strong> %s</div>', (int)$line);
@@ -232,7 +146,7 @@ EOT;
             
             $html .= '<table><tbody>';
             foreach ($traces as $index => $trace) {
-                $html .= sprintf('<tr><td>#%d</td><td>%s</td><td>%s</td></tr>', count($traces) - $index, $this->escapeHtml($trace['function']), $this->escapeHtml($trace['file'] ?: ''));
+                $html .= sprintf('<tr><td>#%d</td><td>%s</td><td>%s</td></tr>', count($traces) - $index, $trace['function'], $this->replaceRoot($trace['file'] ?: ''));
             }
             $html .= '</table></tbody>';
         }
@@ -247,7 +161,7 @@ EOT;
      *
      * @return string
      */
-    private function renderJsonErrorMessage(Throwable $error): string
+    private function renderJsonBody(Throwable $error): string
     {
         $json = [
             'message' => 'Chiron Application Error',
@@ -274,7 +188,7 @@ EOT;
      *
      * @return string
      */
-    private function renderXmlErrorMessage(Throwable $error): string
+    private function renderXmlBody(Throwable $error): string
     {
         $xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
         $xml .= "<errors>\n  <message>Chiron Application Error</message>\n";

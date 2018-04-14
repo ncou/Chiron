@@ -167,6 +167,12 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
         }
         return $return;
     }
+
+    protected function shouldDisplayDetails(ServerRequestInterface $request) : bool
+    {
+        return $request->getAttribute($this->attributeName . '_displayErrorDetails', false);
+    }
+
     /**
      * normalizeBacktrace
      *
@@ -194,9 +200,6 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
                 $arguments .= gettype($arg);
             }
         }
-        if (!empty($trace['file'])) {
-            $trace['file'] = $this->replaceRoot($trace['file']);
-        }
         return [
             'file' => $trace['file'] ? $trace['file'] . ' (' . $trace['line'] . ')' : null,
             'function' => ($trace['class'] ? $trace['class'] . $trace['type'] : null) . $trace['function'] . '(' . $arguments . ')'
@@ -210,7 +213,7 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
      *
      * @return  string
      */
-    protected function replaceRoot($file)
+    protected function replaceRoot(string $file) : string
     {
         if (defined('Chiron\ROOT_DIR')) {
             $file = 'ROOT' . substr($file, strlen(\Chiron\ROOT_DIR));

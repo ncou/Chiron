@@ -29,7 +29,7 @@ class RoutingMiddleware implements MiddlewareInterface
     // TODO : ajouter un RouterInterface comme type hinting pour la paramétre $router
     // TODO : en fait on lui passe en paramétre toute l'application $app , il faudrait surement cloisonner la partie router et l'application.
     // TODO : lui passer le reouter en paramétre. !!!!!
-    public function __construct($router)
+    public function __construct(Router $router)
     {
         $this->router = $router;
     }

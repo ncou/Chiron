@@ -62,6 +62,11 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
     //private $container;
 
     /**
+     * @var bool
+     */
+    private $displayErrorDetails;
+
+    /**
      * Set container
      *
      * @param ContainerInterface $container
@@ -75,8 +80,9 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
 
     // TODO : ajouter un paramétre displayExceptionDetail = true/false pour afficher ou non le détail de l'exception.
     // TODO : virer ce constructeur et utiliser directement la config dans le container pour voir si on doit afficher le detail de l'exception "displayExceptionDetail = true/false"
-    public function __construct()
+    public function __construct(bool $displayErrorDetails)
     {
+        $this->displayErrorDetails = $displayErrorDetails;
     }
 
     /**
@@ -151,7 +157,10 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
         //$params = [$this->request, $this->response, $exception, $this->displayErrorDetails];
         //return call_user_func_array($handler, $params);
 
+// TODO : mettre plutot dans la request un attribute de type tableau : [$exception, $displayDetails, $logError...etc] avec éventuellement directement le array qui est dans la config du container pour la rubrique ErrorHandler
+// TODO : au lieu de utiliser une variable "attributeName" il faudrait soit utiliser le nom de la classe : ErrorHandlerMiddleware::class ou alors utiliser une constante de classe genre ErrorHandlerMiddleware::ATTRIBUTE_NAME
         $request = $request->withAttribute($this->attributeName, $exception);
+        $request = $request->withAttribute($this->attributeName . '_displayErrorDetails', $this->displayErrorDetails);
 
         // TODO : il faudra passer le tableau de headers[] qui est dans l'exception aussi dans la response (genre pour une httpexception 405 MethodNotAllowed, on va avoir un headers['Allow' => 'GET', 'POST']) qu'il faut utiliser dans la response.
         /*
