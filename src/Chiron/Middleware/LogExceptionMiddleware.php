@@ -12,6 +12,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LogLevel;
 use Psr\Log\LoggerInterface;
 
+use ErrorException;
+use Throwable;
+
 // TODO ; ajouter une description du middleware + ajouter de la phpdoc en entête des fonctions de la classe
 
 final class LogExceptionMiddleware implements MiddlewareInterface
@@ -27,16 +30,16 @@ final class LogExceptionMiddleware implements MiddlewareInterface
     {
         try {
             return $handler->handle($request);
-        } catch (\ErrorException $e) {
+        } catch (ErrorException $e) {
             $this->handleErrorException($e);
             throw $e;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->logger->critical($this->formatException($e));
             throw $e;
         }
     }
 
-    private function handleErrorException(\ErrorException $e)
+    private function handleErrorException(ErrorException $e): void
     {
         switch ($e->getSeverity()) {
             case E_ERROR:
@@ -71,15 +74,15 @@ final class LogExceptionMiddleware implements MiddlewareInterface
      * @param Throwable $e
      * @return string
      */
-    private function formatException(\Throwable $e): string
+    private function formatException(Throwable $e): string
     {
         return sprintf(
-            "%s: %s in file %s on line %d%s\n",
+            "%s: %s in file %s on line %d\r\n%s",
             get_class($e),
             $e->getMessage(),
             $e->getFile(),
             $e->getLine(),
-            $this->getTraceAsString($e->getTrace())
+            $this->formatExceptionTraces($e->getTrace())
         );
     }
 
@@ -87,13 +90,12 @@ final class LogExceptionMiddleware implements MiddlewareInterface
      * @param array $traces
      * @return string
      */
-    private function getTraceAsString(array $traces) : string
+    private function formatExceptionTraces(array $traces): string
     {
         $trace = '';
         foreach ($traces as $index => $record) {
-            $trace .= PHP_EOL;
             $trace .= sprintf(
-                "    #%s %s%s%s() called at %s:%s\n",
+                "    #%s %s%s%s() called at %s:%s\r\n",
                 $index,
                 $record['class'] ?? '',
                 isset($record['class'], $record['function']) ? $record['type'] : '',
