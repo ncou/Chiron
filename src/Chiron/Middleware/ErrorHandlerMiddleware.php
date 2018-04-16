@@ -95,7 +95,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
             $response = $handler->handle($request);
 
 // TODO : à virer c'est pour tester !!!!
-            //throw new \RuntimeException("TEST_Error Processing Request", 1);
+            //throw new \RuntimeException("TEST_Error 'Processing' \"Request\"", 1);
             //throw new HttpException(404);
             //throw new \Chiron\Exception\NotFoundHttpException();
 
@@ -106,8 +106,6 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
             }*/
         } catch (Throwable $exception) {
             $response = $this->handleThrowable($request, $exception);
-//        } catch (Throwable $exception) {
-//            $response = $this->handleThrowable($request, new HttpException(500, 'An unexpected error has occurred', $exception));
         } finally {
             restore_error_handler();
         }
@@ -150,7 +148,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
 
         // re-throw the exception if there is no handler found to catch this type of exception
         // this case should only happen if the user have unregistered the default handler for exception instanceof == HttpException
-        if (! isset($exceptionHandler)) {
+        if (empty($exceptionHandler)) {
             throw $exception;
         }
 
@@ -187,9 +185,6 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
 //        $params = [$request, new Response($exception->getStatusCode())];
 //        return call_user_func_array($exceptionHandler, $params);
     }
-
-
-
     /**
      * Get callable to handle scenarios where an error
      * occurs when processing the current request.
@@ -212,7 +207,6 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
 
         return $exceptionHandler;
     }
-
     /**
      * Add HTTP exception handler.
      *
@@ -233,7 +227,6 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
      * @param string|array     $exceptionTypes
      * @param RequestHandlerInterface $handler
      *
-     * @throws \RuntimeException
      */
     // TODO : il faudrait faire un test si on passe un seul attribut qui est un callable dans ce cas c'est qu'on ne précise pas le type d'exception rattaché au handler et donc qu'il s'agit du handler par défaut pour traiter toutes les exceptions. Dans ce cas la méthode setDefaultErrorHandler ne servirai plus à rien !!!
     // TODO : mettre le type du paramétre $handler à RequestHandlerInterface

@@ -31,6 +31,8 @@ namespace Chiron\Stack;
 
 //https://github.com/koolkode/http-komponent/blob/master/src/MiddlewareChain.php
 
+//https://github.com/idealo/php-middleware-stack/blob/use-new-psr15-interfaces/src/Stack.php
+
 // TODO : prendre exemple ici pour gérer la méthode offsetSet sur une stack ???? https://github.com/zendframework/zend-httphandlerrunner/blob/master/src/Emitter/EmitterStack.php#L55
 
 use Psr\Http\Server\MiddlewareInterface;
@@ -39,13 +41,16 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+use InvalidArgumentException;
+use UnexpectedValueException;
+
 // TODO : renommer cette classe en RequestHandlerStack
 class RequestHandlerStack implements RequestHandlerInterface
 {
     /**
      * @var array MiddlewareInterface[]|callable[]|string[]
      */
-    private $middlewares = []; // TODO : utiliser un "new SplQueue()" au lieu d'un array ???? https://github.com/zendframework/zend-stratigility/blob/master/src/MiddlewarePipe.php#L44 // TODO : utiliser un SplStack à la place ? les fonctions push/unshift fonctionnent !!!!
+    private $middlewares; // TODO : utiliser un "new SplQueue()" au lieu d'un array ???? https://github.com/zendframework/zend-stratigility/blob/master/src/MiddlewarePipe.php#L44 // TODO : utiliser un SplStack à la place ? les fonctions push/unshift fonctionnent !!!!
     /**
      * @var callable
      */
@@ -59,9 +64,10 @@ class RequestHandlerStack implements RequestHandlerInterface
      * @param array $middlewares
      * @param callable $fallbackHandler
      */
-    public function __construct(callable $fallbackHandler)
+    public function __construct(RequestHandlerInterface $fallbackHandler, array $middlewares = [])
     {
         $this->fallbackHandler = $fallbackHandler;
+        $this->middlewares = $middlewares;
     }
 
     /**
@@ -77,22 +83,22 @@ class RequestHandlerStack implements RequestHandlerInterface
 
         // execute the middlewares
         switch (true) {
-            // end of the stack, execute the default callable (aka the default RequestHandler) for creating the response
+            // end of the stack, execute the default RequestHandler for creating the response
             //case empty($middleware):
             case is_null($middleware):
-                $result = call_user_func($this->fallbackHandler, $request);
-                //$result = $this->fallbackHandler->handle($request);
+                //$result = call_user_func($this->fallbackHandler, $request);
+                $result = $this->fallbackHandler->handle($request);
                 break;
             case $middleware instanceof MiddlewareInterface:
                 $result = $middleware->process($request, $this->nextHandler());
                 break;
             default:
-                throw new \InvalidArgumentException(sprintf('No valid middleware provided (%s)', is_object($middleware) ? get_class($middleware) : gettype($middleware)));
+                throw new InvalidArgumentException(sprintf('No valid middleware provided (%s)', is_object($middleware) ? get_class($middleware) : gettype($middleware)));
         }
 
         // middleware MUST return a ResponseInterface object
         if (! $result instanceof ResponseInterface) {
-            throw new \UnexpectedValueException('Middleware must return instance of (\Psr\Http\Message\ResponseInterface)');
+            throw new UnexpectedValueException('Middleware must return instance of (\Psr\Http\Message\ResponseInterface)');
         }
 
         return $result;
@@ -171,13 +177,28 @@ class RequestHandlerStack implements RequestHandlerInterface
             }
         ));
     }*/
+
+/*
+//https://github.com/idealo/php-middleware-stack/blob/use-new-psr15-interfaces/src/Stack.php#L28
+    private function withoutMiddleware(MiddlewareInterface $middleware): RequestHandlerInterface
+    {
+        return new self(
+            $this->defaultResponse,
+            ...array_filter(
+                $this->middlewares,
+                function ($m) use ($middleware) {
+                    return $middleware !== $m;
+                }
+            )
+        );
+    }
+*/
     /**
      * Unshift a middleware to the bottom of the stack.
      *
      * @param MiddlewareInterface $middleware Middleware function
      */
-    // TODO : vérifier le typehint, il faudrait plutot un MiddlewareInterface au lieu d'un callable ???? non ???
-    public function unshift(MiddlewareInterface $middleware)
+    public function append(MiddlewareInterface $middleware)
     {
         array_unshift($this->middlewares, $middleware);
     }
@@ -186,8 +207,7 @@ class RequestHandlerStack implements RequestHandlerInterface
      *
      * @param MiddlewareInterface $middleware Middleware function
      */
-    // TODO : vérifier le typehint, il faudrait plutot un MiddlewareInterface au lieu d'un callable ???? non ???
-    public function push(MiddlewareInterface $middleware)
+    public function prepend(MiddlewareInterface $middleware)
     {
         array_push($this->middlewares, $middleware);
     }

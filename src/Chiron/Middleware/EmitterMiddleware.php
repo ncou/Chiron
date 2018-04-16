@@ -270,7 +270,8 @@ class EmitterMiddleware implements MiddlewareInterface
         // TODO : on doit faire la même chose (virer contenttype et contententlength et vider le body) si la réponse est "informational" cad avec un code entre
         if (($response->getStatusCode() >= 100 && $response->getStatusCode() < 200)
         || in_array($response->getStatusCode(), array(204, 205, 304))) {
-            $response = $response->withoutHeader('Content-Type')->withoutHeader('Content-Length')->setBody('');
+          // TODO : faire un helper pour vider le body d'une response.
+            $response = $response->withoutHeader('Content-Type')->withoutHeader('Content-Length')->withBody(new \Chiron\Http\Stream(fopen('php://temp', 'r+')));
             //return;
         }
 

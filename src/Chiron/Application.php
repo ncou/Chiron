@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 // TODO : AUTH service : https://github.com/harikt/expressive-auth   +   https://github.com/auraphp/Aura.Auth
 
+
 //TODO : stocker la réponse de base dans un objet : https://github.com/zendframework/zend-expressive/blob/release-2.2/src/Application.php#L101    "setResponsePrototype()"
 
 // TODO : serviceProvider qui charge dans le container tout ce dont on a besoin : https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/ServicesProvider/ServicesProvider.php
@@ -42,12 +43,16 @@ use Chiron\Routing\Route;
 use Chiron\Container;
 
 use Chiron\Stack\RequestHandlerStack;
-use Chiron\Stack\LazyLoadingMiddleware;
-use Chiron\Stack\CallableMiddlewareDecorator;
+use Chiron\Stack\Utils\LazyLoadingMiddleware;
+use Chiron\Stack\Utils\CallableMiddlewareDecorator;
+use Chiron\Stack\Utils\CallableRequestHandlerDecorator;
 
 use Chiron\Config\Config;
 
 use Chiron\Http\Response;
+
+use InvalidArgumentException;
+use Closure;
 
 class Application
 {
@@ -104,30 +109,48 @@ class Application
     /**
      * Add a middleware to the end of the stack.
      *
-     * @param string|callable|MiddlewareInterface $middleware
+     * @param string|callable|MiddlewareInterface or an array of such arguments $middlewares
      *
      * @return $this (for chaining)
      */
     // TODO : gérer aussi les tableaux de middleware, ainsi que les tableaux de tableaux de middlewares
-    public function middleware($middleware)
+    public function middleware($middlewares)
     {
-        if ($middleware instanceof MiddlewareInterface) {
-            $this->requestHandler->push($middleware);
-        } else if (is_callable($middleware)) {
-            $this->requestHandler->push(new CallableMiddlewareDecorator($middleware));
-        } else if (is_string($middleware) && $middleware !== '') {
-            $this->requestHandler->push(new LazyLoadingMiddleware($this->container, $middleware));
-        } else {
-            throw new \InvalidArgumentException(sprintf(
-                'Middleware "%s" is neither a string service name, a PHP callable,'
-                . ' a %s instance, or an array of such arguments',
-                is_object($middleware) ? get_class($middleware) : gettype($middleware),
-                MiddlewareInterface::class
-            ));
+        if (! is_array($middlewares)) {
+            $middlewares = [$middlewares];
+        }
+
+        foreach ($middlewares as $middleware) {
+            $this->requestHandler->prepend($this->prepareMiddleware($middleware));
         }
 
         return $this;
     }
+
+    /**
+     * Decorate the middleware if necessary.
+     *
+     * @param string|callable|MiddlewareInterface $middleware
+     *
+     * @return MiddlewareInterface
+     */
+    private function prepareMiddleware($middleware) : MiddlewareInterface
+    {
+        if ($middleware instanceof MiddlewareInterface) {
+            return $middleware;
+        } else if (is_callable($middleware)) {
+            return new CallableMiddlewareDecorator($middleware);
+        } else if (is_string($middleware) && $middleware !== '') {
+            return new LazyLoadingMiddleware($this->container, $middleware);
+        } else {
+            throw new InvalidArgumentException(sprintf(
+                'Middleware "%s" is neither a string service name, a PHP callable, or a %s instance',
+                is_object($middleware) ? get_class($middleware) : gettype($middleware),
+                MiddlewareInterface::class
+            ));
+        }
+    }
+
 
     /**
      * Configure whether to display PHP errors or silence them.
@@ -158,14 +181,15 @@ class Application
     /**
      * Add GET route
      *
-     * @param  string $pattern  The route URI pattern
-     * @param  callable|string  $handler The route callback routine
+     * @param string $pattern  The route URI pattern
+     * @param callable|string  $handler The route callback routine
+     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
      */
-    public function get(string $pattern, $handler)
+    public function get(string $pattern, $handler, $middlewares = null)
     {
-        return $this->map($pattern, $handler)->method('GET');
+        return $this->route($pattern, $handler, $middlewares)->method('GET');
     }
     /**
      * Add HEAD route
@@ -173,39 +197,42 @@ class Application
      * HEAD was added to HTTP/1.1 in RFC2616
      *
      * @link https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
-     * @param  string $pattern  The route URI pattern
-     * @param  callable|string  $handler The route callback routine
+     * @param string $pattern  The route URI pattern
+     * @param callable|string  $handler The route callback routine
+     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
      */
     // TODO : vérifier l'utilité de cette méthode. Et il manque encore la partie CONNECT et TRACE !!!! dans ces helpers
-    public function head(string $pattern, $handler)
+    public function head(string $pattern, $handler, $middlewares = null)
     {
-        return $this->map($pattern, $handler)->method('HEAD');
+        return $this->route($pattern, $handler, $middlewares)->method('HEAD');
     }
     /**
      * Add POST route
      *
-     * @param  string $pattern  The route URI pattern
-     * @param  callable|string  $handler The route callback routine
+     * @param string $pattern  The route URI pattern
+     * @param callable|string  $handler The route callback routine
+     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
      */
-    public function post(string $pattern, $handler)
+    public function post(string $pattern, $handler, $middlewares = null)
     {
-        return $this->map($pattern, $handler)->method('POST');
+        return $this->route($pattern, $handler, $middlewares)->method('POST');
     }
     /**
      * Add PUT route
      *
-     * @param  string $pattern  The route URI pattern
-     * @param  callable|string  $handler The route callback routine
+     * @param string $pattern  The route URI pattern
+     * @param callable|string  $handler The route callback routine
+     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
      */
-    public function put(string $pattern, $handler)
+    public function put(string $pattern, $handler, $middlewares = null)
     {
-        return $this->map($pattern, $handler)->method('PUT');
+        return $this->route($pattern, $handler, $middlewares)->method('PUT');
     }
     /**
      * Add PATCH route
@@ -213,89 +240,106 @@ class Application
      * PATCH was added to HTTP/1.1 in RFC5789
      *
      * @link http://tools.ietf.org/html/rfc5789
-     * @param  string $pattern  The route URI pattern
-     * @param  callable|string  $handler The route callback routine
+     * @param string $pattern  The route URI pattern
+     * @param callable|string  $handler The route callback routine
+     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
      */
-    public function patch(string $pattern, $handler)
+    public function patch(string $pattern, $handler, $middlewares = null)
     {
-        return $this->map($pattern, $handler)->method('PATCH');
+        return $this->route($pattern, $handler, $middlewares)->method('PATCH');
     }
     /**
      * Add DELETE route
      *
-     * @param  string $pattern  The route URI pattern
-     * @param  callable|string  $callable The route callback routine
+     * @param string $pattern  The route URI pattern
+     * @param callable|string  $callable The route callback routine
+     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
      */
-    public function delete(string $pattern, $handler)
+    public function delete(string $pattern, $handler, $middlewares = null)
     {
-        return $this->map($pattern, $handler)->method('DELETE');
+        return $this->route($pattern, $handler, $middlewares)->method('DELETE');
     }
     /**
      * Add OPTIONS route
      *
-     * @param  string $pattern  The route URI pattern
-     * @param  callable|string  $handler The route callback routine
+     * @param string $pattern  The route URI pattern
+     * @param callable|string  $handler The route callback routine
+     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
      */
     // TODO : vérifier l'utilité de cette méthode !!!!
-    public function options(string $pattern, $handler)
+    public function options(string $pattern, $handler, $middlewares = null)
     {
-        return $this->map($pattern, $handler)->method('OPTIONS');
+        return $this->route($pattern, $handler, $middlewares)->method('OPTIONS');
     }
 
     /**
      * Add route for any HTTP method
      *
-     * @param  string $pattern  The route URI pattern
-     * @param  callable|string  $handler The route callback routine
+     * @param string $pattern  The route URI pattern
+     * @param callable|string  $handler The route callback routine
+     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
      */
     // TODO : voir si on conserve cette méthode (qui finalement est un alias de "->map()")
-    public function any(string $pattern, $handler)
+    public function any(string $pattern, $handler, $middlewares = null)
     {
         // TODO : il faudrait plutot laissé vide le setMethods([]) comme ca toutes les méthodes sont acceptées !!!!
-        return $this->map($pattern, $handler)->setMethods(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
+        return $this->route($pattern, $handler, $middlewares)->setAllowedMethods(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
     }
 
     /**
      * Add route with multiple methods
      *
-     * @param  string[] $methods  Numeric array of HTTP method names
-     * @param  string   $pattern  The route URI pattern
-     * @param  RequestHandlerInterface|callable|string    $handler The route callback routine
+     * @param string   $pattern  The route URI pattern
+     * @param RequestHandlerInterface|callable|string    $handler The route callback routine
+     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return RouteInterface
      */
-    public function map(string $pattern, $handler)
+    // TODO : créer une classe RouteInterface qui servira comme type de retour (il faudra aussi l'ajouter dans le use en début de classe) !!!!!
+    // TODO : méthode à renommer en "route()" ????
+    public function route(string $pattern, $handler, $middlewares = null) : Route
     {
+        if (! isset($middlewares)) {
+            $middlewares = [];
+        } else if (! is_array($middlewares)) {
+            $middlewares = [$middlewares];
+        }
+
         // bind the application in the function, so we could use "this" in the callable to access the application.
         // TODO : ce bind est aussi fait au niveau de la classe DeferredRequestHandler !!!! c'est pas bon car c'est fait en double
         // TODO : vérifier l'utilité de ce bind !!!!!!
-        if ($handler instanceof \Closure) {
+        if ($handler instanceof Closure) {
             $handler = $handler->bindTo($this);
         }
 
         /*
-                if (is_callable([$handler, 'setContainer']) && $this->container instanceof ContainerInterface) {
-                    $handler->setContainer($this->container);
-                }
+        if (is_callable([$handler, 'setContainer']) && $this->container instanceof ContainerInterface) {
+            $handler->setContainer($this->container);
+        }
 
-                if (is_array($handler) && is_callable([$handler[0], 'setContainer']) && $this->container instanceof ContainerInterface) {
-                    $handler[0]->setContainer($this->container);
-                }
+        if (is_array($handler) && is_callable([$handler[0], 'setContainer']) && $this->container instanceof ContainerInterface) {
+            $handler[0]->setContainer($this->container);
+        }
         */
 
         if (is_string($handler) || is_callable($handler)) {
             $handler = new DeferredRequestHandler($handler, $this->container);
         }
 
-        return $this->router->map($pattern, $handler);
+        $handlerStack = new RequestHandlerStack($handler);
+        foreach ($middlewares as $middleware) {
+            $handlerStack->prepend($this->prepareMiddleware($middleware));
+        }
+
+        return $this->getRouter()->map($pattern, $handlerStack);
     }
 
     /**
@@ -304,24 +348,30 @@ class Application
      * @param string   $baseRoute The route sub pattern to mount the callbacks on
      * @param callable $fn        The callback method
      */
-    public function mount(string $prefix, \Closure $closure)
+    public function mount(string $prefix, Closure $closure)
     {
         // Track current base route
-        $curBasePath = $this->router->getBasePath();
+        $curBasePath = $this->getRouter()->getBasePath();
         // Build new base route string
-        $this->router->setBasePath($curBasePath . $prefix);
+        $this->getRouter()->setBasePath($curBasePath . $prefix);
         // Bind the $this var, to app instance.
         $closure = $closure->bindTo($this);
+        //$callback = Closure::bind($closure, $this, get_class());
         // Call the callable
         $closure($this);
+        // TODO : regarder ici pour des arguments à passer au mount : https://github.com/nezamy/route/blob/master/system/Route.php#L185
+        //call_user_func_array($closure, $this->bindArgs($this->pramsGroup, $this->matchedArgs));
         // Restore original base route
-        $this->router->setBasePath($curBasePath);
+        $this->getRouter()->setBasePath($curBasePath);
     }
+
+    // TODO : ajouter des méthodes proxy pour : getRoutes / getNamedRoute / hasRoute ?????? voir même pour generateUri et getBasePath/setBasePath ??????
 
     // TODO : ajouter une interface pour le router, et faire en sorte que cette méthode ait un type de retour du genre "RouterInterface", et on pourra aussi créer une méthode "setRouter(RouterInterface $router)"
     public function getRouter()
     {
-        return $this->router;
+        //return $this->router;
+        return $this->container->get('router');
     }
     /*
     // TODO : méthode à implémenter !!!!!!
@@ -339,7 +389,7 @@ class Application
      *
      * @return ContainerInterface|null
      */
-    public function getContainer()
+    public function getContainer() : ?ContainerInterface
     {
         return $this->container;
     }
@@ -347,6 +397,7 @@ class Application
      * Set container
      *
      * @param ContainerInterface $container
+     * @return  Application  Returns itself to support chaining.
      */
     // TODO : voir si on conserve cette méthode ?????
     public function setContainer(ContainerInterface $container)
@@ -366,7 +417,7 @@ class Application
      *
      * @return LoggerInterface
      */
-    public function getLogger()
+    public function getLogger() : LoggerInterface
     {
         // If a logger hasn't been set, use NullLogger
         if (! $this->logger instanceof LoggerInterface) {
@@ -376,7 +427,6 @@ class Application
         return $this->logger;
     }
 
-    // TODO : il faudrait renvoyer $this dans ces méthode du helper du logger pour permettre de chainner les exécutions
     /**
      * Sets logger.
      *
@@ -465,21 +515,28 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     public function __construct(array $values = [])
     { //, ContainerInterface $container = null){
 
-        $this->router = new Router();
+        //$this->router = new Router();
       
         $this->container = new Container();
+
+        $this->container->bind('router', function($c) {
+            return new Router();
+        });
+
         //$this->container = $ontainer;
 
         $config = new Config($values);
         $this->container->config = $config;
 
-
-        $this->requestHandler = new RequestHandlerStack(function ($request) {
+        // TODO : créer plutot une classe "EmptyResponseHandler" qui utilisera une responseFactory pour renvoyer une response vide. et c'est cette classe qu'on passera à la Stack.
+        $emptyResponse = new CallableRequestHandlerDecorator(function ($request) {
             // TODO : passer le charset + version http 1.1 par défaut à cette réponse !!!!
-            //$this->container['charset'] $this->container['httpVersion']
+            //$this->container['charset'] et $this->container['httpVersion']
             $response = new Response();
             return $response;
         });
+
+        $this->requestHandler = new RequestHandlerStack($emptyResponse);
 
         //$this->factory = new MiddlewareFactory($this->container);
 
@@ -642,7 +699,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         //$this->basePath = $this->container['basePath'];
         //$this->setBasePath($this->container['basePath']);
 
-        $this->router->setBasePath($this->container->config['settings.basePath']);
+        $this->getRouter()->setBasePath($this->container->config['settings.basePath']);
 
         // initialise the Router constructor
     //parent::__construct($this->basePath, $this->container);
@@ -773,7 +830,15 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
      * Run App
      ******************************************************************************/
 
-    public function run(ServerRequestInterface $request = null): ResponseInterface
+    public function run() : ResponseInterface
+    {
+        //$request = Request::createFromGlobals($_SERVER);
+        $request = (new \Chiron\Http\Factories\ServerRequestFactory())->createServerRequestFromArray($_SERVER);
+
+        return $this->process($request);
+    }
+
+    public function process(ServerRequestInterface $request) : ResponseInterface
     {
 
         // apply PHP config settings.
@@ -781,7 +846,13 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
         // TODO : c'est plutot ici qu'on devrait la request::fromGlobals et éventuellement la mettre dans le container, non ????, avec éventuellement la possibilité de lui passer une request en paramétre de la méthode Run($request) et donc on créé la request ou on utilisera celle passée en paramétre. Celka peut servir si un utilisateur créé sa request avant (dans le cas ou il utilise du PSR7 request), mais aussi servir pour nos tests PHPUNIT avec une request pré-initilalisée. Cela peut aussi permettre à l'utilisateur de modifier la request, genre pour un sanitize, ou alors pour changer le type de méthode si il y a un champ formulaire hidden _method pour faire un override de la méthode http.
 
-        $request = $request ?? (new \Chiron\Http\Factories\ServerRequestFactory())->createServerRequestFromArray($_SERVER);
+        // create response
+        /*
+        $headers = new Headers(['Content-Type' => 'text/html; charset=UTF-8']);
+        $httpVersion = $this->getSetting('httpVersion');
+        $response = new Response(200, $headers);
+        $response = $response->withProtocolVersion($httpVersion);
+        */
 
         $response = $this->requestHandler->handle($request);
 
@@ -800,27 +871,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 */
 
 
-      // TODO : ajouter une gestion du 405 methode not allowed et du 404 not found => https://www.slimframework.com/docs/handlers/not-allowed.html
-      // TODO : ajouter un try catch pour les exceptions de type PHP 7.x !!!! "Throwable"  => https://github.com/slimphp/Slim/blob/3.x/Slim/App.php#L391
-      //} catch (\Exception $e) {
-      //    $response = $this->handleErrors($e, $request);
-//      } catch (\Throwable $e) {
-
-// TODO : utiliser un middleware pour catcher les exceptions ????? : https://github.com/jasny/error-handler/blob/master/src/ErrorHandler/Middleware.php
-          // TODO : regarder ici comment faire : https://github.com/juliangut/slim-exception/blob/master/src/Handler/ExceptionHandler.php
-          //$response = $this->handlePhpError($e, $request);
- //         $response = $this->handleHttpException($e, $request);
- //     }
-
-// TODO : controle à remonter dans le middlewareStack, qunad on fait l'execution des middleware, les retours doivent être de type ResponseInterface. !!!!!
-      // TODO : attention, l'exception ne sera pas catchées, c'est normal ?????
-      /*
-      if (!$response instanceof ResponseInterface) {
-          throw new Exception("Controllers, hooks and middleware must return instance of ResponseInterface");
-      }
-      */
-
-
+   
 /*
       if ($response->isSuccessful() && $this->requestIsConditional()) {
             if (! $response->headers->has('ETag')) {
@@ -829,17 +880,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
             $response->isNotModified($request);
         }
 */
-
-
-
-
-      // create a compliant response in respect with the specifications RFC 2616
-//      $response = $this->finalizeResponse($response, $request);
-      // TODO il fait refaire un try catch autour de cette méthode pour remonter au format response, le cas ou on a une exception sur les headers sent ou le cas ou on a l'erreur sur le buffer qui est déjà utilisé !!!!
-//      $this->emit($response);
-
-        //exit;
-      //return $response;
     }
 
     /**
@@ -888,79 +928,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         }
         return $this;
     }
-
-
-    /**
-         * Set include path
-         *
-         * @param  array $paths
-         * @return Zend_Application
-         */
-    public function setIncludePaths(array $paths): self
-    {
-        $path = implode(PATH_SEPARATOR, $paths);
-        set_include_path($path . PATH_SEPARATOR . get_include_path());
-        return $this;
-    }
-
-
-
-
-    // TODO : implémenter et utiliser ces getter/setter pour les composants de l'application !!!!!!!!!!!!
-    /**
-     * Returns the error handler component.
-     * @return ErrorHandler the error handler application component.
-     */
-    /*
-    public function getErrorHandler()
-    {
-        return $this->get('errorHandler');
-    }
-    */
-    /**
-     * Returns the request component.
-     * @return Request the request component.
-     */
-    /*
-    public function getRequest()
-    {
-        return $this->get('request');
-    }
-    */
-    /**
-     * Returns the response component.
-     * @return Response the response component.
-     */
-    /*
-    public function getResponse()
-    {
-        return $this->get('response');
-    }
-    */
-    /**
-     * Returns the session component.
-     * @return Session the session component.
-     */
-    /*
-    public function getSession()
-    {
-        return $this->get('session');
-    }
-    */
-
-    //https://laracasts.com/discuss/channels/general-discussion/laravel-5-maintenance-mode
-    //TODO : mettre plutot cette information dans le fichier de configuration. genre "app.down_for_maintenance = true" ou "app.isDownForMaintenance = true"
-    /**
-         * Determine if the application is currently down for maintenance.
-         *
-         * @return bool
-         */
-    /*
-        public function isDownForMaintenance()
-        {
-            return false;
-        }
-    */
 
     /**
          * The base path of the application installation.
@@ -1023,32 +990,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     }
 
 
-    /**
-     * Method to close the application.
-     *
-     * @param   integer|string  $message  The exit code (optional; default is 0).
-     *
-     * @return  void
-     *
-     * @since   2.0
-     */
-    public function close($message = 0)
-    {
-        exit($message);
-    }
-
-
-    /**
-     * Get the version number of the application.
-     *
-     * @return string
-     */
-    public static function version()
-    {
-        return self::PACKAGE.'_'.self::VERSION;
-    }
-
-
     
 
 
@@ -1081,25 +1022,4 @@ $aliases = [
 App::setAliases($aliases);
 */
 
-
-  /**
-     * Calling a non-existant method on App checks to see if there's an item
-     * in the container that is callable and if so, calls it.
-     *
-     * @param  string $method
-     * @param  array $args
-     * @return mixed
-     */
-  //https://github.com/slimphp/Slim/blob/3.x/Slim/App.php#L117
-  /*
-    public function __call($method, $args)
-    {
-        if ($this->container->has($method)) {
-            $obj = $this->container->get($method);
-            if (is_callable($obj)) {
-                return call_user_func_array($obj, $args);
-            }
-        }
-        throw new \BadMethodCallException("Method $method is not a valid method");
-    }*/
 }

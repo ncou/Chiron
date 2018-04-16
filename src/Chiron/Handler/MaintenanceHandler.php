@@ -25,5 +25,4 @@ class MaintenanceHandler extends AbstractExceptionHandler
         }
         return $response;
     }
-
 }

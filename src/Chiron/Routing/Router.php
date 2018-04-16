@@ -56,6 +56,8 @@ use Psr\Http\Message\ServerRequestInterface;
 
 use Psr\Http\Server\RequestHandlerInterface;
 
+use RuntimeException;
+
 /**
  * Router class.
  *
@@ -125,15 +127,15 @@ class Router
      * @throws Exception\RuntimeException if the route name is not known
      *     or a parameter value does not match its regex.
      */
-    public function generateUri(string $name, array $substitutions = []): string
+    public function generateUri(string $routeName, array $substitutions = []): string
     {
 // TODO : la méthode getNamedRoute retourne déjà une exception si la route n'existe pas !!! code à virer ? ou alors il faut modifier le getNamedRoute() pour qu'il retourne vide au lieu d'une exception ????
         // Check if named route exists
-        if (!$this->hasRoute($name)) {
-            throw new \RuntimeException();
+        if (!$this->hasRoute($routeName)) {
+            throw new RuntimeException;
         }
 
-        $route = $this->getNamedRoute($name);
+        $route = $this->getNamedRoute($routeName);
         // TODO : lever une exception si on a trouvé plusieurs routes avec le même nom !!!!
 
         $url = $route->generate($substitutions);
@@ -155,6 +157,7 @@ class Router
      *
      * @return array
      */
+    //TODO : méthode à renommer en "dispatch" ????
     public function match(ServerRequestInterface $request): RouteResult
     {
         $requestUrl = $request->getUri()->getPath();
@@ -227,7 +230,7 @@ class Router
         foreach ($params as $key => $value) {
             //preg_match includes matches twice: once by their name, and once with the numeric index.
             // So we ignore the numeric keys since all the required params are named
-            if (!is_int($key)) {
+            if (! is_int($key)) {
                 $defaults[$key] = $value;
             }
         }
@@ -243,7 +246,6 @@ class Router
      * @return RouteInterface
      */
     // TODO : renommer cette méthode en "addRoute()" ???? et elle prendrait en paramétre directement un objet Route qui est initialisé ???? mais on ferai quoi du basepath dans ce cas ?????
-    // TODO : vérifier le type du paramétre $callable normalement on peut ajouter une chaine qui correspondra à une clée présent dans le container !!!!
     public function map(string $pattern, RequestHandlerInterface $handler)
     {
         //TODO : lever une exception si on redéclare une route (tester aussi en passant par le group si il est possible de redéclarer une route !!!!) : https://github.com/mastacontrola/AltoRouter/blob/master/AltoRouter.php#L328
@@ -274,7 +276,7 @@ class Router
     }
 
     /**
-     * Get a route by name
+     * Get a route by name. First route found win !!!
      *
      * @param string $name
      * @return RouteInterface the route
@@ -370,29 +372,4 @@ class Router
         return true;
     }
     */
-
-
-    /**
-     * Method to get property Matcher
-     *
-     * @return  MatcherInterface
-     */
-    /*
-    public function getMatcher()
-    {
-        return $this->matcher;
-    }*/
-    /**
-     * Method to set property matcher
-     *
-     * @param   MatcherInterface $matcher
-     *
-     * @return  static  Return self to support chaining.
-     */
-    /*
-    public function setMatcher($matcher)
-    {
-        $this->matcher = $matcher;
-        return $this;
-    }*/
 }

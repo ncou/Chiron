@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Stack;
+namespace Chiron\Stack\Utils;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -20,7 +20,7 @@ use Psr\Container\ContainerInterface;
 class LazyLoadingMiddleware implements MiddlewareInterface
 {
     /**
-     * @var ContainerInterface
+     * @var MiddlewareContainer
      */
     private $container;
 
@@ -38,7 +38,8 @@ class LazyLoadingMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @throws InvalidMiddlewareException for invalid middleware types pulled from the container.
+     * @throws InvalidMiddlewareException for invalid middleware types pulled
+     *     from the container.
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
     {

@@ -3,8 +3,6 @@ declare(strict_types = 1);
 
 namespace Chiron\Routing;
 
-//namespace Core\Routing;
-
 //https://docs.zendframework.com/zend-expressive/v2/cookbook/route-specific-pipeline/
 
 // TODO ; regarder exemple ici =>   https://github.com/ncou/router-based-on-AltoRouter/blob/master/src/Route.php
@@ -515,10 +513,17 @@ class Route implements RequestHandlerInterface
     */
 
 
-
+/*
     public function method($method)
     {
         $this->setAllowedMethods(explode('|', $method));
+        return $this;
+    }*/
+
+    public function method(string $method, string ...$methods)
+    {
+        array_unshift($methods, $method);
+        $this->setAllowedMethods($methods);
         return $this;
     }
 

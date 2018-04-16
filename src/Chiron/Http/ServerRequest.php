@@ -2278,6 +2278,7 @@ function getIP()
      *
      * @return string
      */
+    /*
     public function getProtocolVersion()
     {
         if ($this->isFromTrustedProxy()) {
@@ -2287,7 +2288,7 @@ function getIP()
             }
         }
         return $this->server->get('SERVER_PROTOCOL');
-    }
+    }*/
 
 
     /**

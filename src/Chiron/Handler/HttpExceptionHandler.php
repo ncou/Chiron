@@ -111,8 +111,8 @@ class HttpExceptionHandler extends AbstractExceptionHandler
             "       <a href='#' onClick='window.history.go(-1)'>Go Back</a>" .
             "   </body>" .
             "</html>",
-            $title,
-            $title,
+            $this->escapeHtml($title),
+            $this->escapeHtml($title),
             $html
         );
     }
@@ -123,30 +123,31 @@ class HttpExceptionHandler extends AbstractExceptionHandler
      *
      * @return string
      */
-    private function renderThrowableFragment(Throwable $error): string
+    private function renderThrowableFragment(Throwable $e): string
     {
-        $html = sprintf('<div><strong>Type:</strong> %s (%s)</div>', get_class($error), $this->getExceptionCode($error));
+        $html = sprintf('<div><strong>Type:</strong> %s (%s)</div>', $this->escapeHtml(get_class($e)), $this->getExceptionCode($e));
 
-        //if (($code = $error->getCode())) {
+        //if (($code = $e->getCode())) {
         //    $html .= sprintf('<div><strong>Code:</strong> %s</div>', $code);
         //}
-        if (($message = $error->getMessage())) {
+        if (($message = $e->getMessage())) {
             $html .= sprintf('<div><strong>Message:</strong> %s</div>', $this->escapeHtml($message));
         }
-        if (($file = $error->getFile())) {
-            $html .= sprintf('<div><strong>File:</strong> %s</div>', $this->replaceRoot($file));
+        if (($file = $e->getFile())) {
+            $html .= sprintf('<div><strong>File:</strong> %s</div>', $this->escapeHtml($this->replaceRoot($file)));
         }
-        if (($line = $error->getLine())) {
+        if (($line = $e->getLine())) {
             $html .= sprintf('<div><strong>Line:</strong> %s</div>', (int)$line);
         }
     
-        $traces = $this->normalizeBacktraces($error->getTrace());
+        $traces = $this->normalizeBacktraces($e->getTrace());
         if (! empty($traces)) {
             $html .= '<h2>Trace</h2>';
             
             $html .= '<table><tbody>';
-            foreach ($traces as $index => $trace) {
-                $html .= sprintf('<tr><td>#%d</td><td>%s</td><td>%s</td></tr>', count($traces) - $index, $trace['function'], $this->replaceRoot($trace['file'] ?: ''));
+
+            foreach ($traces as $index => $frame) {
+                $html .= sprintf('<tr><td>#%d</td><td>%s</td><td>%s</td></tr>', count($traces) - $index, $this->escapeHtml($frame['function']), $this->escapeHtml($this->replaceRoot($frame['file'] ?: '')));
             }
             $html .= '</table></tbody>';
         }

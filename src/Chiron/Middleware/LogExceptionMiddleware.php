@@ -17,10 +17,30 @@ use Throwable;
 
 // TODO ; ajouter une description du middleware + ajouter de la phpdoc en entête des fonctions de la classe
 
+// TODO : regarder ici quelques exemples : https://github.com/Seldaek/monolog/blob/master/src/Monolog/ErrorHandler.php    notamment : https://github.com/Seldaek/monolog/blob/master/src/Monolog/ErrorHandler.php#L125
+
 final class LogExceptionMiddleware implements MiddlewareInterface
 {
     private $logger;
+    private $errorLevelMap = [
+            E_ERROR             => LogLevel::CRITICAL,
+            E_WARNING           => LogLevel::WARNING,
+            E_PARSE             => LogLevel::ALERT,
+            E_NOTICE            => LogLevel::NOTICE,
+            E_CORE_ERROR        => LogLevel::CRITICAL,
+            E_CORE_WARNING      => LogLevel::WARNING,
+            E_COMPILE_ERROR     => LogLevel::ALERT,
+            E_COMPILE_WARNING   => LogLevel::WARNING,
+            E_USER_ERROR        => LogLevel::ERROR,
+            E_USER_WARNING      => LogLevel::WARNING,
+            E_USER_NOTICE       => LogLevel::NOTICE,
+            E_STRICT            => LogLevel::NOTICE,
+            E_RECOVERABLE_ERROR => LogLevel::ERROR,
+            E_DEPRECATED        => LogLevel::NOTICE,
+            E_USER_DEPRECATED   => LogLevel::NOTICE,
+        ];
 
+// TODO : passer en paramétre le choix de l'utilisateur pour la map des levels, cad un tableau comme celui là $this->errorLevelMap et on fera un array_replace() sur ce tableau avec celui passé en paramétre par l'utilisateur, par défaut on mettra [].   Faire de même pour le callable qui formatera l'exception. 
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
@@ -29,42 +49,18 @@ final class LogExceptionMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
+// TODO : à virer c'est un test !!!!!!!!!!!
+            //trigger_error("This event WILL fire", E_USER_ERROR);
+            //throw new ErrorHandler($errstr, 0, $errno, $errfile, $errline);
+
             return $handler->handle($request);
         } catch (ErrorException $e) {
-            $this->handleErrorException($e);
+            $level = $this->errorLevelMap[$e->getSeverity()];
+            $this->logger->log($level, $this->formatException($e));
             throw $e;
         } catch (Throwable $e) {
             $this->logger->critical($this->formatException($e));
             throw $e;
-        }
-    }
-
-    private function handleErrorException(ErrorException $e): void
-    {
-        switch ($e->getSeverity()) {
-            case E_ERROR:
-            case E_RECOVERABLE_ERROR:
-            case E_CORE_ERROR:
-            case E_COMPILE_ERROR:
-            case E_USER_ERROR:
-            case E_PARSE:
-                $this->logger->error($this->formatException($e));
-                break;
-            case E_WARNING:
-            case E_USER_WARNING:
-            case E_CORE_WARNING:
-            case E_COMPILE_WARNING:
-                $this->logger->warning($this->formatException($e));
-                break;
-            case E_NOTICE:
-            case E_USER_NOTICE:
-                $this->logger->notice($this->formatException($e));
-                break;
-            case E_STRICT:
-            case E_DEPRECATED:
-            case E_USER_DEPRECATED:
-                $this->logger->info($this->formatException($e));
-                break;
         }
     }
 

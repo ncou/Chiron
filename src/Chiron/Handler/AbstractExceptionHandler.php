@@ -152,6 +152,11 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
         return 'text/html';
     }
 
+    protected function shouldDisplayDetails(ServerRequestInterface $request) : bool
+    {
+        return $request->getAttribute($this->attributeName . '_displayErrorDetails', false);
+    }
+
     /**
      * normalizeBacktraces
      *
@@ -162,15 +167,10 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
     protected function normalizeBacktraces(array $traces)
     {
         $return = [];
-        foreach ($traces as $trace) {
-            $return[] = $trace ? $this->normalizeBacktrace($trace) : null;
+        foreach ($traces as $frame) {
+            $return[] = $frame ? $this->normalizeBacktrace($frame) : null;
         }
         return $return;
-    }
-
-    protected function shouldDisplayDetails(ServerRequestInterface $request) : bool
-    {
-        return $request->getAttribute($this->attributeName . '_displayErrorDetails', false);
     }
 
     /**
@@ -180,29 +180,31 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
      *
      * @return  array
      */
-    private function normalizeBacktrace(array $trace)
+    private function normalizeBacktrace(array $frame)
     {
         $arguments = '';
-        foreach ($trace['args'] as $arg) {
-            $arguments .= (strlen($arguments) === 0) ? '' : ', ';
-            if (is_object($arg)) {
-                $arguments .= get_class($arg);
-            } elseif (is_string($arg)) {
-                $preparedArgument = (strlen($arg) < 100) ? $arg : substr($arg, 0, 50) . '…' . substr($arg, -50);
-                $arguments .= '"' . $preparedArgument . '"';
-            } elseif (is_numeric($arg)) {
-                $arguments .= (string)$arg;
-            } elseif (is_bool($arg)) {
-                $arguments .= ($arg === true ? 'TRUE' : 'FALSE');
-            } elseif (is_array($arg)) {
-                $arguments .= 'array|' . count($arg) . '|';
-            } else {
-                $arguments .= gettype($arg);
+        if (isset($frame['args'])) {
+            foreach ($frame['args'] as $arg) {
+                $arguments .= (strlen($arguments) === 0) ? '' : ', ';
+                if (is_object($arg)) {
+                    $arguments .= get_class($arg);
+                } elseif (is_string($arg)) {
+                    $preparedArgument = (strlen($arg) < 100) ? $arg : substr($arg, 0, 50) . '…' . substr($arg, -50);
+                    $arguments .= '"' . $preparedArgument . '"';
+                } elseif (is_numeric($arg)) {
+                    $arguments .= (string)$arg;
+                } elseif (is_bool($arg)) {
+                    $arguments .= ($arg === true ? 'TRUE' : 'FALSE');
+                } elseif (is_array($arg)) {
+                    $arguments .= 'array|' . count($arg) . '|';
+                } else {
+                    $arguments .= gettype($arg);
+                }
             }
         }
         return [
-            'file' => $trace['file'] ? $trace['file'] . ' (' . $trace['line'] . ')' : null,
-            'function' => ($trace['class'] ? $trace['class'] . $trace['type'] : null) . $trace['function'] . '(' . $arguments . ')'
+            'file' => $frame['file'] ? $frame['file'] . ' (' . $frame['line'] . ')' : null,
+            'function' => ($frame['class'] ? $frame['class'] . $frame['type'] : null) . $frame['function'] . '(' . $arguments . ')'
         ];
     }
 
@@ -229,5 +231,6 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
         // TODO : attention on n'a pas stocké le charset dans cette classe, la variable $this->charset ne va pas marcher !!!!
         // TODO : récupérer le charset qui est stocké dans le container ?????
         return htmlspecialchars($str, ENT_COMPAT | ENT_SUBSTITUTE, 'UTF-8');//$this->container->charset);
+        //return htmlspecialchars($str, ENT_NOQUOTES, 'UTF-8');
     }
 }
