@@ -1,25 +1,23 @@
 <?php
 /**
  * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
+ *
  * @copyright Copyright (c) 2015-2018 Zend Technologies USA Inc. (https://www.zend.com)
  * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
  */
 declare(strict_types=1);
 
 //namespace Zend\Expressive\Router;
+
 namespace Chiron\Routing;
 
-
 // TODO : regarder ici : https://github.com/l0gicgate/Slim/blob/4.x-DispatcherResults/Slim/DispatcherResults.php
-
-
 
 //use Psr\Http\Message\ResponseInterface;
 //use Psr\Http\Message\ServerRequestInterface;
 
 //use Psr\Http\Server\MiddlewareInterface;
 //use Psr\Http\Server\RequestHandlerInterface;
-
 
 // TODO : à virer et passer par un getter/setter pour choisir la strategie (plutot qu'en dure dans cette classe !!!!!)
 //use Chiron\Handlers\Strategies\RequestResponseReflection;
@@ -64,17 +62,18 @@ class RouteResult
      */
     private $matchedRouteName;
     /**
-     * Route matched during routing
+     * Route matched during routing.
      *
      * @since 1.3.0
-     * @var Route $route
+     *
+     * @var Route
      */
     private $route;
     /**
      * @var bool Success state of routing.
      */
     private $success;
-    
+
     /**
      * Create an instance representing a route succes from the matching route.
      *
@@ -82,25 +81,29 @@ class RouteResult
      */
     public static function fromRoute(Route $route, array $params = []) : self
     {
-        $result                = new self();
-        $result->success       = true;
-        $result->route         = $route;
+        $result = new self();
+        $result->success = true;
+        $result->route = $route;
         $result->matchedParams = $params;
+
         return $result;
     }
+
     /**
      * Create an instance representing a route failure.
      *
      * @param null|array $methods HTTP methods allowed for the current URI, if any.
-     *     null is equivalent to allowing any HTTP method; empty array means none.
+     *                            null is equivalent to allowing any HTTP method; empty array means none.
      */
     public static function fromRouteFailure(?array $methods) : self
     {
         $result = new self();
         $result->success = false;
         $result->allowedMethods = $methods;
+
         return $result;
     }
+
     /**
      * Does the result represent successful routing?
      */
@@ -108,16 +111,18 @@ class RouteResult
     {
         return $this->success;
     }
+
     /**
      * Retrieve the route that resulted in the route match.
      *
      * @return false|null|Route false if representing a routing failure;
-     *     null if not created via fromRoute(); Route instance otherwise.
+     *                          null if not created via fromRoute(); Route instance otherwise.
      */
     public function getMatchedRoute()
     {
         return $this->isFailure() ? false : $this->route;
     }
+
     /**
      * Retrieve the matched route name, if possible.
      *
@@ -131,11 +136,13 @@ class RouteResult
         if ($this->isFailure()) {
             return false;
         }
-        if (! $this->matchedRouteName && $this->route) {
+        if (!$this->matchedRouteName && $this->route) {
             $this->matchedRouteName = $this->route->getName();
         }
+
         return $this->matchedRouteName;
     }
+
     /**
      * Returns the matched params.
      *
@@ -145,13 +152,15 @@ class RouteResult
     {
         return $this->matchedParams;
     }
+
     /**
      * Is this a routing failure result?
      */
     public function isFailure() : bool
     {
-        return (! $this->success);
+        return !$this->success;
     }
+
     /**
      * Does the result represent failure to route due to HTTP method?
      */
@@ -160,8 +169,10 @@ class RouteResult
         if ($this->isSuccess() || $this->allowedMethods === self::HTTP_METHOD_ANY) {
             return false;
         }
+
         return true;
     }
+
     /**
      * Retrieve the allowed methods for the route failure.
      *
@@ -174,8 +185,10 @@ class RouteResult
                 ? $this->route->getAllowedMethods()
                 : [];
         }
+
         return $this->allowedMethods;
     }
+
     /**
      * Only allow instantiation via factory methods.
      */

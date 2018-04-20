@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 //************************************
 // TODO : comment faire des tests du middleware : https://github.com/cakephp/cakephp/blob/master/tests/TestCase/Error/Middleware/ErrorHandlerMiddlewareTest.php
@@ -22,27 +23,20 @@ declare(strict_types = 1);
 
 namespace Chiron\Middleware;
 
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-
+use Chiron\Exception\HttpException;
+use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
 //use Psr\Container\ContainerInterface;
 
-use Chiron\Exception\HttpException;
-
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
-use ErrorException;
-
 use function is_a;
 use function is_array;
-use function is_string;
-use function array_filter;
 
 class ErrorHandlerMiddleware implements MiddlewareInterface
 {
-
     /**
      * @var array
      */
@@ -55,7 +49,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
     private $attributeName = 'Chiron:exception';
 
     /**
-     * Dependency injection container
+     * Dependency injection container.
      *
      * @var ContainerInterface
      */
@@ -67,11 +61,11 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
     private $displayErrorDetails;
 
     /**
-     * Set container
+     * Set container.
      *
      * @param ContainerInterface $container
      */
-//TODO : attention le middleware n'a pas toujours un container de setté automatiquement depuis qu'on a changé le composant RequestHandlerStack !!!!!
+    //TODO : attention le middleware n'a pas toujours un container de setté automatiquement depuis qu'on a changé le composant RequestHandlerStack !!!!!
     /*
     public function setContainer(ContainerInterface $container)
     {
@@ -94,7 +88,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
             set_error_handler($this->createErrorHandler());
             $response = $handler->handle($request);
 
-// TODO : à virer c'est pour tester !!!!
+            // TODO : à virer c'est pour tester !!!!
             //throw new \RuntimeException("TEST_Error 'Processing' \"Request\"", 1);
             //throw new HttpException(404);
             //throw new \Chiron\Exception\NotFoundHttpException();
@@ -122,7 +116,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
      */
     private function createErrorHandler()
     {
-        /**
+        /*
          * @param int $errno
          * @param string $errstr
          * @param string $errfile
@@ -131,10 +125,11 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
          * @throws ErrorException if error is not within the error_reporting mask.
          */
         return function ($errno, $errstr, $errfile, $errline) {
-            if (! (error_reporting() & $errno)) {
+            if (!(error_reporting() & $errno)) {
                 // error_reporting does not include this error
                 return;
             }
+
             throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
         };
     }
@@ -155,10 +150,10 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
         //$params = [$this->request, $this->response, $exception, $this->displayErrorDetails];
         //return call_user_func_array($handler, $params);
 
-// TODO : mettre plutot dans la request un attribute de type tableau : [$exception, $displayDetails, $logError...etc] avec éventuellement directement le array qui est dans la config du container pour la rubrique ErrorHandler
-// TODO : au lieu de utiliser une variable "attributeName" il faudrait soit utiliser le nom de la classe : ErrorHandlerMiddleware::class ou alors utiliser une constante de classe genre ErrorHandlerMiddleware::ATTRIBUTE_NAME
+        // TODO : mettre plutot dans la request un attribute de type tableau : [$exception, $displayDetails, $logError...etc] avec éventuellement directement le array qui est dans la config du container pour la rubrique ErrorHandler
+        // TODO : au lieu de utiliser une variable "attributeName" il faudrait soit utiliser le nom de la classe : ErrorHandlerMiddleware::class ou alors utiliser une constante de classe genre ErrorHandlerMiddleware::ATTRIBUTE_NAME
         $request = $request->withAttribute($this->attributeName, $exception);
-        $request = $request->withAttribute($this->attributeName . '_displayErrorDetails', $this->displayErrorDetails);
+        $request = $request->withAttribute($this->attributeName.'_displayErrorDetails', $this->displayErrorDetails);
 
         // TODO : il faudra passer le tableau de headers[] qui est dans l'exception aussi dans la response (genre pour une httpexception 405 MethodNotAllowed, on va avoir un headers['Allow' => 'GET', 'POST']) qu'il faut utiliser dans la response.
         /*
@@ -172,7 +167,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
         // TODO : on passe en paramétre l'exception plutot que de la stockée dans la request via un attribut, il faudrait éventuellement faire un check si la méthode setException existe on l'utilise. Et ajouter cela dans la doc (pour gérer les erreurs il suffirait que le handler soit une instance de RequestHandlerInterface et qu'il implémente aussi la méthode setException.
         //$exceptionHandler->setException($exception);
 
-// TODO : vérifier si cela à vraiment une utilité !!!!
+        // TODO : vérifier si cela à vraiment une utilité !!!!
         // Try to inject the dependency injection container in the error handler
 //        if (method_exists($exceptionHandler, 'setContainer') && $this->container instanceof ContainerInterface) {
 //            $exceptionHandler->setContainer($this->container);
@@ -185,13 +180,14 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
 //        $params = [$request, new Response($exception->getStatusCode())];
 //        return call_user_func_array($exceptionHandler, $params);
     }
+
     /**
      * Get callable to handle scenarios where an error
      * occurs when processing the current request.
      *
      * @param HttpException $exception
-     * @return null|RequestHandlerInterface
      *
+     * @return null|RequestHandlerInterface
      */
     public function getExceptionHandler(Throwable $exception) : ?RequestHandlerInterface
     {
@@ -207,6 +203,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
 
         return $exceptionHandler;
     }
+
     /**
      * Add HTTP exception handler.
      *
@@ -224,16 +221,15 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
      * The callable MUST return an instance of
      * \Psr\Http\Message\ResponseInterface.
      *
-     * @param string|array     $exceptionTypes
+     * @param string|array            $exceptionTypes
      * @param RequestHandlerInterface $handler
-     *
      */
     // TODO : il faudrait faire un test si on passe un seul attribut qui est un callable dans ce cas c'est qu'on ne précise pas le type d'exception rattaché au handler et donc qu'il s'agit du handler par défaut pour traiter toutes les exceptions. Dans ce cas la méthode setDefaultErrorHandler ne servirai plus à rien !!!
     // TODO : mettre le type du paramétre $handler à RequestHandlerInterface
     // TODO : https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Error/ExceptionHandlerManager.php#L85
     public function bindExceptionHandler($exceptionTypes, RequestHandlerInterface $handler)
     {
-        if (! is_array($exceptionTypes)) {
+        if (!is_array($exceptionTypes)) {
             $exceptionTypes = [$exceptionTypes];
         }
 

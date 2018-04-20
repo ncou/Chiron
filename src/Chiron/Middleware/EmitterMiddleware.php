@@ -1,13 +1,13 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Chiron\Middleware;
 
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 //https://github.com/narrowspark/http-emitter/blob/master/src/AbstractSapiEmitter.php
 //https://github.com/narrowspark/http-emitter/blob/master/src/SapiStreamEmitter.php
@@ -18,28 +18,29 @@ use Psr\Http\Message\ServerRequestInterface;
 // TODO : regarder ici comment c'est fait : https://github.com/jasny/http-message/blob/master/src/Emitter.php
 
 /**
- * Middleware Emitter
+ * Middleware Emitter.
  *
  * The Emitter middleware is responsible for taking the response
  * object and send the headers and body to the client.
  *
  * @category Phapi
- * @package  Phapi\Middleware\Courier
+ *
  * @author   Peter Ahinko <peter@ahinko.se>
  * @license  MIT (http://opensource.org/licenses/MIT)
+ *
  * @link     https://github.com/phapi/middleware-courier
  */
 class EmitterMiddleware implements MiddlewareInterface
 {
-    
     /**
      * Handle the middleware pipeline call. This calls the next middleware
      * in the queue and after the rest of the middleware pipeline is done
-     * the response will be sent to the client
+     * the response will be sent to the client.
      *
-     * @param RequestInterface $request
+     * @param RequestInterface  $request
      * @param ResponseInterface $response
-     * @param callable $next
+     * @param callable          $next
+     *
      * @return ResponseInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -59,7 +60,7 @@ class EmitterMiddleware implements MiddlewareInterface
     // TODO : s'inpirer de cette classe : https://github.com/zendframework/zend-diactoros/blob/master/src/Response/SapiEmitterTrait.php
 
     /**
-     * Emit the response (headers+body) to the client
+     * Emit the response (headers+body) to the client.
      *
      * @param ResponseInterface $response
      */
@@ -90,7 +91,7 @@ class EmitterMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Send HTTP Headers
+     * Send HTTP Headers.
      *
      * @param ResponseInterface $response
      */
@@ -136,14 +137,13 @@ class EmitterMiddleware implements MiddlewareInterface
         // cookies
 //TODO : utiliser les cookies comme des "headers" classiques ('Set-Cookies:xxxxxxx')
 //https://github.com/paragonie/PHP-Cookie/blob/master/src/Cookie.php#L358
-      
+
 //        foreach ($response->getCookies() as $cookie) {
 //          setrawcookie($cookie['name'], $cookie['value'], $cookie['expire'], $cookie['path'], $cookie['domain'], $cookie['secure'], $cookie['httponly']);
 //        }
-        
+
 //        flush();
 //      }
-
 
       // cookies
       /*
@@ -217,7 +217,7 @@ class EmitterMiddleware implements MiddlewareInterface
      * compliant with RFC 2616. Most of the changes are based on
      * the Request that is "associated" with this Response.
      *
-     * @param ResponseInterface $response
+     * @param ResponseInterface      $response
      * @param ServerRequestInterface $request
      *
      * @return ResponseInterface
@@ -246,7 +246,6 @@ class EmitterMiddleware implements MiddlewareInterface
         //  $response = $response->withHeader('Content-Type', 'text/html');
         //}
 
-
         /*
               $container = $this->getContainer();
               // Fix Content-Type
@@ -261,7 +260,7 @@ class EmitterMiddleware implements MiddlewareInterface
             $response = $response->withHeader('Content-Type', $response->getHeaderLine('Content-Type').'; charset='.$charset);
         }
 
-        if (! $response->hasHeader('Content-Length')) {
+        if (!$response->hasHeader('Content-Length')) {
             $response = $response->withHeader('Content-Length', (string) $response->getBody()->getSize());
         }
 
@@ -269,8 +268,8 @@ class EmitterMiddleware implements MiddlewareInterface
         // TODO : externaliser ce test "if" dans l'objet Response et faire une méthode "isEmpty()" qui vérifie si le code = 204/205 ou 304
         // TODO : on doit faire la même chose (virer contenttype et contententlength et vider le body) si la réponse est "informational" cad avec un code entre
         if (($response->getStatusCode() >= 100 && $response->getStatusCode() < 200)
-        || in_array($response->getStatusCode(), array(204, 205, 304))) {
-          // TODO : faire un helper pour vider le body d'une response.
+        || in_array($response->getStatusCode(), [204, 205, 304])) {
+            // TODO : faire un helper pour vider le body d'une response.
             $response = $response->withoutHeader('Content-Type')->withoutHeader('Content-Length')->withBody(new \Chiron\Http\Stream(fopen('php://temp', 'r+')));
             //return;
         }
@@ -301,11 +300,9 @@ class EmitterMiddleware implements MiddlewareInterface
     {
         $now = new \DateTime('now', new \DateTimeZone('UTC'));
         $now = \DateTimeImmutable::createFromMutable($now);
+
         return $now->format('D, d M Y H:i:s').' GMT';
     }
-
-
-
 
     /**
      * Prepares the Response before it is sent to the client.
@@ -314,7 +311,7 @@ class EmitterMiddleware implements MiddlewareInterface
      * compliant with RFC 2616. Most of the changes are based on
      * the Request that is "associated" with this Response.
      *
-     * @param ResponseInterface $response
+     * @param ResponseInterface      $response
      * @param ServerRequestInterface $request
      *
      * @return ResponseInterface
@@ -368,9 +365,7 @@ class EmitterMiddleware implements MiddlewareInterface
         return $response;
     }
 
-
-
-    /**
+    /*
      * Cleans or flushes output buffers up to target level.
      *
      * Resulting level can be greater than target level if a non-removable buffer has been encountered.

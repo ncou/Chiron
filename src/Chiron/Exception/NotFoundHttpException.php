@@ -1,4 +1,5 @@
 <?php
+
 //namespace Slim\Exception;
 
 namespace Chiron\Exception;

@@ -1,6 +1,7 @@
 <?php
 /**
  * @see       https://github.com/zendframework/zend-stratigility for the canonical source repository
+ *
  * @copyright Copyright (c) 2016-2018 Zend Technologies USA Inc. (https://www.zend.com)
  * @license   https://github.com/zendframework/zend-stratigility/blob/master/LICENSE.md New BSD License
  */
@@ -8,30 +9,22 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
+use Chiron\Http\Factories\ServerRequestFactory;
+use Chiron\Http\Response;
+use Chiron\Middleware\ErrorHandlerMiddleware;
+use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-
-use Throwable;
-use RuntimeException;
 //use Chiron\Exception\HttpException;
 
-use Chiron\Middleware\ErrorHandlerMiddleware;
-use Chiron\ErrorHandler\HttpExceptionHandler;
-
-use Chiron\Http\Response;
-use Chiron\Http\Factories\ServerRequestFactory;
-
-use Chiron\Tests\Utils\HandlerProxy;
-use Chiron\Tests\Utils\HandlerProxy2;
-
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use RuntimeException;
+use Throwable;
+use const E_USER_DEPRECATED;
 use function error_reporting;
 use function trigger_error;
-use const E_USER_DEPRECATED;
 
 class ErrorHandlerMiddlewareTest extends TestCase
 {
@@ -45,12 +38,13 @@ class ErrorHandlerMiddlewareTest extends TestCase
 
         $this->errorReporting = error_reporting();
     }
+
     public function tearDown()
     {
         error_reporting($this->errorReporting);
     }
 
-// TODO : utiliser le $isDevelopmentMode pour afficher/cacher le détail des exceptions !!!!
+    // TODO : utiliser le $isDevelopmentMode pour afficher/cacher le détail des exceptions !!!!
     public function createMiddleware($isDevelopmentMode = false)
     {
         $errorHandlerMiddleware = new ErrorHandlerMiddleware();
@@ -96,9 +90,8 @@ class ErrorHandlerMiddlewareTest extends TestCase
 
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $result);
         $this->assertEquals(500, $result->getStatusCode());
-        $this->assertEquals('Oops..', (string)$result->getBody());
+        $this->assertEquals('Oops..', (string) $result->getBody());
     }
-
 
     public function testReturnsErrorResponseIfHandlerRaisesAnErrorInTheErrorMask()
     {
@@ -111,14 +104,13 @@ class ErrorHandlerMiddlewareTest extends TestCase
                 trigger_error('Deprecated', E_USER_DEPRECATED);
             });
 
-
         $middleware = $this->createMiddleware();
 
         $result = $middleware->process($this->request->reveal(), $handler->reveal());
 
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $result);
         $this->assertEquals(500, $result->getStatusCode());
-        $this->assertEquals('Oops..', (string)$result->getBody());
+        $this->assertEquals('Oops..', (string) $result->getBody());
     }
 
     public function testReturnsResponseFromHandlerWhenErrorRaisedIsNotInTheErrorMask()
@@ -132,6 +124,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
             ->handle(Argument::type(ServerRequestInterface::class))
             ->will(function () use ($expectedResponse) {
                 trigger_error('Deprecated', E_USER_DEPRECATED);
+
                 return $expectedResponse;
             });
 
@@ -155,6 +148,6 @@ class ErrorHandlerMiddlewareTest extends TestCase
 
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $result);
         $this->assertEquals(500, $result->getStatusCode());
-        $this->assertEquals('Oops..', (string)$result->getBody());
+        $this->assertEquals('Oops..', (string) $result->getBody());
     }
 }

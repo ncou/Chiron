@@ -1,16 +1,14 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Chiron\Handler;
 
 // TODO : regarder ici pour gérer les formater pour les messages : https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Error/ExceptionHandlerManager.php
 
-
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
 use Psr\Http\Server\RequestHandlerInterface;
-
 //use Psr\Container\ContainerInterface;
 
 //use Chiron\Exception\HttpException;
@@ -22,16 +20,15 @@ use UnexpectedValueException;
 // TODO : il faudra surement ajouter une méthode setContainer() à cette classe + ajouter le "use Psr\Container\ContainerInterface;"
 abstract class AbstractExceptionHandler implements RequestHandlerInterface
 {
-
     /**
-     * The request attribute name used to retrieve the exception stored previously (in the middleware)
+     * The request attribute name used to retrieve the exception stored previously (in the middleware).
      *
      * @var string
      */
     protected $attributeName = 'Chiron:exception';
 
     /**
-     * Known handled content types
+     * Known handled content types.
      *
      * @var array
      */
@@ -40,18 +37,18 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
         'application/xml',
         'text/xml',
         'text/html',
-        'text/plain'
+        'text/plain',
     ];
 
     /**
-     * Dependency injection container
+     * Dependency injection container.
      *
      * @var ContainerInterface
      */
     //protected $container;
 
     /**
-     * Set container
+     * Set container.
      *
      * @param ContainerInterface $container
      */
@@ -96,7 +93,6 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
 
     abstract public function handle(ServerRequestInterface $request): ResponseInterface;
 
-
     protected function retrieveException(ServerRequestInterface $request) : Throwable
     {
         //retrieve the "HttpException object" stored in the request attribute
@@ -116,13 +112,14 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
     }
 
     /**
-     * Determine which content type we know about is wanted using Accept header
+     * Determine which content type we know about is wanted using Accept header.
      *
      * Note: This method is a bare-bones implementation designed specifically for
      * Slim's error handling requirements. Consider a fully-feature solution such
      * as willdurand/negotiation for any other situation.
      *
      * @param ServerRequestInterface $request
+     *
      * @return string
      */
     // TODO : autre exemple : https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Http/Concerns/DeterminesContentType.php#L42
@@ -134,35 +131,37 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
         $count = count($selectedContentTypes);
         if ($count) {
             $current = current($selectedContentTypes);
-            /**
+            /*
              * Ensure other supported content types take precedence over text/plain
              * when multiple content types are provided via Accept header.
              */
             if ($current === 'text/plain' && $count > 1) {
                 return next($selectedContentTypes);
             }
+
             return $current;
         }
         if (preg_match('/\+(json|xml)/', $acceptHeader, $matches)) {
-            $mediaType = 'application/' . $matches[1];
+            $mediaType = 'application/'.$matches[1];
             if (in_array($mediaType, $this->knownContentTypes)) {
                 return $mediaType;
             }
         }
+
         return 'text/html';
     }
 
     protected function shouldDisplayDetails(ServerRequestInterface $request) : bool
     {
-        return $request->getAttribute($this->attributeName . '_displayErrorDetails', false);
+        return $request->getAttribute($this->attributeName.'_displayErrorDetails', false);
     }
 
     /**
-     * normalizeBacktraces
+     * normalizeBacktraces.
      *
-     * @param   array $traces
+     * @param array $traces
      *
-     * @return  array
+     * @return array
      */
     protected function normalizeBacktraces(array $traces)
     {
@@ -170,15 +169,16 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
         foreach ($traces as $frame) {
             $return[] = $frame ? $this->normalizeBacktrace($frame) : null;
         }
+
         return $return;
     }
 
     /**
-     * normalizeBacktrace
+     * normalizeBacktrace.
      *
-     * @param   array $trace
+     * @param array $trace
      *
-     * @return  array
+     * @return array
      */
     private function normalizeBacktrace(array $frame)
     {
@@ -189,37 +189,39 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
                 if (is_object($arg)) {
                     $arguments .= get_class($arg);
                 } elseif (is_string($arg)) {
-                    $preparedArgument = (strlen($arg) < 100) ? $arg : substr($arg, 0, 50) . '…' . substr($arg, -50);
-                    $arguments .= '"' . $preparedArgument . '"';
+                    $preparedArgument = (strlen($arg) < 100) ? $arg : substr($arg, 0, 50).'…'.substr($arg, -50);
+                    $arguments .= '"'.$preparedArgument.'"';
                 } elseif (is_numeric($arg)) {
-                    $arguments .= (string)$arg;
+                    $arguments .= (string) $arg;
                 } elseif (is_bool($arg)) {
                     $arguments .= ($arg === true ? 'TRUE' : 'FALSE');
                 } elseif (is_array($arg)) {
-                    $arguments .= 'array|' . count($arg) . '|';
+                    $arguments .= 'array|'.count($arg).'|';
                 } else {
                     $arguments .= gettype($arg);
                 }
             }
         }
+
         return [
-            'file' => $frame['file'] ? $frame['file'] . ' (' . $frame['line'] . ')' : null,
-            'function' => ($frame['class'] ? $frame['class'] . $frame['type'] : null) . $frame['function'] . '(' . $arguments . ')'
+            'file'     => $frame['file'] ? $frame['file'].' ('.$frame['line'].')' : null,
+            'function' => ($frame['class'] ? $frame['class'].$frame['type'] : null).$frame['function'].'('.$arguments.')',
         ];
     }
 
     /**
-     * replaceRoot
+     * replaceRoot.
      *
      * @param string $file
      *
-     * @return  string
+     * @return string
      */
     protected function replaceRoot(string $file) : string
     {
         if (defined('Chiron\ROOT_DIR')) {
-            $file = 'ROOT' . substr($file, strlen(\Chiron\ROOT_DIR));
+            $file = 'ROOT'.substr($file, strlen(\Chiron\ROOT_DIR));
         }
+
         return $file;
     }
 
@@ -230,7 +232,7 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
     {
         // TODO : attention on n'a pas stocké le charset dans cette classe, la variable $this->charset ne va pas marcher !!!!
         // TODO : récupérer le charset qui est stocké dans le container ?????
-        return htmlspecialchars($str, ENT_COMPAT | ENT_SUBSTITUTE, 'UTF-8');//$this->container->charset);
+        return htmlspecialchars($str, ENT_COMPAT | ENT_SUBSTITUTE, 'UTF-8'); //$this->container->charset);
         //return htmlspecialchars($str, ENT_NOQUOTES, 'UTF-8');
     }
 }

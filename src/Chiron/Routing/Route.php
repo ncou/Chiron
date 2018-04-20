@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Chiron\Routing;
 
@@ -11,10 +12,8 @@ namespace Chiron\Routing;
 
 // TODO : utiliser un systéme de cache avec un serialize/unserialize pour charger les routes en cache : https://github.com/symfony/routing/blob/master/Route.php#L68
 
-
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
 use Psr\Http\Server\RequestHandlerInterface;
 
 //use Chiron\Stack\StackAwareTrait;
@@ -59,17 +58,16 @@ class Route implements RequestHandlerInterface
     /**
      * @var array Array of default match types (regex helpers)
      */
-    private $matchTypes = array(
+    private $matchTypes = [
         'i'  => '[0-9]++',
         'a'  => '[0-9A-Za-z]++',
         'h'  => '[0-9A-Fa-f]++',
         '*'  => '.+?',
         '**' => '.++',
-        ''   => '[^/\.]++'
-    );
+        ''   => '[^/\.]++',
+    ];
 
     const REGEX_PATTERN = '`(/|\.|)\[([^:\]]*+)(?::([^:\]]*+))?\](\?|)`';
-
 
     /**
      * @param $url
@@ -109,7 +107,7 @@ class Route implements RequestHandlerInterface
     }
 
     /**
-     * Compile the regex for a given route (EXPENSIVE)
+     * Compile the regex for a given route (EXPENSIVE).
      */
     public function compile(string $route): string
     {
@@ -139,30 +137,32 @@ class Route implements RequestHandlerInterface
 
                 // TODO : eventuellement regarder dans le tableau "default" si il n'y a pas des clés qui ne sont pas rattachées à un paramétre "optionnel", car si on ajoute des valeurs par défault sur des paramétres qui ne sont pas optionnels, on va augmenter le nombre de "params" qui vont être retournés à la méthode de callback. Grossomodo, si on a ajouter une clé dans le tableau default et que cette clé n'est pas un param optionnel (? dans la regex), alors il faut virer cette clé du tableau default !!!!!
                 $optional = $optional !== '' ? '?' : null;
-                
+
                 //Older versions of PCRE require the 'P' in (?P<named>)
                 $pattern = '(?:'
-                        . ($pre !== '' ? $pre : null)
-                        . '('
-                        . ($param !== '' ? "?P<$param>" : null)
-                        . $type
-                        . ')'
-                        . $optional
-                        . ')'
-                        . $optional;
+                        .($pre !== '' ? $pre : null)
+                        .'('
+                        .($param !== '' ? "?P<$param>" : null)
+                        .$type
+                        .')'
+                        .$optional
+                        .')'
+                        .$optional;
 
                 $route = str_replace($block, $pattern, $route);
             }
         }
+
         return "`^$route$`u";
     }
 
     /**
-     * Reversed routing
+     * Reversed routing.
      *
      * Generate the URL for a named route. Replace regexes with supplied substitutions values
      *
      * @param array $substitutions
+     *
      * @return string
      */
     public function generate(array $substitutions = []): string
@@ -180,7 +180,7 @@ class Route implements RequestHandlerInterface
                 if (isset($substitutions[$param])) {
                     $url = str_replace($block, $substitutions[$param], $url);
                 } elseif ($optional) {
-                    $url = str_replace($pre . $block, '', $url);
+                    $url = str_replace($pre.$block, '', $url);
                 }
             }
         }
@@ -188,11 +188,11 @@ class Route implements RequestHandlerInterface
         return $url;
     }
 
-
-
     /**
-     * Check if the method used as parameter is supported/allowed in this route
+     * Check if the method used as parameter is supported/allowed in this route.
+     *
      * @param $methods string/array HTTP Method
+     *
      * @return bool
      */
     // TODO : regarder aussi ici comment c'est fait pour HEAD et GET : https://github.com/klein/klein.php/blob/b65c53c605d500caaea0d269f7970cccbb26bbba/src/Klein/Klein.php#L686
@@ -213,10 +213,10 @@ class Route implements RequestHandlerInterface
         return false;
     }*/
 
-
     public function value($variable, $default)
     {
         $this->setDefault($variable, $default);
+
         return $this;
     }
 
@@ -229,6 +229,7 @@ class Route implements RequestHandlerInterface
     {
         return $this->defaults;
     }
+
     /**
      * Sets the defaults.
      *
@@ -241,8 +242,10 @@ class Route implements RequestHandlerInterface
     public function setDefaults(array $defaults)
     {
         $this->defaults = [];
+
         return $this->addDefaults($defaults);
     }
+
     /**
      * Adds defaults.
      *
@@ -260,6 +263,7 @@ class Route implements RequestHandlerInterface
         //$this->compiled = null;
         return $this;
     }
+
     /**
      * Gets a default value.
      *
@@ -271,6 +275,7 @@ class Route implements RequestHandlerInterface
     {
         return isset($this->defaults[$name]) ? $this->defaults[$name] : null;
     }
+
     /**
      * Checks if a default value is set for the given variable.
      *
@@ -282,6 +287,7 @@ class Route implements RequestHandlerInterface
     {
         return array_key_exists($name, $this->defaults);
     }
+
     /**
      * Sets a default value.
      *
@@ -297,20 +303,11 @@ class Route implements RequestHandlerInterface
         return $this;
     }
 
-
-
-
-
-
-
-
-
-
-
     // TODO : avoir la possibilité de passer un tableau ? si on détecte que c'est un is_array dans le getargs() on appel la méthode addReqirements() pour un tableau, sinon on appel setRequirement()
     public function assert($key, $regex)
     {
         $this->setRequirement($key, $regex);
+
         return $this;
     }
 
@@ -323,6 +320,7 @@ class Route implements RequestHandlerInterface
     {
         return $this->requirements;
     }
+
     /**
      * Sets the requirements.
      *
@@ -334,9 +332,11 @@ class Route implements RequestHandlerInterface
      */
     public function setRequirements(array $requirements)
     {
-        $this->requirements = array();
+        $this->requirements = [];
+
         return $this->addRequirements($requirements);
     }
+
     /**
      * Adds requirements.
      *
@@ -354,6 +354,7 @@ class Route implements RequestHandlerInterface
         //$this->compiled = null;
         return $this;
     }
+
     /**
      * Returns the requirement for the given key.
      *
@@ -365,6 +366,7 @@ class Route implements RequestHandlerInterface
     {
         return isset($this->requirements[$key]) ? $this->requirements[$key] : null;
     }
+
     /**
      * Checks if a requirement is set for the given key.
      *
@@ -376,6 +378,7 @@ class Route implements RequestHandlerInterface
     {
         return array_key_exists($key, $this->requirements);
     }
+
     /**
      * Sets a requirement for the given key.
      *
@@ -390,6 +393,7 @@ class Route implements RequestHandlerInterface
         //$this->compiled = null;
         return $this;
     }
+
     // remove the char "^" at the start of the regex, and the final "$" char at the end of the regex
     private function sanitizeRequirement($key, $regex)
     {
@@ -405,13 +409,12 @@ class Route implements RequestHandlerInterface
         if ('' === $regex) {
             throw new \InvalidArgumentException(sprintf('Routing requirement for "%s" cannot be empty.', $key));
         }
+
         return $regex;
     }
-    
-
-
 
     //https://github.com/silexphp/Silex/blob/master/src/Silex/Route.php#L138
+
     /**
      * Sets the requirement of HTTP (no HTTPS) on this Route.
      *
@@ -420,8 +423,10 @@ class Route implements RequestHandlerInterface
     public function requireHttp()
     {
         $this->setSchemes('http');
+
         return $this;
     }
+
     /**
      * Sets the requirement of HTTPS on this Route.
      *
@@ -430,10 +435,12 @@ class Route implements RequestHandlerInterface
     public function requireHttps()
     {
         $this->setSchemes('https');
+
         return $this;
     }
 
     //https://github.com/symfony/routing/blob/master/Route.php
+
     /**
      * Returns the lowercased schemes this route is restricted to.
      * So an empty array means that any scheme is allowed.
@@ -444,6 +451,7 @@ class Route implements RequestHandlerInterface
     {
         return $this->schemes;
     }
+
     /**
      * Sets the schemes (e.g. 'https') this route is restricted to.
      * So an empty array means that any scheme is allowed.
@@ -460,6 +468,7 @@ class Route implements RequestHandlerInterface
         //$this->compiled = null;
         return $this;
     }
+
     /**
      * Checks if a scheme requirement has been set.
      *
@@ -471,8 +480,6 @@ class Route implements RequestHandlerInterface
     {
         return in_array(strtolower($scheme), $this->schemes, true);
     }
-
-
 
     public function name(string $name)
     {
@@ -490,8 +497,10 @@ class Route implements RequestHandlerInterface
         */
 
         $this->name = $name;
+
         return $this;
     }
+
     public function getName()
     {
         return $this->name;
@@ -512,18 +521,18 @@ class Route implements RequestHandlerInterface
         }
     */
 
-
-/*
-    public function method($method)
-    {
-        $this->setAllowedMethods(explode('|', $method));
-        return $this;
-    }*/
+    /*
+        public function method($method)
+        {
+            $this->setAllowedMethods(explode('|', $method));
+            return $this;
+        }*/
 
     public function method(string $method, string ...$methods)
     {
         array_unshift($methods, $method);
         $this->setAllowedMethods($methods);
+
         return $this;
     }
 
@@ -531,11 +540,11 @@ class Route implements RequestHandlerInterface
      * Set supported HTTP method(s).
      *
      * @param array
+     *
      * @return self
      */
     public function setAllowedMethods(array $methods)
     {
-
 
         // Allow null, otherwise expect an array or a string
         /*
@@ -548,11 +557,9 @@ class Route implements RequestHandlerInterface
         // TODO : ajouter une vérification concernant la méthode ajoutée en la validant avec un regex : https://github.com/zendframework/zend-expressive-router/blob/master/src/Route.php#L170
 
         $this->methods = array_map('strtoupper', $methods);
+
         return $this;
     }
-
-
-
 
     /**
      * Validate the provided HTTP method names.
@@ -560,8 +567,10 @@ class Route implements RequestHandlerInterface
      * Validates, and then normalizes to upper case.
      *
      * @param string[] An array of HTTP method names.
-     * @return string[]
+     *
      * @throws Exception\InvalidArgumentException for any invalid method names.
+     *
+     * @return string[]
      */
     // TODO : regarder aussi ici : https://github.com/slimphp/Slim-Http/blob/master/src/Request.php#L269
     // https://github.com/zendframework/zend-diactoros/blob/master/src/RequestTrait.php#L283
@@ -591,37 +600,22 @@ class Route implements RequestHandlerInterface
         return array_map('strtoupper', $methods);
     }*/
 
-
-
-
-
-
-
-
-
-
-/**
+    /**
      * Indicate whether the specified method is allowed by the route.
      *
      * @param string $method HTTP method to test.
      */
-/*
-    public function allowsMethod(string $method) : bool
-    {
-        $method = strtoupper($method);
-        if ($this->methods === self::HTTP_METHOD_ANY
-            || in_array($method, $this->methods, true)
-        ) {
-            return true;
-        }
-        return false;
-    }*/
-
-
-
-
-
-
+    /*
+        public function allowsMethod(string $method) : bool
+        {
+            $method = strtoupper($method);
+            if ($this->methods === self::HTTP_METHOD_ANY
+                || in_array($method, $this->methods, true)
+            ) {
+                return true;
+            }
+            return false;
+        }*/
 
     /**
      * Get supported HTTP method(s).
@@ -634,10 +628,7 @@ class Route implements RequestHandlerInterface
         return $this->methods;
     }
 
-
-
-
-    /**
+    /*
      * Get route callable
      *
      * @return callable
@@ -647,7 +638,7 @@ class Route implements RequestHandlerInterface
     {
         return $this->callable;
     }*/
-    /**
+    /*
      * This method enables you to override the Route's callable
      *
      * @param string|\Closure $callable
@@ -658,9 +649,7 @@ class Route implements RequestHandlerInterface
         $this->callable = $callable;
     }*/
 
-
-
-    /**
+    /*
      * Set callable resolver
      *
      * @param CallableResolverInterface $resolver
@@ -670,7 +659,7 @@ class Route implements RequestHandlerInterface
     {
         $this->callableResolver = $resolver;
     }*/
-    /**
+    /*
      * Get callable resolver
      *
      * @return CallableResolverInterface|null
@@ -681,8 +670,7 @@ class Route implements RequestHandlerInterface
         return $this->callableResolver;
     }*/
 
-
-    /**
+    /*
      * Dispatch route callable against current Request and Response objects
      *
      * This method invokes the route object's callable. If middleware is

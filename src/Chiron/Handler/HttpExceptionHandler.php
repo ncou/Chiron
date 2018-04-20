@@ -1,18 +1,15 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Chiron\Handler;
 
+use Chiron\Exception\HttpException;
+use Chiron\Http\Response;
+use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
-use Psr\Http\Server\RequestHandlerInterface;
-
-use Chiron\Http\Response;
-
-use Chiron\Exception\HttpException;
 use Throwable;
-use ErrorException;
 
 // TODO : utiliser des renderer : https://github.com/userfrosting/UserFrosting/tree/master/app/sprinkles/core/src/Error/Renderer
 class HttpExceptionHandler extends AbstractExceptionHandler
@@ -63,14 +60,14 @@ class HttpExceptionHandler extends AbstractExceptionHandler
                 break;
                 // TODO : gérer le cas : 'text/plain' avec la même chose que le html mais sans les balises html...
             default:
-                throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType);
+                throw new UnexpectedValueException('Cannot render unknown content type '.$contentType);
         }
 
         return $body;
     }
 
     /**
-     * Render HTML error page
+     * Render HTML error page.
      *
      * @param Chiron\Exception\HttpException $error
      *
@@ -91,31 +88,32 @@ class HttpExceptionHandler extends AbstractExceptionHandler
         }
 
         return sprintf(
-            "<html>" .
-            "   <head>" .
-            "       <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>" .
-            "       <title>%s</title>" .
-            "       <style>" .
-            "           body{margin:0;padding:20px;font-family:Helvetica,Arial,Verdana,sans-serif;font-size:15px;line-height:1.5em}" .
-            "           h1{margin:0;font-size:40px;font-weight:normal;line-height:40px;padding-bottom: 10px;border-bottom:1px solid #eee}" .
-            "           p.lead{font-size:22px}" .
-            "           strong{display:inline-block;width:85px}" .
-            "           table{border-spacing:0;border-collapse:collapse}" .
-            "           table tbody tr td{padding:8px;line-height:1.5em;vertical-align:middle;border-top:1px solid #ddd;font-family:monospace}" .
-            "           table>tbody>tr:nth-child(odd)>td{background-color:#f9f9f9}" .
-            "       </style>" .
-            "   </head>" .
-            "   <body>" .
-            "       <h1>%s</h1>" .
-            "       <div>%s</div>" .
-            "       <a href='#' onClick='window.history.go(-1)'>Go Back</a>" .
-            "   </body>" .
-            "</html>",
+            '<html>'.
+            '   <head>'.
+            "       <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>".
+            '       <title>%s</title>'.
+            '       <style>'.
+            '           body{margin:0;padding:20px;font-family:Helvetica,Arial,Verdana,sans-serif;font-size:15px;line-height:1.5em}'.
+            '           h1{margin:0;font-size:40px;font-weight:normal;line-height:40px;padding-bottom: 10px;border-bottom:1px solid #eee}'.
+            '           p.lead{font-size:22px}'.
+            '           strong{display:inline-block;width:85px}'.
+            '           table{border-spacing:0;border-collapse:collapse}'.
+            '           table tbody tr td{padding:8px;line-height:1.5em;vertical-align:middle;border-top:1px solid #ddd;font-family:monospace}'.
+            '           table>tbody>tr:nth-child(odd)>td{background-color:#f9f9f9}'.
+            '       </style>'.
+            '   </head>'.
+            '   <body>'.
+            '       <h1>%s</h1>'.
+            '       <div>%s</div>'.
+            "       <a href='#' onClick='window.history.go(-1)'>Go Back</a>".
+            '   </body>'.
+            '</html>',
             $this->escapeHtml($title),
             $this->escapeHtml($title),
             $html
         );
     }
+
     /**
      * Render error as HTML.
      *
@@ -137,13 +135,13 @@ class HttpExceptionHandler extends AbstractExceptionHandler
             $html .= sprintf('<div><strong>File:</strong> %s</div>', $this->escapeHtml($this->replaceRoot($file)));
         }
         if (($line = $e->getLine())) {
-            $html .= sprintf('<div><strong>Line:</strong> %s</div>', (int)$line);
+            $html .= sprintf('<div><strong>Line:</strong> %s</div>', (int) $line);
         }
-    
+
         $traces = $this->normalizeBacktraces($e->getTrace());
-        if (! empty($traces)) {
+        if (!empty($traces)) {
             $html .= '<h2>Trace</h2>';
-            
+
             $html .= '<table><tbody>';
 
             foreach ($traces as $index => $frame) {
@@ -156,7 +154,7 @@ class HttpExceptionHandler extends AbstractExceptionHandler
     }
 
     /**
-     * Render JSON error
+     * Render JSON error.
      *
      * @param Throwable $error
      *
@@ -171,19 +169,20 @@ class HttpExceptionHandler extends AbstractExceptionHandler
         $json['error'] = [];
         do {
             $json['error'][] = [
-                    'type' => get_class($error),
-                    'code' => $error->getCode(),
+                    'type'    => get_class($error),
+                    'code'    => $error->getCode(),
                     'message' => $error->getMessage(),
-                    'file' => $this->replaceRoot($error->getFile()),
-                    'line' => $error->getLine(),
-                    'trace' => explode("\n", $error->getTraceAsString())
+                    'file'    => $this->replaceRoot($error->getFile()),
+                    'line'    => $error->getLine(),
+                    'trace'   => explode("\n", $error->getTraceAsString()),
                 ];
         } while ($error = $error->getPrevious());
 //        }
         return json_encode($json, JSON_PRETTY_PRINT); //JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
     }
+
     /**
-     * Render XML error
+     * Render XML error.
      *
      * @param Throwable $error
      *
@@ -196,30 +195,31 @@ class HttpExceptionHandler extends AbstractExceptionHandler
 //        if ($this->displayErrorDetails) {
         do {
             $xml .= "  <error>\n";
-            $xml .= "    <type>" . get_class($error) . "</type>\n";
-            $xml .= "    <code>" . $error->getCode() . "</code>\n";
-            $xml .= "    <message>" . $this->createCdataSection($error->getMessage()) . "</message>\n";
-            $xml .= "    <file>" . $error->getFile() . "</file>\n";
-            $xml .= "    <line>" . $error->getLine() . "</line>\n";
-            $xml .= "    <trace>" . $this->createCdataSection($error->getTraceAsString()) . "</trace>\n";
+            $xml .= '    <type>'.get_class($error)."</type>\n";
+            $xml .= '    <code>'.$error->getCode()."</code>\n";
+            $xml .= '    <message>'.$this->createCdataSection($error->getMessage())."</message>\n";
+            $xml .= '    <file>'.$error->getFile()."</file>\n";
+            $xml .= '    <line>'.$error->getLine()."</line>\n";
+            $xml .= '    <trace>'.$this->createCdataSection($error->getTraceAsString())."</trace>\n";
             $xml .= "  </error>\n";
         } while ($error = $error->getPrevious());
 //        }
-        $xml .= "</errors>";
+        $xml .= '</errors>';
+
         return $xml;
     }
+
     /**
      * Returns a CDATA section with the given content.
      *
-     * @param  string $content
+     * @param string $content
+     *
      * @return string
      */
     private function createCdataSection(string $content): string
     {
         return sprintf('<![CDATA[%s]]>', str_replace(']]>', ']]]]><![CDATA[>', $content));
     }
-
-
 
     /**
      * Get the code of the exception that is currently being handled.
@@ -246,6 +246,7 @@ class HttpExceptionHandler extends AbstractExceptionHandler
             // ErrorExceptions wrap the php-error types within the 'severity' property
             $code = $this->translateErrorCode($exception->getSeverity());
         }
+
         return (string) $code;
     }
 
@@ -253,6 +254,7 @@ class HttpExceptionHandler extends AbstractExceptionHandler
      * Translate ErrorException code into the represented constant.
      *
      * @param int $error_code
+     *
      * @return string
      */
     private static function translateErrorCode($error_code): string
@@ -265,7 +267,8 @@ class HttpExceptionHandler extends AbstractExceptionHandler
                 }
             }
         }
-        return "E_UNKNOWN";
+
+        return 'E_UNKNOWN';
     }
 
     // TODO : attention il manque le choix de la version HTTP 1.1 ou 1.0 lorsqu'on initialise cette nouvelle response. Idem pour le charset par défaut défini dans l'application !!!!
@@ -284,13 +287,13 @@ class HttpExceptionHandler extends AbstractExceptionHandler
         foreach ($headers as $header => $value) {
             $response = $response->withAddedHeader($header, $value);
         }
-        
+
         return $response->withStatus($statusCode);
     }
 
     // TODO : en fait on devrait toujours avoir une HTTPException dans la request, donc cette méthode ne sert à rien !!!!
     private function isHttpException(Throwable $e): bool
     {
-        return ($e instanceof HttpException);
+        return $e instanceof HttpException;
     }
 }

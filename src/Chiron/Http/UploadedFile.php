@@ -1,15 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 //namespace Nyholm\Psr7;
+
 namespace Chiron\Http;
 
-use RuntimeException;
 use InvalidArgumentException;
-
-//use Nyholm\Psr7\Factory\StreamFactory;
 use Psr\Http\Message\StreamInterface;
+//use Nyholm\Psr7\Factory\StreamFactory;
 use Psr\Http\Message\UploadedFileInterface;
+use RuntimeException;
 
 /**
  * @author Michael Dowling and contributors to guzzlehttp/psr7

@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Chiron\Config;
 
@@ -38,6 +39,7 @@ class Config implements \ArrayAccess, \Iterator, \Countable
     {
         $this->data = $data;
     }
+
     /**
      * Retrieve a configuration option via a provided key.
      *
@@ -52,14 +54,16 @@ class Config implements \ArrayAccess, \Iterator, \Countable
         $keys = explode('.', $key);
 
         foreach ($keys as $k) {
-            if (! isset($data[$k])) {
+            if (!isset($data[$k])) {
                 //if (!is_array($data) || !array_key_exists($k, $data)) {
                 return $default;
             }
             $data = $data[$k];
         }
+
         return $data;
     }
+
     /**
      * Store a config value with a specified key.
      *
@@ -80,6 +84,7 @@ class Config implements \ArrayAccess, \Iterator, \Countable
 
         return $this;
     }
+
     /**
      * Check for the existance of a config item.
      *
@@ -93,17 +98,19 @@ class Config implements \ArrayAccess, \Iterator, \Countable
         $keys = explode('.', $key);
 
         foreach ($keys as $k) {
-            if (! isset($data[$k])) {
+            if (!isset($data[$k])) {
                 return false;
             }
             $data = $data[$k];
         }
+
         return true;
     }
+
     /**
-     * Remove a value using the offset as a key
+     * Remove a value using the offset as a key.
      *
-     * @param  string $key
+     * @param string $key
      *
      * @return object This Config object
      */
@@ -111,14 +118,16 @@ class Config implements \ArrayAccess, \Iterator, \Countable
     {
         // @TODO : faire en sorte de pouvoir supprimer des clés du type ->remove('php.settings.abc') au lieu de mettre cela à null pour l'instant. Il faudra aussi gérer le risque de désynchro si on fait un unset ou un remove pendant une boucle.
         $this->set($key, null);
+
         return $this;
     }
+
     /**
      * Load configuration options from an array.
      *
-     * @param array $data Raw array of configuration options
-     * @param bool $override Whether or not to override existing options with
-     *                         values from the loaded array data
+     * @param array $data     Raw array of configuration options
+     * @param bool  $override Whether or not to override existing options with
+     *                        values from the loaded array data
      *
      * @return object This Config object
      */
@@ -129,10 +138,12 @@ class Config implements \ArrayAccess, \Iterator, \Countable
         } else {
             $this->data = array_merge($data, $this->data);
         }
+
         return $this;
     }
+
     /**
-     * Get all of the configuration items
+     * Get all of the configuration items.
      *
      * @return array
      */
@@ -144,6 +155,7 @@ class Config implements \ArrayAccess, \Iterator, \Countable
     /*******************************************************************************
      * ArrayAccess Methods
      ******************************************************************************/
+
     /**
      * Determine whether an item exists at a specific offset.
      *
@@ -156,6 +168,7 @@ class Config implements \ArrayAccess, \Iterator, \Countable
         //return $this->has($offset);
         return $this->__isset($offset);
     }
+
     /**
      * Retrieve an item at a specific offset.
      *
@@ -168,6 +181,7 @@ class Config implements \ArrayAccess, \Iterator, \Countable
         //return $this->get($offset);
         return $this->__get($offset);
     }
+
     /**
      * Assign a value to the specified item at a specific offset.
      *
@@ -179,6 +193,7 @@ class Config implements \ArrayAccess, \Iterator, \Countable
         //$this->set($offset, $value);
         $this->__set($offset, $value);
     }
+
     /**
      * Unset an item at a specific offset.
      *
@@ -193,23 +208,28 @@ class Config implements \ArrayAccess, \Iterator, \Countable
     /*******************************************************************************
      * Magic Methods
      ******************************************************************************/
+
     /**
      * Magic function so that $obj->value will work.
      *
-     * @param  string $name
+     * @param string $name
+     *
      * @return mixed
      */
     public function __get($name)
     {
         return $this->get($name);
     }
+
     /**
      * Set a value in the config.
      *
-     * @param  string $name
-     * @param  mixed  $value
-     * @return void
+     * @param string $name
+     * @param mixed  $value
+     *
      * @throws Exception\RuntimeException
+     *
+     * @return void
      */
     public function __set($name, $value)
     {
@@ -227,10 +247,12 @@ class Config implements \ArrayAccess, \Iterator, \Countable
             $this->data[$name] = $value;
         }*/
     }
+
     /**
-     * isset() overloading
+     * isset() overloading.
      *
-     * @param  string $name
+     * @param string $name
+     *
      * @return bool
      */
     public function __isset($name)
@@ -239,12 +261,15 @@ class Config implements \ArrayAccess, \Iterator, \Countable
 
         //return isset($this->data[$name]);
     }
+
     /**
-     * unset() overloading
+     * unset() overloading.
      *
-     * @param  string $name
-     * @return void
+     * @param string $name
+     *
      * @throws Exception\InvalidArgumentException
+     *
+     * @return void
      */
     public function __unset($name)
     {
@@ -255,6 +280,7 @@ class Config implements \ArrayAccess, \Iterator, \Countable
             $this->skipNextIteration = true;
         }*/
     }
+
     /**
      * Deep clone of this instance to ensure that nested Chiron\Configs are also cloned.
      *
@@ -276,62 +302,70 @@ class Config implements \ArrayAccess, \Iterator, \Countable
     /*******************************************************************************
      * Iterator Methods
      ******************************************************************************/
+
     /**
-     * Returns the config array element referenced by its internal cursor
+     * Returns the config array element referenced by its internal cursor.
      *
      * @return mixed The element referenced by the config array's internal cursor.
-     *     If the array is empty or there is no element at the cursor, the
-     *     function returns false. If the array is undefined, the function
-     *     returns null
+     *               If the array is empty or there is no element at the cursor, the
+     *               function returns false. If the array is undefined, the function
+     *               returns null
      */
     public function current()
     {
         $this->skipNextIteration = false;
+
         return current($this->data);
     }
+
     /**
-     * Returns the config array index referenced by its internal cursor
+     * Returns the config array index referenced by its internal cursor.
      *
      * @return mixed The index referenced by the config array's internal cursor.
-     *     If the array is empty or undefined or there is no element at the
-     *     cursor, the function returns null
+     *               If the array is empty or undefined or there is no element at the
+     *               cursor, the function returns null
      */
     public function key()
     {
         return key($this->data);
     }
+
     /**
-     * Moves the config array's internal cursor forward one element
+     * Moves the config array's internal cursor forward one element.
      *
      * @return mixed The element referenced by the config array's internal cursor
-     *     after the move is completed. If there are no more elements in the
-     *     array after the move, the function returns false. If the config array
-     *     is undefined, the function returns null
+     *               after the move is completed. If there are no more elements in the
+     *               array after the move, the function returns false. If the config array
+     *               is undefined, the function returns null
      */
     public function next()
     {
         if ($this->skipNextIteration) {
             $this->skipNextIteration = false;
+
             return;
         }
 
         return next($this->data);
     }
+
     /**
-     * Moves the config array's internal cursor to the first element
+     * Moves the config array's internal cursor to the first element.
      *
      * @return mixed The element referenced by the config array's internal cursor
-     *     after the move is completed. If the config array is empty, the function
-     *     returns false. If the config array is undefined, the function returns
-     *     null
+     *               after the move is completed. If the config array is empty, the function
+     *               returns false. If the config array is undefined, the function returns
+     *               null
      */
     public function rewind()
     {
         $this->skipNextIteration = false;
+
         return reset($this->data);
     }
+
     /**
-     * Tests whether the iterator's current index is valid
+     * Tests whether the iterator's current index is valid.
      *
      * @return bool True if the current index is valid; false otherwise
      */
@@ -343,10 +377,12 @@ class Config implements \ArrayAccess, \Iterator, \Countable
     /*******************************************************************************
      * Count Methods
      ******************************************************************************/
+
     /**
      * count(): defined by Countable interface.
      *
      * @see    Countable::count()
+     *
      * @return int
      */
     public function count()

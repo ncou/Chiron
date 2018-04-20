@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Chiron\Http;
 
@@ -23,17 +24,15 @@ namespace Chiron\Http;
 //https://github.com/guzzle/psr7/blob/master/src
 //https://github.com/zendframework/zend-diactoros/tree/master/src
 
-
 //https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php
 //https://github.com/symfony/http-foundation/blob/master/Response.php
 
 use Psr\Http\Message\ResponseInterface;
 
 class Response extends Message implements ResponseInterface
-{ 
+{
     const MIN_STATUS_CODE_VALUE = 100;
     const MAX_STATUS_CODE_VALUE = 599;
-    
 
     /** @var array Map of standard HTTP status code/reason phrases */
     private static $phrases = [
@@ -116,27 +115,21 @@ class Response extends Message implements ResponseInterface
     // TODO : les cookies ne semble pas avoir leur place ici !!!!!!!!!!
     private $cookies = [];
 
-
-
     // https://github.com/guzzle/guzzle3/blob/master/src/Guzzle/Http/Message/Response.php#L99
     /** @var array Cacheable response codes (see RFC 2616:13.4) */
-    protected static $cacheResponseCodes = array(200, 203, 206, 300, 301, 410); // 200, 203, 300, 301, 302, 404, 410
+    protected static $cacheResponseCodes = [200, 203, 206, 300, 301, 410]; // 200, 203, 300, 301, 302, 404, 410
     // TODO : regarder ici la liste : https://github.com/micheh/psr7-cache/blob/master/src/CacheUtil.php#L289
 
-    
-
-// TODO : vérifier si on garde l'initialisation du ProtocolVersion en trant que paramétre du constructeur
+    // TODO : vérifier si on garde l'initialisation du ProtocolVersion en trant que paramétre du constructeur
     // TODO : virer la partie "reason" du constructeur ?????
     //@param string|resource|StreamInterface $body Stream identifier and/or actual stream resource
-    public function __construct($status = 200, $body = 'php://temp', $reason = '', $version = '1.1', array $headers = []) 
+    public function __construct($status = 200, $body = 'php://temp', $reason = '', $version = '1.1', array $headers = [])
     {
         // TODO : vérifier ce qu'on fait de cette méthode
         //$this->setBody($body);
 
-
         $this->stream = $this->getStream($body, 'wb+');
 
-        
         $this->setStatusCode($status);
         $this->reasonPhrase = $reason;
 
@@ -152,7 +145,7 @@ class Response extends Message implements ResponseInterface
         }
 */
 
-       	//$this->setProtocolVersion($version);
+        //$this->setProtocolVersion($version);
         $this->protocol = $version;
 
         // TODO : vérifier si il a besoin de créer plutot une méthode pour faire un setHeaders() directement.
@@ -166,12 +159,8 @@ class Response extends Message implements ResponseInterface
         //$this->setHeaders(array_merge(array('Content-Type' => 'text/html'), $headers));
         $this->setHeaders($headers);
 
-
         //$this->cookies = array();
-        
     }
-
-
 
     /*******************************************************************************
      * Status
@@ -203,19 +192,22 @@ class Response extends Message implements ResponseInterface
      *
      * @see http://tools.ietf.org/html/rfc7231#section-6
      * @see http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
-     * @param int $code The 3-digit integer result code to set.
+     *
+     * @param int    $code         The 3-digit integer result code to set.
      * @param string $reasonPhrase The reason phrase to use with the
-     *     provided status code; if none is provided, implementations MAY
-     *     use the defaults as suggested in the HTTP specification.
-     * @return static
+     *                             provided status code; if none is provided, implementations MAY
+     *                             use the defaults as suggested in the HTTP specification.
+     *
      * @throws \InvalidArgumentException For invalid status code arguments.
+     *
+     * @return static
      */
     public function withStatus($code, $reasonPhrase = '')
-    {  	
+    {
         $new = clone $this;
         $new->setStatusCode($code);
         $new->reasonPhrase = $reasonPhrase;
-    	
+
         return $new;
     }
 
@@ -230,25 +222,27 @@ class Response extends Message implements ResponseInterface
      *
      * @see http://tools.ietf.org/html/rfc7231#section-6
      * @see http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+     *
      * @return string Reason phrase; must return an empty string if none present.
      */
     public function getReasonPhrase()
     {
-        if (! $this->reasonPhrase && isset($this->phrases[$this->statusCode])) {
+        if (!$this->reasonPhrase && isset($this->phrases[$this->statusCode])) {
             $this->reasonPhrase = $this->phrases[$this->statusCode];
         }
 
         return $this->reasonPhrase;
     }
 
-//******************************************************************
-// Tout le reste ne fait pas parti du PSR 7 Response !!!!!!!!!!!!!!
-//******************************************************************
+    //******************************************************************
+    // Tout le reste ne fait pas parti du PSR 7 Response !!!!!!!!!!!!!!
+    //******************************************************************
 
     /**
-     * Return the reason phrase by code
+     * Return the reason phrase by code.
      *
      * @param $code
+     *
      * @return string
      */
     /*
@@ -263,13 +257,14 @@ class Response extends Message implements ResponseInterface
      * Set a valid status code.
      *
      * @param int $code
+     *
      * @throws InvalidArgumentException on an invalid status code.
      */
     // NOT A PSR7 FUNCTION
     //https://github.com/phly/http/blob/master/src/Response.php#L167
     protected function setStatusCode($code)
     {
-        if (! is_numeric($code)
+        if (!is_numeric($code)
             || is_float($code)
             || $code < static::MIN_STATUS_CODE_VALUE
             || $code > static::MAX_STATUS_CODE_VALUE
@@ -284,10 +279,10 @@ class Response extends Message implements ResponseInterface
         $this->statusCode = $code;
     }
 
-
     /*******************************************************************************
      * Body
      ******************************************************************************/
+
     /**
      * Write data to the response body.
      *
@@ -296,18 +291,17 @@ class Response extends Message implements ResponseInterface
      * Proxies to the underlying stream and writes the provided data to it.
      *
      * @param string $data
+     *
      * @return $this
      */
     public function write(string $data)
     {
         $this->getBody()->write($data);
+
         return $this;
     }
 
-
-
-
-//--------------------------
+    //--------------------------
     // https://github.com/swoft-cloud/framework/blob/master/src/Base/Response.php
 
     /**
@@ -319,6 +313,7 @@ class Response extends Message implements ResponseInterface
      * Return an instance with the specified charset content type.
      *
      * @param $charset
+     *
      * @return static
      */
     /*
@@ -341,6 +336,7 @@ class Response extends Message implements ResponseInterface
     */
     /**
      * @param string $charset
+     *
      * @return Response
      */
     /*
@@ -351,20 +347,21 @@ class Response extends Message implements ResponseInterface
     }
     */
 
-
-//https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php#L1170
+    //https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php#L1170
     /**
-     * The charset the response body is encoded with
+     * The charset the response body is encoded with.
      *
      * @var string
      */
     //protected $_charset = 'UTF-8';
     /**
      * Sets the response charset
-     * if $charset is null the current charset is returned
+     * if $charset is null the current charset is returned.
      *
      * @param string|null $charset Character set string.
+     *
      * @return string Current charset
+     *
      * @deprecated 3.5.0 Use getCharset()/withCharset() instead.
      */
     /*
@@ -391,6 +388,7 @@ class Response extends Message implements ResponseInterface
      * Get a new instance with an updated charset.
      *
      * @param string $charset Character set string.
+     *
      * @return static
      */
     /*
@@ -401,10 +399,6 @@ class Response extends Message implements ResponseInterface
         $new->_setContentType();
         return $new;
     }*/
-
-
-
-
 
     /**
      * Refreshes the current page.
@@ -418,7 +412,8 @@ class Response extends Message implements ResponseInterface
      * ```
      *
      * @param string $anchor the anchor that should be appended to the redirection URL.
-     * Defaults to empty. Make sure the anchor starts with '#' if you want to specify it.
+     *                       Defaults to empty. Make sure the anchor starts with '#' if you want to specify it.
+     *
      * @return Response the response object itself
      */
     /*
@@ -427,12 +422,15 @@ class Response extends Message implements ResponseInterface
         return $this->redirect(Yii::$app->getRequest()->getUrl() . $anchor);
     }*/
 
-
     /**
      * Sets the response status code based on the exception.
+     *
      * @param \Exception|\Error $e the exception object.
+     *
      * @throws InvalidArgumentException if the status code is invalid.
+     *
      * @return $this the response object itself
+     *
      * @since 2.0.12
      */
     //https://github.com/yiisoft/yii2/blob/master/framework/web/Response.php#L303
@@ -447,19 +445,15 @@ class Response extends Message implements ResponseInterface
         return $this;
     }*/
 
-    
-
-
     /**
      * Is the response empty?
      * Note: This method is not part of the PSR-7 standard.
      *
      * @return bool
-     *
      */
     public function isEmpty(): bool
     {
-        return in_array($this->statusCode, array(204, 304));
+        return in_array($this->statusCode, [204, 304]);
     }
 
     /**
@@ -484,9 +478,6 @@ class Response extends Message implements ResponseInterface
         return in_array($this->getStatusCode(), [201, 204, 304]);
     }*/
 
-
-
-
     /**
      * Is the response a redirect of some form?
      * Note: This method is not part of the PSR-7 standard.
@@ -494,11 +485,10 @@ class Response extends Message implements ResponseInterface
      * @param string $location
      *
      * @return bool
-     *
      */
     public function isRedirect($location = null): bool
     {
-        return in_array($this->statusCode, array(201, 301, 302, 303, 307, 308)) && (null === $location ?: $location == $this->getHeaderLine('Location'));
+        return in_array($this->statusCode, [201, 301, 302, 303, 307, 308]) && (null === $location ?: $location == $this->getHeaderLine('Location'));
     }
 
     /**
@@ -513,7 +503,6 @@ class Response extends Message implements ResponseInterface
     {
         return in_array($this->getStatusCode(), [301, 302, 303, 307]);
     }*/
-    
 
     /**
      * Is response invalid?
@@ -522,36 +511,36 @@ class Response extends Message implements ResponseInterface
      * @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
      *
      * @return bool
-     *
      */
     public function isInvalid(): bool
     {
         return $this->statusCode < 100 || $this->statusCode >= 600;
     }
+
     /**
      * Is response informative?
      * Note: This method is not part of the PSR-7 standard.
      *
      * @return bool
-     *
      */
     public function isInformational(): bool
     {
         return $this->statusCode >= 100 && $this->statusCode < 200;
     }
+
     /**
      * Is response successful?
      * Note: This method is not part of the PSR-7 standard.
      *
      * @return bool
-     *
      */
     public function isSuccessful(): bool
     {
         return $this->statusCode >= 200 && $this->statusCode < 300;
     }
+
     /**
-     * Checks if HTTP Status code is Successful (2xx | 304)
+     * Checks if HTTP Status code is Successful (2xx | 304).
      *
      * @return bool
      */
@@ -560,34 +549,34 @@ class Response extends Message implements ResponseInterface
     {
         return ($this->statusCode >= 200 && $this->statusCode < 300) || $this->statusCode == 304;
     }*/
+
     /**
      * Is the response a redirect?
      * Note: This method is not part of the PSR-7 standard.
      *
      * @return bool
-     *
      */
     public function isRedirection(): bool
     {
         return $this->statusCode >= 300 && $this->statusCode < 400;
     }
+
     /**
      * Is there a client error?
      * Note: This method is not part of the PSR-7 standard.
      *
      * @return bool
-     *
      */
     public function isClientError(): bool
     {
         return $this->statusCode >= 400 && $this->statusCode < 500;
     }
+
     /**
      * Was there a server side error?
      * Note: This method is not part of the PSR-7 standard.
      *
      * @return bool
-     *
      */
     public function isServerError(): bool
     {
@@ -595,9 +584,9 @@ class Response extends Message implements ResponseInterface
     }
 
     /**
-     * Checks if HTTP Status code is Server OR Client Error (4xx or 5xx)
+     * Checks if HTTP Status code is Server OR Client Error (4xx or 5xx).
      *
-     * @return boolean
+     * @return bool
      */
     public function isError(): bool
     {
@@ -609,36 +598,33 @@ class Response extends Message implements ResponseInterface
      * Note: This method is not part of the PSR-7 standard.
      *
      * @return bool
-     *
      */
     public function isOk(): bool
     {
         return $this->statusCode === 200;
     }
+
     /**
      * Is the response forbidden?
      * Note: This method is not part of the PSR-7 standard.
      *
      * @return bool
-     *
      */
     public function isForbidden(): bool
     {
         return $this->statusCode === 403;
     }
+
     /**
      * Is the response a not found error?
      * Note: This method is not part of the PSR-7 standard.
      *
      * @return bool
-     *
      */
-    public function isNotFound(): bool 
+    public function isNotFound(): bool
     {
         return $this->statusCode === 404;
     }
-
-
 
     /**
      * @return array the formatters that are supported by default
@@ -664,119 +650,116 @@ class Response extends Message implements ResponseInterface
         ];
     }*/
 
-
-
-
-
     /*******************************************************************************
      * Cookie Section
      ******************************************************************************/
-    
+
     /**
      * 添加cookie
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param string  $key
-     * @param  string $value
-     * @param int     $expire
-     * @param string  $path
-     * @param string  $domain
+     * @param string $key
+     * @param string $value
+     * @param int    $expire
+     * @param string $path
+     * @param string $domain
      */
     public function addCookie($key, $value, $expire = 0, $path = '/', $domain = '')
     {
         $this->swooleResponse->cookie($key, $value, $expire, $path, $domain);
     }
 
-
-
-// TODO : regarder comment c'est fait ici : https://github.com/dflydev/dflydev-fig-cookies/blob/master/src/Dflydev/FigCookies/SetCookie.php
+    // TODO : regarder comment c'est fait ici : https://github.com/dflydev/dflydev-fig-cookies/blob/master/src/Dflydev/FigCookies/SetCookie.php
     // TODO : transformer cela en header classique ???? =>   https://stackoverflow.com/questions/35257522/slim-3-framework-cookies
-/**
-     * @param Response $response
-     * @param string $key
-     * @param string $value
-     * @return Response
-     */
-/*
-    public function deleteCookie(Response $response, $key)
-    {
-        $cookie = urlencode($key).'='.
-            urlencode('deleted').'; expires=Thu, 01-Jan-1970 00:00:01 GMT; Max-Age=0; path=/; secure; httponly';
-        $response = $response->withAddedHeader('Set-Cookie', $cookie);
-        return $response;
-    }
-Good answer. However, when deleting cookie, use empty text as value for deleted cookie. Your own method getCookieValue will return null when trying to get a cookie deleted by deleteCookie. More consistent (for me at least).
-
-*/
     /**
      * @param Response $response
-     * @param string $cookieName
-     * @param string $cookieValue
+     * @param string   $key
+     * @param string   $value
+     *
      * @return Response
      */
-/*
-    public function addCookie(Response $response, $cookieName, $cookieValue)
-    {
-        $expirationMinutes = 10;
-        $expiry = new \DateTimeImmutable('now + '.$expirationMinutes.'minutes');
-        $cookie = urlencode($cookieName).'='.
-            urlencode($cookieValue).'; expires='.$expiry->format(\DateTime::COOKIE).'; Max-Age=' .
-            $expirationMinutes * 60 . '; path=/; secure; httponly';
-        $response = $response->withAddedHeader('Set-Cookie', $cookie);
-        return $response;
-    }
-*/
+    /*
+        public function deleteCookie(Response $response, $key)
+        {
+            $cookie = urlencode($key).'='.
+                urlencode('deleted').'; expires=Thu, 01-Jan-1970 00:00:01 GMT; Max-Age=0; path=/; secure; httponly';
+            $response = $response->withAddedHeader('Set-Cookie', $cookie);
+            return $response;
+        }
+    Good answer. However, when deleting cookie, use empty text as value for deleted cookie. Your own method getCookieValue will return null when trying to get a cookie deleted by deleteCookie. More consistent (for me at least).
+    
+    */
+    /**
+     * @param Response $response
+     * @param string   $cookieName
+     * @param string   $cookieValue
+     *
+     * @return Response
+     */
+    /*
+        public function addCookie(Response $response, $cookieName, $cookieValue)
+        {
+            $expirationMinutes = 10;
+            $expiry = new \DateTimeImmutable('now + '.$expirationMinutes.'minutes');
+            $cookie = urlencode($cookieName).'='.
+                urlencode($cookieValue).'; expires='.$expiry->format(\DateTime::COOKIE).'; Max-Age=' .
+                $expirationMinutes * 60 . '; path=/; secure; httponly';
+            $response = $response->withAddedHeader('Set-Cookie', $cookie);
+            return $response;
+        }
+    */
     /**
      * @param Request $request
-     * @param string $cookieName
+     * @param string  $cookieName
+     *
      * @return string
      */
-/*
-    public function getCookieValue(Request $request, $cookieName)
-    {
-        $cookies = $request->getCookieParams();
-        return isset($cookies[$cookieName]) ? $cookies[$cookieName] : null;
-    }
-*/
-
-
+    /*
+        public function getCookieValue(Request $request, $cookieName)
+        {
+            $cookies = $request->getCookieParams();
+            return isset($cookies[$cookieName]) ? $cookies[$cookieName] : null;
+        }
+    */
 
     //* Note: This method is not part of the PSR-7 standard.
     // TODO : voir ou on positionne cette méthode !!!!!!!!!!!!!!!! ca ne semble pas avoir sa place dans la classe Reponse ou dans la classe Message
     public function setCookie($name, $value, $expire = null, $path = '/', $domain = '', $secure = false, $httpOnly = false)
-  	{
-    	$name = (string) $name;
-    	
-    	if (! is_null($expire)) {
-      		if (is_numeric($expire)) {
-        		$expire = (int) $expire;
-      		} else {
-        		$expire = strtotime($expire);
-        		if (false === $expire || -1 == $expire)
-        			throw new InvalidArgumentException('The cookie expire parameter is not valid.');
-        	}
-    	}
+    {
+        $name = (string) $name;
 
-  		$this->cookies[$name] = array(
-  		  'name'     => $name,
-  		  'value'    => $value,
-  		  'expire'   => $expire,
-  		  'path'     => $path,
-  		  'domain'   => $domain,
-  		  'secure'   => (boolean) $secure,
-  		  'httpOnly' => (boolean) $httpOnly,
-  		);
+        if (!is_null($expire)) {
+            if (is_numeric($expire)) {
+                $expire = (int) $expire;
+            } else {
+                $expire = strtotime($expire);
+                if (false === $expire || -1 == $expire) {
+                    throw new InvalidArgumentException('The cookie expire parameter is not valid.');
+                }
+            }
+        }
 
-    	return $this;
-  	}
+        $this->cookies[$name] = [
+          'name'     => $name,
+          'value'    => $value,
+          'expire'   => $expire,
+          'path'     => $path,
+          'domain'   => $domain,
+          'secure'   => (bool) $secure,
+          'httpOnly' => (bool) $httpOnly,
+        ];
+
+        return $this;
+    }
 
     //*********************************
-// COOKIES ************************
-//*********************************
+    // COOKIES ************************
+    //*********************************
 
-//https://github.com/symfony/psr-http-message-bridge/blob/master/Factory/HttpFoundationFactory.php
-//https://github.com/symfony/http-foundation/blob/master/Cookie.php
-/**
+    //https://github.com/symfony/psr-http-message-bridge/blob/master/Factory/HttpFoundationFactory.php
+    //https://github.com/symfony/http-foundation/blob/master/Cookie.php
+
+    /**
      * Creates a Cookie instance from a cookie string.
      * Note: This method is not part of the PSR-7 standard.
      *
@@ -784,9 +767,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
      *
      * @param string $cookie
      *
-     * @return Cookie
-     *
      * @throws \InvalidArgumentException
+     *
+     * @return Cookie
      */
     private function createCookie($cookie)
     {
@@ -824,6 +807,7 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
         if (!isset($cookieName)) {
             throw new \InvalidArgumentException('The value of the Set-Cookie header is malformed.');
         }
+
         return new Cookie(
             $cookieName,
             $cookieValue,
@@ -838,7 +822,7 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     /*******************************************************************************
      * Response Helper
      ******************************************************************************/
-    
+
     /**
      * Redirect.
      *
@@ -847,15 +831,16 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
      * This method prepares the response object to return an HTTP Redirect
      * response to the client.
      *
-     * @param  string|UriInterface $url    The redirect destination.
-     * @param  int|null            $status The redirect HTTP status code.
+     * @param string|UriInterface $url    The redirect destination.
+     * @param int|null            $status The redirect HTTP status code.
+     *
      * @return static
      */
     // TODO : vérifier ce code pour gérer le cas du 308 et 307 pour les redirections avec une méthode POST : https://github.com/middlewares/redirect/blob/master/src/Redirect.php#L89
     // TODO : utiliser une classe RedirectResponse et ajouter un body avec un lien hypertext (cf spec : https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.3.2), plus gestion du cache pour les redirections 301 : cf les classes Symfony.
     public function withRedirect($url, $status = null)
     {
-        $responseWithRedirect = $this->withHeader('Location', (string)$url);
+        $responseWithRedirect = $this->withHeader('Location', (string) $url);
         if (is_null($status) && $this->getStatusCode() === 200) {
             $status = 302;
         }
@@ -864,10 +849,11 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
         }
 
         $urlHtml = htmlentities($url);
-        $responseWithRedirect->getBody()->write('You are being redirected to <a href="' . $urlHtml . '">' . $urlHtml . '</a>', 'text/html');
+        $responseWithRedirect->getBody()->write('You are being redirected to <a href="'.$urlHtml.'">'.$urlHtml.'</a>', 'text/html');
 
         return $responseWithRedirect;
     }
+
     /**
      * Json.
      *
@@ -876,16 +862,18 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
      * This method prepares the response object to return an HTTP Json
      * response to the client.
      *
-     * @param  mixed  $data   The data
-     * @param  int    $status The HTTP status code.
-     * @param  int    $encodingOptions Json encoding options
+     * @param mixed $data            The data
+     * @param int   $status          The HTTP status code.
+     * @param int   $encodingOptions Json encoding options
+     *
      * @throws \RuntimeException
+     *
      * @return static
      */
     //https://github.com/zendframework/zend-diactoros/blob/master/src/Response/JsonResponse.php
-//TODO : faire un clone de la réponse et retourner ce clone : https://github.com/slimphp/Slim/blob/c9a768c5a062c5f1aaa0a588d7bb90e8ce18bfd6/Slim/Http/Response.php#L346
+    //TODO : faire un clone de la réponse et retourner ce clone : https://github.com/slimphp/Slim/blob/c9a768c5a062c5f1aaa0a588d7bb90e8ce18bfd6/Slim/Http/Response.php#L346
 
-//https://github.com/symfony/http-foundation/blob/master/JsonResponse.php
+    //https://github.com/symfony/http-foundation/blob/master/JsonResponse.php
     // Encode <, >, ', &, and " characters in the JSON, making it also safe to be embedded into HTML.
     // Encode <, >, ', &, and " for RFC4627-compliant JSON, which may also be embedded into HTML.
     // 15 === JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
@@ -893,7 +881,7 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     const DEFAULT_ENCODING_OPTIONS = 15;
     protected $encodingOptions = self::DEFAULT_ENCODING_OPTIONS;
 */
-//TODO : à renommer en "writeJson()" ?????
+    //TODO : à renommer en "writeJson()" ?????
     public function withJson($data, $status = null, $encodingOptions = 79)
     {
         // default encodingOptions is 79 => JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES
@@ -909,6 +897,7 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
         if (isset($status)) {
             return $responseWithJson->withStatus($status);
         }
+
         return $responseWithJson;
     }
 
@@ -916,7 +905,8 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
      * Determine if the given content should be turned into JSON.
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param  mixed  $content
+     * @param mixed $content
+     *
      * @return bool
      */
     protected function shouldBeJson($content)
@@ -932,7 +922,8 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
      * Morph the given content into JSON.
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param  mixed   $content
+     * @param mixed $content
+     *
      * @return string
      */
     protected function morphToJson($content)
@@ -942,27 +933,29 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
         } elseif ($content instanceof Arrayable) {
             return json_encode($content->toArray());
         }
+
         return json_encode($content);
     }
-
-
 
     /**
      * Add a cookie to the response.
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param  \Symfony\Component\HttpFoundation\Cookie|mixed  $cookie
+     * @param \Symfony\Component\HttpFoundation\Cookie|mixed $cookie
+     *
      * @return $this
      */
     public function cookie($cookie)
     {
         return call_user_func_array([$this, 'withCookie'], func_get_args());
     }
+
     /**
      * Add a cookie to the response.
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param  \Symfony\Component\HttpFoundation\Cookie|mixed  $cookie
+     * @param \Symfony\Component\HttpFoundation\Cookie|mixed $cookie
+     *
      * @return $this
      */
     public function withCookie($cookie)
@@ -971,15 +964,14 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
             $cookie = call_user_func_array('cookie', func_get_args());
         }
         $this->headers->setCookie($cookie);
+
         return $this;
     }
 
-
-
-//*************************************************************
+    //*************************************************************
 
     /**
-     * Check if the response can be cached based on the response headers
+     * Check if the response can be cached based on the response headers.
      *
      * @return bool Returns TRUE if the response can be cached or false if not
      */
@@ -1003,11 +995,12 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
         if ($this->getHeader('Cache-Control') && $this->getHeader('Cache-Control')->hasDirective('no-store')) {
             return false;
         }
+
         return $this->isFresh() || $this->getFreshness() === null || $this->canValidate();
     }
 
     /**
-     * Gets the number of seconds from the current time in which this response is still considered fresh
+     * Gets the number of seconds from the current time in which this response is still considered fresh.
      *
      * @return int|null Returns the number of seconds
      */
@@ -1027,8 +1020,8 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
             // TODO : regarder ici on dirait qu'on soustrait le champ Expire - Date, et non pas comme dans l'exemple au dessus ou on soutrait Expire - time()
             // https://github.com/symfony/symfony/blob/master/src/Symfony/Component/HttpFoundation/Response.php#L751
         }
-        return null;
     }
+
     /**
      * Check if the response is considered fresh.
      *
@@ -1041,8 +1034,10 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     public function isFresh()
     {
         $fresh = $this->getFreshness();
+
         return $fresh === null ? null : $fresh >= 0;
     }
+
     /**
      * Check if the response can be validated against the origin server using a conditional GET request.
      *
@@ -1053,6 +1048,7 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return $this->getEtag() || $this->getLastModified();
     }
+
     /**
      * Get the freshness of the response by returning the difference of the maximum lifetime of the response and the
      * age of the response (max-age - age).
@@ -1067,14 +1063,14 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         $maxAge = $this->getMaxAge();
         $age = $this->calculateAge();
+
         return $maxAge && $age ? ($maxAge - $age) : null;
     }
 
-
     /**
-     * Calculate the age of the response
+     * Calculate the age of the response.
      *
-     * @return integer
+     * @return int
      */
     public function calculateAge()
     {
@@ -1082,33 +1078,27 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
         if ($age === null && $this->getDate()) {
             $age = time() - strtotime($this->getDate());
         }
+
         return $age === null ? null : (int) (string) $age;
     }
-
-
-
-
-    
-
-
-
 
     /*******************************************************************************
      * Cache
      // TODO : regarder ici comment c'est fait : https://github.com/micheh/psr7-cache/blob/master/src/CacheUtil.php    ou ici : https://github.com/slimphp/Slim-HttpCache/blob/master/src/CacheProvider.php
      ******************************************************************************/
 
-     /**
+    /**
      * Enable client-side HTTP caching
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param  ResponseInterface $response       PSR7 response object
-     * @param  string            $type           Cache-Control type: "private" or "public"
-     * @param  null|int|string   $maxAge         Maximum cache age (integer timestamp or datetime string)
-     * @param  bool              $mustRevalidate add option "must-revalidate" to Cache-Control
+     * @param ResponseInterface $response       PSR7 response object
+     * @param string            $type           Cache-Control type: "private" or "public"
+     * @param null|int|string   $maxAge         Maximum cache age (integer timestamp or datetime string)
+     * @param bool              $mustRevalidate add option "must-revalidate" to Cache-Control
      *
-     * @return ResponseInterface           A new PSR7 response object with `Cache-Control` header
      * @throws InvalidArgumentException if the cache-control type is invalid
+     *
+     * @return ResponseInterface A new PSR7 response object with `Cache-Control` header
      */
     public function allowCache(ResponseInterface $response, $type = 'private', $maxAge = null, $mustRevalidate = false)
     {
@@ -1116,61 +1106,68 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
             throw new InvalidArgumentException('Invalid Cache-Control type. Must be "public" or "private".');
         }
         $headerValue = $type;
-        if ($maxAge || is_integer($maxAge)) {
-            if (!is_integer($maxAge)) {
+        if ($maxAge || is_int($maxAge)) {
+            if (!is_int($maxAge)) {
                 $maxAge = strtotime($maxAge);
             }
             // TODO : il faudrait peut etre utiliser un "no-cache" au lieu de max-age=0 dans le cas ou la variable $maxAge === 0    : regarder ici : https://github.com/slimphp/Slim-HttpCache/blob/master/src/Cache.php#L59
-            $headerValue = $headerValue . ', max-age=' . $maxAge;
+            $headerValue = $headerValue.', max-age='.$maxAge;
         }
         if ($mustRevalidate) {
-            $headerValue = $headerValue . ", must-revalidate";
+            $headerValue = $headerValue.', must-revalidate';
         }
+
         return $response->withHeader('Cache-Control', $headerValue);
     }
+
     /**
      * Disable client-side HTTP caching
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param  ResponseInterface $response PSR7 response object
+     * @param ResponseInterface $response PSR7 response object
      *
-     * @return ResponseInterface           A new PSR7 response object with `Cache-Control` header
+     * @return ResponseInterface A new PSR7 response object with `Cache-Control` header
      */
     public function denyCache(ResponseInterface $response)
     {
         return $response->withHeader('Cache-Control', 'no-store,no-cache');
     }
+
     /**
      * Add `Expires` header to PSR7 response object
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param  ResponseInterface $response A PSR7 response object
-     * @param  int|string        $time     A UNIX timestamp or a valid `strtotime()` string
+     * @param ResponseInterface $response A PSR7 response object
+     * @param int|string        $time     A UNIX timestamp or a valid `strtotime()` string
      *
-     * @return ResponseInterface           A new PSR7 response object with `Expires` header
      * @throws InvalidArgumentException if the expiration date cannot be parsed
+     *
+     * @return ResponseInterface A new PSR7 response object with `Expires` header
      */
     // TODO : regarder aussi ici : https://github.com/micheh/psr7-cache/blob/master/src/CacheUtil.php#L86
     public function withExpires(ResponseInterface $response, $time)
     {
-        if (!is_integer($time)) {
+        if (!is_int($time)) {
             $time = strtotime($time);
             if ($time === false) {
                 throw new InvalidArgumentException('Expiration value could not be parsed with `strtotime()`.');
             }
         }
+
         return $response->withHeader('Expires', gmdate('D, d M Y H:i:s T', $time));
     }
+
     /**
      * Add `ETag` header to PSR7 response object
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param  ResponseInterface $response A PSR7 response object
-     * @param  string            $value    The ETag value
-     * @param  string            $type     ETag type: "strong" or "weak"
+     * @param ResponseInterface $response A PSR7 response object
+     * @param string            $value    The ETag value
+     * @param string            $type     ETag type: "strong" or "weak"
      *
-     * @return ResponseInterface           A new PSR7 response object with `ETag` header
      * @throws InvalidArgumentException if the etag type is invalid
+     *
+     * @return ResponseInterface A new PSR7 response object with `ETag` header
      */
     // TODO : regarder aussi ici : https://github.com/micheh/psr7-cache/blob/master/src/CacheUtil.php#L132
     public function withEtag(ResponseInterface $response, $value, $type = 'strong')
@@ -1178,38 +1175,37 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
         if (!in_array($type, ['strong', 'weak'])) {
             throw new InvalidArgumentException('Invalid etag type. Must be "strong" or "weak".');
         }
-        $value = '"' . $value . '"';
+        $value = '"'.$value.'"';
         if ($type === 'weak') {
-            $value = 'W/' . $value;
+            $value = 'W/'.$value;
         }
+
         return $response->withHeader('ETag', $value);
     }
+
     /**
      * Add `Last-Modified` header to PSR7 response object
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param  ResponseInterface $response A PSR7 response object
-     * @param  int|string        $time     A UNIX timestamp or a valid `strtotime()` string
+     * @param ResponseInterface $response A PSR7 response object
+     * @param int|string        $time     A UNIX timestamp or a valid `strtotime()` string
      *
-     * @return ResponseInterface           A new PSR7 response object with `Last-Modified` header
      * @throws InvalidArgumentException if the last modified date cannot be parsed
+     *
+     * @return ResponseInterface A new PSR7 response object with `Last-Modified` header
      */
     public function withLastModified(ResponseInterface $response, $time)
     {
-        if (!is_integer($time)) {
+        if (!is_int($time)) {
             $time = strtotime($time);
             if ($time === false) {
                 throw new InvalidArgumentException('Last Modified value could not be parsed with `strtotime()`.');
             }
         }
+
         return $response->withHeader('Last-Modified', gmdate('D, d M Y H:i:s T', $time));
     }
 
-
-
-
-
-    
     /**
      * Modifies the response so that it conforms to the rules defined for a 304 status code.
      *
@@ -1229,9 +1225,10 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
         $this->setStatusCode(304);
         $this->setContent(null);
         // remove headers that MUST NOT be included with 304 Not Modified responses
-        foreach (array('Allow', 'Content-Encoding', 'Content-Language', 'Content-Length', 'Content-MD5', 'Content-Type', 'Last-Modified') as $header) {
+        foreach (['Allow', 'Content-Encoding', 'Content-Language', 'Content-Length', 'Content-MD5', 'Content-Type', 'Last-Modified'] as $header) {
             $this->headers->remove($header);
         }
+
         return $this;
     }
 
@@ -1267,13 +1264,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
         if ($notModified) {
             $this->setNotModified();
         }
+
         return $notModified;
     }
-
-
-    
-
-
 
     /**
      * Convert response to string.
@@ -1293,20 +1286,15 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
             $this->getReasonPhrase()
         );
         $output .= self::EOL;
-        $output .= "HEADERS :" . self::EOL;
+        $output .= 'HEADERS :'.self::EOL;
         foreach ($this->getHeaders() as $name => $values) {
-            $output .= sprintf('    %s: %s', $name, $this->getHeaderLine($name)) . self::EOL;
+            $output .= sprintf('    %s: %s', $name, $this->getHeaderLine($name)).self::EOL;
         }
-        $output .= "BODY :" . self::EOL;
-        $output .= (string)$this->getBody();
+        $output .= 'BODY :'.self::EOL;
+        $output .= (string) $this->getBody();
+
         return $output;
     }
-
-
-
-
-
-
 
     /**
      * Sets the Date header.
@@ -1323,9 +1311,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
         }
         $date = $date->setTimezone(new \DateTimeZone('UTC'));
         $this->headers->set('Date', $date->format('D, d M Y H:i:s').' GMT');
+
         return $this;
     }
-
 
     /**
      * Sets the ETag value.
@@ -1347,6 +1335,7 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
             }
             $this->headers->set('ETag', (true === $weak ? 'W/' : '').$etag);
         }
+
         return $this;
     }
 
@@ -1355,15 +1344,16 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
      *
      * Available options are: etag, last_modified, max_age, s_maxage, private, public and immutable.
      *
+     * @throws \InvalidArgumentException
+     *
      * @return $this
      *
-     * @throws \InvalidArgumentException
      *
      * @final
      */
     public function setCache(array $options)
     {
-        if ($diff = array_diff(array_keys($options), array('etag', 'last_modified', 'max_age', 's_maxage', 'private', 'public', 'immutable'))) {
+        if ($diff = array_diff(array_keys($options), ['etag', 'last_modified', 'max_age', 's_maxage', 'private', 'public', 'immutable'])) {
             throw new \InvalidArgumentException(sprintf('Response does not support the following options: "%s".', implode('", "', array_values($diff))));
         }
         if (isset($options['etag'])) {
@@ -1395,9 +1385,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
         if (isset($options['immutable'])) {
             $this->setImmutable((bool) $options['immutable']);
         }
+
         return $this;
     }
-
 
     /**
      * Returns an array of header names given in the Vary header.
@@ -1416,6 +1406,7 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
         }
         return $ret;
     }*/
+
     /**
      * Sets the Vary header.
      *
@@ -1429,25 +1420,12 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     public function setVary($headers, bool $replace = true)
     {
         $this->headers->set('Vary', $headers, $replace);
+
         return $this;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
-     * Get the Accept-Ranges HTTP header
+     * Get the Accept-Ranges HTTP header.
      *
      * @return string Returns what partial content range types this server supports.
      */
@@ -1455,17 +1433,19 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Accept-Ranges');
     }
+
     /**
-     * Get the Age HTTP header
+     * Get the Age HTTP header.
      *
-     * @return integer|null Returns the age the object has been in a proxy cache in seconds.
+     * @return int|null Returns the age the object has been in a proxy cache in seconds.
      */
     public function getAge()
     {
         return (string) $this->getHeader('Age');
     }
+
     /**
-     * Get the Allow HTTP header
+     * Get the Allow HTTP header.
      *
      * @return string|null Returns valid actions for a specified resource. To be used for a 405 Method not allowed.
      */
@@ -1473,8 +1453,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Allow');
     }
+
     /**
-     * Check if an HTTP method is allowed by checking the Allow response header
+     * Check if an HTTP method is allowed by checking the Allow response header.
      *
      * @param string $method Method to check
      *
@@ -1490,10 +1471,12 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
                 }
             }
         }
+
         return false;
     }
+
     /**
-     * Get the Cache-Control HTTP header
+     * Get the Cache-Control HTTP header.
      *
      * @return string
      */
@@ -1501,8 +1484,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Cache-Control');
     }
+
     /**
-     * Get the Connection HTTP header
+     * Get the Connection HTTP header.
      *
      * @return string
      */
@@ -1510,8 +1494,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Connection');
     }
+
     /**
-     * Get the Content-Encoding HTTP header
+     * Get the Content-Encoding HTTP header.
      *
      * @return string|null
      */
@@ -1519,8 +1504,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Content-Encoding');
     }
+
     /**
-     * Get the Content-Language HTTP header
+     * Get the Content-Language HTTP header.
      *
      * @return string|null Returns the language the content is in.
      */
@@ -1528,17 +1514,19 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Content-Language');
     }
+
     /**
-     * Get the Content-Length HTTP header
+     * Get the Content-Length HTTP header.
      *
-     * @return integer Returns the length of the response body in bytes
+     * @return int Returns the length of the response body in bytes
      */
     public function getContentLength()
     {
         return (int) (string) $this->getHeader('Content-Length');
     }
+
     /**
-     * Get the Content-Location HTTP header
+     * Get the Content-Location HTTP header.
      *
      * @return string|null Returns an alternate location for the returned data (e.g /index.htm)
      */
@@ -1546,8 +1534,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Content-Location');
     }
+
     /**
-     * Get the Content-Disposition HTTP header
+     * Get the Content-Disposition HTTP header.
      *
      * @return string|null Returns the Content-Disposition header
      */
@@ -1555,8 +1544,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Content-Disposition');
     }
+
     /**
-     * Get the Content-MD5 HTTP header
+     * Get the Content-MD5 HTTP header.
      *
      * @return string|null Returns a Base64-encoded binary MD5 sum of the content of the response.
      */
@@ -1564,8 +1554,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Content-MD5');
     }
+
     /**
-     * Get the Content-Range HTTP header
+     * Get the Content-Range HTTP header.
      *
      * @return string Returns where in a full body message this partial message belongs (e.g. bytes 21010-47021/47022).
      */
@@ -1573,8 +1564,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Content-Range');
     }
+
     /**
-     * Get the Content-Type HTTP header
+     * Get the Content-Type HTTP header.
      *
      * @return string Returns the mime type of this content.
      */
@@ -1582,6 +1574,7 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Content-Type');
     }
+
     /**
      * Checks if the Content-Type is of a certain type.  This is useful if the
      * Content-Type header contains charset information and you need to know if
@@ -1595,8 +1588,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return stripos($this->getHeader('Content-Type'), $type) !== false;
     }
+
     /**
-     * Get the Date HTTP header
+     * Get the Date HTTP header.
      *
      * @return string|null Returns the date and time that the message was sent.
      */
@@ -1604,8 +1598,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Date');
     }
+
     /**
-     * Get the ETag HTTP header
+     * Get the ETag HTTP header.
      *
      * @return string|null Returns an identifier for a specific version of a resource, often a Message digest.
      */
@@ -1613,8 +1608,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('ETag');
     }
+
     /**
-     * Get the Expires HTTP header
+     * Get the Expires HTTP header.
      *
      * @return string|null Returns the date/time after which the response is considered stale.
      */
@@ -1622,8 +1618,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Expires');
     }
+
     /**
-     * Get the Last-Modified HTTP header
+     * Get the Last-Modified HTTP header.
      *
      * @return string|null Returns the last modified date for the requested object, in RFC 2822 format
      *                     (e.g. Tue, 15 Nov 1994 12:45:26 GMT)
@@ -1632,8 +1629,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Last-Modified');
     }
+
     /**
-     * Get the Location HTTP header
+     * Get the Location HTTP header.
      *
      * @return string|null Used in redirection, or when a new resource has been created.
      */
@@ -1641,8 +1639,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Location');
     }
+
     /**
-     * Get the Pragma HTTP header
+     * Get the Pragma HTTP header.
      *
      * @return Header|null Returns the implementation-specific headers that may have various effects anywhere along
      *                     the request-response chain.
@@ -1651,8 +1650,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Pragma');
     }
+
     /**
-     * Get the Proxy-Authenticate HTTP header
+     * Get the Proxy-Authenticate HTTP header.
      *
      * @return string|null Authentication to access the proxy (e.g. Basic)
      */
@@ -1660,8 +1660,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Proxy-Authenticate');
     }
+
     /**
-     * Get the Retry-After HTTP header
+     * Get the Retry-After HTTP header.
      *
      * @return int|null If an entity is temporarily unavailable, this instructs the client to try again after a
      *                  specified period of time.
@@ -1670,17 +1671,19 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Retry-After');
     }
+
     /**
-     * Get the Server HTTP header
+     * Get the Server HTTP header.
      *
      * @return string|null A name for the server
      */
     public function getServer()
     {
-        return (string)  $this->getHeader('Server');
+        return (string) $this->getHeader('Server');
     }
+
     /**
-     * Get the Set-Cookie HTTP header
+     * Get the Set-Cookie HTTP header.
      *
      * @return string|null An HTTP cookie.
      */
@@ -1688,8 +1691,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Set-Cookie');
     }
+
     /**
-     * Get the Trailer HTTP header
+     * Get the Trailer HTTP header.
      *
      * @return string|null The Trailer general field value indicates that the given set of header fields is present in
      *                     the trailer of a message encoded with chunked transfer-coding.
@@ -1698,8 +1702,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Trailer');
     }
+
     /**
-     * Get the Transfer-Encoding HTTP header
+     * Get the Transfer-Encoding HTTP header.
      *
      * @return string|null The form of encoding used to safely transfer the entity to the user
      */
@@ -1707,8 +1712,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Transfer-Encoding');
     }
+
     /**
-     * Get the Vary HTTP header
+     * Get the Vary HTTP header.
      *
      * @return string|null Tells downstream proxies how to match future request headers to decide whether the cached
      *                     response can be used rather than requesting a fresh one from the origin server.
@@ -1718,8 +1724,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Vary');
     }
+
     /**
-     * Get the Via HTTP header
+     * Get the Via HTTP header.
      *
      * @return string|null Informs the client of proxies through which the response was sent.
      */
@@ -1727,8 +1734,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Via');
     }
+
     /**
-     * Get the Warning HTTP header
+     * Get the Warning HTTP header.
      *
      * @return string|null A general warning about possible problems with the entity body
      */
@@ -1736,8 +1744,9 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
     {
         return (string) $this->getHeader('Warning');
     }
+
     /**
-     * Get the WWW-Authenticate HTTP header
+     * Get the WWW-Authenticate HTTP header.
      *
      * @return string|null Indicates the authentication scheme that should be used to access the requested entity
      */
@@ -1746,14 +1755,13 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
         return (string) $this->getHeader('WWW-Authenticate');
     }
 
-
-//*************************
-// https://github.com/yiisoft/yii2-httpclient/blob/master/src/Response.php#L84
-//*******************************
-
+    //*************************
+    // https://github.com/yiisoft/yii2-httpclient/blob/master/src/Response.php#L84
+    //*******************************
 
     /**
      * Returns default format automatically detected from headers and content.
+     *
      * @return string|null format name, 'null' - if detection failed.
      */
     protected function defaultFormat()
@@ -1762,11 +1770,15 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
         if ($format === null) {
             $format = $this->detectFormatByContent($this->getContent());
         }
+
         return $format;
     }
+
     /**
      * Detects format from headers.
+     *
      * @param HeaderCollection $headers source headers.
+     *
      * @return null|string format name, 'null' - if detection failed.
      */
     protected function detectFormatByHeaders(HeaderCollection $headers)
@@ -1784,11 +1796,13 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
                 return Client::FORMAT_XML;
             }
         }
-        return null;
     }
+
     /**
      * Detects response format from raw content.
+     *
      * @param string $content raw response content.
+     *
      * @return null|string format name, 'null' - if detection failed.
      */
     // TODO : on peut surement faire un middleware pour ajouter un contentType = application/json ou /xml ou html/text selon la détection du format ???? cela semble une bonne idée !!!!
@@ -1803,8 +1817,5 @@ Good answer. However, when deleting cookie, use empty text as value for deleted 
         if (preg_match('/^<.*>$/s', $content)) {
             return Client::FORMAT_XML;
         }
-        return null;
     }
-
-
 }

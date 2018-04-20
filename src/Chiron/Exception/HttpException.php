@@ -1,10 +1,11 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Chiron\Exception;
 
-use Throwable;
 use RuntimeException;
+use Throwable;
 
 //https://github.com/symfony/http-kernel/blob/master/Exception/HttpException.php
 //https://github.com/stratifyphp/http/blob/master/src/Exception/HttpException.php
@@ -23,7 +24,7 @@ class HttpException extends RuntimeException //implements \ExceptionInterface
         $this->statusCode = $statusCode;
         $this->headers = $headers;
 
-        parent::__construct($message ?:'', 0, $previous);
+        parent::__construct($message ?: '', 0, $previous);
     }
 
     public function getStatusCode() : int

@@ -1,6 +1,6 @@
 <?php
-declare(strict_types=1);
 
+declare(strict_types=1);
 
 namespace Chiron;
 
@@ -13,7 +13,7 @@ namespace Chiron;
 
 //*************
 // TODO : ajouter la gestion des ServicesProviders => https://github.com/mnapoli/simplex/blob/master/src/Simplex/Container.php#L332
-// Regarder aussi ici => https://github.com/thecodingmachine/slim-universal-module      
+// Regarder aussi ici => https://github.com/thecodingmachine/slim-universal-module
 // et ici pour les specs => https://github.com/container-interop/service-provider
 //*************
 
@@ -29,11 +29,10 @@ use Psr\Container\ContainerInterface;
 
 class Container implements \ArrayAccess, ContainerInterface
 {
-
     /**
-     * Contains all entries
+     * Contains all entries.
      *
-     * @var $container array
+     * @var array
      */
     private $container = [];
 
@@ -72,9 +71,8 @@ class Container implements \ArrayAccess, ContainerInterface
         $this->container[$alias] = $entry;
     }
 
-
     /**
-     * Unsets an alias
+     * Unsets an alias.
      *
      * @param string $alias
      */
@@ -82,24 +80,24 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         // TODO : tester si cela est utile (surement si on stocke un string au lieu d'un callable à voir)
         //if (is_object($this->container[$alias])) {
-            unset($this->factories[$this->container[$alias]]);
+        unset($this->factories[$this->container[$alias]]);
         //}
         unset($this->container[$alias]);
     }
-
 
     /**
      * Marks a callable as being a factory service.
      *
      * @param callable $callable A service definition to be used as a factory
      *
-     * @return callable The passed callable
-     *
      * @throws ExpectedInvokableException Service definition has to be a closure or an invokable object
+     *
+     * @return callable The passed callable
      */
     public function factory(callable $callable)
     {
         $this->factories->attach($callable);
+
         return $callable;
     }
 
@@ -125,9 +123,10 @@ class Container implements \ArrayAccess, ContainerInterface
         }
 
         $this->container[$alias] = $this->container[$alias]($container);
-        return $this->container[$alias];
 
+        return $this->container[$alias];
     }
+
     /**
      * {@inheritdoc}
      */
@@ -139,8 +138,9 @@ class Container implements \ArrayAccess, ContainerInterface
     }
 
     // TODO : méthode à tester, et vérifier son utilité !!!!
+
     /**
-     * Get container keys
+     * Get container keys.
      *
      * @return array The container data keys
      */
@@ -148,7 +148,6 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         return array_keys($this->container);
     }
-
 
     /**
      * Registers a service provider.
@@ -170,21 +169,20 @@ class Container implements \ArrayAccess, ContainerInterface
     }
     */
 
-
-
     /**
      * Gets a parameter or an object.
      *
      * @param string $name The unique identifier for the parameter or object
      *
-     * @return mixed The value of the parameter or an object
-     *
      * @throws UnknownIdentifierException If the identifier is not defined
+     *
+     * @return mixed The value of the parameter or an object
      */
     public function offsetGet($name)
     {
-      return $this->get($name);
+        return $this->get($name);
     }
+
     /**
      * Sets a parameter or an object.
      *
@@ -201,8 +199,9 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function offsetSet($name, $service)
     {
-      $this->bind($name, $service);
+        $this->bind($name, $service);
     }
+
     /**
      * Unsets a parameter or an object.
      *
@@ -210,8 +209,9 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function offsetUnset($name)
     {
-      $this->remove($name);
+        $this->remove($name);
     }
+
     /**
      * Checks if a parameter or an object is set.
      *
@@ -221,7 +221,6 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function offsetExists($name)
     {
-      return $this->has($name);
+        return $this->has($name);
     }
-
 }

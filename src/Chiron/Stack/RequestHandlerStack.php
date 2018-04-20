@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Chiron\Stack;
 
@@ -35,13 +36,11 @@ namespace Chiron\Stack;
 
 // TODO : prendre exemple ici pour gérer la méthode offsetSet sur une stack ???? https://github.com/zendframework/zend-httphandlerrunner/blob/master/src/Emitter/EmitterStack.php#L55
 
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
-use InvalidArgumentException;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use UnexpectedValueException;
 
 // TODO : renommer cette classe en RequestHandlerStack
@@ -56,12 +55,12 @@ class RequestHandlerStack implements RequestHandlerInterface
      */
     private $fallbackHandler;
     /**
-     * @var integer
+     * @var int
      */
     private $index = 0;
 
     /**
-     * @param array $middlewares
+     * @param array    $middlewares
      * @param callable $fallbackHandler
      */
     public function __construct(RequestHandlerInterface $fallbackHandler, array $middlewares = [])
@@ -97,7 +96,7 @@ class RequestHandlerStack implements RequestHandlerInterface
         }
 
         // middleware MUST return a ResponseInterface object
-        if (! $result instanceof ResponseInterface) {
+        if (!$result instanceof ResponseInterface) {
             throw new UnexpectedValueException('Middleware must return instance of (\Psr\Http\Message\ResponseInterface)');
         }
 
@@ -118,7 +117,7 @@ class RequestHandlerStack implements RequestHandlerInterface
     }
 
     /**
-     * Create a middleware from a closure
+     * Create a middleware from a closure.
      */
     /*
     private static function createMiddlewareFromClosure(Closure $handler): MiddlewareInterface
@@ -136,12 +135,12 @@ class RequestHandlerStack implements RequestHandlerInterface
         };
     }*/
 
-
     /**
-     * Insert middlewares to the next position
+     * Insert middlewares to the next position.
      *
      * @param array $middlewares
-     * @param null $index
+     * @param null  $index
+     *
      * @return $this
      */
     //https://github.com/swoft-cloud/swoft-framework/blob/e04d1293cc5b4a8a532fce9bc20c6eb6f0f8abc8/src/Core/RequestHandler.php#L88
@@ -160,7 +159,6 @@ class RequestHandlerStack implements RequestHandlerInterface
         return $this;
     }*/
 
-
     /**
      * Remove a middleware by instance or name from the stack.
      *
@@ -178,21 +176,22 @@ class RequestHandlerStack implements RequestHandlerInterface
         ));
     }*/
 
-/*
-//https://github.com/idealo/php-middleware-stack/blob/use-new-psr15-interfaces/src/Stack.php#L28
-    private function withoutMiddleware(MiddlewareInterface $middleware): RequestHandlerInterface
-    {
-        return new self(
-            $this->defaultResponse,
-            ...array_filter(
-                $this->middlewares,
-                function ($m) use ($middleware) {
-                    return $middleware !== $m;
-                }
-            )
-        );
-    }
-*/
+    /*
+    //https://github.com/idealo/php-middleware-stack/blob/use-new-psr15-interfaces/src/Stack.php#L28
+        private function withoutMiddleware(MiddlewareInterface $middleware): RequestHandlerInterface
+        {
+            return new self(
+                $this->defaultResponse,
+                ...array_filter(
+                    $this->middlewares,
+                    function ($m) use ($middleware) {
+                        return $middleware !== $m;
+                    }
+                )
+            );
+        }
+    */
+
     /**
      * Unshift a middleware to the bottom of the stack.
      *
@@ -202,6 +201,7 @@ class RequestHandlerStack implements RequestHandlerInterface
     {
         array_unshift($this->middlewares, $middleware);
     }
+
     /**
      * Push a middleware to the top of the stack.
      *
