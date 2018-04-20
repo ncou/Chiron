@@ -53,10 +53,10 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
     public function createServerRequestFromArray(array $server)
     {
         // Check if request is valid, need URI and method set at least.
-        if (!isset($server['REQUEST_URI'])) {
+        if (! isset($server['REQUEST_URI'])) {
             throw new \InvalidArgumentException('HTTP request must have an URI set.');
         }
-        if (!isset($server['REQUEST_METHOD'])) {
+        if (! isset($server['REQUEST_METHOD'])) {
             throw new \InvalidArgumentException('HTTP request must have an HTTP method set.');
         }
 
@@ -173,7 +173,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
     public function marshalUriFromServer(array $server)
     {
         $uri = new Uri('');
-        $uri = $uri->withScheme(!empty($server['HTTPS']) && $server['HTTPS'] !== 'off' ? 'https' : 'http');
+        $uri = $uri->withScheme(! empty($server['HTTPS']) && $server['HTTPS'] !== 'off' ? 'https' : 'http');
         $hasPort = false;
         if (isset($server['HTTP_HOST'])) {
             $hostHeaderParts = explode(':', $server['HTTP_HOST']);
@@ -187,7 +187,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         } elseif (isset($server['SERVER_ADDR'])) {
             $uri = $uri->withHost($server['SERVER_ADDR']);
         }
-        if (!$hasPort && isset($server['SERVER_PORT'])) {
+        if (! $hasPort && isset($server['SERVER_PORT'])) {
             $uri = $uri->withPort($server['SERVER_PORT']);
         }
         $hasQuery = false;
@@ -199,7 +199,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
                 $uri = $uri->withQuery($requestUriParts[1]);
             }
         }
-        if (!$hasQuery && isset($server['QUERY_STRING'])) {
+        if (! $hasQuery && isset($server['QUERY_STRING'])) {
             $uri = $uri->withQuery($server['QUERY_STRING']);
         }
 
@@ -329,7 +329,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
     {
         // This seems to be the only way to get the Authorization header on Apache
         $apacheRequestHeaders = self::$apacheRequestHeaders;
-        if (isset($server['HTTP_AUTHORIZATION']) || !is_callable($apacheRequestHeaders)) {
+        if (isset($server['HTTP_AUTHORIZATION']) || ! is_callable($apacheRequestHeaders)) {
             return $server;
         }
         //If HTTP_AUTHORIZATION does not exist tries to get it from "apache_request_headers()" when available.

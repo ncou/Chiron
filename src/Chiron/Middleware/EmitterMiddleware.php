@@ -171,7 +171,7 @@ class EmitterMiddleware implements MiddlewareInterface
             $stream->rewind();
         }
 
-        while (!$stream->eof()) {
+        while (! $stream->eof()) {
             echo $stream->read($chunkSize);
             flush(); // Free up memory. Otherwise large files will trigger PHP's memory limit.
         }
@@ -237,7 +237,7 @@ class EmitterMiddleware implements MiddlewareInterface
 
         //TODO : pas sur que cela serve car apache semble ajouter automatiquement la date du jour et on ne peut pas la modifier... :(
         /* RFC2616 - 14.18 says all Responses need to have a Date */
-        if (!$response->hasHeader('Date')) {
+        if (! $response->hasHeader('Date')) {
             $response = $response->withHeader('Date', $this->initDate());
         }
 
@@ -253,14 +253,14 @@ class EmitterMiddleware implements MiddlewareInterface
         */
         // Fix Content-Type
         $charset = 'UTF-8';
-        if (!$response->hasHeader('Content-Type')) {
+        if (! $response->hasHeader('Content-Type')) {
             $response = $response->withHeader('Content-Type', 'text/html; charset=' . $charset);
         } elseif (0 === stripos($response->getHeaderLine('Content-Type'), 'text/') && false === stripos($response->getHeaderLine('Content-Type'), 'charset')) {
             // add the charset
             $response = $response->withHeader('Content-Type', $response->getHeaderLine('Content-Type') . '; charset=' . $charset);
         }
 
-        if (!$response->hasHeader('Content-Length')) {
+        if (! $response->hasHeader('Content-Length')) {
             $response = $response->withHeader('Content-Length', (string) $response->getBody()->getSize());
         }
 
@@ -325,7 +325,7 @@ class EmitterMiddleware implements MiddlewareInterface
             $headers->remove('Content-Length');
         } else {
             // Content-type based on the Request
-            if (!$headers->has('Content-Type')) {
+            if (! $headers->has('Content-Type')) {
                 $format = $request->getRequestFormat();
                 if (null !== $format && $mimeType = $request->getMimeType($format)) {
                     $headers->set('Content-Type', $mimeType);
@@ -333,7 +333,7 @@ class EmitterMiddleware implements MiddlewareInterface
             }
             // Fix Content-Type
             $charset = $response->charset ?: 'UTF-8';
-            if (!$headers->has('Content-Type')) {
+            if (! $headers->has('Content-Type')) {
                 $headers->set('Content-Type', 'text/html; charset=' . $charset);
             } elseif (0 === stripos($headers->get('Content-Type'), 'text/') && false === stripos($headers->get('Content-Type'), 'charset')) {
                 // add the charset

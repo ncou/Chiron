@@ -139,7 +139,7 @@ class HttpExceptionHandler extends AbstractExceptionHandler
         }
 
         $traces = $this->normalizeBacktraces($e->getTrace());
-        if (!empty($traces)) {
+        if (! empty($traces)) {
             $html .= '<h2>Trace</h2>';
 
             $html .= '<table><tbody>';

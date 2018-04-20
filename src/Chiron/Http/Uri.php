@@ -234,7 +234,7 @@ class Uri implements UriInterface
     {
         return $uri->getScheme() === ''
             && $uri->getAuthority() === ''
-            && (!isset($uri->getPath()[0]) || $uri->getPath()[0] !== '/');
+            && (! isset($uri->getPath()[0]) || $uri->getPath()[0] !== '/');
     }
 
     /**
@@ -293,7 +293,7 @@ class Uri implements UriInterface
      */
     public static function resolve(UriInterface $base, $rel)
     {
-        if (!($rel instanceof UriInterface)) {
+        if (! ($rel instanceof UriInterface)) {
             $rel = new self($rel);
         }
 
@@ -587,7 +587,7 @@ class Uri implements UriInterface
      */
     private function filterScheme($scheme)
     {
-        if (!is_string($scheme)) {
+        if (! is_string($scheme)) {
             throw new \InvalidArgumentException('Scheme must be a string');
         }
 
@@ -603,7 +603,7 @@ class Uri implements UriInterface
      */
     private function filterHost($host)
     {
-        if (!is_string($host)) {
+        if (! is_string($host)) {
             throw new \InvalidArgumentException('Host must be a string');
         }
 
@@ -651,7 +651,7 @@ class Uri implements UriInterface
      */
     private function filterPath($path)
     {
-        if (!is_string($path)) {
+        if (! is_string($path)) {
             throw new \InvalidArgumentException('Path must be a string');
         }
 
@@ -673,7 +673,7 @@ class Uri implements UriInterface
      */
     private function filterQueryAndFragment($str)
     {
-        if (!is_string($str)) {
+        if (! is_string($str)) {
             throw new \InvalidArgumentException('Query and fragment must be a string');
         }
 

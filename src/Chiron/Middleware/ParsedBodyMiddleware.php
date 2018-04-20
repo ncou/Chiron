@@ -28,7 +28,7 @@ class ParsedBodyMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (empty($request->getParsedBody()) && !in_array($request->getMethod(), ['GET', 'HEAD'])) {
+        if (empty($request->getParsedBody()) && ! in_array($request->getMethod(), ['GET', 'HEAD'])) {
             $body = (string) $request->getBody();
             $mediaType = $this->getMediaType($request);
 
@@ -37,7 +37,7 @@ class ParsedBodyMiddleware implements MiddlewareInterface
             //return (bool) preg_match('#[/+]json$#', trim($mime));
             if (preg_match('~application/([a-z.]+\+)?json~', $mediaType)) {
                 $parsed = json_decode($body, true);
-                if (!is_array($parsed)) {
+                if (! is_array($parsed)) {
                     $parsed = null;
                 }
                 // Throw error if we are unable to decode body

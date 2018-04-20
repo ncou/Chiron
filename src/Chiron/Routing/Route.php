@@ -397,7 +397,7 @@ class Route implements RequestHandlerInterface
     // remove the char "^" at the start of the regex, and the final "$" char at the end of the regex
     private function sanitizeRequirement($key, $regex)
     {
-        if (!is_string($regex)) {
+        if (! is_string($regex)) {
             throw new \InvalidArgumentException(sprintf('Routing requirement for "%s" must be a string.', $key));
         }
         if ('' !== $regex && '^' === $regex[0]) {

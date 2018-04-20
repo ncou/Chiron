@@ -72,7 +72,7 @@ class Message
 
       // TODO : vérifier l'utilité de conserver ce contrôle !!!!!!!! et donc le tableau de constantes correspondant en début de classe.
         // TODO : utiliser plutot ce controle : https://github.com/zendframework/zend-diactoros/blob/fb7f06e1b78c2aa17d08f30633bb2fa337428182/src/MessageTrait.php#L357
-        if (!isset(self::$validProtocolVersions[$version])) {
+        if (! isset(self::$validProtocolVersions[$version])) {
             throw new InvalidArgumentException('Invalid HTTP version. Must be one of: ' . implode(', ', array_keys(self::$validProtocolVersions)));
         }
 
@@ -181,7 +181,7 @@ class Message
     public function getHeader($header)
     {
         $header = strtolower($header);
-        if (!isset($this->headerNames[$header])) {
+        if (! isset($this->headerNames[$header])) {
             return [];
         }
         $header = $this->headerNames[$header];
@@ -233,7 +233,7 @@ class Message
      */
     public function withHeader($header, $value)
     {
-        if (!is_array($value)) {
+        if (! is_array($value)) {
             $value = [$value];
         }
         $value = $this->trimHeaderValues($value);
@@ -268,7 +268,7 @@ class Message
      */
     public function withAddedHeader($header, $value)
     {
-        if (!is_array($value)) {
+        if (! is_array($value)) {
             $value = [$value];
         }
         $value = $this->trimHeaderValues($value);
@@ -301,7 +301,7 @@ class Message
     public function withoutHeader($header)
     {
         $normalized = strtolower($header);
-        if (!isset($this->headerNames[$normalized])) {
+        if (! isset($this->headerNames[$normalized])) {
             return $this;
         }
         $header = $this->headerNames[$normalized];
@@ -326,7 +326,7 @@ class Message
     {
         $this->headerNames = $this->headers = [];
         foreach ($headers as $header => $value) {
-            if (!is_array($value)) {
+            if (! is_array($value)) {
                 $value = [$value];
             }
             $value = $this->trimHeaderValues($value);
@@ -445,7 +445,7 @@ class Message
         if ($stream instanceof StreamInterface) {
             return $stream;
         }
-        if (!is_string($stream) && !is_resource($stream)) {
+        if (! is_string($stream) && ! is_resource($stream)) {
             throw new InvalidArgumentException(
                 'Stream must be a string stream resource identifier, '
                 . 'an actual stream resource, '

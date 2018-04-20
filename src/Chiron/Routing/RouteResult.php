@@ -136,7 +136,7 @@ class RouteResult
         if ($this->isFailure()) {
             return false;
         }
-        if (!$this->matchedRouteName && $this->route) {
+        if (! $this->matchedRouteName && $this->route) {
             $this->matchedRouteName = $this->route->getName();
         }
 
@@ -158,7 +158,7 @@ class RouteResult
      */
     public function isFailure(): bool
     {
-        return !$this->success;
+        return ! $this->success;
     }
 
     /**

@@ -43,18 +43,18 @@ class MethodOverrideMiddleware implements MiddlewareInterface
 
 // TODO : on devrait plutot utiliser un truc genre : strtoupper($request->getHeaderLine("X-Http-Method-Override"));
         if ($request->hasHeader('X-Http-Method-Override')) {
-            if (!empty($request->getHeader('X-Http-Method-Override')[0])) {
+            if (! empty($request->getHeader('X-Http-Method-Override')[0])) {
                 $request = $request->withMethod($request->getHeader('X-Http-Method-Override')[0]);
             }
         }
         if (strtoupper($request->getMethod()) == 'GET') {
-            if (!empty($request->getQueryParams()['_method'])) {
+            if (! empty($request->getQueryParams()['_method'])) {
                 $method = $request->getQueryParams()['_method'];
                 $request = $request->withMethod($method);
             }
         }
         if ($request->getMethod() == 'POST') {
-            if (!empty($request->getParsedBody()['_method'])) {
+            if (! empty($request->getParsedBody()['_method'])) {
                 $request = $request->withMethod($request->getParsedBody()['_method']);
             }
             /*

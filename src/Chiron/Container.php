@@ -107,12 +107,12 @@ class Container implements \ArrayAccess, ContainerInterface
     public function get($alias)
     {
         //TODO : on devrait faire une vérif si le paramétre $alias est bien une string sinon on léve une exception !!!!!
-        if (!$this->has($alias)) {
+        if (! $this->has($alias)) {
             //throw new NotFoundException("$alias doesn't exists in the container");
             throw new \InvalidArgumentException("'$alias' doesn't exists in the Container component");
         }
 
-        if (!is_callable($this->container[$alias])) {
+        if (! is_callable($this->container[$alias])) {
             return $this->container[$alias];
         }
 

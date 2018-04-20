@@ -96,7 +96,7 @@ class RequestHandlerStack implements RequestHandlerInterface
         }
 
         // middleware MUST return a ResponseInterface object
-        if (!$result instanceof ResponseInterface) {
+        if (! $result instanceof ResponseInterface) {
             throw new UnexpectedValueException('Middleware must return instance of (\Psr\Http\Message\ResponseInterface)');
         }
 

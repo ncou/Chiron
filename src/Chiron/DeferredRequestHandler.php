@@ -95,7 +95,7 @@ class DeferredRequestHandler implements RequestHandlerInterface
     private function resolveCallable($toResolve)
     {
         $resolved = $toResolve;
-        if (!is_callable($toResolve) && is_string($toResolve)) {
+        if (! is_callable($toResolve) && is_string($toResolve)) {
             $class = $toResolve;
             $method = '__invoke';
             // check for slim callable as "class:method"
@@ -109,13 +109,13 @@ class DeferredRequestHandler implements RequestHandlerInterface
             if ($this->container instanceof ContainerInterface && $this->container->has($class)) {
                 $resolved = [$this->container->get($class), $method];
             } else {
-                if (!class_exists($class)) {
+                if (! class_exists($class)) {
                     throw new \RuntimeException(sprintf('Class %s does not exist', $class));
                 }
                 $resolved = [new $class($this->container), $method];
             }
         }
-        if (!is_callable($resolved)) {
+        if (! is_callable($resolved)) {
             throw new \InvalidArgumentException(sprintf(
                 '(%s) is not resolvable',
                 is_array($resolved) || is_object($resolved) || is_null($resolved) ? json_encode($resolved) : $resolved

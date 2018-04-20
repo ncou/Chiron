@@ -54,7 +54,7 @@ class Config implements \ArrayAccess, \Iterator, \Countable
         $keys = explode('.', $key);
 
         foreach ($keys as $k) {
-            if (!isset($data[$k])) {
+            if (! isset($data[$k])) {
                 //if (!is_array($data) || !array_key_exists($k, $data)) {
                 return $default;
             }
@@ -98,7 +98,7 @@ class Config implements \ArrayAccess, \Iterator, \Countable
         $keys = explode('.', $key);
 
         foreach ($keys as $k) {
-            if (!isset($data[$k])) {
+            if (! isset($data[$k])) {
                 return false;
             }
             $data = $data[$k];

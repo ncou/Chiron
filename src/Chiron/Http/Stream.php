@@ -48,7 +48,7 @@ class Stream implements StreamInterface
      */
     public function __toString()
     {
-        if (!$this->isReadable()) {
+        if (! $this->isReadable()) {
             return '';
         }
 
@@ -68,7 +68,7 @@ class Stream implements StreamInterface
      */
     public function close()
     {
-        if (!$this->resource) {
+        if (! $this->resource) {
             return;
         }
 
@@ -121,12 +121,12 @@ class Stream implements StreamInterface
      */
     public function tell()
     {
-        if (!$this->resource) {
+        if (! $this->resource) {
             throw new RuntimeException('No resource available; cannot tell position');
         }
 
         $result = ftell($this->resource);
-        if (!is_int($result)) {
+        if (! is_int($result)) {
             throw new RuntimeException('Error occurred during tell operation');
         }
 
@@ -138,7 +138,7 @@ class Stream implements StreamInterface
      */
     public function eof()
     {
-        if (!$this->resource) {
+        if (! $this->resource) {
             return true;
         }
 
@@ -150,7 +150,7 @@ class Stream implements StreamInterface
      */
     public function isSeekable()
     {
-        if (!$this->resource) {
+        if (! $this->resource) {
             return false;
         }
 
@@ -164,11 +164,11 @@ class Stream implements StreamInterface
      */
     public function seek($offset, $whence = SEEK_SET)
     {
-        if (!$this->resource) {
+        if (! $this->resource) {
             throw new RuntimeException('No resource available; cannot seek position');
         }
 
-        if (!$this->isSeekable()) {
+        if (! $this->isSeekable()) {
             throw new RuntimeException('Stream is not seekable');
         }
 
@@ -194,7 +194,7 @@ class Stream implements StreamInterface
      */
     public function isWritable()
     {
-        if (!$this->resource) {
+        if (! $this->resource) {
             return false;
         }
 
@@ -214,11 +214,11 @@ class Stream implements StreamInterface
      */
     public function write($string)
     {
-        if (!$this->resource) {
+        if (! $this->resource) {
             throw new RuntimeException('No resource available; cannot write');
         }
 
-        if (!$this->isWritable()) {
+        if (! $this->isWritable()) {
             throw new RuntimeException('Stream is not writable');
         }
 
@@ -236,7 +236,7 @@ class Stream implements StreamInterface
      */
     public function isReadable()
     {
-        if (!$this->resource) {
+        if (! $this->resource) {
             return false;
         }
 
@@ -251,11 +251,11 @@ class Stream implements StreamInterface
      */
     public function read($length)
     {
-        if (!$this->resource) {
+        if (! $this->resource) {
             throw new RuntimeException('No resource available; cannot read');
         }
 
-        if (!$this->isReadable()) {
+        if (! $this->isReadable()) {
             throw new RuntimeException('Stream is not readable');
         }
 
@@ -273,7 +273,7 @@ class Stream implements StreamInterface
      */
     public function getContents()
     {
-        if (!$this->isReadable()) {
+        if (! $this->isReadable()) {
             throw new RuntimeException('Stream is not readable');
         }
 
@@ -295,7 +295,7 @@ class Stream implements StreamInterface
         }
 
         $metadata = stream_get_meta_data($this->resource);
-        if (!array_key_exists($key, $metadata)) {
+        if (! array_key_exists($key, $metadata)) {
             return;
         }
 
@@ -327,7 +327,7 @@ class Stream implements StreamInterface
             throw new InvalidArgumentException('Invalid stream reference provided');
         }
 
-        if (!is_resource($resource) || 'stream' !== get_resource_type($resource)) {
+        if (! is_resource($resource) || 'stream' !== get_resource_type($resource)) {
             throw new InvalidArgumentException(
                 'Invalid stream provided; must be a string stream identifier or stream resource'
             );

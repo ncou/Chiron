@@ -128,7 +128,7 @@ class Router
     {
         // TODO : la méthode getNamedRoute retourne déjà une exception si la route n'existe pas !!! code à virer ? ou alors il faut modifier le getNamedRoute() pour qu'il retourne vide au lieu d'une exception ????
         // Check if named route exists
-        if (!$this->hasRoute($routeName)) {
+        if (! $this->hasRoute($routeName)) {
             throw new RuntimeException();
         }
 
@@ -168,7 +168,7 @@ class Router
             $match = false;
 
             // check condition for "Http or Https" required
-            if ($route->getSchemes() && !$route->hasScheme($requestScheme)) {
+            if ($route->getSchemes() && ! $route->hasScheme($requestScheme)) {
                 continue;
             }
 
@@ -194,7 +194,7 @@ class Router
                     if ('HEAD' === $method = $requestMethod) {
                         $method = 'GET';
                     }
-                    if (!in_array($method, $requiredMethods)) {
+                    if (! in_array($method, $requiredMethods)) {
                         $allowedMethods = array_merge($allowedMethods, $requiredMethods);
                         continue;
                     }
@@ -227,7 +227,7 @@ class Router
         foreach ($params as $key => $value) {
             //preg_match includes matches twice: once by their name, and once with the numeric index.
             // So we ignore the numeric keys since all the required params are named
-            if (!is_int($key)) {
+            if (! is_int($key)) {
                 $defaults[$key] = $value;
             }
         }

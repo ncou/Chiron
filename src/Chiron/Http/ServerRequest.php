@@ -82,7 +82,7 @@ class ServerRequest extends Message implements ServerRequestInterface
 
         $this->serverParams = $serverParams;
 
-        if (!($uri instanceof UriInterface)) {
+        if (! ($uri instanceof UriInterface)) {
             $uri = new Uri($uri);
         }
 
@@ -109,7 +109,7 @@ class ServerRequest extends Message implements ServerRequestInterface
         */
 
         // per PSR-7: attempt to set the Host header from a provided URI if no 'Host' header is provided
-        if (!$this->hasHeader('Host')) {
+        if (! $this->hasHeader('Host')) {
             $this->updateHostFromUri();
         }
     }
@@ -159,7 +159,7 @@ class ServerRequest extends Message implements ServerRequestInterface
      */
     private function validateMethod(string $method): void
     {
-        if (!preg_match('/^[!#$%&\'*+.^_`\|~0-9a-z-]+$/i', $method)) {
+        if (! preg_match('/^[!#$%&\'*+.^_`\|~0-9a-z-]+$/i', $method)) {
             throw new InvalidArgumentException(sprintf(
                 'Unsupported HTTP method "%s" provided',
                 $method
@@ -516,7 +516,7 @@ class ServerRequest extends Message implements ServerRequestInterface
     {
         $new = clone $this;
         $new->uri = $uri;
-        if (!$preserveHost) {
+        if (! $preserveHost) {
             //TODO : attention vérifier si on n'a pas viré cette méthode de la classe !!!!!!!!
             $new->updateHostFromUri();
         }
@@ -709,7 +709,7 @@ class ServerRequest extends Message implements ServerRequestInterface
      */
     public function expectsJson()
     {
-        return ($this->isAjax() && !$this->isPjax()) || $this->wantsJson();
+        return ($this->isAjax() && ! $this->isPjax()) || $this->wantsJson();
     }
 
     /**
@@ -796,7 +796,7 @@ class ServerRequest extends Message implements ServerRequestInterface
             }
             foreach ($contentTypes as $contentType) {
                 $type = $contentType;
-                if (!is_null($mimeType = $this->getMimeType($contentType))) {
+                if (! is_null($mimeType = $this->getMimeType($contentType))) {
                     $type = $mimeType;
                 }
                 if ($this->matchesType($type, $accept) || $accept === strtok($type, '/') . '/*') {
@@ -1004,7 +1004,7 @@ class ServerRequest extends Message implements ServerRequestInterface
     {
         $https = $this->getServerParam('HTTPS');
 
-        return !empty($https) && ('off' !== strtolower($https));
+        return ! empty($https) && ('off' !== strtolower($https));
     }
 
     /**
@@ -1157,7 +1157,7 @@ function getIP()
             $request_uri = strstr($request_uri, '?', true);
         }
 
-        return $request_uri . (!empty($query) ? '?' . http_build_query($query) : null);
+        return $request_uri . (! empty($query) ? '?' . http_build_query($query) : null);
     }
 
     /**
@@ -1388,7 +1388,7 @@ function getIP()
             $scriptUrl = $_SERVER['ORIG_SCRIPT_NAME'];
         } elseif (isset($_SERVER['PHP_SELF']) && ($pos = strpos($_SERVER['PHP_SELF'], '/' . $scriptName)) !== false) {
             $scriptUrl = substr($_SERVER['SCRIPT_NAME'], 0, $pos) . '/' . $scriptName;
-        } elseif (!empty($_SERVER['DOCUMENT_ROOT']) && strpos($scriptFile, $_SERVER['DOCUMENT_ROOT']) === 0) {
+        } elseif (! empty($_SERVER['DOCUMENT_ROOT']) && strpos($scriptFile, $_SERVER['DOCUMENT_ROOT']) === 0) {
             $scriptUrl = str_replace('\\', '/', str_replace($_SERVER['DOCUMENT_ROOT'], '', $scriptFile));
         } else {
             throw new RuntimeException('Unable to determine the entry script URL.');
@@ -1826,7 +1826,7 @@ function getIP()
     public function getClientIps()
     {
         $ip = $this->server->get('REMOTE_ADDR');
-        if (!$this->isFromTrustedProxy()) {
+        if (! $this->isFromTrustedProxy()) {
             return [$ip];
         }
 
@@ -2088,7 +2088,7 @@ function getIP()
     public function getRelativeUriForPath($path)
     {
         // be sure that we are dealing with an absolute path
-        if (!isset($path[0]) || '/' !== $path[0]) {
+        if (! isset($path[0]) || '/' !== $path[0]) {
             return $path;
         }
         if ($path === $basePath = $this->getPathInfo()) {
@@ -2111,7 +2111,7 @@ function getIP()
         // This also applies to a segment with a colon character (e.g., "file:colon") that cannot be used
         // as the first segment of a relative-path reference, as it would be mistaken for a scheme name
         // (see http://tools.ietf.org/html/rfc3986#section-4.2).
-        return !isset($path[0]) || '/' === $path[0]
+        return ! isset($path[0]) || '/' === $path[0]
             || false !== ($colonPos = strpos($path, ':')) && ($colonPos < ($slashPos = strpos($path, '/')) || false === $slashPos)
             ? "./$path" : $path;
     }
@@ -2264,7 +2264,7 @@ function getIP()
      */
     public function isMethodSafe(/* $andCacheable = true */)
     {
-        if (!func_num_args() || func_get_arg(0)) {
+        if (! func_num_args() || func_get_arg(0)) {
             // setting $andCacheable to false should be deprecated in 4.1
             throw new \BadMethodCallException('Checking only for cacheable HTTP methods with Symfony\Component\HttpFoundation\Request::isMethodSafe() is not supported.');
         }
@@ -2330,7 +2330,7 @@ function getIP()
         if (empty($locales)) {
             return isset($preferredLanguages[0]) ? $preferredLanguages[0] : null;
         }
-        if (!$preferredLanguages) {
+        if (! $preferredLanguages) {
             return $locales[0];
         }
         $extendedPreferredLanguages = [];
@@ -2338,7 +2338,7 @@ function getIP()
             $extendedPreferredLanguages[] = $language;
             if (false !== $position = strpos($language, '_')) {
                 $superLanguage = substr($language, 0, $position);
-                if (!in_array($superLanguage, $preferredLanguages)) {
+                if (! in_array($superLanguage, $preferredLanguages)) {
                     $extendedPreferredLanguages[] = $superLanguage;
                 }
             }
@@ -2569,7 +2569,7 @@ function getIP()
             } elseif (isset($_SERVER['SERVER_NAME'])) {
                 $this->_hostInfo = $http . '://' . $_SERVER['SERVER_NAME'];
                 $port = $secure ? $this->getSecurePort() : $this->getPort();
-                if (($port !== 80 && !$secure) || ($port !== 443 && $secure)) {
+                if (($port !== 80 && ! $secure) || ($port !== 443 && $secure)) {
                     $this->_hostInfo .= ':' . $port;
                 }
             }
@@ -2891,7 +2891,7 @@ function getIP()
                 throw new InvalidConfigException(get_class($this) . '::cookieValidationKey must be configured with a secret key.');
             }
             foreach ($_COOKIE as $name => $value) {
-                if (!is_string($value)) {
+                if (! is_string($value)) {
                     continue;
                 }
                 $data = Yii::$app->getSecurity()->validateData($value, $this->cookieValidationKey);
@@ -3029,7 +3029,7 @@ function getIP()
     {
         $method = $this->getMethod();
         // only validate CSRF token on non-"safe" methods https://tools.ietf.org/html/rfc2616#section-9.1.1
-        if (!$this->enableCsrfValidation || in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {
+        if (! $this->enableCsrfValidation || in_array($method, ['GET', 'HEAD', 'OPTIONS'], true)) {
             return true;
         }
         $trueToken = $this->getCsrfToken();
@@ -3051,7 +3051,7 @@ function getIP()
      */
     private function validateCsrfTokenInternal($clientSuppliedToken, $trueToken)
     {
-        if (!is_string($clientSuppliedToken)) {
+        if (! is_string($clientSuppliedToken)) {
             return false;
         }
         $security = Yii::$app->security;
