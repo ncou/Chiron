@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 //https://github.com/slimphp/Slim/blob/3.x/Slim/Handlers/NotAllowed.php
 
@@ -8,9 +9,7 @@ namespace Chiron\Handler;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-use Psr\Http\Server\RequestHandlerInterface;
-
-class HttpExceptionHandler extends AbstractExceptionHandler
+class NotAllowedHandler extends AbstractExceptionHandler
 {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
@@ -24,7 +23,7 @@ class HttpExceptionHandler extends AbstractExceptionHandler
         return $response->withHeader('Content-type', $contentType)->write($body);
     }
 
-// TODO : le type de l'exception doit etre "HttpException" et non pas throwable !!!!
+    // TODO : le type de l'exception doit etre "HttpException" et non pas throwable !!!!
     private function formatException(Throwable $exception, string $contentType): string
     {
         switch ($contentType) {
@@ -40,16 +39,13 @@ class HttpExceptionHandler extends AbstractExceptionHandler
                 //$output = $this->format($error);
                 break;
             default:
-                throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType);
+                throw new UnexpectedValueException('Cannot render unknown content type '.$contentType);
         }
 
 //        $this->writeToErrorLog($error);
 
         return $body;
     }
-
-
-    
 
     /**
      * Return the error as html.
@@ -103,28 +99,28 @@ EOT;
 EOT;
     }*/
 
-
-
     private function format(Throwable $exception) : string
     {
         $html = '<h2>An error has occurred</h2>';
         $html .= "\n";
         $html .= $this->doFormat($exception);
+
         return $html;
     }
+
     private function doFormat(Throwable $exception)
     {
-        $html = '<p>' . $exception->getMessage() . '</p>';
+        $html = '<p>'.$exception->getMessage().'</p>';
 //        if ($this->options['includeTrace']) {
+        $html .= "\n";
+        $html .= '<strong>Trace:</strong><br>';
+        $html .= "\n";
+        $trace = $exception->getTrace();
+        $traceLength = count($trace);
+        foreach ($exception->getTrace() as $i => $traceRecord) {
             $html .= "\n";
-            $html .= '<strong>Trace:</strong><br>';
-            $html .= "\n";
-            $trace = $exception->getTrace();
-            $traceLength = count($trace);
-            foreach ($exception->getTrace() as $i => $traceRecord) {
-                $html .= "\n";
-                $html .= $this->formatTraceRecord($traceRecord, $i, $traceLength) . '<br>';
-            }
+            $html .= $this->formatTraceRecord($traceRecord, $i, $traceLength).'<br>';
+        }
 //        }
         if ($previous = $exception->getPrevious()) {
             $html .= "\n";
@@ -132,6 +128,7 @@ EOT;
             $html .= "\n";
             $html .= $this->doFormat($previous);
         }
+
         return $html;
     }
 
@@ -148,7 +145,6 @@ EOT;
         );
     }
 
-
     /**
      * Return the error as plain text.
      */
@@ -157,9 +153,8 @@ EOT;
         return sprintf("Error %s\n%s", $error->getStatusCode(), $error->getMessage());
     }
 
-
     /**
-     * Render HTML error page
+     * Render HTML error page.
      *
      * @param \Throwable $error
      *
@@ -178,27 +173,29 @@ EOT;
 
         $title = 'Nano Application Error';
 //        if ($this->displayErrorDetails) {
-            $html = '<p>The application could not run because of the following error:</p>';
-            $html .= '<h2>Details</h2>';
+        $html = '<p>The application could not run because of the following error:</p>';
+        $html .= '<h2>Details</h2>';
+        $html .= $this->renderHtmlError($error);
+        while ($error = $error->getPrevious()) {
+            $html .= '<h2>Previous error</h2>';
             $html .= $this->renderHtmlError($error);
-            while ($error = $error->getPrevious()) {
-                $html .= '<h2>Previous error</h2>';
-                $html .= $this->renderHtmlError($error);
-            }
+        }
 //        } else {
 //            $html = '<p>A website error has occurred. Sorry for the temporary inconvenience.</p>';
 //        }
         $output = sprintf(
-            "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'>" .
-            "<title>%s</title><style>body{margin:0;padding:30px;font:12px/1.5 Helvetica,Arial,Verdana," .
-            "sans-serif;}h1{margin:0;font-size:40px;font-weight:normal;line-height:40px;}strong{" .
-            "display:inline-block;width:65px;}</style></head><body><h1>%s</h1>%s</body></html>",
+            "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'>".
+            '<title>%s</title><style>body{margin:0;padding:30px;font:12px/1.5 Helvetica,Arial,Verdana,'.
+            'sans-serif;}h1{margin:0;font-size:40px;font-weight:normal;line-height:40px;}strong{'.
+            'display:inline-block;width:65px;}</style></head><body><h1>%s</h1>%s</body></html>',
             $title,
             $title,
             $html
         );
+
         return $output;
     }
+
     /**
      * Render error as HTML.
      *
@@ -220,22 +217,22 @@ EOT;
             $html .= sprintf('<div><strong>File:</strong> %s</div>', $this->escapeHtml($file));
         }
         if (($line = $error->getLine())) {
-            $html .= sprintf('<div><strong>Line:</strong> %s</div>', (int)$line);
+            $html .= sprintf('<div><strong>Line:</strong> %s</div>', (int) $line);
         }
         //if (($trace = $error->getTraceAsString())) {
         if (($trace = $this->getTraceAsString($error->getTrace()))) {
             $html .= '<h2>Trace</h2>';
             $html .= sprintf('<pre>%s</pre>', $this->escapeHtml($trace));
         }
+
         return $html;
     }
-
 
     private function getTraceAsString(array $trace): string
     {
         $backtraceCode = '';
         foreach ($trace as $index => $step) {
-            $class = isset($step['class']) ? $step['class'] . $step['type'] : '';
+            $class = isset($step['class']) ? $step['class'].$step['type'] : '';
             $arguments = '';
             if (isset($step['args']) && is_array($step['args'])) {
                 foreach ($step['args'] as $argument) {
@@ -243,30 +240,28 @@ EOT;
                     if (is_object($argument)) {
                         $arguments .= get_class($argument);
                     } elseif (is_string($argument)) {
-                        $preparedArgument = (strlen($argument) < 100) ? $argument : substr($argument, 0, 50) . '…' . substr($argument, -50);
-                        $arguments .= '"' . $preparedArgument . '"';
+                        $preparedArgument = (strlen($argument) < 100) ? $argument : substr($argument, 0, 50).'…'.substr($argument, -50);
+                        $arguments .= '"'.$preparedArgument.'"';
                     } elseif (is_numeric($argument)) {
-                        $arguments .= (string)$argument;
+                        $arguments .= (string) $argument;
                     } elseif (is_bool($argument)) {
                         $arguments .= ($argument === true ? 'TRUE' : 'FALSE');
                     } elseif (is_array($argument)) {
-                        $arguments .= 'array|' . count($argument) . '|';
+                        $arguments .= 'array|'.count($argument).'|';
                     } else {
                         $arguments .= gettype($argument);
                     }
                 }
             }
-            $backtraceCode .= (count($trace) - $index) . ' ' . $class . $step['function'] . '(' . $arguments . ')' . PHP_EOL;
-            $backtraceCode .= '     ' . $step['file'] . '(' . $step['line'] . ')' . PHP_EOL;
+            $backtraceCode .= (count($trace) - $index).' '.$class.$step['function'].'('.$arguments.')'.PHP_EOL;
+            $backtraceCode .= '     '.$step['file'].'('.$step['line'].')'.PHP_EOL;
         }
+
         return $backtraceCode;
     }
 
-    
-
-
     /**
-     * Render JSON error
+     * Render JSON error.
      *
      * @param \Throwable $error
      *
@@ -278,22 +273,23 @@ EOT;
             'message' => 'Slim Application Error',
         ];
 //        if ($this->displayErrorDetails) {
-            $json['error'] = [];
-            do {
-                $json['error'][] = [
-                    'type' => get_class($error),
-                    'code' => $error->getCode(),
+        $json['error'] = [];
+        do {
+            $json['error'][] = [
+                    'type'    => get_class($error),
+                    'code'    => $error->getCode(),
                     'message' => $error->getMessage(),
-                    'file' => $error->getFile(),
-                    'line' => $error->getLine(),
-                    'trace' => explode("\n", $error->getTraceAsString())
+                    'file'    => $error->getFile(),
+                    'line'    => $error->getLine(),
+                    'trace'   => explode("\n", $error->getTraceAsString()),
                 ];
-            } while ($error = $error->getPrevious());
+        } while ($error = $error->getPrevious());
 //        }
         return json_encode($json, JSON_PRETTY_PRINT); //JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
     }
+
     /**
-     * Render XML error
+     * Render XML error.
      *
      * @param \Throwable $error
      *
@@ -304,32 +300,33 @@ EOT;
         $xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
         $xml .= "<errors>\n  <message>Slim Application Error</message>\n";
 //        if ($this->displayErrorDetails) {
-            do {
-                $xml .= "  <error>\n";
-                $xml .= "    <type>" . get_class($error) . "</type>\n";
-                $xml .= "    <code>" . $error->getCode() . "</code>\n";
-                $xml .= "    <message>" . $this->createCdataSection($error->getMessage()) . "</message>\n";
-                $xml .= "    <file>" . $error->getFile() . "</file>\n";
-                $xml .= "    <line>" . $error->getLine() . "</line>\n";
-                $xml .= "    <trace>" . $this->createCdataSection($error->getTraceAsString()) . "</trace>\n";
-                $xml .= "  </error>\n";
-            } while ($error = $error->getPrevious());
+        do {
+            $xml .= "  <error>\n";
+            $xml .= '    <type>'.get_class($error)."</type>\n";
+            $xml .= '    <code>'.$error->getCode()."</code>\n";
+            $xml .= '    <message>'.$this->createCdataSection($error->getMessage())."</message>\n";
+            $xml .= '    <file>'.$error->getFile()."</file>\n";
+            $xml .= '    <line>'.$error->getLine()."</line>\n";
+            $xml .= '    <trace>'.$this->createCdataSection($error->getTraceAsString())."</trace>\n";
+            $xml .= "  </error>\n";
+        } while ($error = $error->getPrevious());
 //        }
-        $xml .= "</errors>";
+        $xml .= '</errors>';
+
         return $xml;
     }
+
     /**
      * Returns a CDATA section with the given content.
      *
-     * @param  string $content
+     * @param string $content
+     *
      * @return string
      */
     private function createCdataSection(string $content): string
     {
         return sprintf('<![CDATA[%s]]>', str_replace(']]>', ']]]]><![CDATA[>', $content));
     }
-
-
 
     /**
      * Get the code of the exception that is currently being handled.
@@ -356,6 +353,7 @@ EOT;
             // ErrorExceptions wrap the php-error types within the 'severity' property
             $code = $this->translateErrorCode($exception->getSeverity());
         }
+
         return (string) $code;
     }
 
@@ -363,6 +361,7 @@ EOT;
      * Translate ErrorException code into the represented constant.
      *
      * @param int $error_code
+     *
      * @return string
      */
     private static function translateErrorCode($error_code): string
@@ -375,7 +374,7 @@ EOT;
                 }
             }
         }
-        return "E_UNKNOWN";
-    }
 
+        return 'E_UNKNOWN';
+    }
 }

@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Chiron\Middleware;
 
@@ -10,29 +11,24 @@ namespace Chiron\Middleware;
 
 // TODO : regarder ici : https://github.com/zendframework/zend-expressive-helpers/blob/master/src/BodyParams/BodyParamsMiddleware.php    +    https://github.com/zendframework/zend-expressive-helpers/blob/master/src/BodyParams/FormUrlEncodedStrategy.php  +    https://github.com/zendframework/zend-expressive-helpers/blob/master/src/BodyParams/JsonStrategy.php
 
-
-use Psr\Http\{
-    Message\ResponseInterface,
-    Message\ServerRequestInterface,
-    Server\MiddlewareInterface,
-    Server\RequestHandlerInterface
-};
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class ParsedBodyMiddleware implements MiddlewareInterface
 {
-
     /**
-     * Process request
+     * Process request.
      *
-     * @param ServerRequestInterface  $request  request
+     * @param ServerRequestInterface  $request request
      * @param RequestHandlerInterface $handler
      *
      * @return object ResponseInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (empty($request->getParsedBody()) && !in_array($request->getMethod(), ['GET','HEAD'])) {
-
+        if (empty($request->getParsedBody()) && !in_array($request->getMethod(), ['GET', 'HEAD'])) {
             $body = (string) $request->getBody();
             $mediaType = $this->getMediaType($request);
 
@@ -69,13 +65,13 @@ class ParsedBodyMiddleware implements MiddlewareInterface
                 }
             }
 
-/*
-//return (bool) preg_match('#^application/x-www-form-urlencoded($|[ ;])#', $contentType);
-            $this->registerMediaTypeParser('application/x-www-form-urlencoded', function ($input) {
-                parse_str($input, $data);
-                return $data;
-            });
-*/
+            /*
+            //return (bool) preg_match('#^application/x-www-form-urlencoded($|[ ;])#', $contentType);
+                        $this->registerMediaTypeParser('application/x-www-form-urlencoded', function ($input) {
+                            parse_str($input, $data);
+                            return $data;
+                        });
+            */
             $request = $request->withParsedBody($parsed);
         }
 
@@ -86,21 +82,20 @@ class ParsedBodyMiddleware implements MiddlewareInterface
      * Get request media type, if known.
      *
      * @param ServerRequestInterface $request request
-     * 
+     *
      * @return string|null The request media type, minus content-type params
      */
     // TODO : déplacer cettte méthode dans la classe ServerRequest ????
     private function getMediaType(ServerRequestInterface $request)
     {
         $parts = explode(';', $request->getHeaderLine('Content-Type'));
+
         return strtolower(trim(array_shift($parts)));
     }
 
-
-
     //************************************************
 
-    /**
+    /*
      * Parse the JSON response body and return an array
      *
      * @return array|string|int|bool|float
@@ -115,7 +110,7 @@ class ParsedBodyMiddleware implements MiddlewareInterface
         }
         return $data === null ? array() : $data;
     }*/
-    /**
+    /*
      * Parse the XML response body and return a \SimpleXMLElement.
      *
      * In order to prevent XXE attacks, this method disables loading external
@@ -150,7 +145,6 @@ class ParsedBodyMiddleware implements MiddlewareInterface
         return $xml;
     }*/
 
-
 /*
     protected function detectFormatByHeaders(HeaderCollection $headers)
     {
@@ -171,8 +165,7 @@ class ParsedBodyMiddleware implements MiddlewareInterface
     }
 */
 
-
-    /**
+    /*
      * Deserialize the XML body
      *
      * @param $body
@@ -199,8 +192,7 @@ class ParsedBodyMiddleware implements MiddlewareInterface
         return $array;
     }*/
 
-
-    /**
+    /*
      * Parse the XML response body and return a \SimpleXMLElement.
      *
      * In order to prevent XXE attacks, this method disables loading external
@@ -235,7 +227,6 @@ class ParsedBodyMiddleware implements MiddlewareInterface
         }
         return $xml;
     }*/
-
 
 /*
 // TODO : méthode pour détecter si c'est du JSON depuis le content type.

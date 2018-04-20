@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Chiron;
 
@@ -7,9 +8,7 @@ use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 
 /**
- *
  * Minimalist PSR-3 logger designed to write in stderr or any other stream.
- *
  */
 class Logger extends AbstractLogger
 {
@@ -31,7 +30,7 @@ class Logger extends AbstractLogger
     {
         // TODO : creer une methode assertLevel() qui fait le throw de l'exception si le ne level n'est pas correct.
         if (!isset(self::LEVELS[$minLevel])) {
-            throw new InvalidArgumentException('Invalid log level. Must be one of : ' . implode(', ', array_keys(self::LEVELS)));
+            throw new InvalidArgumentException('Invalid log level. Must be one of : '.implode(', ', array_keys(self::LEVELS)));
         }
         if (false === $this->handle = is_resource($output) ? $output : @fopen($output, 'a')) {
             throw new InvalidArgumentException(sprintf('Unable to open "%s".', $output));
@@ -41,11 +40,11 @@ class Logger extends AbstractLogger
         $this->minLevelIndex = self::LEVELS[$minLevel];
     }
 
-    public function log($level, $message, array $context = array())
+    public function log($level, $message, array $context = [])
     {
         // TODO : creer une methode assertLevel() qui fait le throw de l'exception si le ne level n'est pas correct.
         if (!isset(self::LEVELS[$level])) {
-            throw new InvalidArgumentException('Invalid log level. Must be one of : ' . implode(', ', array_keys(self::LEVELS)));
+            throw new InvalidArgumentException('Invalid log level. Must be one of : '.implode(', ', array_keys(self::LEVELS)));
         }
         if (self::LEVELS[$level] < $this->minLevelIndex) {
             return;
@@ -63,7 +62,7 @@ class Logger extends AbstractLogger
     private function format(string $level, string $message, array $context): string
     {
         if (false !== strpos($message, '{')) {
-            $replacements = array();
+            $replacements = [];
             foreach ($context as $key => $val) {
                 if (null === $val || is_scalar($val) || (\is_object($val) && method_exists($val, '__toString'))) {
                     $replacements["{{$key}}"] = $val;
@@ -77,6 +76,7 @@ class Logger extends AbstractLogger
             }
             $message = strtr($message, $replacements);
         }
+
         return sprintf('%s [%s] %s', date(\DateTime::RFC3339), strtoupper($level), $message);
     }
 }

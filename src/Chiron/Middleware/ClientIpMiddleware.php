@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Chiron\Middleware;
 
@@ -8,7 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class ClientIp implements MiddlewareInterface
+class ClientIpMiddleware implements MiddlewareInterface
 {
     /**
      * @var bool
@@ -43,8 +44,10 @@ class ClientIp implements MiddlewareInterface
     ) {
         $this->proxyIps = $ips;
         $this->proxyHeaders = $headers;
+
         return $this;
     }
+
     /**
      * To get the ip from a remote service.
      * Useful for testing purposes on localhost.
@@ -52,24 +55,30 @@ class ClientIp implements MiddlewareInterface
     public function remote(bool $remote = true): self
     {
         $this->remote = $remote;
+
         return $this;
     }
+
     /**
      * Set the attribute name to store client's IP address.
      */
     public function attribute(string $attribute): self
     {
         $this->attribute = $attribute;
+
         return $this;
     }
+
     /**
      * Process a server request and return a response.
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $ip = $this->getIp($request);
+
         return $handler->handle($request->withAttribute($this->attribute, $ip));
     }
+
     /**
      * Detect and return the ip.
      *
@@ -92,8 +101,10 @@ class ClientIp implements MiddlewareInterface
             // Found IP address via proxy-defined headers.
             return $proxiedIp;
         }
+
         return $localIp;
     }
+
     /**
      * Returns the IP address from remote service.
      *
@@ -109,6 +120,7 @@ class ClientIp implements MiddlewareInterface
             }
         }
     }
+
     /**
      * Returns the first valid proxied IP found.
      *
@@ -125,6 +137,7 @@ class ClientIp implements MiddlewareInterface
             }
         }
     }
+
     /**
      * Returns the remote address of the request, if valid.
      *
@@ -137,6 +150,7 @@ class ClientIp implements MiddlewareInterface
             return $server['REMOTE_ADDR'];
         }
     }
+
     /**
      * Returns the first valid ip found in the header.
      *
@@ -150,6 +164,7 @@ class ClientIp implements MiddlewareInterface
             }
         }
     }
+
     /**
      * Check that a given string is a valid IP address.
      */
@@ -158,23 +173,14 @@ class ClientIp implements MiddlewareInterface
         return filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6) !== false;
     }
 
-
-
-
-
-
-
-
-
-
-
-// TODO : voir si on peut réutiliser cette fonction !!!!
+    // TODO : voir si on peut réutiliser cette fonction !!!!
     //https://github.com/PrestaShop/PrestaShop/blob/ce881a124f8e6e2900396564f2c67f6dd4ebd65d/classes/Tools.php#L333
+
     /**
-    * Get the server variable REMOTE_ADDR, or the first ip of HTTP_X_FORWARDED_FOR (when using proxy)
-    *
-    * @return string $remote_addr ip of client
-    */
+     * Get the server variable REMOTE_ADDR, or the first ip of HTTP_X_FORWARDED_FOR (when using proxy).
+     *
+     * @return string $remote_addr ip of client
+     */
     public static function getRemoteAddr()
     {
         if (function_exists('apache_request_headers')) {
@@ -190,6 +196,7 @@ class ClientIp implements MiddlewareInterface
             || preg_match('/^192\.168\.*/i', trim($_SERVER['REMOTE_ADDR'])) || preg_match('/^10\..*/i', trim($_SERVER['REMOTE_ADDR'])))) {
             if (strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',')) {
                 $ips = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+
                 return $ips[0];
             } else {
                 return $_SERVER['HTTP_X_FORWARDED_FOR'];
@@ -199,8 +206,7 @@ class ClientIp implements MiddlewareInterface
         }
     }
 
-
-    /**
+    /*
      * Gets the client IP.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request Request used.
@@ -228,13 +234,4 @@ class ClientIp implements MiddlewareInterface
         // @codeCoverageIgnoreEnd
         return '';
     }*/
-
-
-
-
-
-
-
-
-
 }

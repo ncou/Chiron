@@ -1,18 +1,16 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Chiron\Middleware;
 
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-
+use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
-use Psr\Log\LogLevel;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
-
-use ErrorException;
+use Psr\Log\LogLevel;
 use Throwable;
 
 // TODO ; ajouter une description du middleware + ajouter de la phpdoc en entête des fonctions de la classe
@@ -40,7 +38,7 @@ final class LogExceptionMiddleware implements MiddlewareInterface
             E_USER_DEPRECATED   => LogLevel::NOTICE,
         ];
 
-// TODO : passer en paramétre le choix de l'utilisateur pour la map des levels, cad un tableau comme celui là $this->errorLevelMap et on fera un array_replace() sur ce tableau avec celui passé en paramétre par l'utilisateur, par défaut on mettra [].   Faire de même pour le callable qui formatera l'exception. 
+    // TODO : passer en paramétre le choix de l'utilisateur pour la map des levels, cad un tableau comme celui là $this->errorLevelMap et on fera un array_replace() sur ce tableau avec celui passé en paramétre par l'utilisateur, par défaut on mettra [].   Faire de même pour le callable qui formatera l'exception.
     public function __construct(LoggerInterface $logger)
     {
         $this->logger = $logger;
@@ -49,7 +47,7 @@ final class LogExceptionMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
-// TODO : à virer c'est un test !!!!!!!!!!!
+            // TODO : à virer c'est un test !!!!!!!!!!!
             //trigger_error("This event WILL fire", E_USER_ERROR);
             //throw new ErrorHandler($errstr, 0, $errno, $errfile, $errline);
 
@@ -57,17 +55,20 @@ final class LogExceptionMiddleware implements MiddlewareInterface
         } catch (ErrorException $e) {
             $level = $this->errorLevelMap[$e->getSeverity()];
             $this->logger->log($level, $this->formatException($e));
+
             throw $e;
         } catch (Throwable $e) {
             $this->logger->critical($this->formatException($e));
+
             throw $e;
         }
     }
 
     /**
-     * Create plain text response and return it as a string
+     * Create plain text response and return it as a string.
      *
      * @param Throwable $e
+     *
      * @return string
      */
     private function formatException(Throwable $e): string
@@ -84,6 +85,7 @@ final class LogExceptionMiddleware implements MiddlewareInterface
 
     /**
      * @param array $traces
+     *
      * @return string
      */
     private function formatExceptionTraces(array $traces): string
@@ -100,6 +102,7 @@ final class LogExceptionMiddleware implements MiddlewareInterface
                 $record['line'] ?? 0
             );
         }
+
         return $trace;
     }
 }

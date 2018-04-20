@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Chiron\Http\Factories;
 
@@ -15,21 +16,16 @@ namespace Chiron\Http\Factories;
 
 //https://github.com/Hail-Team/framework/blob/fcd26224a6d175458df249b74bf03c88b5321840/src/Http/Helpers.php
 
-
 //namespace Viserio\Component\HttpFactory;
 
-use Interop\Http\Factory\ServerRequestFactoryInterface;
-
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UploadedFileInterface;
+use Chiron\Http\ServerRequest;
+use Chiron\Http\Uri;
 //use Psr\Http\Message\UriInterface;
 
 //use UnexpectedValueException;
 
-
-use Chiron\Http\ServerRequest;
-use Chiron\Http\Stream;
-use Chiron\Http\Uri;
+use Interop\Http\Factory\ServerRequestFactoryInterface;
+use Psr\Http\Message\UploadedFileInterface;
 
 // basé sur : https://github.com/viserio/http-factory/blob/master/ServerRequestFactory.php
 
@@ -41,6 +37,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      * @var callable
      */
     private static $apacheRequestHeaders = 'apache_request_headers';
+
     /**
      * {@inheritdoc}
      */
@@ -77,9 +74,6 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         $_SERVER['REQUEST_URI'] = trim($_SERVER['REQUEST_URI'], '/');
 */
 
-
-
-
         // TODO : gérer le cas ou la fonction getallheader qui est un alias de apache n'est pas présente. Dans ce cas il faut itérer sur $_SERVER pour récupérer les headers !!!!
         // TODO : cf : https://github.com/slimphp/Slim/blob/3.x/Slim/Http/Headers.php#L54   et les polyfill : http://php.net/manual/fr/function.getallheaders.php   +   https://github.com/ralouphie/getallheaders/blob/master/src/getallheaders.php    +    http://php.net/manual/fr/function.apache-request-headers.php
 //        $headers = function_exists('getallheaders') ? getallheaders() : $this->marshalHeaders($server);
@@ -105,8 +99,6 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
                 }
         */
 
-
-
         // TODO : utiliser ce bout de code qui vient du framework FatFree ????
         /*
             if (function_exists('getallheaders')) {
@@ -131,18 +123,14 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             }
 */
 
-
-
-
         $uri = $this->marshalUriFromServer($server);
         // TODO : ilm manque un normalizeFiles directement dans le constructeur !!!!! => $files   = static::normalizeFiles($_FILES);
 
         //die(print_r($uri));
-        
 
         $method = isset($server['REQUEST_METHOD']) ? $server['REQUEST_METHOD'] : 'GET';
         $protocol = isset($server['SERVER_PROTOCOL']) ? str_replace('HTTP/', '', $server['SERVER_PROTOCOL']) : '1.1';
-        
+
         /*
                 preg_match('/^HTTP\/([\d.]+)$/', $_SERVER['SERVER_PROTOCOL'], $match);
                 $protocol = isset($match[1]) ? $protocol = $match[1] : '1.1';
@@ -151,8 +139,6 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         $body = 'php://input'; //new LazyOpenStream('php://input', 'r+');
 
         $serverRequest = new ServerRequest($method, $uri, $headers, $body, $protocol, $server);
-
-
 
         // per PSR-7: attempt to set the Host header from a provided URI if no Host header is provided (ensure it's set as the first header)
         // TODO : Methode 1 ou Methode 2 ????
@@ -170,7 +156,6 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
                 }
         */
 
-
         return $serverRequest
             ->withCookieParams($_COOKIE)
             ->withQueryParams($_GET)
@@ -182,6 +167,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      * Get a Uri populated with values from $_SERVER.
      *
      * @param array $server
+     *
      * @return UriInterface
      */
     public function marshalUriFromServer(array $server)
@@ -216,14 +202,15 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         if (!$hasQuery && isset($server['QUERY_STRING'])) {
             $uri = $uri->withQuery($server['QUERY_STRING']);
         }
+
         return $uri;
     }
 
-
     /**
-     * Marshal headers from $_SERVER
+     * Marshal headers from $_SERVER.
      *
      * @param array $server
+     *
      * @return array
      */
     public function marshalHeaders(array $server)
@@ -246,11 +233,12 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
                 continue;
             }
             if ($value && strpos($key, 'CONTENT_') === 0) {
-                $name = 'content-' . strtolower(substr($key, 8));
+                $name = 'content-'.strtolower(substr($key, 8));
                 $headers[$name] = $value;
                 continue;
             }
         }
+
         return $headers;
     }
 
@@ -333,36 +321,40 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      * Pre-processes and returns the $_SERVER superglobal.
      *
      * @param array $server
-     * @return array
      *
+     * @return array
      */
     // fix : https://support.deskpro.com/en/kb/articles/missing-authorization-headers-with-apache
     private function normalizeServer(array $server)
     {
         // This seems to be the only way to get the Authorization header on Apache
         $apacheRequestHeaders = self::$apacheRequestHeaders;
-        if (isset($server['HTTP_AUTHORIZATION']) || ! is_callable($apacheRequestHeaders)) {
+        if (isset($server['HTTP_AUTHORIZATION']) || !is_callable($apacheRequestHeaders)) {
             return $server;
         }
         //If HTTP_AUTHORIZATION does not exist tries to get it from "apache_request_headers()" when available.
         $headers = $apacheRequestHeaders();
         if (isset($headers['Authorization'])) {
             $server['HTTP_AUTHORIZATION'] = $headers['Authorization'];
+
             return $server;
         }
         if (isset($headers['authorization'])) {
             $server['HTTP_AUTHORIZATION'] = $headers['authorization'];
+
             return $server;
         }
+
         return $server;
     }
-
 
     /**
      * Return an UploadedFile instance array.
      *
      * @param array $files A array which respect $_FILES structure
+     *
      * @throws InvalidArgumentException for unrecognized values
+     *
      * @return array
      */
     public function normalizeFiles(array $files)
@@ -380,8 +372,10 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
                 throw new InvalidArgumentException('Invalid value in files specification');
             }
         }
+
         return $normalized;
     }
+
     /**
      * Create and return an UploadedFile instance from a $_FILES specification.
      *
@@ -389,6 +383,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      * delegate to normalizeNestedFileSpec() and return that return value.
      *
      * @param array $value $_FILES struct
+     *
      * @return array|UploadedFileInterface
      */
     private function createUploadedFileFromSpec(array $value)
@@ -396,6 +391,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         if (is_array($value['tmp_name'])) {
             return $this->normalizeNestedFileSpec($value);
         }
+
         return new UploadedFile(
             $value['tmp_name'],
             (int) $value['size'],
@@ -404,6 +400,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             $value['type']
         );
     }
+
     /**
      * Normalize an array of file specifications.
      *
@@ -411,6 +408,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      * UploadedFileInterface instances.
      *
      * @param array $files
+     *
      * @return UploadedFileInterface[]
      */
     private function normalizeNestedFileSpec(array $files = [])
@@ -426,6 +424,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             ];
             $normalizedFiles[$key] = $this->createUploadedFileFromSpec($spec);
         }
+
         return $normalizedFiles;
     }
 }

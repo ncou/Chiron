@@ -1,13 +1,12 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Chiron\Middleware;
-
 
 //github.com/middlewares/method-override/blob/master/src/MethodOverride.php
 //https://github.com/rstgroup/http-method-override
 //https://github.com/koolkode/http-komponent/blob/04106b00c0106f4838b1bee138c0f58d6a5b1a25/src/Filter/MethodOverrideFilter.php
-
 
 //https://github.com/geggleto/method-override/blob/master/src/MethodOverrideMiddleware.php
 //https://github.com/phapi/middleware-method-override/blob/master/src/Phapi/Middleware/MethodOverride/MethodOverride.php
@@ -18,36 +17,34 @@ namespace Chiron\Middleware;
 //https://github.com/koolkode/http-komponent/blob/master/src/Filter/MethodOverrideFilter.php
 //https://github.com/rstgroup/http-method-override
 
-
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-
 /**
- * Middleware HTTP Method Override
- *
+ * Middleware HTTP Method Override.
  */
 class MethodOverrideMiddleware implements MiddlewareInterface
 {
     /**
      * Handle the middleware pipeline call. This calls the next middleware
      * in the queue and after the rest of the middleware pipeline is done
-     * the response will be sent to the client
+     * the response will be sent to the client.
      *
-     * @param RequestInterface $request
+     * @param RequestInterface  $request
      * @param ResponseInterface $response
-     * @param callable $next
+     * @param callable          $next
+     *
      * @return ResponseInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
 
 // TODO : on devrait plutot utiliser un truc genre : strtoupper($request->getHeaderLine("X-Http-Method-Override"));
-        if ($request->hasHeader("X-Http-Method-Override")) {
-            if (!empty($request->getHeader("X-Http-Method-Override")[0])) {
-                $request = $request->withMethod($request->getHeader("X-Http-Method-Override")[0]);
+        if ($request->hasHeader('X-Http-Method-Override')) {
+            if (!empty($request->getHeader('X-Http-Method-Override')[0])) {
+                $request = $request->withMethod($request->getHeader('X-Http-Method-Override')[0]);
             }
         }
         if (strtoupper($request->getMethod()) == 'GET') {
@@ -66,10 +63,10 @@ class MethodOverrideMiddleware implements MiddlewareInterface
             }*/
         }
 
-// TODO : faire un throw HttpException 405 si la méthode override n'est pas correcte
+        // TODO : faire un throw HttpException 405 si la méthode override n'est pas correcte
 
         $response = $handler->handle($request);
+
         return $response;
     }
-
 }

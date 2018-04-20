@@ -1,12 +1,15 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 /**
- * Slim Framework (https://slimframework.com)
+ * Slim Framework (https://slimframework.com).
  *
  * @link      https://github.com/slimphp/Slim
+ *
  * @copyright Copyright (c) 2011-2017 Josh Lockhart
  * @license   https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
  */
+
 namespace Chiron\Handler\Strategies;
 
 use Psr\Http\Message\ResponseInterface;
@@ -37,9 +40,9 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
     ) {
         $parameters = $this->getParametersFromCallable($callable);
         $arguments = $this->bindAttributesWithParameters($parameters, $request);
+
         return call_user_func_array($callable, $arguments);
     }
-
 
     // Retrieve the parameter for the callable by Reflexion + store the controller name to use it later if we need to throw an exception and display the controller name
     private function getParametersFromCallable(callable $controller): array
@@ -91,7 +94,6 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
         return $arguments;
     }
 
-
     /**
      * Transform parameter to primitive.
      *
@@ -103,7 +105,7 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
     //protected function transformToPrimitive(string $parameter, string $type)
 
     /**
-     * cast the type of binding param
+     * cast the type of binding param.
      *
      * @param string $type  the type of param
      * @param mixed  $value the value of param
@@ -127,6 +129,7 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
                 $value = (float) $value;
                 break;
         }
+
         return $value;
     }
 }

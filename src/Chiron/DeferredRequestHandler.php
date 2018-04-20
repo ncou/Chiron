@@ -1,38 +1,40 @@
 <?php
+
 declare(strict_types=1);
 
 /**
- * Chiron Framework (https://chiron.com)
+ * Chiron Framework (https://chiron.com).
  *
  * @link      https://github.com/slimphp/Slim
+ *
  * @copyright Copyright (c) 2011-2017 Josh Lockhart
  * @license   https://github.com/slimphp/Slim/blob/3.x/LICENSE.md (MIT License)
  */
+
 namespace Chiron;
 
 //use Closure;
 
 // TODO : regarder aussi ici : https://github.com/silexphp/Silex/blob/master/src/Silex/CallbackResolver.php
 
+use Chiron\Handler\Strategies\RouteInvocationStrategy;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
-use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-
-use Chiron\Handler\Strategies\RouteInvocationStrategy;
 
 class DeferredRequestHandler implements RequestHandlerInterface
 {
     private $callable;
-    /** @var  ContainerInterface */
+    /** @var ContainerInterface */
     private $container;
 
     private $strategy;
 
     /**
      * DeferredMiddleware constructor.
-     * @param callable|string $callable
+     *
+     * @param callable|string    $callable
      * @param ContainerInterface $container
      */
     public function __construct($callable, ContainerInterface $container = null)
@@ -54,14 +56,12 @@ class DeferredRequestHandler implements RequestHandlerInterface
             $callable = $callable->bindTo($this->container);
         }*/
 
-
         // TODO : vérifier l'utilité !!!!!
         /*
                 if (is_array($callable) && is_callable([$callable[0], 'setContainer']) && $this->container instanceof ContainerInterface) {
                     $callable[0]->setContainer($this->container);
                 }
         */
-
 
         /*
                 if (method_exists($callable, 'setContainer') && $this->container instanceof ContainerInterface) {
@@ -71,7 +71,6 @@ class DeferredRequestHandler implements RequestHandlerInterface
 
         //$args = func_get_args();
         //return call_user_func_array($callable, $args);
-
 
         // execute the callable with the request as parameter (+ the strategy using reflection to match request attribute with the callable parameters)
         return call_user_func_array($this->strategy, [$callable, $request]);
@@ -87,10 +86,10 @@ class DeferredRequestHandler implements RequestHandlerInterface
      *
      * @param mixed $toResolve
      *
-     * @return callable
-     *
      * @throws RuntimeException if the callable does not exist
      * @throws RuntimeException if the callable is not resolvable
+     *
+     * @return callable
      */
     //https://github.com/slimphp/Slim/blob/4.x/Slim/CallableResolver.php#L47
     private function resolveCallable($toResolve)

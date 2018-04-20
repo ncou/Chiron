@@ -1,6 +1,7 @@
 <?php
 
 //namespace Equip\Dispatch;
+
 namespace Chiron\Tests\Utils;
 
 use Psr\Http\Message\ResponseInterface;
@@ -13,6 +14,7 @@ class HandlerProxy
      * @var RequestHandlerInterface
      */
     private $adaptee;
+
     /**
      * @param RequestHandlerInterface $adaptee
      */
@@ -20,6 +22,7 @@ class HandlerProxy
     {
         $this->adaptee = $adaptee;
     }
+
     /**
      * Process the request using a handler.
      *

@@ -1,8 +1,8 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 // TODO : AUTH service : https://github.com/harikt/expressive-auth   +   https://github.com/auraphp/Aura.Auth
-
 
 //TODO : stocker la réponse de base dans un objet : https://github.com/zendframework/zend-expressive/blob/release-2.2/src/Application.php#L101    "setResponsePrototype()"
 
@@ -23,44 +23,33 @@ namespace Chiron;
 // TODO : utiliser un service de ce style pour charger un fichier de configuration : https://github.com/igorw/ConfigServiceProvider/blob/master/src/Igorw/Silex/ConfigServiceProvider.php
 // TODO : utiliser eventuellement ce fichier : https://github.com/lokhman/silex-config/blob/master/src/Silex/Provider/ConfigServiceProvider.php
 
-
 // TODO : ajouter un faux cache : https://github.com/phapi/cache-nullcache
 
 //*****************************
 // TODO : regarder pour ajouter par défaut les middlewares dans la stack (à faire lorsqu'on va faire un run) sur le emitter/le requestHandler....etc : https://github.com/swoft-cloud/swoft-framework/blob/c105a87b667f06f01eddf0c17ff94f023008dae4/src/Web/DispatcherServer.php#L85
 //*****************************
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-
-use Psr\Http\Server\MiddlewareInterface;
-
-use Psr\Container\ContainerInterface;
-
-use Chiron\Routing\Router;
+use Chiron\Config\Config;
+use Chiron\Http\Response;
 use Chiron\Routing\Route;
-
-use Chiron\Container;
-
+use Chiron\Routing\Router;
 use Chiron\Stack\RequestHandlerStack;
-use Chiron\Stack\Utils\LazyLoadingMiddleware;
 use Chiron\Stack\Utils\CallableMiddlewareDecorator;
 use Chiron\Stack\Utils\CallableRequestHandlerDecorator;
-
-use Chiron\Config\Config;
-
-use Chiron\Http\Response;
-
-use InvalidArgumentException;
+use Chiron\Stack\Utils\LazyLoadingMiddleware;
 use Closure;
+use InvalidArgumentException;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
 
 class Application
 {
-
     //@{ Framework details
     const
-    PACKAGE='Chiron Framework',
-    VERSION='1.0.0';
+    PACKAGE = 'Chiron Framework';
+    const VERSION = '1.0.0';
     //@}
 
     /**
@@ -70,7 +59,7 @@ class Application
      */
     private $logger;
     /**
-     * Dependency injection container
+     * Dependency injection container.
      *
      * @var ContainerInterface
      */
@@ -84,11 +73,11 @@ class Application
 
     private $requestHandler;
 
- 
     /**
      * Load a configuration file into the application.
      *
-     * @param  string  $name
+     * @param string $name
+     *
      * @return void
      */
     //https://github.com/laravel/lumen-framework/blob/5.5/src/Application.php#L598
@@ -116,7 +105,7 @@ class Application
     // TODO : gérer aussi les tableaux de middleware, ainsi que les tableaux de tableaux de middlewares
     public function middleware($middlewares)
     {
-        if (! is_array($middlewares)) {
+        if (!is_array($middlewares)) {
             $middlewares = [$middlewares];
         }
 
@@ -138,9 +127,9 @@ class Application
     {
         if ($middleware instanceof MiddlewareInterface) {
             return $middleware;
-        } else if (is_callable($middleware)) {
+        } elseif (is_callable($middleware)) {
             return new CallableMiddlewareDecorator($middleware);
-        } else if (is_string($middleware) && $middleware !== '') {
+        } elseif (is_string($middleware) && $middleware !== '') {
             return new LazyLoadingMiddleware($this->container, $middleware);
         } else {
             throw new InvalidArgumentException(sprintf(
@@ -150,7 +139,6 @@ class Application
             ));
         }
     }
-
 
     /**
      * Configure whether to display PHP errors or silence them.
@@ -173,16 +161,15 @@ class Application
         ini_set('report_memleaks', $debug);
     }
 
-
     /********************************************************************************
      * Router helper methods
      *******************************************************************************/
 
     /**
-     * Add GET route
+     * Add GET route.
      *
-     * @param string $pattern  The route URI pattern
-     * @param callable|string  $handler The route callback routine
+     * @param string                                    $pattern    The route URI pattern
+     * @param callable|string                           $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
@@ -191,14 +178,16 @@ class Application
     {
         return $this->route($pattern, $handler, $middlewares)->method('GET');
     }
+
     /**
-     * Add HEAD route
+     * Add HEAD route.
      *
      * HEAD was added to HTTP/1.1 in RFC2616
      *
      * @link https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
-     * @param string $pattern  The route URI pattern
-     * @param callable|string  $handler The route callback routine
+     *
+     * @param string                                    $pattern    The route URI pattern
+     * @param callable|string                           $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
@@ -208,11 +197,12 @@ class Application
     {
         return $this->route($pattern, $handler, $middlewares)->method('HEAD');
     }
+
     /**
-     * Add POST route
+     * Add POST route.
      *
-     * @param string $pattern  The route URI pattern
-     * @param callable|string  $handler The route callback routine
+     * @param string                                    $pattern    The route URI pattern
+     * @param callable|string                           $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
@@ -221,11 +211,12 @@ class Application
     {
         return $this->route($pattern, $handler, $middlewares)->method('POST');
     }
+
     /**
-     * Add PUT route
+     * Add PUT route.
      *
-     * @param string $pattern  The route URI pattern
-     * @param callable|string  $handler The route callback routine
+     * @param string                                    $pattern    The route URI pattern
+     * @param callable|string                           $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
@@ -234,14 +225,16 @@ class Application
     {
         return $this->route($pattern, $handler, $middlewares)->method('PUT');
     }
+
     /**
-     * Add PATCH route
+     * Add PATCH route.
      *
      * PATCH was added to HTTP/1.1 in RFC5789
      *
      * @link http://tools.ietf.org/html/rfc5789
-     * @param string $pattern  The route URI pattern
-     * @param callable|string  $handler The route callback routine
+     *
+     * @param string                                    $pattern    The route URI pattern
+     * @param callable|string                           $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
@@ -250,11 +243,12 @@ class Application
     {
         return $this->route($pattern, $handler, $middlewares)->method('PATCH');
     }
+
     /**
-     * Add DELETE route
+     * Add DELETE route.
      *
-     * @param string $pattern  The route URI pattern
-     * @param callable|string  $callable The route callback routine
+     * @param string                                    $pattern    The route URI pattern
+     * @param callable|string                           $callable   The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
@@ -263,11 +257,12 @@ class Application
     {
         return $this->route($pattern, $handler, $middlewares)->method('DELETE');
     }
+
     /**
-     * Add OPTIONS route
+     * Add OPTIONS route.
      *
-     * @param string $pattern  The route URI pattern
-     * @param callable|string  $handler The route callback routine
+     * @param string                                    $pattern    The route URI pattern
+     * @param callable|string                           $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
@@ -279,10 +274,10 @@ class Application
     }
 
     /**
-     * Add route for any HTTP method
+     * Add route for any HTTP method.
      *
-     * @param string $pattern  The route URI pattern
-     * @param callable|string  $handler The route callback routine
+     * @param string                                    $pattern    The route URI pattern
+     * @param callable|string                           $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Slim\Interfaces\RouteInterface
@@ -295,10 +290,10 @@ class Application
     }
 
     /**
-     * Add route with multiple methods
+     * Add route with multiple methods.
      *
-     * @param string   $pattern  The route URI pattern
-     * @param RequestHandlerInterface|callable|string    $handler The route callback routine
+     * @param string                                    $pattern    The route URI pattern
+     * @param RequestHandlerInterface|callable|string   $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return RouteInterface
@@ -307,9 +302,9 @@ class Application
     // TODO : méthode à renommer en "route()" ????
     public function route(string $pattern, $handler, $middlewares = null) : Route
     {
-        if (! isset($middlewares)) {
+        if (!isset($middlewares)) {
             $middlewares = [];
-        } else if (! is_array($middlewares)) {
+        } elseif (!is_array($middlewares)) {
             $middlewares = [$middlewares];
         }
 
@@ -353,7 +348,7 @@ class Application
         // Track current base route
         $curBasePath = $this->getRouter()->getBasePath();
         // Build new base route string
-        $this->getRouter()->setBasePath($curBasePath . $prefix);
+        $this->getRouter()->setBasePath($curBasePath.$prefix);
         // Bind the $this var, to app instance.
         $closure = $closure->bindTo($this);
         //$callback = Closure::bind($closure, $this, get_class());
@@ -373,6 +368,7 @@ class Application
         //return $this->router;
         return $this->container->get('router');
     }
+
     /*
     // TODO : méthode à implémenter !!!!!!
         public function setRouter(RouterInterface $router)
@@ -384,8 +380,9 @@ class Application
     /*******************************************************************************
      * Container
      ******************************************************************************/
+
     /**
-     * Get container
+     * Get container.
      *
      * @return ContainerInterface|null
      */
@@ -393,37 +390,41 @@ class Application
     {
         return $this->container;
     }
+
     /**
-     * Set container
+     * Set container.
      *
      * @param ContainerInterface $container
-     * @return  Application  Returns itself to support chaining.
+     *
+     * @return Application Returns itself to support chaining.
      */
     // TODO : voir si on conserve cette méthode ?????
     public function setContainer(ContainerInterface $container)
     {
         $this->container = $container;
+
         return $this;
     }
-
 
     /*******************************************************************************
      * Logger
      ******************************************************************************/
     // TODO : on met le logger plutot dans le container ???? via un serviceRegister par exemple : https://github.com/slimphp/Slim/blob/3.x/Slim/DefaultServicesProvider.php
     // ou ici :
+
     /**
-     * Get logger
+     * Get logger.
      *
      * @return LoggerInterface
      */
     public function getLogger() : LoggerInterface
     {
         // If a logger hasn't been set, use NullLogger
-        if (! $this->logger instanceof LoggerInterface) {
-            $this->logger = new NullLogger;
+        if (!$this->logger instanceof LoggerInterface) {
+            $this->logger = new NullLogger();
             //$this->logger = new \Logger();
         }
+
         return $this->logger;
     }
 
@@ -431,11 +432,13 @@ class Application
      * Sets logger.
      *
      * @param LoggerInterface $logger
-     * @return  Application  Returns itself to support chaining.
+     *
+     * @return Application Returns itself to support chaining.
      */
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
+
         return $this;
     }
 
@@ -477,8 +480,9 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
      * Calling a non-existant method on App checks to see if there's an item
      * in the container that is callable and if so, calls it.
      *
-     * @param  string $method
-     * @param  array $args
+     * @param string $method
+     * @param array  $args
+     *
      * @return mixed
      */
     //https://github.com/slimphp/Slim/blob/3.x/Slim/App.php#L117
@@ -498,11 +502,9 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     // TODO : regarder les méthodes magiques qu'il manque : https://github.com/ncou/klein.php-container-services-router/blob/master/src/Klein/ServiceProvider.php#L412
     // __set / __unset
 
-
     /*******************************************************************************
      * Constructor
      ******************************************************************************/
-
 
     /**
      * Instantiate a new Application.
@@ -516,10 +518,10 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     { //, ContainerInterface $container = null){
 
         //$this->router = new Router();
-      
+
         $this->container = new Container();
 
-        $this->container->bind('router', function($c) {
+        $this->container->bind('router', function ($c) {
             return new Router();
         });
 
@@ -533,17 +535,13 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
             // TODO : passer le charset + version http 1.1 par défaut à cette réponse !!!!
             //$this->container['charset'] et $this->container['httpVersion']
             $response = new Response();
+
             return $response;
         });
 
         $this->requestHandler = new RequestHandlerStack($emptyResponse);
 
         //$this->factory = new MiddlewareFactory($this->container);
-
-
-        
-
-
 
         //$this->loadConfig($config_path_or_file_or_array, $config_cache_file);
 
@@ -561,16 +559,11 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
             };
         */
 
-
-
-
         /*
             $this['router'] = function ($c) {
                 return new Router($c->get('basePath'), $this->container);
             };
         */
-
-
 
         // Create request class closure.
         /*
@@ -579,11 +572,10 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
             };
         */
 
-
         // TODO : à virer car maintenant la réponse est créée directement dans le controler. il faudrait plutot utiliser une ResponseFactory appellé directement dans le controller !!!
         // TODO : vérifier l'utilité de créer cette response ici !!!!! normalement chaque controller ou errorhandler va créer une nouvelle response...
         $this->container['response'] = function ($c) {
-      
+
         //$headers = new Headers(['Content-Type' => 'text/html; charset=UTF-8']);
             //$response = new Response(200, $headers);
             //return $response->withProtocolVersion($container->get('settings')['httpVersion']);
@@ -597,9 +589,8 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
             return $response;
         };
 
-
         // TODO : initialiser un logger ici ???? et éventuellement créer une propriété pour changer le formater dans la restitution de la log. cf nanologger et la liste des todo pour mettre un formater custom à passer en paramétre du constructeur !!!!
-    
+
         // register the not found route exception
         $this->container['404notFoundHandler'] = function ($c) {
             return function ($request, $response, $e) use ($c) {
@@ -630,18 +621,17 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $this->container['errorHandler'] = function ($c) {
             return function ($request, $response, $e) use ($c) {
                 // TODO : corriger la méthode "expectsJson()"
-            
+
 //                  if ($request->expectsJson()) {
 //                $response->setStatusCode(500)
 //                  ->addHeader('Content-Type', 'application/json')
 //                    ->setBody(json_encode(['status_code'   => $e->getCode(), 'reason_phrase' => $e->getMessage()]));
 //                } else {
-            
 
                 // TODO : penser à récupérer le charset déclaré dans le container, et le passer à la response !!!!
                 return $response->withStatus(502)
                     //->withHeader('Content-Type', 'text/html')
-                    ->setBody("Exception1: "."Code: ({$e->getCode()}); Message: ({$e->getMessage()}); in file: {$e->getFile()} [line: {$e->getLine()}]");
+                    ->setBody('Exception1: '."Code: ({$e->getCode()}); Message: ({$e->getMessage()}); in file: {$e->getFile()} [line: {$e->getLine()}]");
                 //->setBody('Something went wrong!');
             //    }
                 //return $response;
@@ -651,24 +641,22 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $this->container['phpErrorHandler'] = function ($c) {
             return function (ServerRequestInterface $request, ResponseInterface $response, \Throwable $e) use ($c) {
                 // TODO : corriger la méthode "expectsJson()"
-            
+
 //                  if ($request->expectsJson()) {
 //                $response->setStatusCode(500)
 //                  ->addHeader('Content-Type', 'application/json')
 //                    ->setBody(json_encode(['status_code'   => $e->getCode(), 'reason_phrase' => $e->getMessage()]));
 //                } else {
-            
 
                 // TODO : penser à récupérer le charset déclaré dans le container, et le passer à la response !!!!
                 return $response->withStatus(551)
                     //->withHeader('Content-Type', 'text/html')
-                    ->setBody("Exception2: "."Code: ({$e->getCode()}); Message: ({$e->getMessage()}); in file: {$e->getFile()} [line: {$e->getLine()}]"); //$e->getTraceAsString()
+                    ->setBody('Exception2: '."Code: ({$e->getCode()}); Message: ({$e->getMessage()}); in file: {$e->getFile()} [line: {$e->getLine()}]"); //$e->getTraceAsString()
                     //->setBody('Something went wrong!');
             //    }
                 //return $response;
             };
         };
-
 
         /*
             $this->container['callableResolver'] = function ($container) {
@@ -676,24 +664,19 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
             };
         */
 
-
-
         //        $this->container['debug'] = false;
 //        $this->container['charset'] = 'UTF-8';
 //        $this->container['httpVersion'] = '1.1';
 //        $this->container['logger'] = null;
-
 
         // TODO : il faut s'assurer que le charset est bien propagé dans la création de la response !!!! et mettre en minuscule cette valeur !!!!!
         $this->container['charset'] = 'UTF-8';
         $this->container['httpVersion'] = '1.1';
         $this->container['basePath'] = '';
 
-
         foreach ($values as $key => $value) {
             $this->container[$key] = $value;
         }
-
 
         //$router->setBasePath($request->getUri()->getBasePath());
         //$this->basePath = $this->container['basePath'];
@@ -703,7 +686,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
         // initialise the Router constructor
     //parent::__construct($this->basePath, $this->container);
-
 
 /*
 //https://github.com/laravel/lumen-framework/blob/5.5/src/Application.php#L91
@@ -719,7 +701,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     //$this->basePath = $this['basePath'];
 
     //$this['router']->setBasePath($this->basePath);
-
 
 /*
     if (isset($settings['charset']))
@@ -738,9 +719,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         Kohana::$base_url = rtrim($settings['base_url'], '/').'/';
     }
 */
-
-
-
 
 /*
 // TODO : regarder cette initialisation trouvée dans le framework de FatFree !!!!
@@ -778,13 +756,8 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
   register_shutdown_function([$this,'unload'],getcwd());
 */
 
-
-
 //      $this->registerPhpErrorHandling();
     }
-
-
-
 
     //! Prohibit cloning
     // TODO : vérifier l'utilité de cette fonction
@@ -795,6 +768,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
     /**
      * @throws LogicException If trying to clone an instance of a singleton.
+     *
      * @return void
      */
     /*
@@ -810,6 +784,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     */
     /**
      * @throws LogicException If trying to unserialize an instance of a singleton.
+     *
      * @return void
      */
     /*
@@ -823,8 +798,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         );
     }
     */
-
-
 
     /*******************************************************************************
      * Run App
@@ -858,10 +831,9 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
         return $response;
 
-
         //'text/plain; q=0.5, application/json; version=1.0, application/xml; version=2.0;'
 //'text/plain;q=0.5,text/html,text/*;q=0.1'
-       
+
 /*
         $request = $request->withHeader('Accept','text/plain; q=0.5, application/json; version=1.0, application/xml; version=2.0;');
         die(print_r($request->getAcceptableContentTypes()));
@@ -870,8 +842,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         die(print_r($request->getAcceptableLanguages()));
 */
 
-
-   
 /*
       if ($response->isSuccessful() && $this->requestIsConditional()) {
             if (! $response->headers->has('ETag')) {
@@ -911,14 +881,15 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
             date_default_timezone_set($config['php.timezone']);
         }
     }
+
     /**
-     * Set PHP configuration settings
+     * Set PHP configuration settings.
      *
-     * @param  array $settings
-     * @param  string $prefix Key prefix to prepend to array values (used to map . separated INI values)
+     * @param array  $settings
+     * @param string $prefix   Key prefix to prepend to array values (used to map . separated INI values)
+     *
      * @return Zend_Application
      */
-
     private function setPhpSettings(array $settings)
     {
         foreach ($settings as $key => $value) {
@@ -926,14 +897,15 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
                 //ini_set($key, $value);
             }
         }
+
         return $this;
     }
 
     /**
-         * The base path of the application installation.
-         *
-         * @var string
-         */
+     * The base path of the application installation.
+     *
+     * @var string
+     */
     //protected $basePath;
     /**
      * Get the path to the application "app" directory.
@@ -950,10 +922,10 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     /**
      * Get the base path for the application.
      *
-     * @param  string|null  $path
+     * @param string|null $path
+     *
      * @return string
      */
-
     public function basePath($path = null)
     {
         if (isset($this->basePath)) {
@@ -964,35 +936,32 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         return '/';
     }
 
-
-
     //https://github.com/Kajna/K-Core/blob/master/Core/Util/Util.php#L21
+
     /**
      * Get site base url.
      *
      * @param string $path
+     *
      * @return string
      */
     public static function base($path = '')
     {
         // Check for cached version of base path
         if (null !== self::$base) {
-            return self::$base . $path;
+            return self::$base.$path;
         }
         if (isset($_SERVER['HTTP_HOST'])) {
             $base_url = isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off' ? 'https' : 'http';
-            $base_url .= '://' . $_SERVER['HTTP_HOST'];
+            $base_url .= '://'.$_SERVER['HTTP_HOST'];
             $base_url .= str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
             self::$base = $base_url;
-            return $base_url . $path;
+
+            return $base_url.$path;
         }
+
         return '';
     }
-
-
-    
-
-
 
     // TODO : dans un fichier séparé genre define.php :
 
@@ -1021,5 +990,4 @@ $aliases = [
 ];
 App::setAliases($aliases);
 */
-
 }

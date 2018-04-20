@@ -1,15 +1,14 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 // TODO : créer une classe RouteResult() au lieu de retourner un tableau avec FOUNT / NOT_FOUND / METHOD_NOT_ALLOWED : https://github.com/zendframework/zend-expressive-router/blob/master/src/RouteResult.php
 
 // TODO : créer une interface : https://github.com/zendframework/zend-expressive-router/blob/master/src/RouterInterface.php
 
-
 // TODO : regarder ici pour gérer les doublons de routes, et lever une exception si on essaye de redéclarer une route !!!!   https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Router.php#L66
 
 // TODO réfléchir si il faut encoder et décoder les url via un rawurlencode/decode pour s'assurer que les caractéres genre "espace => %20" sont bien gérés
-
 
 // TODO regarder le router de cake : https://book.cakephp.org/3.0/fr/development/routing.html
 /*
@@ -37,7 +36,6 @@ $routes->connect(
 
 */
 
-
 namespace Chiron\Routing;
 
 // TODO : utiliser un systéme de cache avec un serialize/unserialize pour charger les routes en cache : https://github.com/symfony/routing/blob/master/Route.php#L68
@@ -51,11 +49,8 @@ namespace Chiron\Routing;
 
 // TODO : ajouter une propriété pour gérer les url de maniére non-case sensitive : https://github.com/mastacontrola/AltoRouter/blob/master/AltoRouter.php#L541
 
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
 use Psr\Http\Server\RequestHandlerInterface;
-
 use RuntimeException;
 
 /**
@@ -117,22 +112,24 @@ class Router
 */
 
     /**
-     * Reversed routing
+     * Reversed routing.
      *
      * Generate the URL for a named route. Replace regexes pattern with supplied substitutions
      *
-     * @param string $name Route name.
-     * @param array $substitutions Key/value pairs to substitute into the route pattern.
-     * @return string URI path generated.
+     * @param string $name          Route name.
+     * @param array  $substitutions Key/value pairs to substitute into the route pattern.
+     *
      * @throws Exception\RuntimeException if the route name is not known
-     *     or a parameter value does not match its regex.
+     *                                    or a parameter value does not match its regex.
+     *
+     * @return string URI path generated.
      */
     public function generateUri(string $routeName, array $substitutions = []): string
     {
-// TODO : la méthode getNamedRoute retourne déjà une exception si la route n'existe pas !!! code à virer ? ou alors il faut modifier le getNamedRoute() pour qu'il retourne vide au lieu d'une exception ????
+        // TODO : la méthode getNamedRoute retourne déjà une exception si la route n'existe pas !!! code à virer ? ou alors il faut modifier le getNamedRoute() pour qu'il retourne vide au lieu d'une exception ????
         // Check if named route exists
         if (!$this->hasRoute($routeName)) {
-            throw new RuntimeException;
+            throw new RuntimeException();
         }
 
         $route = $this->getNamedRoute($routeName);
@@ -230,18 +227,19 @@ class Router
         foreach ($params as $key => $value) {
             //preg_match includes matches twice: once by their name, and once with the numeric index.
             // So we ignore the numeric keys since all the required params are named
-            if (! is_int($key)) {
+            if (!is_int($key)) {
                 $defaults[$key] = $value;
             }
         }
+
         return $defaults;
     }
 
     /**
-     * Add route with multiple methods (by defaul accept any HTTP method)
+     * Add route with multiple methods (by defaul accept any HTTP method).
      *
-     * @param  string   $pattern  The route URI pattern
-     * @param  RequestHandlerInterface    $handler The route callback routine
+     * @param string                  $pattern The route URI pattern
+     * @param RequestHandlerInterface $handler The route callback routine
      *
      * @return RouteInterface
      */
@@ -249,9 +247,9 @@ class Router
     public function map(string $pattern, RequestHandlerInterface $handler)
     {
         //TODO : lever une exception si on redéclare une route (tester aussi en passant par le group si il est possible de redéclarer une route !!!!) : https://github.com/mastacontrola/AltoRouter/blob/master/AltoRouter.php#L328
-        
+
         //$route = new Route($this->prefix . $pattern, $target);
-        $route = new Route($this->basePath . $pattern, $handler);
+        $route = new Route($this->basePath.$pattern, $handler);
         // TODO : on devrait plutot faire un array_unshift($this->routes, $route);  pour que la derniére route soit au début du tableau, dans le cas ou il y a plusieurs route c'est la 1ere trouvée qui gagne, donc autant mettre la derniére le plus haut dans le tableau
         //$this->routes[] = $route;
         // add the route at the top of the array (and not at the end of the array), => in case there is multiple same routes, it's the last route added who will win (in the foreach when searching the first matching route).
@@ -261,9 +259,10 @@ class Router
     }
 
     /**
-     * Check if a route with a specific name exists
+     * Check if a route with a specific name exists.
      *
-     * @param  string $name
+     * @param string $name
+     *
      * @return bool true if route exists
      */
     // TODO : regarder ici comment c'est fait : https://github.com/zendframework/zend-router/blob/master/src/SimpleRouteStack.php#L214
@@ -272,6 +271,7 @@ class Router
         $routes = array_filter($this->routes, function ($route) use ($name) {
             return $route->getName() === $name;
         });
+
         return count($routes) > 0;
     }
 
@@ -279,6 +279,7 @@ class Router
      * Get a route by name. First route found win !!!
      *
      * @param string $name
+     *
      * @return RouteInterface the route
      */
     // TODO : renommer en getRoute($name) ????
@@ -298,7 +299,7 @@ class Router
             }
         }
         // TODO : il faudrait pas plutot retourner null si la route n'est pas trouvée plutot qu'une exception ???? si c'est la cas utiliser directement la même méthode que le hasRoute et faire un return au lieu du count !!!!
-        throw new RuntimeException('Named route does not exist for name: ' . $name);
+        throw new RuntimeException('Named route does not exist for name: '.$name);
     }
 
     // TODO : ajouter une méthode "removeNamedRoute" ????
@@ -313,7 +314,7 @@ class Router
         return $this->routes;
     }
 
-    /**
+    /*
      * Determine if the route is duplicated in the current list.
      *
      * Checks if a route with the same name or path exists already in the list;
@@ -353,7 +354,7 @@ class Router
         }
     }*/
 
-    /**
+    /*
      * Delete the cache file
      *
      * @access public

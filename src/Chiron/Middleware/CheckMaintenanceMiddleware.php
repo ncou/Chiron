@@ -20,29 +20,27 @@ https://github.com/ladybirdweb/momo-email-listener/blob/master/vendor/laravel/fr
 https://github.com/jimrubenstein/laravel-framework/blob/master/src/Illuminate/Foundation/Http/Middleware/CheckForMaintenanceMode.php
 */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Chiron\Middleware;
 
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
-use Psr\Container\ContainerInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class CheckMaintenanceMiddleware implements MiddlewareInterface
 {
     /**
-     * Dependency injection container
+     * Dependency injection container.
      *
      * @var ContainerInterface
      */
     private $container;
 
     /**
-     * Set container
+     * Set container.
      *
      * @param ContainerInterface $container
      */
@@ -80,7 +78,6 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
 
 */
 
-
         //if ($this->app->isDownForMaintenance() && !in_array($this->request->getClientIp(), ['86.10.190.248', '86.4.7.24']))
         $config = $this->container->config;
         if ($config['settings.isDownForMaintenance']) {
@@ -94,9 +91,6 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
 
             throw new ServiceUnavailableHttpException($retryAfter);
         }
-
-
-
 
         /*
         //https://github.com/juliangut/janitor/blob/master/src/Handler/Render.php#L65
@@ -114,15 +108,10 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
                     ->withBody($body);
         */
 
-
-
         return $handler->handle($request);
     }
 
-
-
-
-    /**
+    /*
      * Create an HTTP date (RFC 1123 / RFC 822) formatted UTC date-time string
      *
      * @param string|integer|\DateTime $value Date time value
@@ -135,7 +124,7 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
         return $this->dateFormatter($value, 'D, d M Y H:i:s \G\M\T');
     }*/
 
-    /**
+    /*
      * Perform the actual DateTime formatting
      *
      * @param int|string|\DateTime $dateTime Date time value

@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 //https://github.com/slimphp/Slim/blob/3.x/Slim/Handlers/NotFound.php
 
@@ -7,8 +8,6 @@ namespace Chiron\Handler;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
-use Psr\Http\Server\RequestHandlerInterface;
 
 class NotFoundHandler extends AbstractExceptionHandler
 {
