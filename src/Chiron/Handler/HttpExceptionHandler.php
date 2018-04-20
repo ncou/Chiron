@@ -60,7 +60,7 @@ class HttpExceptionHandler extends AbstractExceptionHandler
                 break;
                 // TODO : gérer le cas : 'text/plain' avec la même chose que le html mais sans les balises html...
             default:
-                throw new UnexpectedValueException('Cannot render unknown content type '.$contentType);
+                throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType);
         }
 
         return $body;
@@ -88,25 +88,25 @@ class HttpExceptionHandler extends AbstractExceptionHandler
         }
 
         return sprintf(
-            '<html>'.
-            '   <head>'.
-            "       <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>".
-            '       <title>%s</title>'.
-            '       <style>'.
-            '           body{margin:0;padding:20px;font-family:Helvetica,Arial,Verdana,sans-serif;font-size:15px;line-height:1.5em}'.
-            '           h1{margin:0;font-size:40px;font-weight:normal;line-height:40px;padding-bottom: 10px;border-bottom:1px solid #eee}'.
-            '           p.lead{font-size:22px}'.
-            '           strong{display:inline-block;width:85px}'.
-            '           table{border-spacing:0;border-collapse:collapse}'.
-            '           table tbody tr td{padding:8px;line-height:1.5em;vertical-align:middle;border-top:1px solid #ddd;font-family:monospace}'.
-            '           table>tbody>tr:nth-child(odd)>td{background-color:#f9f9f9}'.
-            '       </style>'.
-            '   </head>'.
-            '   <body>'.
-            '       <h1>%s</h1>'.
-            '       <div>%s</div>'.
-            "       <a href='#' onClick='window.history.go(-1)'>Go Back</a>".
-            '   </body>'.
+            '<html>' .
+            '   <head>' .
+            "       <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>" .
+            '       <title>%s</title>' .
+            '       <style>' .
+            '           body{margin:0;padding:20px;font-family:Helvetica,Arial,Verdana,sans-serif;font-size:15px;line-height:1.5em}' .
+            '           h1{margin:0;font-size:40px;font-weight:normal;line-height:40px;padding-bottom: 10px;border-bottom:1px solid #eee}' .
+            '           p.lead{font-size:22px}' .
+            '           strong{display:inline-block;width:85px}' .
+            '           table{border-spacing:0;border-collapse:collapse}' .
+            '           table tbody tr td{padding:8px;line-height:1.5em;vertical-align:middle;border-top:1px solid #ddd;font-family:monospace}' .
+            '           table>tbody>tr:nth-child(odd)>td{background-color:#f9f9f9}' .
+            '       </style>' .
+            '   </head>' .
+            '   <body>' .
+            '       <h1>%s</h1>' .
+            '       <div>%s</div>' .
+            "       <a href='#' onClick='window.history.go(-1)'>Go Back</a>" .
+            '   </body>' .
             '</html>',
             $this->escapeHtml($title),
             $this->escapeHtml($title),
@@ -195,12 +195,12 @@ class HttpExceptionHandler extends AbstractExceptionHandler
 //        if ($this->displayErrorDetails) {
         do {
             $xml .= "  <error>\n";
-            $xml .= '    <type>'.get_class($error)."</type>\n";
-            $xml .= '    <code>'.$error->getCode()."</code>\n";
-            $xml .= '    <message>'.$this->createCdataSection($error->getMessage())."</message>\n";
-            $xml .= '    <file>'.$error->getFile()."</file>\n";
-            $xml .= '    <line>'.$error->getLine()."</line>\n";
-            $xml .= '    <trace>'.$this->createCdataSection($error->getTraceAsString())."</trace>\n";
+            $xml .= '    <type>' . get_class($error) . "</type>\n";
+            $xml .= '    <code>' . $error->getCode() . "</code>\n";
+            $xml .= '    <message>' . $this->createCdataSection($error->getMessage()) . "</message>\n";
+            $xml .= '    <file>' . $error->getFile() . "</file>\n";
+            $xml .= '    <line>' . $error->getLine() . "</line>\n";
+            $xml .= '    <trace>' . $this->createCdataSection($error->getTraceAsString()) . "</trace>\n";
             $xml .= "  </error>\n";
         } while ($error = $error->getPrevious());
 //        }

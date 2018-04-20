@@ -79,7 +79,7 @@ class RouteResult
      *
      * @param array $params Parameters associated with the matched route, if any.
      */
-    public static function fromRoute(Route $route, array $params = []) : self
+    public static function fromRoute(Route $route, array $params = []): self
     {
         $result = new self();
         $result->success = true;
@@ -95,7 +95,7 @@ class RouteResult
      * @param null|array $methods HTTP methods allowed for the current URI, if any.
      *                            null is equivalent to allowing any HTTP method; empty array means none.
      */
-    public static function fromRouteFailure(?array $methods) : self
+    public static function fromRouteFailure(?array $methods): self
     {
         $result = new self();
         $result->success = false;
@@ -107,7 +107,7 @@ class RouteResult
     /**
      * Does the result represent successful routing?
      */
-    public function isSuccess() : bool
+    public function isSuccess(): bool
     {
         return $this->success;
     }
@@ -148,7 +148,7 @@ class RouteResult
      *
      * Guaranted to return an array, even if it is simply empty.
      */
-    public function getMatchedParams() : array
+    public function getMatchedParams(): array
     {
         return $this->matchedParams;
     }
@@ -156,7 +156,7 @@ class RouteResult
     /**
      * Is this a routing failure result?
      */
-    public function isFailure() : bool
+    public function isFailure(): bool
     {
         return !$this->success;
     }
@@ -164,7 +164,7 @@ class RouteResult
     /**
      * Does the result represent failure to route due to HTTP method?
      */
-    public function isMethodFailure() : bool
+    public function isMethodFailure(): bool
     {
         if ($this->isSuccess() || $this->allowedMethods === self::HTTP_METHOD_ANY) {
             return false;
@@ -178,7 +178,7 @@ class RouteResult
      *
      * @return null|string[] HTTP methods allowed
      */
-    public function getAllowedMethods() : ?array
+    public function getAllowedMethods(): ?array
     {
         if ($this->isSuccess()) {
             return $this->route

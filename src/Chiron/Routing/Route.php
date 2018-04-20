@@ -140,14 +140,14 @@ class Route implements RequestHandlerInterface
 
                 //Older versions of PCRE require the 'P' in (?P<named>)
                 $pattern = '(?:'
-                        .($pre !== '' ? $pre : null)
-                        .'('
-                        .($param !== '' ? "?P<$param>" : null)
-                        .$type
-                        .')'
-                        .$optional
-                        .')'
-                        .$optional;
+                        . ($pre !== '' ? $pre : null)
+                        . '('
+                        . ($param !== '' ? "?P<$param>" : null)
+                        . $type
+                        . ')'
+                        . $optional
+                        . ')'
+                        . $optional;
 
                 $route = str_replace($block, $pattern, $route);
             }
@@ -180,7 +180,7 @@ class Route implements RequestHandlerInterface
                 if (isset($substitutions[$param])) {
                     $url = str_replace($block, $substitutions[$param], $url);
                 } elseif ($optional) {
-                    $url = str_replace($pre.$block, '', $url);
+                    $url = str_replace($pre . $block, '', $url);
                 }
             }
         }

@@ -73,7 +73,7 @@ class Message
       // TODO : vérifier l'utilité de conserver ce contrôle !!!!!!!! et donc le tableau de constantes correspondant en début de classe.
         // TODO : utiliser plutot ce controle : https://github.com/zendframework/zend-diactoros/blob/fb7f06e1b78c2aa17d08f30633bb2fa337428182/src/MessageTrait.php#L357
         if (!isset(self::$validProtocolVersions[$version])) {
-            throw new InvalidArgumentException('Invalid HTTP version. Must be one of: '.implode(', ', array_keys(self::$validProtocolVersions)));
+            throw new InvalidArgumentException('Invalid HTTP version. Must be one of: ' . implode(', ', array_keys(self::$validProtocolVersions)));
         }
 
         /*
@@ -448,8 +448,8 @@ class Message
         if (!is_string($stream) && !is_resource($stream)) {
             throw new InvalidArgumentException(
                 'Stream must be a string stream resource identifier, '
-                .'an actual stream resource, '
-                .'or a Psr\Http\Message\StreamInterface implementation'
+                . 'an actual stream resource, '
+                . 'or a Psr\Http\Message\StreamInterface implementation'
             );
         }
 

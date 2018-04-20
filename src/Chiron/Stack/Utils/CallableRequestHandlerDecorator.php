@@ -51,7 +51,7 @@ final class CallableRequestHandlerDecorator implements RequestHandlerInterface
      * @throws Exception\MissingResponseException if the decorated middleware
      *                                            fails to produce a response.
      */
-    public function handle(ServerRequestInterface $request) : ResponseInterface
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         //return ($this->middleware)($request, $handler);
         return call_user_func($this->handler, $request);

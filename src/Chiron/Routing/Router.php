@@ -249,7 +249,7 @@ class Router
         //TODO : lever une exception si on redéclare une route (tester aussi en passant par le group si il est possible de redéclarer une route !!!!) : https://github.com/mastacontrola/AltoRouter/blob/master/AltoRouter.php#L328
 
         //$route = new Route($this->prefix . $pattern, $target);
-        $route = new Route($this->basePath.$pattern, $handler);
+        $route = new Route($this->basePath . $pattern, $handler);
         // TODO : on devrait plutot faire un array_unshift($this->routes, $route);  pour que la derniére route soit au début du tableau, dans le cas ou il y a plusieurs route c'est la 1ere trouvée qui gagne, donc autant mettre la derniére le plus haut dans le tableau
         //$this->routes[] = $route;
         // add the route at the top of the array (and not at the end of the array), => in case there is multiple same routes, it's the last route added who will win (in the foreach when searching the first matching route).
@@ -299,7 +299,7 @@ class Router
             }
         }
         // TODO : il faudrait pas plutot retourner null si la route n'est pas trouvée plutot qu'une exception ???? si c'est la cas utiliser directement la même méthode que le hasRoute et faire un return au lieu du count !!!!
-        throw new RuntimeException('Named route does not exist for name: '.$name);
+        throw new RuntimeException('Named route does not exist for name: ' . $name);
     }
 
     // TODO : ajouter une méthode "removeNamedRoute" ????
