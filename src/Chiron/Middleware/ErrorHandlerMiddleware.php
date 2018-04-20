@@ -125,7 +125,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
          * @throws ErrorException if error is not within the error_reporting mask.
          */
         return function ($errno, $errstr, $errfile, $errline) {
-            if (!(error_reporting() & $errno)) {
+            if (! (error_reporting() & $errno)) {
                 // error_reporting does not include this error
                 return;
             }
@@ -229,7 +229,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
     // TODO : https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Error/ExceptionHandlerManager.php#L85
     public function bindExceptionHandler($exceptionTypes, RequestHandlerInterface $handler)
     {
-        if (!is_array($exceptionTypes)) {
+        if (! is_array($exceptionTypes)) {
             $exceptionTypes = [$exceptionTypes];
         }
 

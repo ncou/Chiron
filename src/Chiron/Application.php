@@ -105,7 +105,7 @@ class Application
     // TODO : gérer aussi les tableaux de middleware, ainsi que les tableaux de tableaux de middlewares
     public function middleware($middlewares)
     {
-        if (!is_array($middlewares)) {
+        if (! is_array($middlewares)) {
             $middlewares = [$middlewares];
         }
 
@@ -302,9 +302,9 @@ class Application
     // TODO : méthode à renommer en "route()" ????
     public function route(string $pattern, $handler, $middlewares = null): Route
     {
-        if (!isset($middlewares)) {
+        if (! isset($middlewares)) {
             $middlewares = [];
-        } elseif (!is_array($middlewares)) {
+        } elseif (! is_array($middlewares)) {
             $middlewares = [$middlewares];
         }
 
@@ -420,7 +420,7 @@ class Application
     public function getLogger(): LoggerInterface
     {
         // If a logger hasn't been set, use NullLogger
-        if (!$this->logger instanceof LoggerInterface) {
+        if (! $this->logger instanceof LoggerInterface) {
             $this->logger = new NullLogger();
             //$this->logger = new \Logger();
         }

@@ -98,7 +98,7 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
         //retrieve the "HttpException object" stored in the request attribute
         $exception = $request->getAttribute($this->attributeName);
 
-        if (!$exception instanceof Throwable) {
+        if (! $exception instanceof Throwable) {
             throw new UnexpectedValueException(
                 sprintf(
                     'No valid exception provided (%s) for the request attribute [%s]. It must return an instance of (\Throwable)',

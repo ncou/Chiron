@@ -227,7 +227,7 @@ class Response extends Message implements ResponseInterface
      */
     public function getReasonPhrase()
     {
-        if (!$this->reasonPhrase && isset($this->phrases[$this->statusCode])) {
+        if (! $this->reasonPhrase && isset($this->phrases[$this->statusCode])) {
             $this->reasonPhrase = $this->phrases[$this->statusCode];
         }
 
@@ -264,7 +264,7 @@ class Response extends Message implements ResponseInterface
     //https://github.com/phly/http/blob/master/src/Response.php#L167
     protected function setStatusCode($code)
     {
-        if (!is_numeric($code)
+        if (! is_numeric($code)
             || is_float($code)
             || $code < static::MIN_STATUS_CODE_VALUE
             || $code > static::MAX_STATUS_CODE_VALUE
@@ -728,7 +728,7 @@ class Response extends Message implements ResponseInterface
     {
         $name = (string) $name;
 
-        if (!is_null($expire)) {
+        if (! is_null($expire)) {
             if (is_numeric($expire)) {
                 $expire = (int) $expire;
             } else {
@@ -778,7 +778,7 @@ class Response extends Message implements ResponseInterface
             $data = explode('=', $part, 2);
             $name = $data[0];
             $value = isset($data[1]) ? trim($data[1], " \n\r\t\0\x0B\"") : null;
-            if (!isset($cookieName)) {
+            if (! isset($cookieName)) {
                 $cookieName = $name;
                 $cookieValue = $value;
                 continue;
@@ -804,7 +804,7 @@ class Response extends Message implements ResponseInterface
                 continue;
             }
         }
-        if (!isset($cookieName)) {
+        if (! isset($cookieName)) {
             throw new \InvalidArgumentException('The value of the Set-Cookie header is malformed.');
         }
 
@@ -844,7 +844,7 @@ class Response extends Message implements ResponseInterface
         if (is_null($status) && $this->getStatusCode() === 200) {
             $status = 302;
         }
-        if (!is_null($status)) {
+        if (! is_null($status)) {
             $responseWithRedirect = $responseWithRedirect->withStatus($status);
         }
 
@@ -982,11 +982,11 @@ class Response extends Message implements ResponseInterface
     public function canCache()
     {
         // Check if the response is cacheable based on the code
-        if (!in_array((int) $this->getStatusCode(), self::$cacheResponseCodes)) {
+        if (! in_array((int) $this->getStatusCode(), self::$cacheResponseCodes)) {
             return false;
         }
         // Make sure a valid body was returned and can be cached
-        if ((!$this->getBody()->isReadable() || !$this->getBody()->isSeekable())
+        if ((! $this->getBody()->isReadable() || ! $this->getBody()->isSeekable())
             && ($this->getContentLength() > 0 || $this->getTransferEncoding() == 'chunked')) {
             return false;
         }
@@ -1102,12 +1102,12 @@ class Response extends Message implements ResponseInterface
      */
     public function allowCache(ResponseInterface $response, $type = 'private', $maxAge = null, $mustRevalidate = false)
     {
-        if (!in_array($type, ['private', 'public'])) {
+        if (! in_array($type, ['private', 'public'])) {
             throw new InvalidArgumentException('Invalid Cache-Control type. Must be "public" or "private".');
         }
         $headerValue = $type;
         if ($maxAge || is_int($maxAge)) {
-            if (!is_int($maxAge)) {
+            if (! is_int($maxAge)) {
                 $maxAge = strtotime($maxAge);
             }
             // TODO : il faudrait peut etre utiliser un "no-cache" au lieu de max-age=0 dans le cas ou la variable $maxAge === 0    : regarder ici : https://github.com/slimphp/Slim-HttpCache/blob/master/src/Cache.php#L59
@@ -1147,7 +1147,7 @@ class Response extends Message implements ResponseInterface
     // TODO : regarder aussi ici : https://github.com/micheh/psr7-cache/blob/master/src/CacheUtil.php#L86
     public function withExpires(ResponseInterface $response, $time)
     {
-        if (!is_int($time)) {
+        if (! is_int($time)) {
             $time = strtotime($time);
             if ($time === false) {
                 throw new InvalidArgumentException('Expiration value could not be parsed with `strtotime()`.');
@@ -1172,7 +1172,7 @@ class Response extends Message implements ResponseInterface
     // TODO : regarder aussi ici : https://github.com/micheh/psr7-cache/blob/master/src/CacheUtil.php#L132
     public function withEtag(ResponseInterface $response, $value, $type = 'strong')
     {
-        if (!in_array($type, ['strong', 'weak'])) {
+        if (! in_array($type, ['strong', 'weak'])) {
             throw new InvalidArgumentException('Invalid etag type. Must be "strong" or "weak".');
         }
         $value = '"' . $value . '"';
@@ -1196,7 +1196,7 @@ class Response extends Message implements ResponseInterface
      */
     public function withLastModified(ResponseInterface $response, $time)
     {
-        if (!is_int($time)) {
+        if (! is_int($time)) {
             $time = strtotime($time);
             if ($time === false) {
                 throw new InvalidArgumentException('Last Modified value could not be parsed with `strtotime()`.');
@@ -1249,7 +1249,7 @@ class Response extends Message implements ResponseInterface
     //https://github.com/symfony/symfony/blob/master/src/Symfony/Component/HttpFoundation/Response.php#L1051
     public function isNotModified(Request $request): bool
     {
-        if (!$request->isMethodCacheable()) {
+        if (! $request->isMethodCacheable()) {
             return false;
         }
         $notModified = false;
@@ -1259,7 +1259,7 @@ class Response extends Message implements ResponseInterface
             $notModified = in_array($this->getEtag(), $etags) || in_array('*', $etags);
         }
         if ($modifiedSince && $lastModified) {
-            $notModified = strtotime($modifiedSince) >= strtotime($lastModified) && (!$etags || $notModified);
+            $notModified = strtotime($modifiedSince) >= strtotime($lastModified) && (! $etags || $notModified);
         }
         if ($notModified) {
             $this->setNotModified();
@@ -1466,7 +1466,7 @@ class Response extends Message implements ResponseInterface
         $allow = $this->getHeader('Allow');
         if ($allow) {
             foreach (explode(',', $allow) as $allowable) {
-                if (!strcasecmp(trim($allowable), $method)) {
+                if (! strcasecmp(trim($allowable), $method)) {
                     return true;
                 }
             }
@@ -1784,7 +1784,7 @@ class Response extends Message implements ResponseInterface
     protected function detectFormatByHeaders(HeaderCollection $headers)
     {
         $contentTypeHeaders = $headers->get('content-type', null, false);
-        if (!empty($contentTypeHeaders)) {
+        if (! empty($contentTypeHeaders)) {
             $contentType = end($contentTypeHeaders);
             if (stripos($contentType, 'json') !== false) {
                 return Client::FORMAT_JSON;

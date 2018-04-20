@@ -50,7 +50,7 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
         if (is_array($controller)) {
             $reflector = new \ReflectionMethod($controller[0], $controller[1]);
             $this->controllerName = sprintf('%s::%s()', get_class($controller[0]), $controller[1]);
-        } elseif (is_object($controller) && !$controller instanceof \Closure) {
+        } elseif (is_object($controller) && ! $controller instanceof \Closure) {
             $reflector = (new \ReflectionObject($controller))->getMethod('__invoke');
             $this->controllerName = get_class($controller);
         } else {

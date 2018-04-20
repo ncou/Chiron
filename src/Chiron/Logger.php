@@ -29,7 +29,7 @@ class Logger extends AbstractLogger
     public function __construct($output = 'php://stderr', string $minLevel = LogLevel::ERROR)
     {
         // TODO : creer une methode assertLevel() qui fait le throw de l'exception si le ne level n'est pas correct.
-        if (!isset(self::LEVELS[$minLevel])) {
+        if (! isset(self::LEVELS[$minLevel])) {
             throw new InvalidArgumentException('Invalid log level. Must be one of : ' . implode(', ', array_keys(self::LEVELS)));
         }
         if (false === $this->handle = is_resource($output) ? $output : @fopen($output, 'a')) {
@@ -43,7 +43,7 @@ class Logger extends AbstractLogger
     public function log($level, $message, array $context = [])
     {
         // TODO : creer une methode assertLevel() qui fait le throw de l'exception si le ne level n'est pas correct.
-        if (!isset(self::LEVELS[$level])) {
+        if (! isset(self::LEVELS[$level])) {
             throw new InvalidArgumentException('Invalid log level. Must be one of : ' . implode(', ', array_keys(self::LEVELS)));
         }
         if (self::LEVELS[$level] < $this->minLevelIndex) {

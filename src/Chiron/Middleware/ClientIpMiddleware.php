@@ -87,17 +87,17 @@ class ClientIpMiddleware implements MiddlewareInterface
     private function getIp(ServerRequestInterface $request)
     {
         $remoteIp = $this->getRemoteIp();
-        if (!empty($remoteIp)) {
+        if (! empty($remoteIp)) {
             // Found IP address via remote service.
             return $remoteIp;
         }
         $localIp = $this->getLocalIp($request);
-        if ($this->proxyIps && !in_array($localIp, $this->proxyIps)) {
+        if ($this->proxyIps && ! in_array($localIp, $this->proxyIps)) {
             // Local IP address does not point at a known proxy, do not attempt to read proxied IP address.
             return $localIp;
         }
         $proxiedIp = $this->getProxiedIp($request);
-        if (!empty($proxiedIp)) {
+        if (! empty($proxiedIp)) {
             // Found IP address via proxy-defined headers.
             return $proxiedIp;
         }
@@ -146,7 +146,7 @@ class ClientIpMiddleware implements MiddlewareInterface
     private function getLocalIp(ServerRequestInterface $request)
     {
         $server = $request->getServerParams();
-        if (!empty($server['REMOTE_ADDR']) && self::isValid($server['REMOTE_ADDR'])) {
+        if (! empty($server['REMOTE_ADDR']) && self::isValid($server['REMOTE_ADDR'])) {
             return $server['REMOTE_ADDR'];
         }
     }
@@ -191,7 +191,7 @@ class ClientIpMiddleware implements MiddlewareInterface
         if (array_key_exists('X-Forwarded-For', $headers)) {
             $_SERVER['HTTP_X_FORWARDED_FOR'] = $headers['X-Forwarded-For'];
         }
-        if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR'] && (!isset($_SERVER['REMOTE_ADDR'])
+        if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && $_SERVER['HTTP_X_FORWARDED_FOR'] && (! isset($_SERVER['REMOTE_ADDR'])
             || preg_match('/^127\..*/i', trim($_SERVER['REMOTE_ADDR'])) || preg_match('/^172\.16.*/i', trim($_SERVER['REMOTE_ADDR']))
             || preg_match('/^192\.168\.*/i', trim($_SERVER['REMOTE_ADDR'])) || preg_match('/^10\..*/i', trim($_SERVER['REMOTE_ADDR'])))) {
             if (strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',')) {
