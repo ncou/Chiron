@@ -47,7 +47,8 @@ use Psr\Http\Server\MiddlewareInterface;
 class Application
 {
     //@{ Framework details
-    const PACKAGE = 'Chiron Framework',VERSION = '1.0.0';
+    public const PACKAGE = 'Chiron Framework';
+    public const VERSION = '1.0.0';
 
     //@}
 

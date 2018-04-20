@@ -67,7 +67,7 @@ class Route implements RequestHandlerInterface
         ''   => '[^/\.]++',
     ];
 
-    const REGEX_PATTERN = '`(/|\.|)\[([^:\]]*+)(?::([^:\]]*+))?\](\?|)`';
+    public const REGEX_PATTERN = '`(/|\.|)\[([^:\]]*+)(?::([^:\]]*+))?\](\?|)`';
 
     /**
      * @param $url

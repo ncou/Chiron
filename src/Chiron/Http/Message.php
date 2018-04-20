@@ -19,7 +19,7 @@ class Message
      *
      * @var string
      */
-    const EOL = "\r\n";
+    public const EOL = "\r\n";
 
     /**
      * A map of valid protocol versions.
