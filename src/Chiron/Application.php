@@ -47,9 +47,7 @@ use Psr\Http\Server\MiddlewareInterface;
 class Application
 {
     //@{ Framework details
-    const
-    PACKAGE = 'Chiron Framework';
-    const VERSION = '1.0.0';
+    const PACKAGE = 'Chiron Framework',VERSION = '1.0.0';
     //@}
 
     /**
@@ -384,7 +382,7 @@ class Application
     /**
      * Get container.
      *
-     * @return ContainerInterface|null
+     * @return null|ContainerInterface
      */
     public function getContainer(): ?ContainerInterface
     {
