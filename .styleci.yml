@@ -1,14 +1,5 @@
-preset: symfony
+preset: recommended
 
 finder:
     exclude:
         - "vendor"
-
-enabled:
-    - short_array_syntax
-    - alpha_ordered_imports
-    - phpdoc_order
-    - align_phpdoc
-
-disabled:
-    - phpdoc_annotation_without_dot # This is still buggy: https://github.com/symfony/symfony/pull/19198
