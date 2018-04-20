@@ -1,14 +1,12 @@
-preset: symfony
+preset: recommended
 
 finder:
     exclude:
         - "vendor"
 
 enabled:
-    - short_array_syntax
-    - alpha_ordered_imports
-    - phpdoc_order
-    - align_phpdoc
-
-disabled:
-    - phpdoc_annotation_without_dot # This is still buggy: https://github.com/symfony/symfony/pull/19198
+    - phpdoc_link_to_see
+    - phpdoc_return_self_reference
+    - short_scalar_cast
+    - return_type_declaration
+    - concat_with_spaces
