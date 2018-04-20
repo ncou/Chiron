@@ -48,6 +48,7 @@ class Application
 {
     //@{ Framework details
     const PACKAGE = 'Chiron Framework',VERSION = '1.0.0';
+
     //@}
 
     /**
