@@ -9,3 +9,6 @@ enabled:
     - phpdoc_return_self_reference
     - return_type_declaration
     - concat_with_spaces
+
+disabled:
+    - concat_without_spaces
