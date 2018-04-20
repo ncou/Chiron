@@ -52,7 +52,7 @@ final class CallableMiddlewareDecorator implements MiddlewareInterface
      * @throws Exception\MissingResponseException if the decorated middleware
      *                                            fails to produce a response.
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         //return ($this->middleware)($request, $handler);
         return call_user_func_array($this->middleware, [$request, $handler]);

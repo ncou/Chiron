@@ -123,7 +123,7 @@ class Application
      *
      * @return MiddlewareInterface
      */
-    private function prepareMiddleware($middleware) : MiddlewareInterface
+    private function prepareMiddleware($middleware): MiddlewareInterface
     {
         if ($middleware instanceof MiddlewareInterface) {
             return $middleware;
@@ -184,7 +184,7 @@ class Application
      *
      * HEAD was added to HTTP/1.1 in RFC2616
      *
-     * @link https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
+     * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
      *
      * @param string                                    $pattern    The route URI pattern
      * @param callable|string                           $handler    The route callback routine
@@ -231,7 +231,7 @@ class Application
      *
      * PATCH was added to HTTP/1.1 in RFC5789
      *
-     * @link http://tools.ietf.org/html/rfc5789
+     * @see http://tools.ietf.org/html/rfc5789
      *
      * @param string                                    $pattern    The route URI pattern
      * @param callable|string                           $handler    The route callback routine
@@ -300,7 +300,7 @@ class Application
      */
     // TODO : créer une classe RouteInterface qui servira comme type de retour (il faudra aussi l'ajouter dans le use en début de classe) !!!!!
     // TODO : méthode à renommer en "route()" ????
-    public function route(string $pattern, $handler, $middlewares = null) : Route
+    public function route(string $pattern, $handler, $middlewares = null): Route
     {
         if (!isset($middlewares)) {
             $middlewares = [];
@@ -348,7 +348,7 @@ class Application
         // Track current base route
         $curBasePath = $this->getRouter()->getBasePath();
         // Build new base route string
-        $this->getRouter()->setBasePath($curBasePath.$prefix);
+        $this->getRouter()->setBasePath($curBasePath . $prefix);
         // Bind the $this var, to app instance.
         $closure = $closure->bindTo($this);
         //$callback = Closure::bind($closure, $this, get_class());
@@ -386,7 +386,7 @@ class Application
      *
      * @return ContainerInterface|null
      */
-    public function getContainer() : ?ContainerInterface
+    public function getContainer(): ?ContainerInterface
     {
         return $this->container;
     }
@@ -417,7 +417,7 @@ class Application
      *
      * @return LoggerInterface
      */
-    public function getLogger() : LoggerInterface
+    public function getLogger(): LoggerInterface
     {
         // If a logger hasn't been set, use NullLogger
         if (!$this->logger instanceof LoggerInterface) {
@@ -584,7 +584,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
             $response = new Response();
             // TODO : ajouter 2 lignes "Content-Type" avec text/html puis avec charset=XXXX, ca fera la même chose qu'une ligne séparée avec une virgule
             // TODO : récuperer le charset directement dans la partie ->getContainer()->get('config') !!!!
-            $response = $response->withAddedHeader('Content-Type', 'text/html; charset='.$c->get('charset'));
+            $response = $response->withAddedHeader('Content-Type', 'text/html; charset=' . $c->get('charset'));
             //$response->setProtocolVersion($c->get('httpVersion'));
             return $response;
         };
@@ -631,7 +631,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
                 // TODO : penser à récupérer le charset déclaré dans le container, et le passer à la response !!!!
                 return $response->withStatus(502)
                     //->withHeader('Content-Type', 'text/html')
-                    ->setBody('Exception1: '."Code: ({$e->getCode()}); Message: ({$e->getMessage()}); in file: {$e->getFile()} [line: {$e->getLine()}]");
+                    ->setBody('Exception1: ' . "Code: ({$e->getCode()}); Message: ({$e->getMessage()}); in file: {$e->getFile()} [line: {$e->getLine()}]");
                 //->setBody('Something went wrong!');
             //    }
                 //return $response;
@@ -651,7 +651,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
                 // TODO : penser à récupérer le charset déclaré dans le container, et le passer à la response !!!!
                 return $response->withStatus(551)
                     //->withHeader('Content-Type', 'text/html')
-                    ->setBody('Exception2: '."Code: ({$e->getCode()}); Message: ({$e->getMessage()}); in file: {$e->getFile()} [line: {$e->getLine()}]"); //$e->getTraceAsString()
+                    ->setBody('Exception2: ' . "Code: ({$e->getCode()}); Message: ({$e->getMessage()}); in file: {$e->getFile()} [line: {$e->getLine()}]"); //$e->getTraceAsString()
                     //->setBody('Something went wrong!');
             //    }
                 //return $response;
@@ -803,7 +803,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
      * Run App
      ******************************************************************************/
 
-    public function run() : ResponseInterface
+    public function run(): ResponseInterface
     {
         //$request = Request::createFromGlobals($_SERVER);
         $request = (new \Chiron\Http\Factories\ServerRequestFactory())->createServerRequestFromArray($_SERVER);
@@ -811,7 +811,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         return $this->process($request);
     }
 
-    public function process(ServerRequestInterface $request) : ResponseInterface
+    public function process(ServerRequestInterface $request): ResponseInterface
     {
 
         // apply PHP config settings.
@@ -916,7 +916,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
     public function path()
     {
-        return $this->basePath.DIRECTORY_SEPARATOR.'app';
+        return $this->basePath . DIRECTORY_SEPARATOR . 'app';
     }
 
     /**
@@ -929,7 +929,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     public function basePath($path = null)
     {
         if (isset($this->basePath)) {
-            return $this->basePath.($path ? '/'.$path : $path);
+            return $this->basePath . ($path ? '/' . $path : $path);
         }
 
         // TODO : tester le cas quand on n'a pas déclaré dans l'application un paramétre de basePath passé au constructeur de l'application. Je pense que renvoyer "/" va poser un soucis !!!!
@@ -949,15 +949,15 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     {
         // Check for cached version of base path
         if (null !== self::$base) {
-            return self::$base.$path;
+            return self::$base . $path;
         }
         if (isset($_SERVER['HTTP_HOST'])) {
             $base_url = isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off' ? 'https' : 'http';
-            $base_url .= '://'.$_SERVER['HTTP_HOST'];
+            $base_url .= '://' . $_SERVER['HTTP_HOST'];
             $base_url .= str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
             self::$base = $base_url;
 
-            return $base_url.$path;
+            return $base_url . $path;
         }
 
         return '';

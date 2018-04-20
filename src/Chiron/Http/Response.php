@@ -687,7 +687,7 @@ class Response extends Message implements ResponseInterface
             return $response;
         }
     Good answer. However, when deleting cookie, use empty text as value for deleted cookie. Your own method getCookieValue will return null when trying to get a cookie deleted by deleteCookie. More consistent (for me at least).
-    
+
     */
     /**
      * @param Response $response
@@ -849,7 +849,7 @@ class Response extends Message implements ResponseInterface
         }
 
         $urlHtml = htmlentities($url);
-        $responseWithRedirect->getBody()->write('You are being redirected to <a href="'.$urlHtml.'">'.$urlHtml.'</a>', 'text/html');
+        $responseWithRedirect->getBody()->write('You are being redirected to <a href="' . $urlHtml . '">' . $urlHtml . '</a>', 'text/html');
 
         return $responseWithRedirect;
     }
@@ -1111,10 +1111,10 @@ class Response extends Message implements ResponseInterface
                 $maxAge = strtotime($maxAge);
             }
             // TODO : il faudrait peut etre utiliser un "no-cache" au lieu de max-age=0 dans le cas ou la variable $maxAge === 0    : regarder ici : https://github.com/slimphp/Slim-HttpCache/blob/master/src/Cache.php#L59
-            $headerValue = $headerValue.', max-age='.$maxAge;
+            $headerValue = $headerValue . ', max-age=' . $maxAge;
         }
         if ($mustRevalidate) {
-            $headerValue = $headerValue.', must-revalidate';
+            $headerValue = $headerValue . ', must-revalidate';
         }
 
         return $response->withHeader('Cache-Control', $headerValue);
@@ -1175,9 +1175,9 @@ class Response extends Message implements ResponseInterface
         if (!in_array($type, ['strong', 'weak'])) {
             throw new InvalidArgumentException('Invalid etag type. Must be "strong" or "weak".');
         }
-        $value = '"'.$value.'"';
+        $value = '"' . $value . '"';
         if ($type === 'weak') {
-            $value = 'W/'.$value;
+            $value = 'W/' . $value;
         }
 
         return $response->withHeader('ETag', $value);
@@ -1286,11 +1286,11 @@ class Response extends Message implements ResponseInterface
             $this->getReasonPhrase()
         );
         $output .= self::EOL;
-        $output .= 'HEADERS :'.self::EOL;
+        $output .= 'HEADERS :' . self::EOL;
         foreach ($this->getHeaders() as $name => $values) {
-            $output .= sprintf('    %s: %s', $name, $this->getHeaderLine($name)).self::EOL;
+            $output .= sprintf('    %s: %s', $name, $this->getHeaderLine($name)) . self::EOL;
         }
-        $output .= 'BODY :'.self::EOL;
+        $output .= 'BODY :' . self::EOL;
         $output .= (string) $this->getBody();
 
         return $output;
@@ -1310,7 +1310,7 @@ class Response extends Message implements ResponseInterface
             $date = \DateTimeImmutable::createFromMutable($date);
         }
         $date = $date->setTimezone(new \DateTimeZone('UTC'));
-        $this->headers->set('Date', $date->format('D, d M Y H:i:s').' GMT');
+        $this->headers->set('Date', $date->format('D, d M Y H:i:s') . ' GMT');
 
         return $this;
     }
@@ -1331,9 +1331,9 @@ class Response extends Message implements ResponseInterface
             $this->headers->remove('Etag');
         } else {
             if (0 !== strpos($etag, '"')) {
-                $etag = '"'.$etag.'"';
+                $etag = '"' . $etag . '"';
             }
-            $this->headers->set('ETag', (true === $weak ? 'W/' : '').$etag);
+            $this->headers->set('ETag', (true === $weak ? 'W/' : '') . $etag);
         }
 
         return $this;

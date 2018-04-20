@@ -233,7 +233,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
                 continue;
             }
             if ($value && strpos($key, 'CONTENT_') === 0) {
-                $name = 'content-'.strtolower(substr($key, 8));
+                $name = 'content-' . strtolower(substr($key, 8));
                 $headers[$name] = $value;
                 continue;
             }

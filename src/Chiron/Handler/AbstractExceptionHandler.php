@@ -93,7 +93,7 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
 
     abstract public function handle(ServerRequestInterface $request): ResponseInterface;
 
-    protected function retrieveException(ServerRequestInterface $request) : Throwable
+    protected function retrieveException(ServerRequestInterface $request): Throwable
     {
         //retrieve the "HttpException object" stored in the request attribute
         $exception = $request->getAttribute($this->attributeName);
@@ -142,7 +142,7 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
             return $current;
         }
         if (preg_match('/\+(json|xml)/', $acceptHeader, $matches)) {
-            $mediaType = 'application/'.$matches[1];
+            $mediaType = 'application/' . $matches[1];
             if (in_array($mediaType, $this->knownContentTypes)) {
                 return $mediaType;
             }
@@ -151,9 +151,9 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
         return 'text/html';
     }
 
-    protected function shouldDisplayDetails(ServerRequestInterface $request) : bool
+    protected function shouldDisplayDetails(ServerRequestInterface $request): bool
     {
-        return $request->getAttribute($this->attributeName.'_displayErrorDetails', false);
+        return $request->getAttribute($this->attributeName . '_displayErrorDetails', false);
     }
 
     /**
@@ -189,14 +189,14 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
                 if (is_object($arg)) {
                     $arguments .= get_class($arg);
                 } elseif (is_string($arg)) {
-                    $preparedArgument = (strlen($arg) < 100) ? $arg : substr($arg, 0, 50).'…'.substr($arg, -50);
-                    $arguments .= '"'.$preparedArgument.'"';
+                    $preparedArgument = (strlen($arg) < 100) ? $arg : substr($arg, 0, 50) . '…' . substr($arg, -50);
+                    $arguments .= '"' . $preparedArgument . '"';
                 } elseif (is_numeric($arg)) {
                     $arguments .= (string) $arg;
                 } elseif (is_bool($arg)) {
                     $arguments .= ($arg === true ? 'TRUE' : 'FALSE');
                 } elseif (is_array($arg)) {
-                    $arguments .= 'array|'.count($arg).'|';
+                    $arguments .= 'array|' . count($arg) . '|';
                 } else {
                     $arguments .= gettype($arg);
                 }
@@ -204,8 +204,8 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
         }
 
         return [
-            'file'     => $frame['file'] ? $frame['file'].' ('.$frame['line'].')' : null,
-            'function' => ($frame['class'] ? $frame['class'].$frame['type'] : null).$frame['function'].'('.$arguments.')',
+            'file'     => $frame['file'] ? $frame['file'] . ' (' . $frame['line'] . ')' : null,
+            'function' => ($frame['class'] ? $frame['class'] . $frame['type'] : null) . $frame['function'] . '(' . $arguments . ')',
         ];
     }
 
@@ -216,10 +216,10 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
      *
      * @return string
      */
-    protected function replaceRoot(string $file) : string
+    protected function replaceRoot(string $file): string
     {
         if (defined('Chiron\ROOT_DIR')) {
-            $file = 'ROOT'.substr($file, strlen(\Chiron\ROOT_DIR));
+            $file = 'ROOT' . substr($file, strlen(\Chiron\ROOT_DIR));
         }
 
         return $file;

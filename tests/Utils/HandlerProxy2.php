@@ -30,7 +30,7 @@ class HandlerProxy2 implements RequestHandlerInterface
      *
      * @return ResponseInterface
      */
-    public function handle(ServerRequestInterface $request) : ResponseInterface
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         return call_user_func($this->adaptee, $request);
     }

@@ -153,7 +153,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
         // TODO : mettre plutot dans la request un attribute de type tableau : [$exception, $displayDetails, $logError...etc] avec éventuellement directement le array qui est dans la config du container pour la rubrique ErrorHandler
         // TODO : au lieu de utiliser une variable "attributeName" il faudrait soit utiliser le nom de la classe : ErrorHandlerMiddleware::class ou alors utiliser une constante de classe genre ErrorHandlerMiddleware::ATTRIBUTE_NAME
         $request = $request->withAttribute($this->attributeName, $exception);
-        $request = $request->withAttribute($this->attributeName.'_displayErrorDetails', $this->displayErrorDetails);
+        $request = $request->withAttribute($this->attributeName . '_displayErrorDetails', $this->displayErrorDetails);
 
         // TODO : il faudra passer le tableau de headers[] qui est dans l'exception aussi dans la response (genre pour une httpexception 405 MethodNotAllowed, on va avoir un headers['Allow' => 'GET', 'POST']) qu'il faut utiliser dans la response.
         /*
@@ -189,7 +189,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
      *
      * @return null|RequestHandlerInterface
      */
-    public function getExceptionHandler(Throwable $exception) : ?RequestHandlerInterface
+    public function getExceptionHandler(Throwable $exception): ?RequestHandlerInterface
     {
         $exceptionHandler = null;
 

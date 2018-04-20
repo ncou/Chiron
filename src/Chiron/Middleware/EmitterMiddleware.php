@@ -28,7 +28,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  * @author   Peter Ahinko <peter@ahinko.se>
  * @license  MIT (http://opensource.org/licenses/MIT)
  *
- * @link     https://github.com/phapi/middleware-courier
+ * @see     https://github.com/phapi/middleware-courier
  */
 class EmitterMiddleware implements MiddlewareInterface
 {
@@ -254,10 +254,10 @@ class EmitterMiddleware implements MiddlewareInterface
         // Fix Content-Type
         $charset = 'UTF-8';
         if (!$response->hasHeader('Content-Type')) {
-            $response = $response->withHeader('Content-Type', 'text/html; charset='.$charset);
+            $response = $response->withHeader('Content-Type', 'text/html; charset=' . $charset);
         } elseif (0 === stripos($response->getHeaderLine('Content-Type'), 'text/') && false === stripos($response->getHeaderLine('Content-Type'), 'charset')) {
             // add the charset
-            $response = $response->withHeader('Content-Type', $response->getHeaderLine('Content-Type').'; charset='.$charset);
+            $response = $response->withHeader('Content-Type', $response->getHeaderLine('Content-Type') . '; charset=' . $charset);
         }
 
         if (!$response->hasHeader('Content-Length')) {
@@ -301,7 +301,7 @@ class EmitterMiddleware implements MiddlewareInterface
         $now = new \DateTime('now', new \DateTimeZone('UTC'));
         $now = \DateTimeImmutable::createFromMutable($now);
 
-        return $now->format('D, d M Y H:i:s').' GMT';
+        return $now->format('D, d M Y H:i:s') . ' GMT';
     }
 
     /**
@@ -334,10 +334,10 @@ class EmitterMiddleware implements MiddlewareInterface
             // Fix Content-Type
             $charset = $response->charset ?: 'UTF-8';
             if (!$headers->has('Content-Type')) {
-                $headers->set('Content-Type', 'text/html; charset='.$charset);
+                $headers->set('Content-Type', 'text/html; charset=' . $charset);
             } elseif (0 === stripos($headers->get('Content-Type'), 'text/') && false === stripos($headers->get('Content-Type'), 'charset')) {
                 // add the charset
-                $headers->set('Content-Type', $headers->get('Content-Type').'; charset='.$charset);
+                $headers->set('Content-Type', $headers->get('Content-Type') . '; charset=' . $charset);
             }
             // Fix Content-Length
             if ($headers->has('Transfer-Encoding')) {

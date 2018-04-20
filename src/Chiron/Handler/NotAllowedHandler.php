@@ -39,7 +39,7 @@ class NotAllowedHandler extends AbstractExceptionHandler
                 //$output = $this->format($error);
                 break;
             default:
-                throw new UnexpectedValueException('Cannot render unknown content type '.$contentType);
+                throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType);
         }
 
 //        $this->writeToErrorLog($error);
@@ -99,7 +99,7 @@ EOT;
 EOT;
     }*/
 
-    private function format(Throwable $exception) : string
+    private function format(Throwable $exception): string
     {
         $html = '<h2>An error has occurred</h2>';
         $html .= "\n";
@@ -110,7 +110,7 @@ EOT;
 
     private function doFormat(Throwable $exception)
     {
-        $html = '<p>'.$exception->getMessage().'</p>';
+        $html = '<p>' . $exception->getMessage() . '</p>';
 //        if ($this->options['includeTrace']) {
         $html .= "\n";
         $html .= '<strong>Trace:</strong><br>';
@@ -119,7 +119,7 @@ EOT;
         $traceLength = count($trace);
         foreach ($exception->getTrace() as $i => $traceRecord) {
             $html .= "\n";
-            $html .= $this->formatTraceRecord($traceRecord, $i, $traceLength).'<br>';
+            $html .= $this->formatTraceRecord($traceRecord, $i, $traceLength) . '<br>';
         }
 //        }
         if ($previous = $exception->getPrevious()) {
@@ -132,7 +132,7 @@ EOT;
         return $html;
     }
 
-    private function formatTraceRecord(array $traceRecord, int $index, int $traceLength) : string
+    private function formatTraceRecord(array $traceRecord, int $index, int $traceLength): string
     {
         return sprintf(
             '#%s %s%s%s in %s:%s',
@@ -184,9 +184,9 @@ EOT;
 //            $html = '<p>A website error has occurred. Sorry for the temporary inconvenience.</p>';
 //        }
         $output = sprintf(
-            "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'>".
-            '<title>%s</title><style>body{margin:0;padding:30px;font:12px/1.5 Helvetica,Arial,Verdana,'.
-            'sans-serif;}h1{margin:0;font-size:40px;font-weight:normal;line-height:40px;}strong{'.
+            "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'>" .
+            '<title>%s</title><style>body{margin:0;padding:30px;font:12px/1.5 Helvetica,Arial,Verdana,' .
+            'sans-serif;}h1{margin:0;font-size:40px;font-weight:normal;line-height:40px;}strong{' .
             'display:inline-block;width:65px;}</style></head><body><h1>%s</h1>%s</body></html>',
             $title,
             $title,
@@ -232,7 +232,7 @@ EOT;
     {
         $backtraceCode = '';
         foreach ($trace as $index => $step) {
-            $class = isset($step['class']) ? $step['class'].$step['type'] : '';
+            $class = isset($step['class']) ? $step['class'] . $step['type'] : '';
             $arguments = '';
             if (isset($step['args']) && is_array($step['args'])) {
                 foreach ($step['args'] as $argument) {
@@ -240,21 +240,21 @@ EOT;
                     if (is_object($argument)) {
                         $arguments .= get_class($argument);
                     } elseif (is_string($argument)) {
-                        $preparedArgument = (strlen($argument) < 100) ? $argument : substr($argument, 0, 50).'…'.substr($argument, -50);
-                        $arguments .= '"'.$preparedArgument.'"';
+                        $preparedArgument = (strlen($argument) < 100) ? $argument : substr($argument, 0, 50) . '…' . substr($argument, -50);
+                        $arguments .= '"' . $preparedArgument . '"';
                     } elseif (is_numeric($argument)) {
                         $arguments .= (string) $argument;
                     } elseif (is_bool($argument)) {
                         $arguments .= ($argument === true ? 'TRUE' : 'FALSE');
                     } elseif (is_array($argument)) {
-                        $arguments .= 'array|'.count($argument).'|';
+                        $arguments .= 'array|' . count($argument) . '|';
                     } else {
                         $arguments .= gettype($argument);
                     }
                 }
             }
-            $backtraceCode .= (count($trace) - $index).' '.$class.$step['function'].'('.$arguments.')'.PHP_EOL;
-            $backtraceCode .= '     '.$step['file'].'('.$step['line'].')'.PHP_EOL;
+            $backtraceCode .= (count($trace) - $index) . ' ' . $class . $step['function'] . '(' . $arguments . ')' . PHP_EOL;
+            $backtraceCode .= '     ' . $step['file'] . '(' . $step['line'] . ')' . PHP_EOL;
         }
 
         return $backtraceCode;
@@ -302,12 +302,12 @@ EOT;
 //        if ($this->displayErrorDetails) {
         do {
             $xml .= "  <error>\n";
-            $xml .= '    <type>'.get_class($error)."</type>\n";
-            $xml .= '    <code>'.$error->getCode()."</code>\n";
-            $xml .= '    <message>'.$this->createCdataSection($error->getMessage())."</message>\n";
-            $xml .= '    <file>'.$error->getFile()."</file>\n";
-            $xml .= '    <line>'.$error->getLine()."</line>\n";
-            $xml .= '    <trace>'.$this->createCdataSection($error->getTraceAsString())."</trace>\n";
+            $xml .= '    <type>' . get_class($error) . "</type>\n";
+            $xml .= '    <code>' . $error->getCode() . "</code>\n";
+            $xml .= '    <message>' . $this->createCdataSection($error->getMessage()) . "</message>\n";
+            $xml .= '    <file>' . $error->getFile() . "</file>\n";
+            $xml .= '    <line>' . $error->getLine() . "</line>\n";
+            $xml .= '    <trace>' . $this->createCdataSection($error->getTraceAsString()) . "</trace>\n";
             $xml .= "  </error>\n";
         } while ($error = $error->getPrevious());
 //        }

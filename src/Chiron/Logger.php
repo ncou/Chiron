@@ -30,7 +30,7 @@ class Logger extends AbstractLogger
     {
         // TODO : creer une methode assertLevel() qui fait le throw de l'exception si le ne level n'est pas correct.
         if (!isset(self::LEVELS[$minLevel])) {
-            throw new InvalidArgumentException('Invalid log level. Must be one of : '.implode(', ', array_keys(self::LEVELS)));
+            throw new InvalidArgumentException('Invalid log level. Must be one of : ' . implode(', ', array_keys(self::LEVELS)));
         }
         if (false === $this->handle = is_resource($output) ? $output : @fopen($output, 'a')) {
             throw new InvalidArgumentException(sprintf('Unable to open "%s".', $output));
@@ -44,7 +44,7 @@ class Logger extends AbstractLogger
     {
         // TODO : creer une methode assertLevel() qui fait le throw de l'exception si le ne level n'est pas correct.
         if (!isset(self::LEVELS[$level])) {
-            throw new InvalidArgumentException('Invalid log level. Must be one of : '.implode(', ', array_keys(self::LEVELS)));
+            throw new InvalidArgumentException('Invalid log level. Must be one of : ' . implode(', ', array_keys(self::LEVELS)));
         }
         if (self::LEVELS[$level] < $this->minLevelIndex) {
             return;
@@ -69,9 +69,9 @@ class Logger extends AbstractLogger
                 } elseif ($val instanceof \DateTimeInterface) {
                     $replacements["{{$key}}"] = $val->format(\DateTime::RFC3339);
                 } elseif (\is_object($val)) {
-                    $replacements["{{$key}}"] = '[object '.\get_class($val).']';
+                    $replacements["{{$key}}"] = '[object ' . \get_class($val) . ']';
                 } else {
-                    $replacements["{{$key}}"] = '['.\gettype($val).']';
+                    $replacements["{{$key}}"] = '[' . \gettype($val) . ']';
                 }
             }
             $message = strtr($message, $replacements);

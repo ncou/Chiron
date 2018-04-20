@@ -121,7 +121,7 @@ class ServerRequest extends Message implements ServerRequestInterface
             return;
         }
         if (($port = $this->uri->getPort()) !== null) {
-            $host .= ':'.$port;
+            $host .= ':' . $port;
         }
 
         if (isset($this->headerNames['host'])) {
@@ -488,7 +488,7 @@ class ServerRequest extends Message implements ServerRequestInterface
      *
      * This method MUST return a UriInterface instance.
      *
-     * @link http://tools.ietf.org/html/rfc3986#section-4.3
+     * @see http://tools.ietf.org/html/rfc3986#section-4.3
      *
      * @return UriInterface Returns a UriInterface instance
      *                      representing the URI of the request.
@@ -629,9 +629,9 @@ class ServerRequest extends Message implements ServerRequestInterface
             }
             return null;
         }
-    
-    
-    
+
+
+
             */
 
     /**
@@ -770,7 +770,7 @@ class ServerRequest extends Message implements ServerRequestInterface
                 return true;
             }
             foreach ($types as $type) {
-                if ($this->matchesType($accept, $type) || $accept === strtok($type, '/').'/*') {
+                if ($this->matchesType($accept, $type) || $accept === strtok($type, '/') . '/*') {
                     return true;
                 }
             }
@@ -799,7 +799,7 @@ class ServerRequest extends Message implements ServerRequestInterface
                 if (!is_null($mimeType = $this->getMimeType($contentType))) {
                     $type = $mimeType;
                 }
-                if ($this->matchesType($type, $accept) || $accept === strtok($type, '/').'/*') {
+                if ($this->matchesType($type, $accept) || $accept === strtok($type, '/') . '/*') {
                     return $contentType;
                 }
             }
@@ -1157,7 +1157,7 @@ function getIP()
             $request_uri = strstr($request_uri, '?', true);
         }
 
-        return $request_uri.(!empty($query) ? '?'.http_build_query($query) : null);
+        return $request_uri . (!empty($query) ? '?' . http_build_query($query) : null);
     }
 
     /**
@@ -1386,8 +1386,8 @@ function getIP()
             $scriptUrl = $_SERVER['PHP_SELF'];
         } elseif (isset($_SERVER['ORIG_SCRIPT_NAME']) && basename($_SERVER['ORIG_SCRIPT_NAME']) === $scriptName) {
             $scriptUrl = $_SERVER['ORIG_SCRIPT_NAME'];
-        } elseif (isset($_SERVER['PHP_SELF']) && ($pos = strpos($_SERVER['PHP_SELF'], '/'.$scriptName)) !== false) {
-            $scriptUrl = substr($_SERVER['SCRIPT_NAME'], 0, $pos).'/'.$scriptName;
+        } elseif (isset($_SERVER['PHP_SELF']) && ($pos = strpos($_SERVER['PHP_SELF'], '/' . $scriptName)) !== false) {
+            $scriptUrl = substr($_SERVER['SCRIPT_NAME'], 0, $pos) . '/' . $scriptName;
         } elseif (!empty($_SERVER['DOCUMENT_ROOT']) && strpos($scriptFile, $_SERVER['DOCUMENT_ROOT']) === 0) {
             $scriptUrl = str_replace('\\', '/', str_replace($_SERVER['DOCUMENT_ROOT'], '', $scriptFile));
         } else {
@@ -1642,7 +1642,7 @@ function getIP()
     }
 
     /*
-    
+
         public function getMethod()
         {
             return $this->getServerVariable('REQUEST_METHOD');
@@ -1679,7 +1679,7 @@ function getIP()
      * inferred from the request's Uri. This also lets you change the request
      * target's form to an absolute-form, authority-form or asterisk-form
      *
-     * @link https://tools.ietf.org/html/rfc7230#section-2.7 (for the various
+     * @see https://tools.ietf.org/html/rfc7230#section-2.7 (for the various
      *   request-target forms allowed in request messages)
      *
      * @param string $target The request target.
@@ -1717,7 +1717,7 @@ function getIP()
         }
         $target = $this->uri->getPath();
         if ($this->uri->getQuery()) {
-            $target .= '?'.$this->uri->getQuery();
+            $target .= '?' . $this->uri->getQuery();
         }
         if (empty($target)) {
             $target = '/';
@@ -1780,11 +1780,11 @@ function getIP()
             $this->getUri()
         );
         $output .= self::EOL;
-        $output .= 'HEADERS :'.self::EOL;
+        $output .= 'HEADERS :' . self::EOL;
         foreach ($this->getHeaders() as $name => $values) {
-            $output .= sprintf('    %s: %s', $name, $this->getHeaderLine($name)).self::EOL;
+            $output .= sprintf('    %s: %s', $name, $this->getHeaderLine($name)) . self::EOL;
         }
-        $output .= 'BODY :'.self::EOL;
+        $output .= 'BODY :' . self::EOL;
         $output .= (string) $this->getBody();
 
         return $output;
@@ -1796,7 +1796,7 @@ function getIP()
 
     public function getPath()
     {
-        return '/'.ltrim($this->url->getPath(), '/');
+        return '/' . ltrim($this->url->getPath(), '/');
     }
 
     public function getPort()
@@ -2008,7 +2008,7 @@ function getIP()
             return $this->getHost();
         }
 
-        return $this->getHost().':'.$port;
+        return $this->getHost() . ':' . $port;
     }
 
     /**
@@ -2035,7 +2035,7 @@ function getIP()
      */
     public function getSchemeAndHttpHost()
     {
-        return $this->getScheme().'://'.$this->getHttpHost();
+        return $this->getScheme() . '://' . $this->getHttpHost();
     }
 
     /**
@@ -2063,7 +2063,7 @@ function getIP()
      */
     public function getUriForPath($path)
     {
-        return $this->getSchemeAndHttpHost().$this->getBaseUrl().$path;
+        return $this->getSchemeAndHttpHost() . $this->getBaseUrl() . $path;
     }
 
     /**
@@ -2106,7 +2106,7 @@ function getIP()
             }
         }
         $targetDirs[] = $targetFile;
-        $path = str_repeat('../', count($sourceDirs)).implode('/', $targetDirs);
+        $path = str_repeat('../', count($sourceDirs)) . implode('/', $targetDirs);
         // A reference to the same base directory or an empty subdirectory must be prefixed with "./".
         // This also applies to a segment with a colon character (e.g., "file:colon") that cannot be used
         // as the first segment of a relative-path reference, as it would be mistaken for a scheme name
@@ -2375,7 +2375,7 @@ function getIP()
                         if (0 === $i) {
                             $lang = strtolower($codes[0]);
                         } else {
-                            $lang .= '_'.strtoupper($codes[$i]);
+                            $lang .= '_' . strtoupper($codes[$i]);
                         }
                     }
                 }
@@ -2563,14 +2563,14 @@ function getIP()
             $secure = $this->getIsSecureConnection();
             $http = $secure ? 'https' : 'http';
             if ($this->headers->has('X-Forwarded-Host')) {
-                $this->_hostInfo = $http.'://'.$this->headers->get('X-Forwarded-Host');
+                $this->_hostInfo = $http . '://' . $this->headers->get('X-Forwarded-Host');
             } elseif ($this->headers->has('Host')) {
-                $this->_hostInfo = $http.'://'.$this->headers->get('Host');
+                $this->_hostInfo = $http . '://' . $this->headers->get('Host');
             } elseif (isset($_SERVER['SERVER_NAME'])) {
-                $this->_hostInfo = $http.'://'.$_SERVER['SERVER_NAME'];
+                $this->_hostInfo = $http . '://' . $_SERVER['SERVER_NAME'];
                 $port = $secure ? $this->getSecurePort() : $this->getPort();
                 if (($port !== 80 && !$secure) || ($port !== 443 && $secure)) {
-                    $this->_hostInfo .= ':'.$port;
+                    $this->_hostInfo .= ':' . $port;
                 }
             }
         }
@@ -2888,7 +2888,7 @@ function getIP()
         $cookies = [];
         if ($this->enableCookieValidation) {
             if ($this->cookieValidationKey == '') {
-                throw new InvalidConfigException(get_class($this).'::cookieValidationKey must be configured with a secret key.');
+                throw new InvalidConfigException(get_class($this) . '::cookieValidationKey must be configured with a secret key.');
             }
             foreach ($_COOKIE as $name => $value) {
                 if (!is_string($value)) {

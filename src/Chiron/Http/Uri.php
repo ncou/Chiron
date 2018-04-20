@@ -116,7 +116,7 @@ class Uri implements UriInterface
      *
      * @return string
      *
-     * @link https://tools.ietf.org/html/rfc3986#section-5.3
+     * @see https://tools.ietf.org/html/rfc3986#section-5.3
      */
     public static function composeComponents($scheme, $authority, $path, $query, $fragment)
     {
@@ -124,21 +124,21 @@ class Uri implements UriInterface
 
         // weak type checks to also accept null until we can add scalar type hints
         if ($scheme != '') {
-            $uri .= $scheme.':';
+            $uri .= $scheme . ':';
         }
 
         if ($authority != '' || $scheme === 'file') {
-            $uri .= '//'.$authority;
+            $uri .= '//' . $authority;
         }
 
         $uri .= $path;
 
         if ($query != '') {
-            $uri .= '?'.$query;
+            $uri .= '?' . $query;
         }
 
         if ($fragment != '') {
-            $uri .= '#'.$fragment;
+            $uri .= '#' . $fragment;
         }
 
         return $uri;
@@ -177,7 +177,7 @@ class Uri implements UriInterface
      * @see Uri::isNetworkPathReference
      * @see Uri::isAbsolutePathReference
      * @see Uri::isRelativePathReference
-     * @link https://tools.ietf.org/html/rfc3986#section-4
+     * @see https://tools.ietf.org/html/rfc3986#section-4
      */
     public static function isAbsolute(UriInterface $uri)
     {
@@ -193,7 +193,7 @@ class Uri implements UriInterface
      *
      * @return bool
      *
-     * @link https://tools.ietf.org/html/rfc3986#section-4.2
+     * @see https://tools.ietf.org/html/rfc3986#section-4.2
      */
     public static function isNetworkPathReference(UriInterface $uri)
     {
@@ -209,7 +209,7 @@ class Uri implements UriInterface
      *
      * @return bool
      *
-     * @link https://tools.ietf.org/html/rfc3986#section-4.2
+     * @see https://tools.ietf.org/html/rfc3986#section-4.2
      */
     public static function isAbsolutePathReference(UriInterface $uri)
     {
@@ -228,7 +228,7 @@ class Uri implements UriInterface
      *
      * @return bool
      *
-     * @link https://tools.ietf.org/html/rfc3986#section-4.2
+     * @see https://tools.ietf.org/html/rfc3986#section-4.2
      */
     public static function isRelativePathReference(UriInterface $uri)
     {
@@ -249,7 +249,7 @@ class Uri implements UriInterface
      *
      * @return bool
      *
-     * @link https://tools.ietf.org/html/rfc3986#section-4.4
+     * @see https://tools.ietf.org/html/rfc3986#section-4.4
      */
     public static function isSameDocumentReference(UriInterface $uri, UriInterface $base = null)
     {
@@ -360,7 +360,7 @@ class Uri implements UriInterface
         $key = strtr($key, self::$replaceQuery);
 
         if ($value !== null) {
-            $result[] = $key.'='.strtr($value, self::$replaceQuery);
+            $result[] = $key . '=' . strtr($value, self::$replaceQuery);
         } else {
             $result[] = $key;
         }
@@ -377,7 +377,7 @@ class Uri implements UriInterface
      *
      * @return UriInterface
      *
-     * @link http://php.net/manual/en/function.parse-url.php
+     * @see http://php.net/manual/en/function.parse-url.php
      */
     public static function fromParts(array $parts)
     {
@@ -397,11 +397,11 @@ class Uri implements UriInterface
     {
         $authority = $this->host;
         if ($this->userInfo !== '') {
-            $authority = $this->userInfo.'@'.$authority;
+            $authority = $this->userInfo . '@' . $authority;
         }
 
         if ($this->port !== null) {
-            $authority .= ':'.$this->port;
+            $authority .= ':' . $this->port;
         }
 
         return $authority;
@@ -457,7 +457,7 @@ class Uri implements UriInterface
     {
         $info = $user;
         if ($password != '') {
-            $info .= ':'.$password;
+            $info .= ':' . $password;
         }
 
         if ($this->userInfo === $info) {
@@ -572,7 +572,7 @@ class Uri implements UriInterface
             ? $this->filterQueryAndFragment($parts['fragment'])
             : '';
         if (isset($parts['pass'])) {
-            $this->userInfo .= ':'.$parts['pass'];
+            $this->userInfo .= ':' . $parts['pass'];
         }
 
         $this->removeDefaultPort();
@@ -656,7 +656,7 @@ class Uri implements UriInterface
         }
 
         return preg_replace_callback(
-            '/(?:[^'.self::$charUnreserved.self::$charSubDelims.'%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
+            '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/]++|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'rawurlencodeMatchZero'],
             $path
         );
@@ -678,7 +678,7 @@ class Uri implements UriInterface
         }
 
         return preg_replace_callback(
-            '/(?:[^'.self::$charUnreserved.self::$charSubDelims.'%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
+            '/(?:[^' . self::$charUnreserved . self::$charSubDelims . '%:@\/\?]++|%(?![A-Fa-f0-9]{2}))/',
             [$this, 'rawurlencodeMatchZero'],
             $str
         );
@@ -704,11 +704,11 @@ class Uri implements UriInterface
             }
         } elseif (isset($this->path[0]) && $this->path[0] !== '/') {
             @trigger_error(
-                'The path of a URI with an authority must start with a slash "/" or be empty. Automagically fixing the URI '.
+                'The path of a URI with an authority must start with a slash "/" or be empty. Automagically fixing the URI ' .
                 'by adding a leading slash to the path is deprecated since version 1.4 and will throw an exception instead.',
                 E_USER_DEPRECATED
             );
-            $this->path = '/'.$this->path;
+            $this->path = '/' . $this->path;
             //throw new \InvalidArgumentException('The path of a URI with an authority must start with a slash "/" or be empty');
         }
     }
