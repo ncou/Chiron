@@ -31,8 +31,8 @@ use Psr\Http\Message\ResponseInterface;
 
 class Response extends Message implements ResponseInterface
 {
-    const MIN_STATUS_CODE_VALUE = 100;
-    const MAX_STATUS_CODE_VALUE = 599;
+    public const MIN_STATUS_CODE_VALUE = 100;
+    public const MAX_STATUS_CODE_VALUE = 599;
 
     /** @var array Map of standard HTTP status code/reason phrases */
     private static $phrases = [

@@ -64,9 +64,9 @@ use RuntimeException;
  */
 class Router
 {
-    const NOT_FOUND = 0;
-    const FOUND = 1;
-    const METHOD_NOT_ALLOWED = 2;
+    public const NOT_FOUND = 0;
+    public const FOUND = 1;
+    public const METHOD_NOT_ALLOWED = 2;
 
     /**
      * Collection of routes.

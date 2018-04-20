@@ -12,7 +12,7 @@ use Psr\Log\LogLevel;
  */
 class Logger extends AbstractLogger
 {
-    const LEVELS = [
+    public const LEVELS = [
         LogLevel::DEBUG         => 0,
         LogLevel::INFO          => 1,
         LogLevel::NOTICE        => 2,
