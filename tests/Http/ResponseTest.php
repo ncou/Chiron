@@ -10,9 +10,7 @@ declare(strict_types=1);
 namespace Tests\Http\Response;
 
 use Chiron\Http\Response;
-
 use PHPUnit\Framework\TestCase;
-
 /*
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -30,7 +28,7 @@ class ResponseTest extends TestCase
     {
     }
 
-    public function createResponse(int $status = 200, array $headers = [], $body = null, string $version = '1.1', $reason = null) 
+    public function createResponse(int $status = 200, array $headers = [], $body = null, string $version = '1.1', $reason = null)
     {
         return new Response($status, $headers, $body, $version, $reason);
     }
@@ -77,10 +75,6 @@ class ResponseTest extends TestCase
         $this->assertFalse($r->isMethodAllowed('GET'));
     }
 
-
-
-
-
     public function testIsOk()
     {
         $r = $this->createResponse(200);
@@ -91,7 +85,6 @@ class ResponseTest extends TestCase
     {
         $r = $this->createResponse(204);
         $this->assertTrue($r->isEmpty());
-
 
         $r = $r->withStatus(304);
         $this->assertTrue($r->isEmpty());
@@ -184,15 +177,6 @@ class ResponseTest extends TestCase
         $this->assertTrue($r->isMethodNotAllowed());
     }
 
-
-
-
-
-
-
-
-
-
     public function testDetectFormatByContentHeader()
     {
         $r = $this->createResponse(200, ['Content-Type' => 'text/html; charset=utf-8']);
@@ -201,15 +185,15 @@ class ResponseTest extends TestCase
         $this->assertSame(null, $r->detectFormat());
 
         // detect JSON
-        $r = $r->withHeader('Content-Type','application/json');
+        $r = $r->withHeader('Content-Type', 'application/json');
         $this->assertSame('JSON', $r->detectFormat());
 
         // detect XML
-        $r = $r->withHeader('Content-Type','application/xml');
+        $r = $r->withHeader('Content-Type', 'application/xml');
         $this->assertSame('XML', $r->detectFormat());
 
         // detect URLENCODED
-        $r = $r->withHeader('Content-Type','application/x-www-form-urlencoded');
+        $r = $r->withHeader('Content-Type', 'application/x-www-form-urlencoded');
         $this->assertSame('URLENCODED', $r->detectFormat());
     }
 
@@ -232,6 +216,4 @@ class ResponseTest extends TestCase
         $r = $r->withoutBody()->write('data=test&value=ok');
         $this->assertSame('URLENCODED', $r->detectFormat());
     }
-
-    
 }
