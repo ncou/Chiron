@@ -19,7 +19,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class LazyLoadingMiddleware implements MiddlewareInterface
 {
     /**
-     * @var MiddlewareContainer
+     * @var ContainerInterface
      */
     private $container;
 

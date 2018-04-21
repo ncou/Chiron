@@ -7,6 +7,8 @@ namespace Chiron;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 
+use InvalidArgumentException;
+
 /**
  * Minimalist PSR-3 logger designed to write in stderr or any other stream.
  */

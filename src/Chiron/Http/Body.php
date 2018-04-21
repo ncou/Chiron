@@ -17,6 +17,8 @@ namespace Chiron\Http;
 
 use Nyholm\Psr7\Stream;
 
+use InvalidArgumentException;
+
 /**
  * Implementation of PSR HTTP streams.
  */
