@@ -34,7 +34,12 @@ class ErrorHandlerMiddlewareTest extends TestCase
         $this->request = $this->prophesize(ServerRequestInterface::class);
 
         $this->request->withAttribute(Argument::type('string'), Argument::type(Throwable::class))->will([$this->request, 'reveal']);
-        //$this->request->getAttribute(Argument::type())->willReturn($this->request);
+        $this->request->withAttribute(Argument::type('string'), Argument::type('bool'))->will([$this->request, 'reveal']);
+
+        /*
+        $this->request->withAttribute(Argument::type('string'), Argument::type('bool'))->will(function ($args) {
+            return $args[1];
+        });*/
 
         $this->errorReporting = error_reporting();
     }
@@ -45,11 +50,11 @@ class ErrorHandlerMiddlewareTest extends TestCase
     }
 
     // TODO : utiliser le $isDevelopmentMode pour afficher/cacher le détail des exceptions !!!!
-    public function createMiddleware($isDevelopmentMode = false)
+    public function createMiddleware($isDevelopmentMode = true)
     {
-        $errorHandlerMiddleware = new ErrorHandlerMiddleware();
+        $errorHandlerMiddleware = new ErrorHandlerMiddleware($isDevelopmentMode);
 
-        $handler = function () {
+        $handler = function ($request) {
             $response = new Response(500);
             $response->getBody()->write('Oops..');
 

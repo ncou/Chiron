@@ -1,7 +1,5 @@
 <?php
 
-//namespace Equip\Dispatch;
-
 namespace Chiron\Tests\Utils;
 
 use Psr\Http\Message\ResponseInterface;
