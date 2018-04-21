@@ -20,8 +20,6 @@ require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/UploadedFile.php';
 require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Uri.php';
 */
 
-
-
 // TODO : example : https://github.com/narrowspark/framework/blob/master/src/Viserio/Component/Http/ServerRequest.php
 //https://github.com/koolkode/http/blob/master/src/HttpRequest.php
 //https://github.com/yiisoft/yii2/blob/master/framework/web/Request.php
@@ -42,9 +40,8 @@ require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Uri.php';
 //use Klein\DataCollection\HeaderDataCollection;
 //use Klein\DataCollection\ServerDataCollection;
 
-use Psr\Http\Message\UriInterface;
-
 use Nyholm\Psr7\ServerRequest as ServerRequestPsr7;
+use Psr\Http\Message\UriInterface;
 
 // TODO : gérer le cas du 405 MéthodenotAllowed : https://github.com/cakephp/cakephp/blob/master/src/Http/ServerRequest.php#L1840
 // TODO : ajouter des helpers pour manipuler la classe request comme un tableau ArrayAccess : https://github.com/cakephp/cakephp/blob/master/src/Http/ServerRequest.php#L2197
@@ -78,7 +75,6 @@ class ServerRequest extends ServerRequestPsr7
         parent::__construct($method, $uri, $headers = [], $body, $version, $serverParams);
     }
 
-
     /**
      * Fetch cookie value from cookies sent by the client to the server.
      *
@@ -99,7 +95,6 @@ class ServerRequest extends ServerRequestPsr7
 
         return $result;
     }
-
 
     /**
      * Create a new instance with the specified derived request attributes.
@@ -124,7 +119,6 @@ class ServerRequest extends ServerRequestPsr7
 
         return $clone;
     }
-
 
     /*******************************************************************************
      * Parameters (e.g., POST and GET data)
@@ -257,9 +251,6 @@ class ServerRequest extends ServerRequestPsr7
             return (array_key_exists('HTTPS', $this->server) && $this->server['HTTPS'] !== 'off');
         }
     */
-
-
-
 
     /**
      * Get the original HTTP method (ignore override).
@@ -1726,7 +1717,6 @@ function getIP()
 
         return null === $this->format ? $default : $this->format;
     }
-
 
     /**
      * @var string
