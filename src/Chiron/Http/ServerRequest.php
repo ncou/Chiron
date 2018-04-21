@@ -4,6 +4,24 @@ declare(strict_types=1);
 
 namespace Chiron\Http;
 
+/*
+require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/MessageFactory.php';
+require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/ServerRequestFactory.php';
+require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/StreamFactory.php';
+require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/UploadedFileFactory.php';
+require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/UriFactory.php';
+
+require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/MessageTrait.php';
+require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Response.php';
+require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Request.php';
+require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/ServerRequest.php';
+require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Stream.php';
+require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/UploadedFile.php';
+require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Uri.php';
+*/
+
+
+
 // TODO : example : https://github.com/narrowspark/framework/blob/master/src/Viserio/Component/Http/ServerRequest.php
 //https://github.com/koolkode/http/blob/master/src/HttpRequest.php
 //https://github.com/yiisoft/yii2/blob/master/framework/web/Request.php
@@ -24,8 +42,9 @@ namespace Chiron\Http;
 //use Klein\DataCollection\HeaderDataCollection;
 //use Klein\DataCollection\ServerDataCollection;
 
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
+
+use Nyholm\Psr7\ServerRequest as ServerRequestPsr7;
 
 // TODO : gérer le cas du 405 MéthodenotAllowed : https://github.com/cakephp/cakephp/blob/master/src/Http/ServerRequest.php#L1840
 // TODO : ajouter des helpers pour manipuler la classe request comme un tableau ArrayAccess : https://github.com/cakephp/cakephp/blob/master/src/Http/ServerRequest.php#L2197
@@ -33,191 +52,32 @@ use Psr\Http\Message\UriInterface;
 /**
  * Request.
  */
-class ServerRequest extends Message implements ServerRequestInterface
+class ServerRequest extends ServerRequestPsr7
 {
-    /** @var UriInterface */
-    private $uri;
-
-    /**
-     * @var array
-     */
-    private $attributes = [];
-
-    /**
-     * The request method.
-     *
-     * @var string
-     */
-    private $method;
-
-    /**
-     * The server environment variables at the time the request was created.
-     *
-     * @var array
-     */
-    private $serverParams;
-
     private $contentTypes;
     private $languages;
 
     /**
-     * @param string                          $method       HTTP method
-     * @param string|UriInterface             $uri          URI
-     * @param array                           $headers      Request headers
-     * @param string|resource|StreamInterface $body         Request body
-     * @param string                          $version      Protocol version
-     * @param array                           $serverParams Typically the $_SERVER superglobal
+     * @param string                               $method       HTTP method
+     * @param string|UriInterface                  $uri          URI
+     * @param array                                $headers      Request headers
+     * @param string|null|resource|StreamInterface $body         Request body
+     * @param string                               $version      Protocol version
+     * @param array                                $serverParams Typically the $_SERVER superglobal
      */
     public function __construct(
-        string $method,
+        $method,
         $uri,
         array $headers = [],
-        $body = 'php://temp',
+        $body = null,
         $version = '1.1',
         array $serverParams = []
     ) {
-        $this->validateMethod($method);
-        $this->method = strtoupper($method);
-        $this->protocol = $version;
-
         $this->serverParams = $serverParams;
 
-        if (! ($uri instanceof UriInterface)) {
-            $uri = new Uri($uri);
-        }
-
-        $this->uri = $uri;
-
-        $this->setHeaders($headers);
-
-        $this->stream = $this->getStream($body, 'wb+');
-
-        // per PSR-7: attempt to set the Host header from a provided URI if no 'Host' header is provided
-        // TODO : cas à gérer !!!!!   https://github.com/zendframework/zend-diactoros/blob/master/src/RequestTrait.php#L68
-        /*
-        if (! $this->hasHeader('Host') && $this->uri->getHost()) {
-            $this->headerNames['host'] = 'Host';
-            $this->headers['Host'] = [$this->getHostFromUri()];
-        }
-        */
-
-        /*
-        //https://github.com/slimphp/Slim/blob/b9b546c7539fb6dda9474686f28c3081a9f4a231/Slim/Http/Request.php#L200
-                if (!$this->headers->has('Host') || $this->uri->getHost() !== '') {
-                    $this->headers->set('Host', $this->uri->getHost());
-                }
-        */
-
-        // per PSR-7: attempt to set the Host header from a provided URI if no 'Host' header is provided
-        if (! $this->hasHeader('Host')) {
-            $this->updateHostFromUri();
-        }
+        parent::__construct($method, $uri, $headers = [], $body, $version, $serverParams);
     }
 
-    private function updateHostFromUri()
-    {
-        $host = $this->uri->getHost();
-        if ($host == '') {
-            return;
-        }
-        if (($port = $this->uri->getPort()) !== null) {
-            $host .= ':' . $port;
-        }
-
-        if (isset($this->headerNames['host'])) {
-            $header = $this->headerNames['host'];
-        } else {
-            $header = 'Host';
-            $this->headerNames['host'] = 'Host';
-        }
-        // Ensure Host is the first header.
-        // See: http://tools.ietf.org/html/rfc7230#section-5.4
-        $this->headers = [$header => [$host]] + $this->headers;
-    }
-
-    /**
-     * Retrieve the host from the URI instance.
-     *
-     * @return string
-     */
-    // TODO : permet de gérer ce cas : https://github.com/zendframework/zend-diactoros/blob/master/src/RequestTrait.php#L68
-    /*
-    private function getHostFromUri()
-    {
-        $host  = $this->uri->getHost();
-        $host .= $this->uri->getPort() ? ':' . $this->uri->getPort() : '';
-        return $host;
-    }
-    */
-
-    /**
-     * Validate the HTTP method.
-     *
-     * @param string $method
-     *
-     * @throws InvalidArgumentException on invalid HTTP method.
-     */
-    private function validateMethod(string $method): void
-    {
-        if (! preg_match('/^[!#$%&\'*+.^_`\|~0-9a-z-]+$/i', $method)) {
-            throw new InvalidArgumentException(sprintf(
-                'Unsupported HTTP method "%s" provided',
-                $method
-            ));
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getServerParams()
-    {
-        return $this->serverParams;
-    }
-
-    /**
-     * Retrieve a server parameter.
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * @param string $key
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    public function getServerParam($key, $default = null)
-    {
-        $serverParams = $this->getServerParams();
-
-        return isset($serverParams[$key]) ? $serverParams[$key] : $default;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getUploadedFiles()
-    {
-        return $this->uploadedFiles;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function withUploadedFiles(array $uploadedFiles)
-    {
-        $new = clone $this;
-        $new->uploadedFiles = $uploadedFiles;
-
-        return $new;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCookieParams()
-    {
-        return $this->cookieParams;
-    }
 
     /**
      * Fetch cookie value from cookies sent by the client to the server.
@@ -240,182 +100,166 @@ class ServerRequest extends Message implements ServerRequestInterface
         return $result;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function withCookieParams(array $cookies)
-    {
-        $new = clone $this;
-        $new->cookieParams = $cookies;
-
-        return $new;
-    }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getQueryParams()
-    {
-        return $this->queryParams;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function withQueryParams(array $query)
-    {
-        $new = clone $this;
-        $new->queryParams = $query;
-
-        return $new;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getParsedBody()
-    {
-        return $this->parsedBody;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function withParsedBody($data)
-    {
-        $new = clone $this;
-        $new->parsedBody = $data;
-
-        return $new;
-    }
-
-    /**
-     * Return an instance with the provided HTTP method.
+     * Create a new instance with the specified derived request attributes.
      *
-     * While HTTP method names are typically all uppercase characters, HTTP
-     * method names are case-sensitive and thus implementations SHOULD NOT
-     * modify the given string.
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * This method allows setting all new derived request attributes as
+     * described in getAttributes().
      *
      * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return an instance that has the
-     * changed request method.
+     * immutability of the message, and MUST return a new instance that has the
+     * updated attributes.
      *
-     * @param string $method Case-sensitive method.
-     *
-     * @throws \InvalidArgumentException for invalid HTTP methods.
+     * @param array $attributes New attributes
      *
      * @return static
      */
-    public function withMethod($method)
+    public function withAttributes(array $attributes)
     {
-        // TODO : à implémenter !!!!!!!!!!!! regarder ici : https://github.com/cakephp/cakephp/blob/master/src/Http/ServerRequest.php#L1160
-        /*
-        $this->validateMethod($method);
-        $new = clone $this;
-        $new->originalMethod = $method;
-        $new->method = $method;
-        return $new;
-        */
+        $clone = clone $this;
+        $clone->attributes = $attributes;
 
-        $this->validateMethod($method);
-        $new = clone $this;
-        $new->method = strtoupper($method);
-
-        return $new;
+        return $clone;
     }
 
+
+    /*******************************************************************************
+     * Parameters (e.g., POST and GET data)
+     ******************************************************************************/
+
     /**
-     * Gets the request method, or checks it against $is.
+     * Fetch request parameter value from body or query string (in that order).
      *
-     * <code>
-     * // POST request example
-     * $request->getMethod() // returns 'POST'
-     * $request->getMethod('post') // returns true
-     * $request->getMethod('get') // returns false
-     * </code>
+     * Note: This method is not part of the PSR-7 standard.
      *
-     * @param string $is             The method to check the current request method against
-     * @param bool   $allow_override Whether or not to allow HTTP method overriding via header or params
+     * @param string $key     The parameter key.
+     * @param string $default The default value.
      *
-     * @return string|bool
+     * @return mixed The parameter value.
      */
-    // TODO : virer la gestion du "$is" il faudrait plutot faire une fonction isMethod($is) ????
-    public function getMethod()
+    public function getParam($key, $default = null)
     {
-        return $this->method;
-
-        // TODO : amélorer en utilisant un override de la méthode => https://github.com/slimphp/Slim/blob/403b7980e0bc19ca43015f6232259d81479b24b2/Slim/Http/Request.php#L271
-/*
-        // Override
-        if ($method === 'POST') {
-            // For legacy servers, override the HTTP method with the X-HTTP-Method-Override header or _method parameter
-            if ($this->server->exists('X_HTTP_METHOD_OVERRIDE')) {
-                $method = $this->getServerParam('X_HTTP_METHOD_OVERRIDE', $method);
-            } else {
-                $method = $this->param('_method', $method);
-            }
-
-            $method = strtoupper($method);
+        $postParams = $this->getParsedBody();
+        $getParams = $this->getQueryParams();
+        $result = $default;
+        if (is_array($postParams) && isset($postParams[$key])) {
+            $result = $postParams[$key];
+        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
+            $result = $postParams->$key;
+        } elseif (isset($getParams[$key])) {
+            $result = $getParams[$key];
         }
 
-        return $method;
-        */
+        return $result;
     }
 
     /**
-     * Returns the method of the current request (e.g. GET, POST, HEAD, PUT, PATCH, DELETE).
+     * Fetch parameter value from request body.
      *
-     * @return string request method, such as GET, POST, HEAD, PUT, PATCH, DELETE.
-     *                The value returned is turned into upper case.
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return mixed
      */
+    public function getParsedBodyParam($key, $default = null)
+    {
+        $postParams = $this->getParsedBody();
+        $result = $default;
+        if (is_array($postParams) && isset($postParams[$key])) {
+            $result = $postParams[$key];
+        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
+            $result = $postParams->$key;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Fetch parameter value from query string.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function getQueryParam($key, $default = null)
+    {
+        $getParams = $this->getQueryParams();
+        $result = $default;
+        if (isset($getParams[$key])) {
+            $result = $getParams[$key];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Fetch associative array of body and query string parameters.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @param array|null $only list the keys to retrieve.
+     *
+     * @return array|null
+     */
+    public function getParams(array $only = null)
+    {
+        $params = $this->getQueryParams();
+        $postParams = $this->getParsedBody();
+        if ($postParams) {
+            $params = array_merge($params, (array) $postParams);
+        }
+        if ($only) {
+            $onlyParams = [];
+            foreach ($only as $key) {
+                if (array_key_exists($key, $params)) {
+                    $onlyParams[$key] = $params[$key];
+                }
+            }
+
+            return $onlyParams;
+        }
+
+        return $params;
+    }
+
     /*
-    //https://github.com/yiisoft/yii2/blob/master/framework/web/Request.php#L369
+
         public function getMethod()
         {
-            if (isset($_POST[$this->methodParam])) {
-                return strtoupper($_POST[$this->methodParam]);
-            }
-            if ($this->headers->has('X-Http-Method-Override')) {
-                return strtoupper($this->headers->get('X-Http-Method-Override'));
-            }
-            if (isset($_SERVER['REQUEST_METHOD'])) {
-                return strtoupper($_SERVER['REQUEST_METHOD']);
-            }
-            return 'GET';
+            return $this->getServerVariable('REQUEST_METHOD');
+        }
+        public function getHttpAccept()
+        {
+            return $this->getServerVariable('HTTP_ACCEPT');
+        }
+        public function getReferer()
+        {
+            return $this->getServerVariable('HTTP_REFERER');
+        }
+        public function getUserAgent()
+        {
+            return $this->getServerVariable('HTTP_USER_AGENT');
+        }
+        public function getIpAddress()
+        {
+            return $this->getServerVariable('REMOTE_ADDR');
+        }
+        public function isSecure()
+        {
+            return (array_key_exists('HTTPS', $this->server) && $this->server['HTTPS'] !== 'off');
         }
     */
 
-    /**
-     * Gets the request "intended" method.
-     *
-     * If the X-HTTP-Method-Override header is set, and if the method is a POST,
-     * then it is used to determine the "real" intended HTTP method.
-     *
-     * The _method request parameter can also be used to determine the HTTP method,
-     * but only if enableHttpMethodParameterOverride() has been called.
-     *
-     * The method is always an uppercased string.
-     *
-     * @return string The request method
-     *
-     * @see getRealMethod()
-     */
-    //https://github.com/symfony/http-foundation/blob/f5c38b8dafc947dae251045d52deaab15c3496ab/Request.php#L1203
-    /*
-    public function getMethod()
-    {
-        if (null === $this->method) {
-            $this->method = strtoupper($this->server->get('REQUEST_METHOD', 'GET'));
-            if ('POST' === $this->method) {
-                if ($method = $this->headers->get('X-HTTP-METHOD-OVERRIDE')) {
-                    $this->method = strtoupper($method);
-                } elseif (self::$httpMethodParameterOverride) {
-                    $this->method = strtoupper($this->request->get('_method', $this->query->get('_method', 'POST')));
-                }
-            }
-        }
-        return $this->method;
-    }*/
+
+
 
     /**
      * Get the original HTTP method (ignore override).
@@ -470,59 +314,6 @@ class ServerRequest extends Message implements ServerRequestInterface
             return $this->getMethod() === strtoupper($method);
         }
     */
-
-    /**
-     * Gets the request URI.
-     *
-     * @return string
-     */
-    /*
-    public function getURI()
-    {
-        return $this->getServerParam('REQUEST_URI', '/');
-    }
-    */
-
-    /**
-     * Retrieves the URI instance.
-     *
-     * This method MUST return a UriInterface instance.
-     *
-     * @see http://tools.ietf.org/html/rfc3986#section-4.3
-     *
-     * @return UriInterface Returns a UriInterface instance
-     *                      representing the URI of the request.
-     */
-    public function getUri()
-    {
-        return $this->uri;
-    }
-
-    /**
-     * Return an instance with the specified uri.
-     *
-     * *Warning* Replacing the Uri will not update the `base`, `webroot`,
-     * and `url` attributes.
-     *
-     * @param \Psr\Http\Message\UriInterface $uri          The new request uri
-     * @param bool                           $preserveHost Whether or not the host should be retained.
-     *
-     * @return static
-     */
-    // TODO : à implémeter cf : https://github.com/guzzle/psr7/blob/master/src/Request.php#L104
-    // TODO : cf aussi ici : https://github.com/cakephp/cakephp/blob/master/src/Http/ServerRequest.php#L2121
-    // https://github.com/slimphp/Slim/blob/b9b546c7539fb6dda9474686f28c3081a9f4a231/Slim/Http/Request.php#L586
-    public function withUri(UriInterface $uri, $preserveHost = false)
-    {
-        $new = clone $this;
-        $new->uri = $uri;
-        if (! $preserveHost) {
-            //TODO : attention vérifier si on n'a pas viré cette méthode de la classe !!!!!!!!
-            $new->updateHostFromUri();
-        }
-
-        return $new;
-    }
 
     /**
      * Get request URI segment.
@@ -1407,7 +1198,8 @@ function getIP()
      */
     public function getScheme()
     {
-        return $this->isSecure() ? 'https' : 'http';
+        return $this->uri->getScheme();
+        //return $this->isSecure() ? 'https' : 'http';
     }
 
     //https://github.com/symfony/symfony/blob/master/src/Symfony/Component/HttpFoundation/Request.php
@@ -1427,304 +1219,6 @@ function getIP()
         return $this->getBaseUrl().$path;
     }
     */
-
-    /*******************************************************************************
-     * Attributes
-     ******************************************************************************/
-
-    /**
-     * Retrieve attributes derived from the request.
-     *
-     * The request "attributes" may be used to allow injection of any
-     * parameters derived from the request: e.g., the results of path
-     * match operations; the results of decrypting cookies; the results of
-     * deserializing non-form-encoded message bodies; etc. Attributes
-     * will be application and request specific, and CAN be mutable.
-     *
-     * @return array Attributes derived from the request.
-     */
-    public function getAttributes()
-    {
-        return $this->attributes;
-    }
-
-    /**
-     * Retrieve a single derived request attribute.
-     *
-     * Retrieves a single derived request attribute as described in
-     * getAttributes(). If the attribute has not been previously set, returns
-     * the default value as provided.
-     *
-     * This method obviates the need for a hasAttribute() method, as it allows
-     * specifying a default value to return if the attribute is not found.
-     *
-     * @see getAttributes()
-     *
-     * @param string $name    The attribute name.
-     * @param mixed  $default Default value to return if the attribute does not exist.
-     *
-     * @return mixed
-     */
-    public function getAttribute($attribute, $default = null)
-    {
-        if (false === array_key_exists($attribute, $this->attributes)) {
-            return $default;
-        }
-
-        return $this->attributes[$attribute];
-    }
-
-    /**
-     * Return an instance with the specified derived request attribute.
-     *
-     * This method allows setting a single derived request attribute as
-     * described in getAttributes().
-     *
-     * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return an instance that has the
-     * updated attribute.
-     *
-     * @see getAttributes()
-     *
-     * @param string $name  The attribute name.
-     * @param mixed  $value The value of the attribute.
-     *
-     * @return static
-     */
-    public function withAttribute($attribute, $value)
-    {
-        $new = clone $this;
-        $new->attributes[$attribute] = $value;
-
-        return $new;
-    }
-
-    /**
-     * Create a new instance with the specified derived request attributes.
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * This method allows setting all new derived request attributes as
-     * described in getAttributes().
-     *
-     * This method MUST be implemented in such a way as to retain the
-     * immutability of the message, and MUST return a new instance that has the
-     * updated attributes.
-     *
-     * @param array $attributes New attributes
-     *
-     * @return static
-     */
-    public function withAttributes(array $attributes)
-    {
-        $clone = clone $this;
-        $clone->attributes = $attributes;
-
-        return $clone;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function withoutAttribute($attribute)
-    {
-        if (false === array_key_exists($attribute, $this->attributes)) {
-            return $this;
-        }
-        $new = clone $this;
-        unset($new->attributes[$attribute]);
-
-        return $new;
-    }
-
-    /*******************************************************************************
-     * Parameters (e.g., POST and GET data)
-     ******************************************************************************/
-
-    /**
-     * Fetch request parameter value from body or query string (in that order).
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * @param string $key     The parameter key.
-     * @param string $default The default value.
-     *
-     * @return mixed The parameter value.
-     */
-    public function getParam($key, $default = null)
-    {
-        $postParams = $this->getParsedBody();
-        $getParams = $this->getQueryParams();
-        $result = $default;
-        if (is_array($postParams) && isset($postParams[$key])) {
-            $result = $postParams[$key];
-        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
-            $result = $postParams->$key;
-        } elseif (isset($getParams[$key])) {
-            $result = $getParams[$key];
-        }
-
-        return $result;
-    }
-
-    /**
-     * Fetch parameter value from request body.
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * @param string $key
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    public function getParsedBodyParam($key, $default = null)
-    {
-        $postParams = $this->getParsedBody();
-        $result = $default;
-        if (is_array($postParams) && isset($postParams[$key])) {
-            $result = $postParams[$key];
-        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
-            $result = $postParams->$key;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Fetch parameter value from query string.
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * @param string $key
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    public function getQueryParam($key, $default = null)
-    {
-        $getParams = $this->getQueryParams();
-        $result = $default;
-        if (isset($getParams[$key])) {
-            $result = $getParams[$key];
-        }
-
-        return $result;
-    }
-
-    /**
-     * Fetch associative array of body and query string parameters.
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * @param array|null $only list the keys to retrieve.
-     *
-     * @return array|null
-     */
-    public function getParams(array $only = null)
-    {
-        $params = $this->getQueryParams();
-        $postParams = $this->getParsedBody();
-        if ($postParams) {
-            $params = array_merge($params, (array) $postParams);
-        }
-        if ($only) {
-            $onlyParams = [];
-            foreach ($only as $key) {
-                if (array_key_exists($key, $params)) {
-                    $onlyParams[$key] = $params[$key];
-                }
-            }
-
-            return $onlyParams;
-        }
-
-        return $params;
-    }
-
-    /*
-
-        public function getMethod()
-        {
-            return $this->getServerVariable('REQUEST_METHOD');
-        }
-        public function getHttpAccept()
-        {
-            return $this->getServerVariable('HTTP_ACCEPT');
-        }
-        public function getReferer()
-        {
-            return $this->getServerVariable('HTTP_REFERER');
-        }
-        public function getUserAgent()
-        {
-            return $this->getServerVariable('HTTP_USER_AGENT');
-        }
-        public function getIpAddress()
-        {
-            return $this->getServerVariable('REMOTE_ADDR');
-        }
-        public function isSecure()
-        {
-            return (array_key_exists('HTTPS', $this->server) && $this->server['HTTPS'] !== 'off');
-        }
-    */
-
-    /** @var null|string */
-    private $requestTarget;
-
-    /**
-     * Create a new instance with a specific request-target.
-     *
-     * You can use this method to overwrite the request target that is
-     * inferred from the request's Uri. This also lets you change the request
-     * target's form to an absolute-form, authority-form or asterisk-form
-     *
-     * @see https://tools.ietf.org/html/rfc7230#section-2.7 (for the various
-     *   request-target forms allowed in request messages)
-     *
-     * @param string $target The request target.
-     *
-     * @return static
-     */
-    public function withRequestTarget($requestTarget)
-    {
-        if (preg_match('#\s#', $requestTarget)) {
-            throw new InvalidArgumentException(
-                'Invalid request target provided; cannot contain whitespace'
-            );
-        }
-        $new = clone $this;
-        $new->requestTarget = $requestTarget;
-
-        return $new;
-    }
-
-    /**
-     * Retrieves the request's target.
-     *
-     * Retrieves the message's request-target either as it was requested,
-     * or as set with `withRequestTarget()`. By default this will return the
-     * application relative path without base directory, and the query string
-     * defined in the SERVER environment.
-     *
-     * @return string
-     */
-    //https://github.com/cakephp/cakephp/blob/master/src/Http/ServerRequest.php#L2172
-    public function getRequestTarget()
-    {
-        if ($this->requestTarget !== null) {
-            return $this->requestTarget;
-        }
-        $target = $this->uri->getPath();
-        if ($this->uri->getQuery()) {
-            $target .= '?' . $this->uri->getQuery();
-        }
-        if (empty($target)) {
-            $target = '/';
-        }
-
-        return $target;
-    }
 
     /**
      * Gets the Etags.
@@ -2002,13 +1496,13 @@ function getIP()
      */
     public function getHttpHost()
     {
-        $scheme = $this->getScheme();
-        $port = $this->getPort();
+        $scheme = $this->uri->getScheme();
+        $port = $this->uri->getPort();
         if (('http' == $scheme && 80 == $port) || ('https' == $scheme && 443 == $port)) {
-            return $this->getHost();
+            return $this->uri->getHost();
         }
 
-        return $this->getHost() . ':' . $port;
+        return $this->uri->getHost() . ':' . $port;
     }
 
     /**
@@ -2035,7 +1529,7 @@ function getIP()
      */
     public function getSchemeAndHttpHost()
     {
-        return $this->getScheme() . '://' . $this->getHttpHost();
+        return $this->uri->getScheme() . '://' . $this->getHttpHost();
     }
 
     /**
@@ -2233,6 +1727,16 @@ function getIP()
         return null === $this->format ? $default : $this->format;
     }
 
+
+    /**
+     * @var string
+     */
+    protected $locale;
+    /**
+     * @var string
+     */
+    protected $defaultLocale = 'en';
+
     /**
      * Get the default locale.
      *
@@ -2244,6 +1748,29 @@ function getIP()
     }
 
     /**
+     * Sets the default locale.
+     *
+     * @param string $locale
+     */
+    public function setDefaultLocale($locale)
+    {
+        $this->defaultLocale = $locale;
+        if (null === $this->locale) {
+            $this->setPhpDefaultLocale($locale);
+        }
+    }
+
+    /**
+     * Sets the locale.
+     *
+     * @param string $locale
+     */
+    public function setLocale($locale)
+    {
+        $this->setPhpDefaultLocale($this->locale = $locale);
+    }
+
+    /**
      * Get the locale.
      *
      * @return string
@@ -2251,6 +1778,19 @@ function getIP()
     public function getLocale()
     {
         return null === $this->locale ? $this->defaultLocale : $this->locale;
+    }
+
+    private function setPhpDefaultLocale(string $locale)
+    {
+        // if either the class Locale doesn't exist, or an exception is thrown when
+        // setting the default locale, the intl module is not installed, and
+        // the call can be ignored:
+        try {
+            if (class_exists('Locale', false)) {
+                \Locale::setDefault($locale);
+            }
+        } catch (\Exception $e) {
+        }
     }
 
     /**
@@ -2306,7 +1846,7 @@ function getIP()
      * @return string
      */
     /*
-    public function getProtocolVersion()
+    public function getProtocolVersion2()
     {
         if ($this->isFromTrustedProxy()) {
             preg_match('~^(HTTP/)?([1-9]\.[0-9]) ~', $this->headers->get('Via'), $matches);

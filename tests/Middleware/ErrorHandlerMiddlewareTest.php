@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
-use Chiron\Http\Factories\ServerRequestFactory;
+//use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
 use Chiron\Middleware\ErrorHandlerMiddleware;
 use Chiron\Tests\Utils\HandlerProxy2;

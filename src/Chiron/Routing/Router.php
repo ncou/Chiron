@@ -159,7 +159,7 @@ class Router
     {
         $requestUrl = $request->getUri()->getPath();
         $requestMethod = $request->getMethod();
-        $requestScheme = $request->getScheme();
+        $requestScheme = $request->getUri()->getScheme();
 
         $allowedMethods = [];
 
