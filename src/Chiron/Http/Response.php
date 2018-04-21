@@ -4,22 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Http;
 
-/*
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/MessageFactory.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/ServerRequestFactory.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/StreamFactory.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/UploadedFileFactory.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/UriFactory.php';
-
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/MessageTrait.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Response.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Request.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/ServerRequest.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Stream.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/UploadedFile.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Uri.php';
-*/
-
 // cookies :     https://github.com/michaelbromley/drawACatApp/tree/master/api/Slim/Http
 
 //https://github.com/Guzzle3/http/blob/master/Message/Response.php
@@ -45,8 +29,16 @@ require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Uri.php';
 
 use Nyholm\Psr7\Response as ResponsePsr7;
 
+use Chiron\Http\Body;
+
 class Response extends ResponsePsr7
 {
+
+    const FORMAT_URLENCODED = "URLENCODED";
+    const FORMAT_JSON = "JSON";
+    const FORMAT_XML = "XML";
+
+
     // TODO : il faudrait pas implémenter une méthode clone avec les objets genre header ou cookies ????     https://github.com/slimphp/Slim/blob/3.x/Slim/Http/Response.php#L147
     // TODO : les cookies ne semble pas avoir leur place ici !!!!!!!!!!
     private $cookies = [];
@@ -65,10 +57,6 @@ class Response extends ResponsePsr7
     {
         parent::__construct($status, $headers, $body, $version, $reason);
     }
-
-    //******************************************************************
-    // Tout le reste ne fait pas parti du PSR 7 Response !!!!!!!!!!!!!!
-    //******************************************************************
 
     /**
      * Return the reason phrase by code.
@@ -279,6 +267,17 @@ class Response extends ResponsePsr7
     }*/
 
     /**
+     * Is the response OK?
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return bool
+     */
+    public function isOk(): bool
+    {
+        return $this->getStatusCode() === 200;
+    }
+
+    /**
      * Is the response empty?
      * Note: This method is not part of the PSR-7 standard.
      *
@@ -286,7 +285,7 @@ class Response extends ResponsePsr7
      */
     public function isEmpty(): bool
     {
-        return in_array($this->statusCode, [204, 304]);
+        return in_array($this->getStatusCode(), [204, 304]);
     }
 
     /**
@@ -315,13 +314,11 @@ class Response extends ResponsePsr7
      * Is the response a redirect of some form?
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param string $location
-     *
      * @return bool
      */
-    public function isRedirect($location = null): bool
+    public function isRedirect(): bool
     {
-        return in_array($this->statusCode, [201, 301, 302, 303, 307, 308]) && (null === $location ?: $location == $this->getHeaderLine('Location'));
+        return in_array($this->getStatusCode(), [301, 302, 303, 307, 308]);
     }
 
     /**
@@ -347,7 +344,7 @@ class Response extends ResponsePsr7
      */
     public function isInvalid(): bool
     {
-        return $this->statusCode < 100 || $this->statusCode >= 600;
+        return $this->getStatusCode() < 100 || $this->getStatusCode() >= 600;
     }
 
     /**
@@ -358,7 +355,7 @@ class Response extends ResponsePsr7
      */
     public function isInformational(): bool
     {
-        return $this->statusCode >= 100 && $this->statusCode < 200;
+        return $this->getStatusCode() >= 100 && $this->getStatusCode() < 200;
     }
 
     /**
@@ -369,7 +366,7 @@ class Response extends ResponsePsr7
      */
     public function isSuccessful(): bool
     {
-        return $this->statusCode >= 200 && $this->statusCode < 300;
+        return $this->getStatusCode() >= 200 && $this->getStatusCode() < 300;
     }
 
     /**
@@ -380,7 +377,7 @@ class Response extends ResponsePsr7
     /*
     public function isSuccessful()
     {
-        return ($this->statusCode >= 200 && $this->statusCode < 300) || $this->statusCode == 304;
+        return ($this->getStatusCode() >= 200 && $this->getStatusCode() < 300) || $this->getStatusCode() == 304;
     }*/
 
     /**
@@ -391,7 +388,7 @@ class Response extends ResponsePsr7
      */
     public function isRedirection(): bool
     {
-        return $this->statusCode >= 300 && $this->statusCode < 400;
+        return $this->getStatusCode() >= 300 && $this->getStatusCode() < 400;
     }
 
     /**
@@ -402,7 +399,7 @@ class Response extends ResponsePsr7
      */
     public function isClientError(): bool
     {
-        return $this->statusCode >= 400 && $this->statusCode < 500;
+        return $this->getStatusCode() >= 400 && $this->getStatusCode() < 500;
     }
 
     /**
@@ -413,7 +410,7 @@ class Response extends ResponsePsr7
      */
     public function isServerError(): bool
     {
-        return $this->statusCode >= 500 && $this->statusCode < 600;
+        return $this->getStatusCode() >= 500 && $this->getStatusCode() < 600;
     }
 
     /**
@@ -427,17 +424,6 @@ class Response extends ResponsePsr7
     }
 
     /**
-     * Is the response OK?
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * @return bool
-     */
-    public function isOk(): bool
-    {
-        return $this->statusCode === 200;
-    }
-
-    /**
      * Is the response forbidden?
      * Note: This method is not part of the PSR-7 standard.
      *
@@ -445,7 +431,7 @@ class Response extends ResponsePsr7
      */
     public function isForbidden(): bool
     {
-        return $this->statusCode === 403;
+        return $this->getStatusCode() === 403;
     }
 
     /**
@@ -456,7 +442,18 @@ class Response extends ResponsePsr7
      */
     public function isNotFound(): bool
     {
-        return $this->statusCode === 404;
+        return $this->getStatusCode() === 404;
+    }
+
+    /**
+     * Is the response a method not allowed error?
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return bool
+     */
+    public function isMethodNotAllowed(): bool
+    {
+        return $this->getStatusCode() === 405;
     }
 
     /**
@@ -719,7 +716,7 @@ class Response extends ResponsePsr7
     {
         // default encodingOptions is 79 => JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES
 
-        $response = $this->withBody(new Stream('php://temp', 'r+'));
+        $response = $this->withBody(new Body('php://temp', 'r+'));
         $response->stream->write($json = json_encode($data, $encodingOptions));
 
         // Ensure that the json encoding passed successfully
@@ -1137,7 +1134,7 @@ class Response extends ResponsePsr7
      * @final
      */
     //https://github.com/symfony/http-foundation/blob/master/Response.php#L649
-    public function setDate(\DateTimeInterface $date)
+    public function setDate(\DateTimeInterface $date): self
     {
         if ($date instanceof \DateTime) {
             $date = \DateTimeImmutable::createFromMutable($date);
@@ -1158,7 +1155,7 @@ class Response extends ResponsePsr7
      *
      * @final
      */
-    public function setEtag(string $etag = null, bool $weak = false)
+    public function setEtag(string $etag = null, bool $weak = false): self
     {
         if (null === $etag) {
             $this->headers->remove('Etag');
@@ -1184,7 +1181,7 @@ class Response extends ResponsePsr7
      *
      * @final
      */
-    public function setCache(array $options)
+    public function setCache(array $options) : self
     {
         if ($diff = array_diff(array_keys($options), ['etag', 'last_modified', 'max_age', 's_maxage', 'private', 'public', 'immutable'])) {
             throw new \InvalidArgumentException(sprintf('Response does not support the following options: "%s".', implode('", "', array_values($diff))));
@@ -1257,34 +1254,40 @@ class Response extends ResponsePsr7
         return $this;
     }
 
+
+
+
+
+
+
     /**
      * Get the Accept-Ranges HTTP header.
      *
      * @return string Returns what partial content range types this server supports.
      */
-    public function getAcceptRanges()
+    public function getAcceptRanges(): string
     {
-        return (string) $this->getHeader('Accept-Ranges');
+        return $this->getHeaderLine('Accept-Ranges');
     }
 
     /**
      * Get the Age HTTP header.
      *
-     * @return int|null Returns the age the object has been in a proxy cache in seconds.
+     * @return int|null Returns the age the object has been in a proxy cache in seconds, or null if header not present.
      */
-    public function getAge()
+    public function getAge(): ?int
     {
-        return (string) $this->getHeader('Age');
+        return $this->hasHeader('Age') ? (int) $this->getHeaderLine('Age') : null;
     }
 
     /**
      * Get the Allow HTTP header.
      *
-     * @return string|null Returns valid actions for a specified resource. To be used for a 405 Method not allowed.
+     * @return string[]| null Returns valid actions for a specified resource, or empty array. To be used for a 405 Method not allowed.
      */
-    public function getAllow()
+    public function getAllow(): ?array
     {
-        return (string) $this->getHeader('Allow');
+        return $this->hasHeader('Allow') ? array_map('trim', explode(',', $this->getHeaderLine('Allow'))) : null;
     }
 
     /**
@@ -1294,15 +1297,11 @@ class Response extends ResponsePsr7
      *
      * @return bool
      */
-    public function isMethodAllowed($method)
+    public function isMethodAllowed(string $method): bool
     {
-        $allow = $this->getHeader('Allow');
-        if ($allow) {
-            foreach (explode(',', $allow) as $allowable) {
-                if (! strcasecmp(trim($allowable), $method)) {
-                    return true;
-                }
-            }
+        $methods = $this->getAllow();
+        if ($methods) {
+            return in_array(strtoupper($method), $methods);
         }
 
         return false;
@@ -1315,7 +1314,7 @@ class Response extends ResponsePsr7
      */
     public function getCacheControl()
     {
-        return (string) $this->getHeader('Cache-Control');
+        return $this->getHeaderLine('Cache-Control');
     }
 
     /**
@@ -1325,7 +1324,7 @@ class Response extends ResponsePsr7
      */
     public function getConnection()
     {
-        return (string) $this->getHeader('Connection');
+        return $this->getHeaderLine('Connection');
     }
 
     /**
@@ -1335,7 +1334,7 @@ class Response extends ResponsePsr7
      */
     public function getContentEncoding()
     {
-        return (string) $this->getHeader('Content-Encoding');
+        return $this->getHeaderLine('Content-Encoding');
     }
 
     /**
@@ -1345,7 +1344,7 @@ class Response extends ResponsePsr7
      */
     public function getContentLanguage()
     {
-        return (string) $this->getHeader('Content-Language');
+        return $this->getHeaderLine('Content-Language');
     }
 
     /**
@@ -1355,7 +1354,7 @@ class Response extends ResponsePsr7
      */
     public function getContentLength()
     {
-        return (int) (string) $this->getHeader('Content-Length');
+        return (int) $this->getHeaderLine('Content-Length');
     }
 
     /**
@@ -1365,7 +1364,7 @@ class Response extends ResponsePsr7
      */
     public function getContentLocation()
     {
-        return (string) $this->getHeader('Content-Location');
+        return $this->getHeaderLine('Content-Location');
     }
 
     /**
@@ -1375,7 +1374,7 @@ class Response extends ResponsePsr7
      */
     public function getContentDisposition()
     {
-        return (string) $this->getHeader('Content-Disposition');
+        return $this->getHeaderLine('Content-Disposition');
     }
 
     /**
@@ -1385,7 +1384,7 @@ class Response extends ResponsePsr7
      */
     public function getContentMd5()
     {
-        return (string) $this->getHeader('Content-MD5');
+        return $this->getHeaderLine('Content-MD5');
     }
 
     /**
@@ -1395,7 +1394,7 @@ class Response extends ResponsePsr7
      */
     public function getContentRange()
     {
-        return (string) $this->getHeader('Content-Range');
+        return $this->getHeaderLine('Content-Range');
     }
 
     /**
@@ -1405,7 +1404,7 @@ class Response extends ResponsePsr7
      */
     public function getContentType()
     {
-        return (string) $this->getHeader('Content-Type');
+        return $this->getHeaderLine('Content-Type');
     }
 
     /**
@@ -1419,7 +1418,7 @@ class Response extends ResponsePsr7
      */
     public function isContentType($type)
     {
-        return stripos($this->getHeader('Content-Type'), $type) !== false;
+        return stripos($this->getHeaderLine('Content-Type'), $type) !== false;
     }
 
     /**
@@ -1429,7 +1428,7 @@ class Response extends ResponsePsr7
      */
     public function getDate()
     {
-        return (string) $this->getHeader('Date');
+        return $this->getHeaderLine('Date');
     }
 
     /**
@@ -1439,7 +1438,7 @@ class Response extends ResponsePsr7
      */
     public function getEtag()
     {
-        return (string) $this->getHeader('ETag');
+        return $this->getHeaderLine('ETag');
     }
 
     /**
@@ -1449,7 +1448,7 @@ class Response extends ResponsePsr7
      */
     public function getExpires()
     {
-        return (string) $this->getHeader('Expires');
+        return $this->getHeaderLine('Expires');
     }
 
     /**
@@ -1460,7 +1459,7 @@ class Response extends ResponsePsr7
      */
     public function getLastModified()
     {
-        return (string) $this->getHeader('Last-Modified');
+        return $this->getHeaderLine('Last-Modified');
     }
 
     /**
@@ -1470,7 +1469,7 @@ class Response extends ResponsePsr7
      */
     public function getLocation()
     {
-        return (string) $this->getHeader('Location');
+        return $this->getHeaderLine('Location');
     }
 
     /**
@@ -1481,7 +1480,7 @@ class Response extends ResponsePsr7
      */
     public function getPragma()
     {
-        return (string) $this->getHeader('Pragma');
+        return $this->getHeaderLine('Pragma');
     }
 
     /**
@@ -1491,7 +1490,7 @@ class Response extends ResponsePsr7
      */
     public function getProxyAuthenticate()
     {
-        return (string) $this->getHeader('Proxy-Authenticate');
+        return $this->getHeaderLine('Proxy-Authenticate');
     }
 
     /**
@@ -1502,7 +1501,7 @@ class Response extends ResponsePsr7
      */
     public function getRetryAfter()
     {
-        return (string) $this->getHeader('Retry-After');
+        return (int) $this->getHeaderLine('Retry-After');
     }
 
     /**
@@ -1512,7 +1511,7 @@ class Response extends ResponsePsr7
      */
     public function getServer()
     {
-        return (string) $this->getHeader('Server');
+        return $this->getHeaderLine('Server');
     }
 
     /**
@@ -1522,7 +1521,7 @@ class Response extends ResponsePsr7
      */
     public function getSetCookie()
     {
-        return (string) $this->getHeader('Set-Cookie');
+        return $this->getHeaderLine('Set-Cookie');
     }
 
     /**
@@ -1533,7 +1532,7 @@ class Response extends ResponsePsr7
      */
     public function getTrailer()
     {
-        return (string) $this->getHeader('Trailer');
+        return $this->getHeaderLine('Trailer');
     }
 
     /**
@@ -1543,7 +1542,7 @@ class Response extends ResponsePsr7
      */
     public function getTransferEncoding()
     {
-        return (string) $this->getHeader('Transfer-Encoding');
+        return $this->getHeaderLine('Transfer-Encoding');
     }
 
     /**
@@ -1555,7 +1554,7 @@ class Response extends ResponsePsr7
     // TODO : regarder ici comment c'est fait : https://github.com/symfony/http-foundation/blob/master/Response.php#L1009
     public function getVary()
     {
-        return (string) $this->getHeader('Vary');
+        return $this->getHeaderLine('Vary');
     }
 
     /**
@@ -1565,7 +1564,7 @@ class Response extends ResponsePsr7
      */
     public function getVia()
     {
-        return (string) $this->getHeader('Via');
+        return $this->getHeaderLine('Via');
     }
 
     /**
@@ -1575,7 +1574,7 @@ class Response extends ResponsePsr7
      */
     public function getWarning()
     {
-        return (string) $this->getHeader('Warning');
+        return $this->getHeaderLine('Warning');
     }
 
     /**
@@ -1585,7 +1584,7 @@ class Response extends ResponsePsr7
      */
     public function getWwwAuthenticate()
     {
-        return (string) $this->getHeader('WWW-Authenticate');
+        return $this->getHeaderLine('WWW-Authenticate');
     }
 
     //*************************
@@ -1597,11 +1596,11 @@ class Response extends ResponsePsr7
      *
      * @return string|null format name, 'null' - if detection failed.
      */
-    protected function defaultFormat()
+    public function detectFormat()
     {
-        $format = $this->detectFormatByHeaders($this->getHeaders());
+        $format = $this->detectFormatByHeader();
         if ($format === null) {
-            $format = $this->detectFormatByContent($this->getContent());
+            $format = $this->detectFormatByContent((string) $this->getBody());
         }
 
         return $format;
@@ -1610,23 +1609,21 @@ class Response extends ResponsePsr7
     /**
      * Detects format from headers.
      *
-     * @param HeaderCollection $headers source headers.
-     *
      * @return null|string format name, 'null' - if detection failed.
      */
-    protected function detectFormatByHeaders(HeaderCollection $headers)
+    private function detectFormatByHeader()
     {
-        $contentTypeHeaders = $headers->get('content-type', null, false);
+        $contentTypeHeaders = $this->getHeader('Content-Type');
         if (! empty($contentTypeHeaders)) {
             $contentType = end($contentTypeHeaders);
             if (stripos($contentType, 'json') !== false) {
-                return Client::FORMAT_JSON;
+                return self::FORMAT_JSON;
             }
             if (stripos($contentType, 'urlencoded') !== false) {
-                return Client::FORMAT_URLENCODED;
+                return self::FORMAT_URLENCODED;
             }
             if (stripos($contentType, 'xml') !== false) {
-                return Client::FORMAT_XML;
+                return self::FORMAT_XML;
             }
         }
     }
@@ -1639,16 +1636,21 @@ class Response extends ResponsePsr7
      * @return null|string format name, 'null' - if detection failed.
      */
     // TODO : on peut surement faire un middleware pour ajouter un contentType = application/json ou /xml ou html/text selon la détection du format ???? cela semble une bonne idée !!!!
-    protected function detectFormatByContent($content)
+    private function detectFormatByContent($content)
     {
         if (preg_match('/^\\{.*\\}$/is', $content)) {
-            return Client::FORMAT_JSON;
+            return self::FORMAT_JSON;
         }
         if (preg_match('/^([^=&])+=[^=&]+(&[^=&]+=[^=&]+)*$/', $content)) {
-            return Client::FORMAT_URLENCODED;
+            return self::FORMAT_URLENCODED;
         }
         if (preg_match('/^<.*>$/s', $content)) {
-            return Client::FORMAT_XML;
+            return self::FORMAT_XML;
         }
+    }
+
+    public function withoutBody()
+    {
+        return $this->withBody(Body::createFromStringOrResource('php://temp', 'rw+'));
     }
 }
