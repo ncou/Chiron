@@ -20,7 +20,6 @@ require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/UploadedFile.php';
 require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Uri.php';
 */
 
-
 // cookies :     https://github.com/michaelbromley/drawACatApp/tree/master/api/Slim/Http
 
 //https://github.com/Guzzle3/http/blob/master/Message/Response.php
@@ -48,7 +47,6 @@ use Nyholm\Psr7\Response as ResponsePsr7;
 
 class Response extends ResponsePsr7
 {
-
     // TODO : il faudrait pas implémenter une méthode clone avec les objets genre header ou cookies ????     https://github.com/slimphp/Slim/blob/3.x/Slim/Http/Response.php#L147
     // TODO : les cookies ne semble pas avoir leur place ici !!!!!!!!!!
     private $cookies = [];
@@ -62,13 +60,11 @@ class Response extends ResponsePsr7
     // TODO : virer la partie "reason" du constructeur ?????
     //@param string|resource|StreamInterface $body Stream identifier and/or actual stream resource
 
-
     //public function __construct($status = 200, $body = 'php://temp', $reason = '', $version = '1.1', array $headers = [])
     public function __construct(int $status = 200, array $headers = [], $body = null, string $version = '1.1', $reason = null)
     {
         parent::__construct($status, $headers, $body, $version, $reason);
     }
-
 
     //******************************************************************
     // Tout le reste ne fait pas parti du PSR 7 Response !!!!!!!!!!!!!!
