@@ -15,9 +15,8 @@ namespace Chiron\Http;
 
 //namespace Zend\Diactoros;
 
-use Nyholm\Psr7\Stream;
-
 use InvalidArgumentException;
+use Nyholm\Psr7\Stream;
 
 /**
  * Implementation of PSR HTTP streams.
