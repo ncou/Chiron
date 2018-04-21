@@ -24,12 +24,13 @@ class Body extends Stream
 {
     /**
      * @param string|resource $stream
-     * @param string $mode Mode with which to open stream
+     * @param string          $mode   Mode with which to open stream
+     *
      * @throws InvalidArgumentException
      */
     public static function createFromStringOrResource($stream, $mode = 'r')
     {
-        $error    = null;
+        $error = null;
         $resource = $stream;
 
         if (is_string($stream)) {

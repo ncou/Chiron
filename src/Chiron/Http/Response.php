@@ -29,15 +29,11 @@ namespace Chiron\Http;
 
 use Nyholm\Psr7\Response as ResponsePsr7;
 
-use Chiron\Http\Body;
-
 class Response extends ResponsePsr7
 {
-
-    const FORMAT_URLENCODED = "URLENCODED";
-    const FORMAT_JSON = "JSON";
-    const FORMAT_XML = "XML";
-
+    public const FORMAT_URLENCODED = 'URLENCODED';
+    public const FORMAT_JSON = 'JSON';
+    public const FORMAT_XML = 'XML';
 
     // TODO : il faudrait pas implémenter une méthode clone avec les objets genre header ou cookies ????     https://github.com/slimphp/Slim/blob/3.x/Slim/Http/Response.php#L147
     // TODO : les cookies ne semble pas avoir leur place ici !!!!!!!!!!
@@ -1181,7 +1177,7 @@ class Response extends ResponsePsr7
      *
      * @final
      */
-    public function setCache(array $options) : self
+    public function setCache(array $options): self
     {
         if ($diff = array_diff(array_keys($options), ['etag', 'last_modified', 'max_age', 's_maxage', 'private', 'public', 'immutable'])) {
             throw new \InvalidArgumentException(sprintf('Response does not support the following options: "%s".', implode('", "', array_values($diff))));
@@ -1253,12 +1249,6 @@ class Response extends ResponsePsr7
 
         return $this;
     }
-
-
-
-
-
-
 
     /**
      * Get the Accept-Ranges HTTP header.
