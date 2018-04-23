@@ -45,6 +45,7 @@ class Response extends ResponsePsr7
 
     /** @var array Cacheable response codes (see RFC 2616:13.4) */
     protected static $cacheResponseCodes = [200, 203, 206, 300, 301, 410];
+
     // 200, 203, 300, 301, 302, 404, 410
     // TODO : regarder ici la liste : https://github.com/micheh/psr7-cache/blob/master/src/CacheUtil.php#L289
 
