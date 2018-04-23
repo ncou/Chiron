@@ -53,14 +53,17 @@ class RouteResult
      * @var null|string[]
      */
     private $allowedMethods = [];
+
     /**
      * @var array
      */
     private $matchedParams = [];
+
     /**
      * @var string
      */
     private $matchedRouteName;
+
     /**
      * Route matched during routing.
      *
@@ -69,15 +72,16 @@ class RouteResult
      * @var Route
      */
     private $route;
+
     /**
-     * @var bool Success state of routing.
+     * @var bool success state of routing
      */
     private $success;
 
     /**
      * Create an instance representing a route succes from the matching route.
      *
-     * @param array $params Parameters associated with the matched route, if any.
+     * @param array $params parameters associated with the matched route, if any
      */
     public static function fromRoute(Route $route, array $params = []): self
     {
@@ -116,7 +120,7 @@ class RouteResult
      * Retrieve the route that resulted in the route match.
      *
      * @return false|null|Route false if representing a routing failure;
-     *                          null if not created via fromRoute(); Route instance otherwise.
+     *                          null if not created via fromRoute(); Route instance otherwise
      */
     public function getMatchedRoute()
     {

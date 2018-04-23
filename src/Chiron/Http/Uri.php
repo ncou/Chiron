@@ -42,7 +42,9 @@ class Uri implements UriInterface
     ];
 
     private static $charUnreserved = 'a-zA-Z0-9_\-\.~';
+
     private static $charSubDelims = '!\$&\'\(\)\*\+,;=';
+
     private static $replaceQuery = ['=' => '%3D', '&' => '%26'];
 
     /** @var string Uri scheme. */
@@ -306,8 +308,8 @@ class Uri implements UriInterface
      * Any existing query string values that exactly match the provided key are
      * removed.
      *
-     * @param UriInterface $uri URI to use as a base.
-     * @param string       $key Query string key to remove.
+     * @param uriInterface $uri URI to use as a base
+     * @param string       $key query string key to remove
      *
      * @return UriInterface
      */
@@ -335,8 +337,8 @@ class Uri implements UriInterface
      * A value of null will set the query string key without a value, e.g. "key"
      * instead of "key=value".
      *
-     * @param UriInterface $uri   URI to use as a base.
-     * @param string       $key   Key to set.
+     * @param UriInterface $uri   URI to use as a base
+     * @param string       $key   key to set
      * @param string|null  $value Value to set
      *
      * @return UriInterface
@@ -373,7 +375,7 @@ class Uri implements UriInterface
      *
      * @param array $parts
      *
-     * @throws \InvalidArgumentException If the components do not form a valid URI.
+     * @throws \InvalidArgumentException if the components do not form a valid URI
      *
      * @return UriInterface
      *
@@ -548,7 +550,7 @@ class Uri implements UriInterface
     /**
      * Apply parse_url parts to a URI.
      *
-     * @param array $parts Array of parse_url parts to apply.
+     * @param array $parts array of parse_url parts to apply
      */
     private function applyParts(array $parts)
     {
@@ -581,7 +583,7 @@ class Uri implements UriInterface
     /**
      * @param string $scheme
      *
-     * @throws \InvalidArgumentException If the scheme is invalid.
+     * @throws \InvalidArgumentException if the scheme is invalid
      *
      * @return string
      */
@@ -597,7 +599,7 @@ class Uri implements UriInterface
     /**
      * @param string $host
      *
-     * @throws \InvalidArgumentException If the host is invalid.
+     * @throws \InvalidArgumentException if the host is invalid
      *
      * @return string
      */
@@ -613,7 +615,7 @@ class Uri implements UriInterface
     /**
      * @param int|null $port
      *
-     * @throws \InvalidArgumentException If the port is invalid.
+     * @throws \InvalidArgumentException if the port is invalid
      *
      * @return int|null
      */
@@ -645,7 +647,7 @@ class Uri implements UriInterface
      *
      * @param string $path
      *
-     * @throws \InvalidArgumentException If the path is invalid.
+     * @throws \InvalidArgumentException if the path is invalid
      *
      * @return string
      */
@@ -667,7 +669,7 @@ class Uri implements UriInterface
      *
      * @param string $str
      *
-     * @throws \InvalidArgumentException If the query or fragment is invalid.
+     * @throws \InvalidArgumentException if the query or fragment is invalid
      *
      * @return string
      */

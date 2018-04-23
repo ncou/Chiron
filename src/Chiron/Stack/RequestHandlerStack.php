@@ -50,10 +50,12 @@ class RequestHandlerStack implements RequestHandlerInterface
      * @var array MiddlewareInterface[]|callable[]|string[]
      */
     private $middlewares; // TODO : utiliser un "new SplQueue()" au lieu d'un array ???? https://github.com/zendframework/zend-stratigility/blob/master/src/MiddlewarePipe.php#L44 // TODO : utiliser un SplStack à la place ? les fonctions push/unshift fonctionnent !!!!
+
     /**
      * @var callable
      */
     private $fallbackHandler;
+
     /**
      * @var int
      */
@@ -165,7 +167,7 @@ class RequestHandlerStack implements RequestHandlerInterface
     /**
      * Remove a middleware by instance or name from the stack.
      *
-     * @param callable|string $remove Middleware to remove by instance or name.
+     * @param callable|string $remove middleware to remove by instance or name
      */
     // TODO : on a vraiment besoin d'une méthode remove ?????
     /*

@@ -52,6 +52,7 @@ use Psr\Http\Message\UriInterface;
 class ServerRequest extends ServerRequestPsr7
 {
     private $contentTypes;
+
     private $languages;
 
     /**
@@ -80,8 +81,8 @@ class ServerRequest extends ServerRequestPsr7
      *
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param string $key     The attribute name.
-     * @param mixed  $default Default value to return if the attribute does not exist.
+     * @param string $key     the attribute name
+     * @param mixed  $default default value to return if the attribute does not exist
      *
      * @return mixed
      */
@@ -129,10 +130,10 @@ class ServerRequest extends ServerRequestPsr7
      *
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param string $key     The parameter key.
-     * @param string $default The default value.
+     * @param string $key     the parameter key
+     * @param string $default the default value
      *
-     * @return mixed The parameter value.
+     * @return mixed the parameter value
      */
     public function getParam($key, $default = null)
     {
@@ -199,7 +200,7 @@ class ServerRequest extends ServerRequestPsr7
      *
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param array|null $only list the keys to retrieve.
+     * @param array|null $only list the keys to retrieve
      *
      * @return array|null
      */
@@ -1090,7 +1091,7 @@ function getIP()
      * Only qualifiers will be extracted, any other accept extensions will be
      * discarded as they are not frequently used.
      *
-     * @param string $header Header to parse.
+     * @param string $header header to parse
      *
      * @return array
      */
@@ -1155,7 +1156,7 @@ function getIP()
      *
      * @throws InvalidConfigException if unable to determine the entry script URL
      *
-     * @return string the relative URL of the entry script.
+     * @return string the relative URL of the entry script
      */
     public function getScriptUrl()
     {
@@ -1722,6 +1723,7 @@ function getIP()
      * @var string
      */
     protected $locale;
+
     /**
      * @var string
      */
@@ -1968,7 +1970,7 @@ function getIP()
     /**
      * Returns whether this is a GET request.
      *
-     * @return bool whether this is a GET request.
+     * @return bool whether this is a GET request
      */
     public function getIsGet()
     {
@@ -1978,7 +1980,7 @@ function getIP()
     /**
      * Returns whether this is an OPTIONS request.
      *
-     * @return bool whether this is a OPTIONS request.
+     * @return bool whether this is a OPTIONS request
      */
     public function getIsOptions()
     {
@@ -1988,7 +1990,7 @@ function getIP()
     /**
      * Returns whether this is a HEAD request.
      *
-     * @return bool whether this is a HEAD request.
+     * @return bool whether this is a HEAD request
      */
     public function getIsHead()
     {
@@ -1998,7 +2000,7 @@ function getIP()
     /**
      * Returns whether this is a POST request.
      *
-     * @return bool whether this is a POST request.
+     * @return bool whether this is a POST request
      */
     public function getIsPost()
     {
@@ -2008,7 +2010,7 @@ function getIP()
     /**
      * Returns whether this is a DELETE request.
      *
-     * @return bool whether this is a DELETE request.
+     * @return bool whether this is a DELETE request
      */
     public function getIsDelete()
     {
@@ -2018,7 +2020,7 @@ function getIP()
     /**
      * Returns whether this is a PUT request.
      *
-     * @return bool whether this is a PUT request.
+     * @return bool whether this is a PUT request
      */
     public function getIsPut()
     {
@@ -2028,7 +2030,7 @@ function getIP()
     /**
      * Returns whether this is a PATCH request.
      *
-     * @return bool whether this is a PATCH request.
+     * @return bool whether this is a PATCH request
      */
     public function getIsPatch()
     {
@@ -2041,7 +2043,7 @@ function getIP()
      * Note that jQuery doesn't set the header in case of cross domain
      * requests: https://stackoverflow.com/questions/8163703/cross-domain-ajax-doesnt-send-x-requested-with-header
      *
-     * @return bool whether this is an AJAX (XMLHttpRequest) request.
+     * @return bool whether this is an AJAX (XMLHttpRequest) request
      */
     public function getIsAjax()
     {
@@ -2200,7 +2202,7 @@ function getIP()
      * It is similar to the referer header, but, unlike this header, it doesn't disclose the whole path.
      * Please refer to <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin> for more information.
      *
-     * @return string|null URL origin of a CORS request, `null` if not available.
+     * @return string|null URL origin of a CORS request, `null` if not available
      *
      * @see getHeaders()
      * @since 2.0.13
@@ -2258,7 +2260,7 @@ function getIP()
      * Returns the IP on the other end of this connection.
      * This is always the next hop, any headers are ignored.
      *
-     * @return string|null remote IP address, `null` if not available.
+     * @return string|null remote IP address, `null` if not available
      *
      * @since 2.0.13
      */
@@ -2340,12 +2342,13 @@ function getIP()
     }
 
     private $_port;
+
     /**
      * Returns the port to use for insecure requests.
      * Defaults to 80, or the port specified by the server if the current
      * request is insecure.
      *
-     * @return int port number for insecure requests.
+     * @return int port number for insecure requests
      *
      * @see setPort()
      */
@@ -2364,7 +2367,7 @@ function getIP()
      * Defaults to 443, or the port specified by the server if the current
      * request is secure.
      *
-     * @return int port number for secure requests.
+     * @return int port number for secure requests
      *
      * @see setSecurePort()
      */
@@ -2393,7 +2396,7 @@ function getIP()
      * $value = $request->cookies->getValue('name');
      * ```
      *
-     * @return CookieCollection the cookie collection.
+     * @return CookieCollection the cookie collection
      */
     public function getCookies()
     {
@@ -2463,7 +2466,7 @@ function getIP()
      * @param bool $regenerate whether to regenerate CSRF token. When this parameter is true, each time
      *                         this method is called, a new CSRF token will be generated and persisted (in session or cookie).
      *
-     * @return string the token used to perform CSRF validation.
+     * @return string the token used to perform CSRF validation
      */
     public function getCsrfToken($regenerate = false)
     {
@@ -2496,7 +2499,7 @@ function getIP()
     /**
      * Generates an unmasked random token used to perform CSRF validation.
      *
-     * @return string the random token for CSRF validation.
+     * @return string the random token for CSRF validation
      */
     protected function generateCsrfToken()
     {
@@ -2574,8 +2577,8 @@ function getIP()
     /**
      * Validates CSRF token.
      *
-     * @param string $clientSuppliedToken The masked client-supplied token.
-     * @param string $trueToken           The masked true token.
+     * @param string $clientSuppliedToken the masked client-supplied token
+     * @param string $trueToken           the masked true token
      *
      * @return bool
      */
