@@ -228,8 +228,6 @@ class Config implements \ArrayAccess, \Iterator, \Countable
      * @param mixed  $value
      *
      * @throws Exception\RuntimeException
-     *
-     * @return void
      */
     public function __set($name, $value)
     {
@@ -268,8 +266,6 @@ class Config implements \ArrayAccess, \Iterator, \Countable
      * @param string $name
      *
      * @throws Exception\InvalidArgumentException
-     *
-     * @return void
      */
     public function __unset($name)
     {
@@ -283,8 +279,6 @@ class Config implements \ArrayAccess, \Iterator, \Countable
 
     /**
      * Deep clone of this instance to ensure that nested Chiron\Configs are also cloned.
-     *
-     * @return void
      */
     public function __clone()
     {

@@ -50,13 +50,16 @@ class HttpExceptionHandler extends AbstractExceptionHandler
         switch ($contentType) {
             case 'application/json':
                 $body = $this->renderJsonBody($exception);
+
                 break;
             case 'text/xml':
             case 'application/xml':
                 $body = $this->renderXmlBody($exception);
+
                 break;
             case 'text/html':
                 $body = $this->renderHtmlBody($exception, $displayErrorDetails);
+
                 break;
                 // TODO : gérer le cas : 'text/plain' avec la même chose que le html mais sans les balises html...
             default:
@@ -228,15 +231,14 @@ class HttpExceptionHandler extends AbstractExceptionHandler
      */
     private function getExceptionCode(Throwable $exception): string
     {
-
-/*
-// TODO : utiliser plutot ce bout de code au lieu de faire un test sur l'instance HttpException
-        if (method_exists($e, 'getStatusCode')) {
-            $code = $e->getStatusCode();
-        } else {
-            $code = $e->getCode();
-        }
-*/
+        /*
+        // TODO : utiliser plutot ce bout de code au lieu de faire un test sur l'instance HttpException
+                if (method_exists($e, 'getStatusCode')) {
+                    $code = $e->getStatusCode();
+                } else {
+                    $code = $e->getCode();
+                }
+        */
         $code = $exception->getCode();
         if ($exception instanceof HttpException) {
             // ErrorExceptions wrap the php-error types within the 'severity' property
