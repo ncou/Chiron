@@ -20,11 +20,11 @@ use Psr\Http\Message\StreamInterface;
 
 class ResponseTest extends TestCase
 {
-    public function setUp()
+    protected function setUp()
     {
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
     }
 

@@ -28,7 +28,7 @@ use function trigger_error;
 
 class ErrorHandlerMiddlewareTest extends TestCase
 {
-    public function setUp()
+    protected function setUp()
     {
         //$this->request = (new ServerRequestFactory())->createServerRequestFromArray($this->getMockServerValues());
         $this->request = $this->prophesize(ServerRequestInterface::class);
@@ -44,7 +44,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
         $this->errorReporting = error_reporting();
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         error_reporting($this->errorReporting);
     }

@@ -16,9 +16,9 @@ class MaintenanceHandler extends AbstractExceptionHandler
 
         if ($request->isAjax()) {
             $response = $response->withJSON([
-                  'status_code'   => 404,
-                  'reason_phrase' => 'Maintenance!',
-              ]);
+                'status_code'   => 404,
+                'reason_phrase' => 'Maintenance!',
+            ]);
         } else {
             $response = $response->write(file_get_contents('503.html'));
         }

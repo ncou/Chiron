@@ -278,13 +278,13 @@ EOT;
         $json['error'] = [];
         do {
             $json['error'][] = [
-                    'type'    => get_class($error),
-                    'code'    => $error->getCode(),
-                    'message' => $error->getMessage(),
-                    'file'    => $error->getFile(),
-                    'line'    => $error->getLine(),
-                    'trace'   => explode("\n", $error->getTraceAsString()),
-                ];
+                'type'    => get_class($error),
+                'code'    => $error->getCode(),
+                'message' => $error->getMessage(),
+                'file'    => $error->getFile(),
+                'line'    => $error->getLine(),
+                'trace'   => explode("\n", $error->getTraceAsString()),
+            ];
         } while ($error = $error->getPrevious());
 //        }
         return json_encode($json, JSON_PRETTY_PRINT); //JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
