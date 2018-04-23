@@ -77,8 +77,6 @@ class Application
      * Load a configuration file into the application.
      *
      * @param string $name
-     *
-     * @return void
      */
     //https://github.com/laravel/lumen-framework/blob/5.5/src/Application.php#L598
     /*
@@ -516,7 +514,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     // TODO : lui passer un container en paramétre ?????
     public function __construct(array $values = [])
     { //, ContainerInterface $container = null){
-
         //$this->router = new Router();
 
         $this->container = new Container();
@@ -575,8 +572,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         // TODO : à virer car maintenant la réponse est créée directement dans le controler. il faudrait plutot utiliser une ResponseFactory appellé directement dans le controller !!!
         // TODO : vérifier l'utilité de créer cette response ici !!!!! normalement chaque controller ou errorhandler va créer une nouvelle response...
         $this->container['response'] = function ($c) {
-
-        //$headers = new Headers(['Content-Type' => 'text/html; charset=UTF-8']);
+            //$headers = new Headers(['Content-Type' => 'text/html; charset=UTF-8']);
             //$response = new Response(200, $headers);
             //return $response->withProtocolVersion($container->get('settings')['httpVersion']);
 
@@ -768,8 +764,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
     /**
      * @throws LogicException If trying to clone an instance of a singleton.
-     *
-     * @return void
      */
     /*
     final private function __clone()
@@ -784,8 +778,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     */
     /**
      * @throws LogicException If trying to unserialize an instance of a singleton.
-     *
-     * @return void
      */
     /*
     final private function __wakeup()
@@ -813,7 +805,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
     public function process(ServerRequestInterface $request): ResponseInterface
     {
-
         // apply PHP config settings.
         $this->boot();
 

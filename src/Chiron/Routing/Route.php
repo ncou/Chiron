@@ -545,7 +545,6 @@ class Route implements RequestHandlerInterface
      */
     public function setAllowedMethods(array $methods)
     {
-
         // Allow null, otherwise expect an array or a string
         /*
 //https://github.com/klein/klein.php/blob/master/src/Klein/Route.php#L172

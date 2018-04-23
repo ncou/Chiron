@@ -87,9 +87,11 @@ class RequestHandlerStack implements RequestHandlerInterface
             case is_null($middleware):
                 //$result = call_user_func($this->fallbackHandler, $request);
                 $result = $this->fallbackHandler->handle($request);
+
                 break;
             case $middleware instanceof MiddlewareInterface:
                 $result = $middleware->process($request, $this->nextHandler());
+
                 break;
             default:
                 throw new InvalidArgumentException(sprintf('No valid middleware provided (%s)', is_object($middleware) ? get_class($middleware) : gettype($middleware)));

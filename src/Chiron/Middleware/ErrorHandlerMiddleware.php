@@ -197,6 +197,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
         foreach (array_reverse($this->handlers) as $exceptionType => $handler) {
             if (is_a($exception, $exceptionType)) {
                 $exceptionHandler = $handler;
+
                 break;
             }
         }

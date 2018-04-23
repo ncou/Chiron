@@ -228,12 +228,11 @@ class EmitterMiddleware implements MiddlewareInterface
     // TODO : séparer la fonction finalize dans un middleware dédié, et regarder ici pour ajouter le "Expect" Header + content-type + content-length....etc : https://github.com/guzzle/guzzle/blob/master/src/PrepareBodyMiddleware.php
     private function finalizeResponse(ResponseInterface $response, ServerRequestInterface $request): ResponseInterface
     {
-
-/*
-        if (!isset($this->headers['cache-control'])) {
-            $this->set('Cache-Control', '');
-        }
-*/
+        /*
+                if (!isset($this->headers['cache-control'])) {
+                    $this->set('Cache-Control', '');
+                }
+        */
 
         //TODO : pas sur que cela serve car apache semble ajouter automatiquement la date du jour et on ne peut pas la modifier... :(
         /* RFC2616 - 14.18 says all Responses need to have a Date */
