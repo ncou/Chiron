@@ -17,6 +17,7 @@ use Throwable;
 class HttpException extends RuntimeException //implements \ExceptionInterface
 {
     protected $statusCode;
+
     protected $headers;
 
     public function __construct(int $statusCode, string $message = null, Throwable $previous = null, array $headers = [])

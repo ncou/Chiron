@@ -20,6 +20,7 @@ use Throwable;
 final class LogExceptionMiddleware implements MiddlewareInterface
 {
     private $logger;
+
     private $errorLevelMap = [
             E_ERROR             => LogLevel::CRITICAL,
             E_WARNING           => LogLevel::WARNING,

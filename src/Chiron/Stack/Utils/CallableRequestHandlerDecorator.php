@@ -49,7 +49,7 @@ final class CallableRequestHandlerDecorator implements RequestHandlerInterface
      * {@inheritdoc}
      *
      * @throws Exception\MissingResponseException if the decorated middleware
-     *                                            fails to produce a response.
+     *                                            fails to produce a response
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

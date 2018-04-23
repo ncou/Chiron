@@ -26,6 +26,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class DeferredRequestHandler implements RequestHandlerInterface
 {
     private $callable;
+
     /** @var ContainerInterface */
     private $container;
 

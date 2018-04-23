@@ -15,14 +15,17 @@ class ClientIpMiddleware implements MiddlewareInterface
      * @var bool
      */
     private $remote = false;
+
     /**
      * @var string The attribute name
      */
     private $attribute = 'client-ip';
+
     /**
      * @var array The trusted proxy headers
      */
     private $proxyHeaders = [];
+
     /**
      * @var array The trusted proxy ips
      */

@@ -65,7 +65,9 @@ use RuntimeException;
 class Router
 {
     public const NOT_FOUND = 0;
+
     public const FOUND = 1;
+
     public const METHOD_NOT_ALLOWED = 2;
 
     /**
@@ -102,7 +104,7 @@ class Router
     /**
      * Add named match types. It uses array_merge so keys can be overwritten.
      *
-     * @param array $matchTypes The key is the name and the value is the regex.
+     * @param array $matchTypes the key is the name and the value is the regex
      */
     // TODO : passer au contructeur du routeur une liste de nouveaux matchTypes possibles. Cela permettra de passer ensuite ce nouyveau tableau à l'objet route dans son constructeur pour qu'il fusionne les regex possible
     /*
@@ -116,13 +118,13 @@ class Router
      *
      * Generate the URL for a named route. Replace regexes pattern with supplied substitutions
      *
-     * @param string $name          Route name.
-     * @param array  $substitutions Key/value pairs to substitute into the route pattern.
+     * @param string $name          route name
+     * @param array  $substitutions key/value pairs to substitute into the route pattern
      *
      * @throws Exception\RuntimeException if the route name is not known
-     *                                    or a parameter value does not match its regex.
+     *                                    or a parameter value does not match its regex
      *
-     * @return string URI path generated.
+     * @return string URI path generated
      */
     public function generateUri(string $routeName, array $substitutions = []): string
     {

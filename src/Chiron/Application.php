@@ -54,12 +54,14 @@ class Application
      * @var LoggerInterface
      */
     private $logger;
+
     /**
      * Dependency injection container.
      *
      * @var ContainerInterface
      */
     private $container;
+
     /**
      * The router instance.
      *
@@ -141,7 +143,7 @@ class Application
      * overridden, but some of them pertain to errors which the error handler
      * does not receive, namely start-up errors and memory leaks.
      *
-     * @param bool $debug Whether to display errors or silence them.
+     * @param bool $debug whether to display errors or silence them
      */
     public function initErrorVisibility($debug = true)
     {
@@ -390,7 +392,7 @@ class Application
      *
      * @param ContainerInterface $container
      *
-     * @return Application Returns itself to support chaining.
+     * @return Application returns itself to support chaining
      */
     // TODO : voir si on conserve cette méthode ?????
     public function setContainer(ContainerInterface $container)
@@ -427,7 +429,7 @@ class Application
      *
      * @param LoggerInterface $logger
      *
-     * @return Application Returns itself to support chaining.
+     * @return Application returns itself to support chaining
      */
     public function setLogger(LoggerInterface $logger)
     {
@@ -505,7 +507,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
      *
      * Objects and parameters can be passed as argument to the constructor.
      *
-     * @param array $values The parameters or objects.
+     * @param array $values the parameters or objects
      */
     // TODO : lui passer un container en paramétre ?????
     public function __construct(array $values = [])
@@ -760,7 +762,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 */
 
     /**
-     * @throws LogicException If trying to clone an instance of a singleton.
+     * @throws LogicException if trying to clone an instance of a singleton
      */
     /*
     final private function __clone()
@@ -774,7 +776,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     }
     */
     /**
-     * @throws LogicException If trying to unserialize an instance of a singleton.
+     * @throws LogicException if trying to unserialize an instance of a singleton
      */
     /*
     final private function __wakeup()

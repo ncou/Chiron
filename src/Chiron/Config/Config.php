@@ -22,6 +22,7 @@ class Config implements \ArrayAccess, \Iterator, \Countable
      * @var array
      */
     protected $data = [];
+
     /**
      * Used when unsetting values during iteration to ensure we do not skip
      * the next element.

@@ -50,7 +50,7 @@ final class CallableMiddlewareDecorator implements MiddlewareInterface
      * {@inheritdoc}
      *
      * @throws Exception\MissingResponseException if the decorated middleware
-     *                                            fails to produce a response.
+     *                                            fails to produce a response
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {

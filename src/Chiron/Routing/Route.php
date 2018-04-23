@@ -29,7 +29,9 @@ class Route implements RequestHandlerInterface
 //    use StackAwareTrait;
 
     private $requirements = [];
+
     private $defaults = [];
+
     private $schemes = [];
 
     private $name;
@@ -565,9 +567,9 @@ class Route implements RequestHandlerInterface
      *
      * Validates, and then normalizes to upper case.
      *
-     * @param string[] An array of HTTP method names.
+     * @param string[] an array of HTTP method names
      *
-     * @throws Exception\InvalidArgumentException for any invalid method names.
+     * @throws Exception\InvalidArgumentException for any invalid method names
      *
      * @return string[]
      */
@@ -602,7 +604,7 @@ class Route implements RequestHandlerInterface
     /**
      * Indicate whether the specified method is allowed by the route.
      *
-     * @param string $method HTTP method to test.
+     * @param string $method HTTP method to test
      */
     /*
         public function allowsMethod(string $method) : bool

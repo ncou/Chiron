@@ -25,6 +25,7 @@ class Logger extends AbstractLogger
     ];
 
     private $minLevelIndex;
+
     private $handle;
 
     public function __construct($output = 'php://stderr', string $minLevel = LogLevel::ERROR)

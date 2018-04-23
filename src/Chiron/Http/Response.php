@@ -32,7 +32,9 @@ use Nyholm\Psr7\Response as ResponsePsr7;
 class Response extends ResponsePsr7
 {
     public const FORMAT_URLENCODED = 'URLENCODED';
+
     public const FORMAT_JSON = 'JSON';
+
     public const FORMAT_XML = 'XML';
 
     // TODO : il faudrait pas implémenter une méthode clone avec les objets genre header ou cookies ????     https://github.com/slimphp/Slim/blob/3.x/Slim/Http/Response.php#L147
@@ -40,8 +42,10 @@ class Response extends ResponsePsr7
     private $cookies = [];
 
     // https://github.com/guzzle/guzzle3/blob/master/src/Guzzle/Http/Message/Response.php#L99
+
     /** @var array Cacheable response codes (see RFC 2616:13.4) */
-    protected static $cacheResponseCodes = [200, 203, 206, 300, 301, 410]; // 200, 203, 300, 301, 302, 404, 410
+    protected static $cacheResponseCodes = [200, 203, 206, 300, 301, 410];
+    // 200, 203, 300, 301, 302, 404, 410
     // TODO : regarder ici la liste : https://github.com/micheh/psr7-cache/blob/master/src/CacheUtil.php#L289
 
     // TODO : vérifier si on garde l'initialisation du ProtocolVersion en trant que paramétre du constructeur
@@ -74,7 +78,7 @@ class Response extends ResponsePsr7
      *
      * @param int $code
      *
-     * @throws InvalidArgumentException on an invalid status code.
+     * @throws InvalidArgumentException on an invalid status code
      */
     // NOT A PSR7 FUNCTION
     //https://github.com/phly/http/blob/master/src/Response.php#L167
@@ -175,7 +179,7 @@ class Response extends ResponsePsr7
      * Sets the response charset
      * if $charset is null the current charset is returned.
      *
-     * @param string|null $charset Character set string.
+     * @param string|null $charset character set string
      *
      * @return string Current charset
      *
@@ -204,7 +208,7 @@ class Response extends ResponsePsr7
     /**
      * Get a new instance with an updated charset.
      *
-     * @param string $charset Character set string.
+     * @param string $charset character set string
      *
      * @return static
      */
@@ -242,9 +246,9 @@ class Response extends ResponsePsr7
     /**
      * Sets the response status code based on the exception.
      *
-     * @param \Exception|\Error $e the exception object.
+     * @param \Exception|\Error $e the exception object
      *
-     * @throws InvalidArgumentException if the status code is invalid.
+     * @throws InvalidArgumentException if the status code is invalid
      *
      * @return $this the response object itself
      *
@@ -663,8 +667,8 @@ class Response extends ResponsePsr7
      * This method prepares the response object to return an HTTP Redirect
      * response to the client.
      *
-     * @param string|UriInterface $url    The redirect destination.
-     * @param int|null            $status The redirect HTTP status code.
+     * @param string|UriInterface $url    the redirect destination
+     * @param int|null            $status the redirect HTTP status code
      *
      * @return static
      */
@@ -695,7 +699,7 @@ class Response extends ResponsePsr7
      * response to the client.
      *
      * @param mixed $data            The data
-     * @param int   $status          The HTTP status code.
+     * @param int   $status          the HTTP status code
      * @param int   $encodingOptions Json encoding options
      *
      * @throws \RuntimeException
@@ -1259,7 +1263,7 @@ class Response extends ResponsePsr7
     /**
      * Get the Accept-Ranges HTTP header.
      *
-     * @return string Returns what partial content range types this server supports.
+     * @return string returns what partial content range types this server supports
      */
     public function getAcceptRanges(): string
     {
@@ -1269,7 +1273,7 @@ class Response extends ResponsePsr7
     /**
      * Get the Age HTTP header.
      *
-     * @return int|null Returns the age the object has been in a proxy cache in seconds, or null if header not present.
+     * @return int|null returns the age the object has been in a proxy cache in seconds, or null if header not present
      */
     public function getAge(): ?int
     {
@@ -1336,7 +1340,7 @@ class Response extends ResponsePsr7
     /**
      * Get the Content-Language HTTP header.
      *
-     * @return string|null Returns the language the content is in.
+     * @return string|null returns the language the content is in
      */
     public function getContentLanguage()
     {
@@ -1376,7 +1380,7 @@ class Response extends ResponsePsr7
     /**
      * Get the Content-MD5 HTTP header.
      *
-     * @return string|null Returns a Base64-encoded binary MD5 sum of the content of the response.
+     * @return string|null returns a Base64-encoded binary MD5 sum of the content of the response
      */
     public function getContentMd5()
     {
@@ -1396,7 +1400,7 @@ class Response extends ResponsePsr7
     /**
      * Get the Content-Type HTTP header.
      *
-     * @return string Returns the mime type of this content.
+     * @return string returns the mime type of this content
      */
     public function getContentType()
     {
@@ -1420,7 +1424,7 @@ class Response extends ResponsePsr7
     /**
      * Get the Date HTTP header.
      *
-     * @return string|null Returns the date and time that the message was sent.
+     * @return string|null returns the date and time that the message was sent
      */
     public function getDate()
     {
@@ -1430,7 +1434,7 @@ class Response extends ResponsePsr7
     /**
      * Get the ETag HTTP header.
      *
-     * @return string|null Returns an identifier for a specific version of a resource, often a Message digest.
+     * @return string|null returns an identifier for a specific version of a resource, often a Message digest
      */
     public function getEtag()
     {
@@ -1440,7 +1444,7 @@ class Response extends ResponsePsr7
     /**
      * Get the Expires HTTP header.
      *
-     * @return string|null Returns the date/time after which the response is considered stale.
+     * @return string|null returns the date/time after which the response is considered stale
      */
     public function getExpires()
     {
@@ -1461,7 +1465,7 @@ class Response extends ResponsePsr7
     /**
      * Get the Location HTTP header.
      *
-     * @return string|null Used in redirection, or when a new resource has been created.
+     * @return string|null used in redirection, or when a new resource has been created
      */
     public function getLocation()
     {
@@ -1471,8 +1475,8 @@ class Response extends ResponsePsr7
     /**
      * Get the Pragma HTTP header.
      *
-     * @return Header|null Returns the implementation-specific headers that may have various effects anywhere along
-     *                     the request-response chain.
+     * @return Header|null returns the implementation-specific headers that may have various effects anywhere along
+     *                     the request-response chain
      */
     public function getPragma()
     {
@@ -1492,8 +1496,8 @@ class Response extends ResponsePsr7
     /**
      * Get the Retry-After HTTP header.
      *
-     * @return int|null If an entity is temporarily unavailable, this instructs the client to try again after a
-     *                  specified period of time.
+     * @return int|null if an entity is temporarily unavailable, this instructs the client to try again after a
+     *                  specified period of time
      */
     public function getRetryAfter()
     {
@@ -1513,7 +1517,7 @@ class Response extends ResponsePsr7
     /**
      * Get the Set-Cookie HTTP header.
      *
-     * @return string|null An HTTP cookie.
+     * @return string|null an HTTP cookie
      */
     public function getSetCookie()
     {
@@ -1523,8 +1527,8 @@ class Response extends ResponsePsr7
     /**
      * Get the Trailer HTTP header.
      *
-     * @return string|null The Trailer general field value indicates that the given set of header fields is present in
-     *                     the trailer of a message encoded with chunked transfer-coding.
+     * @return string|null the Trailer general field value indicates that the given set of header fields is present in
+     *                     the trailer of a message encoded with chunked transfer-coding
      */
     public function getTrailer()
     {
@@ -1544,8 +1548,8 @@ class Response extends ResponsePsr7
     /**
      * Get the Vary HTTP header.
      *
-     * @return string|null Tells downstream proxies how to match future request headers to decide whether the cached
-     *                     response can be used rather than requesting a fresh one from the origin server.
+     * @return string|null tells downstream proxies how to match future request headers to decide whether the cached
+     *                     response can be used rather than requesting a fresh one from the origin server
      */
     // TODO : regarder ici comment c'est fait : https://github.com/symfony/http-foundation/blob/master/Response.php#L1009
     public function getVary()
@@ -1556,7 +1560,7 @@ class Response extends ResponsePsr7
     /**
      * Get the Via HTTP header.
      *
-     * @return string|null Informs the client of proxies through which the response was sent.
+     * @return string|null informs the client of proxies through which the response was sent
      */
     public function getVia()
     {
@@ -1590,7 +1594,7 @@ class Response extends ResponsePsr7
     /**
      * Returns default format automatically detected from headers and content.
      *
-     * @return string|null format name, 'null' - if detection failed.
+     * @return string|null format name, 'null' - if detection failed
      */
     public function detectFormat()
     {
@@ -1605,7 +1609,7 @@ class Response extends ResponsePsr7
     /**
      * Detects format from headers.
      *
-     * @return null|string format name, 'null' - if detection failed.
+     * @return null|string format name, 'null' - if detection failed
      */
     private function detectFormatByHeader()
     {
@@ -1627,9 +1631,9 @@ class Response extends ResponsePsr7
     /**
      * Detects response format from raw content.
      *
-     * @param string $content raw response content.
+     * @param string $content raw response content
      *
-     * @return null|string format name, 'null' - if detection failed.
+     * @return null|string format name, 'null' - if detection failed
      */
     // TODO : on peut surement faire un middleware pour ajouter un contentType = application/json ou /xml ou html/text selon la détection du format ???? cela semble une bonne idée !!!!
     private function detectFormatByContent($content)
