@@ -196,6 +196,7 @@ class Router
                     }
                     if (! in_array($method, $requiredMethods)) {
                         $allowedMethods = array_merge($allowedMethods, $requiredMethods);
+
                         continue;
                     }
                 }
@@ -285,13 +286,12 @@ class Router
     // TODO : renommer en getRoute($name) ????
     public function getNamedRoute(string $name)
     {
-
-/*
-        $routes = array_filter($this->routes, function ($route) use ($name) {
-            return $route->getName() === $name;
-        });
-        return $routes[0];
-*/
+        /*
+                $routes = array_filter($this->routes, function ($route) use ($name) {
+                    return $route->getName() === $name;
+                });
+                return $routes[0];
+        */
 
         foreach ($this->routes as $route) {
             if ($route->getName() === $name) {

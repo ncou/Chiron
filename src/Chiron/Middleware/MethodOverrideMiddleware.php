@@ -40,8 +40,7 @@ class MethodOverrideMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-
-// TODO : on devrait plutot utiliser un truc genre : strtoupper($request->getHeaderLine("X-Http-Method-Override"));
+        // TODO : on devrait plutot utiliser un truc genre : strtoupper($request->getHeaderLine("X-Http-Method-Override"));
         if ($request->hasHeader('X-Http-Method-Override')) {
             if (! empty($request->getHeader('X-Http-Method-Override')[0])) {
                 $request = $request->withMethod($request->getHeader('X-Http-Method-Override')[0]);

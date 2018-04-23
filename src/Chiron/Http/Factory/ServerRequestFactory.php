@@ -235,11 +235,13 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             if ($value && strpos($key, 'HTTP_') === 0) {
                 $name = strtr(strtolower(substr($key, 5)), '_', '-');
                 $headers[$name] = $value;
+
                 continue;
             }
             if ($value && strpos($key, 'CONTENT_') === 0) {
                 $name = 'content-' . strtolower(substr($key, 8));
                 $headers[$name] = $value;
+
                 continue;
             }
         }
@@ -372,6 +374,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
                 $normalized[$key] = $this->createUploadedFileFromSpec($value);
             } elseif (is_array($value)) {
                 $normalized[$key] = $this->normalizeFiles($value);
+
                 continue;
             } else {
                 throw new InvalidArgumentException('Invalid value in files specification');

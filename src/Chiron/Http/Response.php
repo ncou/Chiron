@@ -607,26 +607,32 @@ class Response extends ResponsePsr7
             if (! isset($cookieName)) {
                 $cookieName = $name;
                 $cookieValue = $value;
+
                 continue;
             }
             if ('expires' === strtolower($name) && null !== $value) {
                 $cookieExpire = new \DateTime($value);
+
                 continue;
             }
             if ('path' === strtolower($name) && null !== $value) {
                 $cookiePath = $value;
+
                 continue;
             }
             if ('domain' === strtolower($name) && null !== $value) {
                 $cookieDomain = $value;
+
                 continue;
             }
             if ('secure' === strtolower($name)) {
                 $cookieSecure = true;
+
                 continue;
             }
             if ('httponly' === strtolower($name)) {
                 $cookieHttpOnly = true;
+
                 continue;
             }
         }

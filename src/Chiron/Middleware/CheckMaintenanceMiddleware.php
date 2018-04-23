@@ -54,29 +54,28 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-
-/*
-// TODO : ajouter le header "Retry-After" avec une gestion des options, genre durée de la maintenance, et durée avant de faire un refresh !!!!
-// https://github.com/php-middleware/maintenance/blob/master/src/MaintenanceMiddleware.php
-        $headers = [];
-        if ($this->retryAfter !== '') {
-            $headers['Retry-After'] = $this->retryAfter;
-            if ($this->refresh > 0) { // seconds
-                $headers['Refresh'] = (string) $this->refresh;
-            }
-        }
-
-
-// TODO : version alternative pour ajouter le header !!!!
-//https://github.com/middlewares/shutdown/blob/master/src/Shutdown.php#L46
-        if (is_int($this->retryAfter)) {
-            return $response->withHeader(self::RETRY_AFTER, (string) $this->retryAfter);
-        }
-        if ($this->retryAfter instanceof DateTimeInterface) {
-            return $response->withHeader(self::RETRY_AFTER, $this->retryAfter->format('D, d M Y H:i:s \G\M\T')); //$datetime->format(DateTime::RFC2822);
-        }
-
-*/
+        /*
+        // TODO : ajouter le header "Retry-After" avec une gestion des options, genre durée de la maintenance, et durée avant de faire un refresh !!!!
+        // https://github.com/php-middleware/maintenance/blob/master/src/MaintenanceMiddleware.php
+                $headers = [];
+                if ($this->retryAfter !== '') {
+                    $headers['Retry-After'] = $this->retryAfter;
+                    if ($this->refresh > 0) { // seconds
+                        $headers['Refresh'] = (string) $this->refresh;
+                    }
+                }
+        
+        
+        // TODO : version alternative pour ajouter le header !!!!
+        //https://github.com/middlewares/shutdown/blob/master/src/Shutdown.php#L46
+                if (is_int($this->retryAfter)) {
+                    return $response->withHeader(self::RETRY_AFTER, (string) $this->retryAfter);
+                }
+                if ($this->retryAfter instanceof DateTimeInterface) {
+                    return $response->withHeader(self::RETRY_AFTER, $this->retryAfter->format('D, d M Y H:i:s \G\M\T')); //$datetime->format(DateTime::RFC2822);
+                }
+        
+        */
 
         //if ($this->app->isDownForMaintenance() && !in_array($this->request->getClientIp(), ['86.10.190.248', '86.4.7.24']))
         $config = $this->container->config;
