@@ -16,6 +16,8 @@ enabled:
     - not_operator_with_successor_space
     - concat_with_spaces
     - no_extra_block_blank_lines
+    - const_separation
+    - php_unit_fqcn_annotation
 
 disabled:
     - concat_without_spaces
