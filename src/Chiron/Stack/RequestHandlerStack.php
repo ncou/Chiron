@@ -79,6 +79,7 @@ class RequestHandlerStack implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $middleware = $this->middlewares[$this->index] ?? null;
+        //if (!array_key_exists($this->index, $this->middlewares)) {}
 
         // execute the middlewares
         switch (true) {

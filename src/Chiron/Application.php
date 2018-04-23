@@ -46,11 +46,7 @@ use Psr\Http\Server\MiddlewareInterface;
 
 class Application
 {
-    //@{ Framework details
-    public const PACKAGE = 'Chiron Framework';
     public const VERSION = '1.0.0';
-
-    //@}
 
     /**
      * The logger instance.
@@ -534,7 +530,8 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $emptyResponse = new CallableRequestHandlerDecorator(function ($request) {
             // TODO : passer le charset + version http 1.1 par défaut à cette réponse !!!!
             //$this->container['charset'] et $this->container['httpVersion']
-            $response = new Response();
+            // TODO : regarder ici pour créer un truc vide genre un Home.php => https://github.com/Zegnat/php-website-starter/blob/develop/app/RequestHandler/Home.php
+            $response = new Response(204);
 
             return $response;
         });

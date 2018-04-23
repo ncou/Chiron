@@ -97,6 +97,10 @@ class EmitterMiddleware implements MiddlewareInterface
      */
     public function sendHeaders(ResponseInterface $response): void
     {
+        /*
+        if (headers_sent($file, $line)) {
+            throw new \RuntimeException(sprintf('Failed to send headers, because headers have already been sent by "%s" at line %d.', $file, $line));
+        }*/
         // headers have already been sent by the developer
         if (headers_sent()) {
             return;
