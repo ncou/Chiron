@@ -571,13 +571,13 @@ class Response extends ResponsePsr7
         }
 
         $this->cookies[$name] = [
-          'name'     => $name,
-          'value'    => $value,
-          'expire'   => $expire,
-          'path'     => $path,
-          'domain'   => $domain,
-          'secure'   => (bool) $secure,
-          'httpOnly' => (bool) $httpOnly,
+            'name'     => $name,
+            'value'    => $value,
+            'expire'   => $expire,
+            'path'     => $path,
+            'domain'   => $domain,
+            'secure'   => (bool) $secure,
+            'httpOnly' => (bool) $httpOnly,
         ];
 
         return $this;
