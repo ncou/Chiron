@@ -15,8 +15,7 @@ enabled:
     - const_visibility_required
     - not_operator_with_successor_space
     - concat_with_spaces
-    - unalign_double_arrow
+    - no_extra_block_blank_lines
 
 disabled:
     - concat_without_spaces
-    - align_double_arrow
