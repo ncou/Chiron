@@ -19,6 +19,7 @@ enabled:
     - no_extra_block_blank_lines
     - const_separation
     - property_separation
+    - single_line_class_definition
 
 disabled:
     - concat_without_spaces
