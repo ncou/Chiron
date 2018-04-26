@@ -35,7 +35,7 @@ use Chiron\Routing\Route;
 use Chiron\Routing\Router;
 use Chiron\Stack\RequestHandlerStack;
 use Chiron\Stack\Utils\CallableMiddlewareDecorator;
-use Chiron\Stack\Utils\CallableRequestHandlerDecorator;
+use Chiron\Handler\CallableRequestHandlerDecorator;
 use Chiron\Stack\Utils\LazyLoadingMiddleware;
 use Closure;
 use InvalidArgumentException;
