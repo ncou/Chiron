@@ -20,6 +20,7 @@ use Throwable;
 final class LogExceptionMiddleware implements MiddlewareInterface
 {
     private $logger;
+
     //https://github.com/cakephp/cakephp/blob/master/src/Error/BaseErrorHandler.php#L390
     private $errorLevelMap = [
         E_ERROR             => LogLevel::CRITICAL,

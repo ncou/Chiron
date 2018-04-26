@@ -6,13 +6,12 @@ declare(strict_types=1);
 
 namespace Chiron\Handler;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-
-use Throwable;
-use UnexpectedValueException;
 use Chiron\Exception\HttpException;
 use ErrorException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
+use UnexpectedValueException;
 
 class NotAllowedHandler extends AbstractExceptionHandler
 {
