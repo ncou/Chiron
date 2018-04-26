@@ -51,7 +51,7 @@ class Container implements \ArrayAccess, ContainerInterface
 
         //$this->container = $entries;
         foreach ($entries as $alias => $entry) {
-            $this->bind($alias, $entry);
+            $this->set($alias, $entry);
         }
     }
 
@@ -62,7 +62,7 @@ class Container implements \ArrayAccess, ContainerInterface
      * @param string $entry
      */
     // TODO : on devrait pas faire une vérification si le service existe déjà (cad que l'alias est déjà utilisé) on léve une exception pour éviter d'acraser le service ???? ou alors il faudrait un paramétre pour forcer l'overwrite du service si il existe dejà
-    public function bind(string $alias, $entry)
+    public function set(string $alias, $entry)
     {
         // bind the "container" to the var "$this" inside the Closure function
         if ($entry instanceof \Closure) {
@@ -199,7 +199,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function offsetSet($name, $service)
     {
-        $this->bind($name, $service);
+        $this->set($name, $service);
     }
 
     /**

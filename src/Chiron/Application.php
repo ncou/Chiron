@@ -397,7 +397,7 @@ class Application
      * @return Application returns itself to support chaining
      */
     // TODO : voir si on conserve cette méthode ?????
-    public function setContainer(ContainerInterface $container)
+    public function setContainer(ContainerInterface $container): self
     {
         $this->container = $container;
 
@@ -433,7 +433,7 @@ class Application
      *
      * @return Application returns itself to support chaining
      */
-    public function setLogger(LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger): self
     {
         $this->logger = $logger;
 
@@ -518,7 +518,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
         $this->container = new Container();
 
-        $this->container->bind('router', function ($c) {
+        $this->container->set('router', function ($c) {
             return new Router();
         });
 
