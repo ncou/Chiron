@@ -9,6 +9,11 @@ namespace Chiron\Handler;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+use Throwable;
+use UnexpectedValueException;
+use Chiron\Exception\HttpException;
+use ErrorException;
+
 class NotAllowedHandler extends AbstractExceptionHandler
 {
     public function handle(ServerRequestInterface $request): ResponseInterface
@@ -150,19 +155,20 @@ EOT;
     /**
      * Return the error as plain text.
      */
-    public static function plain(HttpException $error): string
+    // TODO : méthode à virer ????
+    public function plain(Throwable $error): string
     {
-        return sprintf("Error %s\n%s", $error->getStatusCode(), $error->getMessage());
+        return sprintf("Error %s\n%s", $this->getExceptionCode($error), $error->getMessage());
     }
 
     /**
      * Render HTML error page.
      *
-     * @param \Throwable $error
+     * @param Throwable $error
      *
      * @return string
      */
-    private function renderHtmlErrorMessage(\Throwable $error)
+    private function renderHtmlErrorMessage(Throwable $error)
     {
         /*
         switch ($error->getStatusCode()) {
@@ -201,11 +207,11 @@ EOT;
     /**
      * Render error as HTML.
      *
-     * @param \Throwable $error
+     * @param Throwable $error
      *
      * @return string
      */
-    private function renderHtmlError(\Throwable $error): string
+    private function renderHtmlError(Throwable $error): string
     {
         $html = sprintf('<div><strong>Type:</strong> %s (%s)</div>', get_class($error), $this->getExceptionCode($error));
 
@@ -265,11 +271,11 @@ EOT;
     /**
      * Render JSON error.
      *
-     * @param \Throwable $error
+     * @param Throwable $error
      *
      * @return string
      */
-    private function renderJsonErrorMessage(\Throwable $error): string
+    private function renderJsonErrorMessage(Throwable $error): string
     {
         $json = [
             'message' => 'Slim Application Error',
@@ -293,11 +299,11 @@ EOT;
     /**
      * Render XML error.
      *
-     * @param \Throwable $error
+     * @param Throwable $error
      *
      * @return string
      */
-    private function renderXmlErrorMessage(\Throwable $error): string
+    private function renderXmlErrorMessage(Throwable $error): string
     {
         $xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
         $xml .= "<errors>\n  <message>Slim Application Error</message>\n";
@@ -335,7 +341,7 @@ EOT;
      *
      * @return string
      */
-    private function getExceptionCode(\Throwable $exception): string
+    private function getExceptionCode(Throwable $exception): string
     {
         /*
         // TODO : utiliser plutot ce bout de code au lieu de faire un test sur l'instance HttpException
@@ -346,11 +352,11 @@ EOT;
                 }
         */
         $code = $exception->getCode();
-        if ($exception instanceof \HttpException) {
+        if ($exception instanceof HttpException) {
             // ErrorExceptions wrap the php-error types within the 'severity' property
             $code = $exception->getStatusCode();
         }
-        if ($exception instanceof \ErrorException) {
+        if ($exception instanceof ErrorException) {
             // ErrorExceptions wrap the php-error types within the 'severity' property
             $code = $this->translateErrorCode($exception->getSeverity());
         }

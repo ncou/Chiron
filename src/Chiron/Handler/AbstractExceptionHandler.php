@@ -235,4 +235,25 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
         return htmlspecialchars($str, ENT_COMPAT | ENT_SUBSTITUTE, 'UTF-8'); //$this->container->charset);
         //return htmlspecialchars($str, ENT_NOQUOTES, 'UTF-8');
     }
+
+    // TODO : attention il manque le choix de la version HTTP 1.1 ou 1.0 lorsqu'on initialise cette nouvelle response. Idem pour le charset par défaut défini dans l'application !!!!
+    protected function createResponseFromException(Throwable $e): ResponseInterface
+    {
+        // TODO : lui passer plutot une factory en paramétre comme ca on évite de rendre cette classe adhérente à la classe "Chiron\Http\Response"
+        $response = new Response();
+
+        // determine the status code to use for the response
+        // TODO : en fait on devrait toujours avoir une HTTPException, donc on peut récupérer directement le getStatusCode et pas forcément le code 500 !!!!! Modifier aussi le type du paramétre.
+        $statusCode = $this->isHttpException($e) ? $e->getStatusCode() : 500;
+
+        // add the headers stored in the exception
+        // TODO : en fait on devrait toujours avoir une HTTPException, donc on peut récupérer directement le getStatusCode et pas forcément le code 500 !!!!! Modifier aussi le type du paramétre.
+        $headers = $this->isHttpException($e) ? $e->getHeaders() : [];
+        foreach ($headers as $header => $value) {
+            $response = $response->withAddedHeader($header, $value);
+        }
+
+        return $response->withStatus($statusCode);
+    }
+
 }

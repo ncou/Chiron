@@ -9,7 +9,9 @@ use Chiron\Http\Response;
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+
 use Throwable;
+use UnexpectedValueException;
 
 // TODO : utiliser des renderer : https://github.com/userfrosting/UserFrosting/tree/master/app/sprinkles/core/src/Error/Renderer
 class HttpExceptionHandler extends AbstractExceptionHandler
@@ -39,8 +41,6 @@ class HttpExceptionHandler extends AbstractExceptionHandler
         $body = $this->formatException($exception, $contentType, $displayErrorDetails);
 
         $response = $this->createResponseFromException($exception);
-
-        //return new \Chiron\Http\Response();
 
         return $response->withHeader('Content-type', $contentType)->write($body);
     }
@@ -271,26 +271,6 @@ class HttpExceptionHandler extends AbstractExceptionHandler
         }
 
         return 'E_UNKNOWN';
-    }
-
-    // TODO : attention il manque le choix de la version HTTP 1.1 ou 1.0 lorsqu'on initialise cette nouvelle response. Idem pour le charset par défaut défini dans l'application !!!!
-    private function createResponseFromException(Throwable $e): ResponseInterface
-    {
-        // TODO : lui passer plutot une factory en paramétre comme ca on évite de rendre cette classe adhérente à la classe "Chiron\Http\Response"
-        $response = new Response();
-
-        // determine the status code to use for the response
-        // TODO : en fait on devrait toujours avoir une HTTPException, donc on peut récupérer directement le getStatusCode et pas forcément le code 500 !!!!! Modifier aussi le type du paramétre.
-        $statusCode = $this->isHttpException($e) ? $e->getStatusCode() : 500;
-
-        // add the headers stored in the exception
-        // TODO : en fait on devrait toujours avoir une HTTPException, donc on peut récupérer directement le getStatusCode et pas forcément le code 500 !!!!! Modifier aussi le type du paramétre.
-        $headers = $this->isHttpException($e) ? $e->getHeaders() : [];
-        foreach ($headers as $header => $value) {
-            $response = $response->withAddedHeader($header, $value);
-        }
-
-        return $response->withStatus($statusCode);
     }
 
     // TODO : en fait on devrait toujours avoir une HTTPException dans la request, donc cette méthode ne sert à rien !!!!
