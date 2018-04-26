@@ -30,12 +30,13 @@ namespace Chiron;
 //*****************************
 
 use Chiron\Config\Config;
+use Chiron\Handler\CallableRequestHandlerDecorator;
+use Chiron\Handler\DeferredRequestHandler;
 use Chiron\Http\Response;
 use Chiron\Routing\Route;
 use Chiron\Routing\Router;
 use Chiron\Stack\RequestHandlerStack;
 use Chiron\Stack\Utils\CallableMiddlewareDecorator;
-use Chiron\Handler\CallableRequestHandlerDecorator;
 use Chiron\Stack\Utils\LazyLoadingMiddleware;
 use Closure;
 use InvalidArgumentException;
@@ -44,8 +45,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;
-
-use Chiron\Handler\DeferredRequestHandler;
 
 class Application
 {

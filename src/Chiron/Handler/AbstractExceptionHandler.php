@@ -255,5 +255,4 @@ abstract class AbstractExceptionHandler implements RequestHandlerInterface
 
         return $response->withStatus($statusCode);
     }
-
 }
