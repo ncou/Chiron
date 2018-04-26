@@ -20,7 +20,7 @@ namespace Chiron\Routing;
 //use Psr\Http\Server\RequestHandlerInterface;
 
 // TODO : à virer et passer par un getter/setter pour choisir la strategie (plutot qu'en dure dans cette classe !!!!!)
-//use Chiron\Handlers\Strategies\RequestResponseReflection;
+//use Chiron\Handlers\Strategy\RequestResponseReflection;
 //use Chiron\Stack\RequestHandlerStack;
 
 //use Chiron\Http\Response;

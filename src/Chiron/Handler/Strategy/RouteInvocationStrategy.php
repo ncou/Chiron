@@ -10,7 +10,7 @@ declare(strict_types=1);
  * @license   https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
  */
 
-namespace Chiron\Handler\Strategies;
+namespace Chiron\Handler\Strategy;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

@@ -45,6 +45,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;
 
+use Chiron\Handler\DeferredRequestHandler;
+
 class Application
 {
     public const VERSION = '1.0.0';

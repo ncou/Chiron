@@ -21,6 +21,8 @@ declare(strict_types=1);
 
 // TODO : regarder ici comment c'est fait : https://github.com/zendframework/zend-problem-details/blob/master/src/ProblemDetailsMiddleware.php
 
+//https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php
+
 namespace Chiron\Middleware;
 
 use Chiron\Exception\HttpException;

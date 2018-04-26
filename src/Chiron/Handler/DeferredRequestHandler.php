@@ -11,13 +11,13 @@ declare(strict_types=1);
  * @license   https://github.com/slimphp/Slim/blob/3.x/LICENSE.md (MIT License)
  */
 
-namespace Chiron;
+namespace Chiron\Handler;
 
 //use Closure;
 
 // TODO : regarder aussi ici : https://github.com/silexphp/Silex/blob/master/src/Silex/CallbackResolver.php
 
-use Chiron\Handler\Strategies\RouteInvocationStrategy;
+use Chiron\Handler\Strategy\RouteInvocationStrategy;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
