@@ -32,12 +32,12 @@ namespace Chiron;
 use Chiron\Config\Config;
 use Chiron\Handler\CallableRequestHandlerDecorator;
 use Chiron\Handler\DeferredRequestHandler;
-use Chiron\Http\Response;
-use Chiron\Routing\Route;
-use Chiron\Routing\Router;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Handler\Stack\Utils\CallableMiddlewareDecorator;
 use Chiron\Handler\Stack\Utils\LazyLoadingMiddleware;
+use Chiron\Http\Response;
+use Chiron\Routing\Route;
+use Chiron\Routing\Router;
 use Closure;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
@@ -893,13 +893,13 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         return $this;
     }
 
-    /**
+    /*
      * The base path of the application installation.
      *
      * @var string
      */
     //protected $basePath;
-    /**
+    /*
      * Get the path to the application "app" directory.
      *
      * @return string
@@ -911,7 +911,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         return $this->basePath . DIRECTORY_SEPARATOR . 'app';
     }
 */
-    /**
+    /*
      * Get the base path for the application.
      *
      * @param string|null $path
@@ -931,7 +931,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
     //https://github.com/Kajna/K-Core/blob/master/Core/Util/Util.php#L21
 
-    /**
+    /*
      * Get site base url.
      *
      * @param string $path
