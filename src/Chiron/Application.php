@@ -35,9 +35,9 @@ use Chiron\Handler\DeferredRequestHandler;
 use Chiron\Http\Response;
 use Chiron\Routing\Route;
 use Chiron\Routing\Router;
-use Chiron\Stack\RequestHandlerStack;
-use Chiron\Stack\Utils\CallableMiddlewareDecorator;
-use Chiron\Stack\Utils\LazyLoadingMiddleware;
+use Chiron\Handler\Stack\RequestHandlerStack;
+use Chiron\Handler\Stack\Utils\CallableMiddlewareDecorator;
+use Chiron\Handler\Stack\Utils\LazyLoadingMiddleware;
 use Closure;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
@@ -905,12 +905,12 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
      * @return string
      */
     //https://github.com/laravel/lumen-framework/blob/5.5/src/Application.php#L706
-
+/*
     public function path()
     {
         return $this->basePath . DIRECTORY_SEPARATOR . 'app';
     }
-
+*/
     /**
      * Get the base path for the application.
      *
@@ -918,6 +918,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
      *
      * @return string
      */
+    /*
     public function basePath($path = null)
     {
         if (isset($this->basePath)) {
@@ -926,7 +927,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
         // TODO : tester le cas quand on n'a pas déclaré dans l'application un paramétre de basePath passé au constructeur de l'application. Je pense que renvoyer "/" va poser un soucis !!!!
         return '/';
-    }
+    }*/
 
     //https://github.com/Kajna/K-Core/blob/master/Core/Util/Util.php#L21
 
@@ -937,6 +938,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
      *
      * @return string
      */
+    /*
     public static function base($path = '')
     {
         // Check for cached version of base path
@@ -953,7 +955,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         }
 
         return '';
-    }
+    }*/
 
     // TODO : dans un fichier séparé genre define.php :
 

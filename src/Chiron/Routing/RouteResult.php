@@ -7,23 +7,9 @@
  */
 declare(strict_types=1);
 
-//namespace Zend\Expressive\Router;
-
 namespace Chiron\Routing;
 
 // TODO : regarder ici : https://github.com/l0gicgate/Slim/blob/4.x-DispatcherResults/Slim/DispatcherResults.php
-
-//use Psr\Http\Message\ResponseInterface;
-//use Psr\Http\Message\ServerRequestInterface;
-
-//use Psr\Http\Server\MiddlewareInterface;
-//use Psr\Http\Server\RequestHandlerInterface;
-
-// TODO : à virer et passer par un getter/setter pour choisir la strategie (plutot qu'en dure dans cette classe !!!!!)
-//use Chiron\Handlers\Strategy\RequestResponseReflection;
-//use Chiron\Stack\RequestHandlerStack;
-
-//use Chiron\Http\Response;
 
 /**
  * Value object representing the results of routing.

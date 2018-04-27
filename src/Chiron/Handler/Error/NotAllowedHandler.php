@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 //https://github.com/slimphp/Slim/blob/3.x/Slim/Handlers/NotAllowed.php
 
-namespace Chiron\Handler;
+namespace Chiron\Handler\Error;
 
-use Chiron\Exception\HttpException;
+use Chiron\Http\Exception\HttpException;
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use UnexpectedValueException;
 
-class NotAllowedHandler extends AbstractExceptionHandler
+class NotAllowedHandler extends AbstractHandler
 {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

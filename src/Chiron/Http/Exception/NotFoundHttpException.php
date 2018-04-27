@@ -2,7 +2,7 @@
 
 //namespace Slim\Exception;
 
-namespace Chiron\Exception;
+namespace Chiron\Http\Exception;
 
 class NotFoundHttpException extends HttpException
 {

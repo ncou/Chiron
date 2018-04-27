@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Stack;
+namespace Chiron\Handler\Stack;
 
 //https://github.com/middlewares/utils
 

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Exception;
+namespace Chiron\Http\Exception;
 
 use RuntimeException;
 use Throwable;

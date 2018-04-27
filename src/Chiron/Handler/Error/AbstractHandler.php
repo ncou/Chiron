@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Handler;
+namespace Chiron\Handler\Error;
 
 // TODO : regarder ici pour gérer les formater pour les messages : https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Error/ExceptionHandlerManager.php
 
@@ -18,7 +18,7 @@ use Throwable;
 use UnexpectedValueException;
 
 // TODO : il faudra surement ajouter une méthode setContainer() à cette classe + ajouter le "use Psr\Container\ContainerInterface;"
-abstract class AbstractExceptionHandler implements RequestHandlerInterface
+abstract class AbstractHandler implements RequestHandlerInterface
 {
     /**
      * The request attribute name used to retrieve the exception stored previously (in the middleware).

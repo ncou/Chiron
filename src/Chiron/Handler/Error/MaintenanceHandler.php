@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Handler;
+namespace Chiron\Handler\Error;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-class MaintenanceHandler extends AbstractExceptionHandler
+class MaintenanceHandler extends AbstractHandler
 {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

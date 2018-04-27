@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Handler;
+namespace Chiron\Handler\Error;
 
-use Chiron\Exception\HttpException;
+use Chiron\Http\Exception\HttpException;
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -12,7 +12,7 @@ use Throwable;
 use UnexpectedValueException;
 
 // TODO : utiliser des renderer : https://github.com/userfrosting/UserFrosting/tree/master/app/sprinkles/core/src/Error/Renderer
-class HttpExceptionHandler extends AbstractExceptionHandler
+class HttpExceptionHandler extends AbstractHandler
 {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
@@ -70,7 +70,7 @@ class HttpExceptionHandler extends AbstractExceptionHandler
     /**
      * Render HTML error page.
      *
-     * @param Chiron\Exception\HttpException $error
+     * @param Chiron\Http\Exception\HttpException $error
      *
      * @return string
      */

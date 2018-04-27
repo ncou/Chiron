@@ -2,7 +2,7 @@
 
 //namespace Symfony\Component\HttpKernel\Exception;
 
-namespace Chiron\Exception;
+namespace Chiron\Http\Exception;
 
 /**
  * @author Ben Ramsey <ben@benramsey.com>

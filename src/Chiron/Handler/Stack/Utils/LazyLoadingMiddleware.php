@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Stack\Utils;
+namespace Chiron\Handler\Stack\Utils;
 
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;

@@ -25,7 +25,7 @@ declare(strict_types=1);
 
 namespace Chiron\Middleware;
 
-use Chiron\Exception\HttpException;
+use Chiron\Http\Exception\HttpException;
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

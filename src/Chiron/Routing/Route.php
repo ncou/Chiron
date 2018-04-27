@@ -16,8 +16,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-//use Chiron\Stack\StackAwareTrait;
-
 /**
  * Route class.
  * This class represents single application route.
@@ -26,8 +24,6 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class Route implements RequestHandlerInterface
 {
-//    use StackAwareTrait;
-
     private $requirements = [];
 
     private $defaults = [];

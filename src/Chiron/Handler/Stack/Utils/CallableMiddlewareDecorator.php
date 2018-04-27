@@ -8,10 +8,11 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Handler;
+namespace Chiron\Handler\Stack\Utils;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 //use Zend\Stratigility\Exception;
@@ -33,16 +34,16 @@ use Psr\Http\Server\RequestHandlerInterface;
  * Neither the arguments nor the return value need be typehinted; however, if
  * the signature is incompatible, a PHP Error will likely be thrown.
  */
-final class CallableRequestHandlerDecorator implements RequestHandlerInterface
+final class CallableMiddlewareDecorator implements MiddlewareInterface
 {
     /**
      * @var callable
      */
-    private $handler;
+    private $middleware;
 
-    public function __construct(callable $handler)
+    public function __construct(callable $middleware)
     {
-        $this->handler = $handler;
+        $this->middleware = $middleware;
     }
 
     /**
@@ -51,9 +52,9 @@ final class CallableRequestHandlerDecorator implements RequestHandlerInterface
      * @throws Exception\MissingResponseException if the decorated middleware
      *                                            fails to produce a response
      */
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         //return ($this->middleware)($request, $handler);
-        return call_user_func($this->handler, $request);
+        return call_user_func_array($this->middleware, [$request, $handler]);
     }
 }
