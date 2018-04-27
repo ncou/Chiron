@@ -5,6 +5,8 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/chiron/chiron.svg?style=flat-square)](https://packagist.org/packages/chiron/chiron/stats)
 [![Monthly Downloads](https://img.shields.io/packagist/dm/chiron/chiron.svg?style=flat-square)](https://packagist.org/packages/chiron/chiron/stats)
 
+https://styleci.io/repos/125737330/shield
+
 Micro-Framework
 ---------------
 
