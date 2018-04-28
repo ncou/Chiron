@@ -197,7 +197,6 @@ class ProxyForwardedMiddlewareTest extends TestCase
             ["\xE9", false],
             ['localhost', true],
             ['localhost:8080', true, 'localhost', 8080],
-            //@TODO : add a test for ipV6 host.
             ['[::1]', true],
             ['[::1]:8080', true, '[::1]', 8080],
             [str_repeat('.', 101), false],

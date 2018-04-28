@@ -41,6 +41,7 @@ class ProxyForwardedMiddleware implements MiddlewareInterface
     {
         if ($this->trustProxy) {
             $uri = $request->getUri();
+
             $uri = $this->applyProtoHeader($request, $uri);
             $uri = $this->applyPortHeader($request, $uri);
             $uri = $this->applyHostHeader($request, $uri);
@@ -88,23 +89,17 @@ class ProxyForwardedMiddleware implements MiddlewareInterface
                     if (isset($matches[2])) {
                         $port = (int) substr($matches[2], 1);
                     }
-                } else { // String or IPV4 Host
-                    $pos = strpos($host, ':');
-                    if ($pos !== false) {
-                        $port = (int) substr($host, $pos + 1);
-                        $host = strstr($host, ':', true);
+                } else { // String Host or IPV4 Host
+                    $hostHeaderParts = explode(':', $host);
+                    if (isset($hostHeaderParts[1])) {
+                        $port = $hostHeaderParts[1];
                     }
+                    $host = $hostHeaderParts[0];
                 }
                 $uri = $uri->withHost($host);
                 if ($port) {
                     $uri = $uri->withPort($port);
                 }
-                /*
-                                $hostHeaderParts = explode(':', $host);
-                                $uri = $uri->withHost($hostHeaderParts[0]);
-                                if (isset($hostHeaderParts[1])) {
-                                    $uri = $uri->withPort($hostHeaderParts[1]);
-                                }*/
             }
         }
 
