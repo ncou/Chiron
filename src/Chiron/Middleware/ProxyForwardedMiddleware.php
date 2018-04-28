@@ -18,17 +18,19 @@ class ProxyForwardedMiddleware implements MiddlewareInterface
      * @var bool
      */
     private $trustProxy;
+
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param array $trustedProxies   List of IP addresses of trusted proxies
+     * @param array $trustedProxies List of IP addresses of trusted proxies
      */
     public function __construct(bool $trustProxy = true)
     {
         $this->trustProxy = $trustProxy;
     }
+
     /**
-     * Override the request URI's scheme, host and port as determined from the proxy headers
+     * Override the request URI's scheme, host and port as determined from the proxy headers.
      *
      * @param ServerRequestInterface  $request request
      * @param RequestHandlerInterface $handler
@@ -48,6 +50,7 @@ class ProxyForwardedMiddleware implements MiddlewareInterface
 
         return $handler->handle($request);
     }
+
     private function applyProtoHeader(ServerRequestInterface $request, UriInterface $uri)
     {
         if ($request->hasHeader('X-Forwarded-Proto')) {
@@ -56,8 +59,10 @@ class ProxyForwardedMiddleware implements MiddlewareInterface
 
             $uri = $uri->withScheme($proto);
         }
+
         return $uri;
     }
+
     private function applyPortHeader(ServerRequestInterface $request, UriInterface $uri)
     {
         if ($request->hasHeader('X-Forwarded-Port')) {
@@ -66,8 +71,10 @@ class ProxyForwardedMiddleware implements MiddlewareInterface
                 $uri = $uri->withPort((int) $port);
             }
         }
+
         return $uri;
     }
+
     private function applyHostHeader(ServerRequestInterface $request, UriInterface $uri)
     {
         if ($request->hasHeader('X-Forwarded-Host')) {
@@ -92,25 +99,28 @@ class ProxyForwardedMiddleware implements MiddlewareInterface
                 if ($port) {
                     $uri = $uri->withPort($port);
                 }
-/*
-                $hostHeaderParts = explode(':', $host);
-                $uri = $uri->withHost($hostHeaderParts[0]);
-                if (isset($hostHeaderParts[1])) {
-                    $uri = $uri->withPort($hostHeaderParts[1]);
-                }*/
+                /*
+                                $hostHeaderParts = explode(':', $host);
+                                $uri = $uri->withHost($hostHeaderParts[0]);
+                                if (isset($hostHeaderParts[1])) {
+                                    $uri = $uri->withPort($hostHeaderParts[1]);
+                                }*/
             }
         }
+
         return $uri;
     }
+
     /**
-     * Check that a given host is a valid Host Name
+     * Check that a given host is a valid Host Name.
      *
      * As the host can come from the user (HTTP_HOST and depending on the configuration, SERVER_NAME too can come from the user)
      * check that it does not contain forbidden characters (see RFC 952 and RFC 2181)
      *
      * @see https://symfony.com/blog/cve-2014-5244-denial-of-service-with-a-malicious-http-host-header
      *
-     * @param  string  $host
+     * @param string $host
+     *
      * @return bool
      */
     private function isValidHostName(string $host): bool
@@ -120,16 +130,17 @@ class ProxyForwardedMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Check that a given port is a valid Port Number
+     * Check that a given port is a valid Port Number.
      *
      * Must be numerical and beetween 1 an 65535
      *
      *
-     * @param  string  $host
+     * @param string $host
+     *
      * @return bool
      */
     private function isValidPortNumber(string $port): bool
     {
-        return strlen($port) <= 5 && preg_match('/^\d+\z/', $port) && !(1 > (int) $port || 0xffff < (int) $port);
+        return strlen($port) <= 5 && preg_match('/^\d+\z/', $port) && ! (1 > (int) $port || 0xffff < (int) $port);
     }
 }
