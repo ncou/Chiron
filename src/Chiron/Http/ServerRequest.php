@@ -73,7 +73,7 @@ class ServerRequest extends ServerRequestPsr7
     ) {
         $this->serverParams = $serverParams;
 
-        parent::__construct($method, $uri, $headers = [], $body, $version, $serverParams);
+        parent::__construct($method, $uri, $headers, $body, $version, $serverParams);
     }
 
     /**
