@@ -10,37 +10,22 @@ declare(strict_types=1);
 namespace Chiron\Tests\Middleware;
 
 use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Middleware\ProxyForwardedMiddleware;
-
-
 use Chiron\Http\Response;
-use Chiron\Middleware\ErrorHandlerMiddleware;
+use Chiron\Middleware\ProxyForwardedMiddleware;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Psr\Http\Message\ResponseInterface;
-
-
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use RuntimeException;
-use Throwable;
-use const E_USER_DEPRECATED;
-use function error_reporting;
-use function trigger_error;
-
 
 class ProxyForwardedMiddlewareTest extends TestCase
 {
     public function testSchemeAndHostAndPortWithPortInHostHeader()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI' => '/',
-            'REQUEST_METHOD' => 'GET',
-            'REMOTE_ADDR' => '192.168.0.1',
-            'HTTP_HOST' => 'foo.com',
+            'REQUEST_URI'            => '/',
+            'REQUEST_METHOD'         => 'GET',
+            'REMOTE_ADDR'            => '192.168.0.1',
+            'HTTP_HOST'              => 'foo.com',
             'HTTP_X_FORWARDED_PROTO' => 'https',
-            'HTTP_X_FORWARDED_HOST' => 'example.com:1234',
+            'HTTP_X_FORWARDED_HOST'  => 'example.com:1234',
         ]);
         $middleware = new ProxyForwardedMiddleware();
 
@@ -49,6 +34,7 @@ class ProxyForwardedMiddlewareTest extends TestCase
             $scheme = $request->getUri()->getScheme();
             $host = $request->getUri()->getHost();
             $port = $request->getUri()->getPort();
+
             return new Response();
         };
 
@@ -61,13 +47,13 @@ class ProxyForwardedMiddlewareTest extends TestCase
     public function testSchemeAndHostAndPortWithPortInPortHeader()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI' => '/',
-            'REQUEST_METHOD' => 'GET',
-            'REMOTE_ADDR' => '192.168.0.1',
-            'HTTP_HOST' => 'foo.com',
+            'REQUEST_URI'            => '/',
+            'REQUEST_METHOD'         => 'GET',
+            'REMOTE_ADDR'            => '192.168.0.1',
+            'HTTP_HOST'              => 'foo.com',
             'HTTP_X_FORWARDED_PROTO' => 'https',
-            'HTTP_X_FORWARDED_HOST' => 'example.com',
-            'HTTP_X_FORWARDED_PORT' => '1234',
+            'HTTP_X_FORWARDED_HOST'  => 'example.com',
+            'HTTP_X_FORWARDED_PORT'  => '1234',
         ]);
         $middleware = new ProxyForwardedMiddleware();
 
@@ -76,6 +62,7 @@ class ProxyForwardedMiddlewareTest extends TestCase
             $scheme = $request->getUri()->getScheme();
             $host = $request->getUri()->getHost();
             $port = $request->getUri()->getPort();
+
             return new Response();
         };
 
@@ -84,16 +71,17 @@ class ProxyForwardedMiddlewareTest extends TestCase
         $this->assertSame('example.com', $host);
         $this->assertSame(1234, $port);
     }
+
     public function testSchemeAndHostAndPortWithPortInHostAndPortHeader()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI' => '/',
-            'REQUEST_METHOD' => 'GET',
-            'REMOTE_ADDR' => '192.168.0.1',
-            'HTTP_HOST' => 'foo.com',
+            'REQUEST_URI'            => '/',
+            'REQUEST_METHOD'         => 'GET',
+            'REMOTE_ADDR'            => '192.168.0.1',
+            'HTTP_HOST'              => 'foo.com',
             'HTTP_X_FORWARDED_PROTO' => 'https',
-            'HTTP_X_FORWARDED_HOST' => 'example.com:1000',
-            'HTTP_X_FORWARDED_PORT' => '2000',
+            'HTTP_X_FORWARDED_HOST'  => 'example.com:1000',
+            'HTTP_X_FORWARDED_PORT'  => '2000',
         ]);
         $middleware = new ProxyForwardedMiddleware();
 
@@ -102,6 +90,7 @@ class ProxyForwardedMiddlewareTest extends TestCase
             $scheme = $request->getUri()->getScheme();
             $host = $request->getUri()->getHost();
             $port = $request->getUri()->getPort();
+
             return new Response();
         };
 
@@ -110,13 +99,14 @@ class ProxyForwardedMiddlewareTest extends TestCase
         $this->assertSame('example.com', $host);
         $this->assertSame(1000, $port);
     }
+
     public function testNonTrustedProxies()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI' => '/',
-            'REQUEST_METHOD' => 'GET',
-            'REMOTE_ADDR' => '10.0.0.1',
-            'HTTP_HOST' => 'foo.com',
+            'REQUEST_URI'           => '/',
+            'REQUEST_METHOD'        => 'GET',
+            'REMOTE_ADDR'           => '10.0.0.1',
+            'HTTP_HOST'             => 'foo.com',
             'HTTP_X_FORWARDED_HOST' => 'example.com:1234',
         ]);
         $middleware = new ProxyForwardedMiddleware(false);
@@ -126,6 +116,7 @@ class ProxyForwardedMiddlewareTest extends TestCase
             $scheme = $request->getUri()->getScheme();
             $host = $request->getUri()->getHost();
             $port = $request->getUri()->getPort();
+
             return new Response();
         };
 
@@ -143,16 +134,17 @@ class ProxyForwardedMiddlewareTest extends TestCase
         $start = microtime(true);
 
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI' => '/',
+            'REQUEST_URI'    => '/',
             'REQUEST_METHOD' => 'GET',
             //'REMOTE_ADDR' => '10.0.0.1',
-            'HTTP_HOST' => 'foo.com',
+            'HTTP_HOST'             => 'foo.com',
             'HTTP_X_FORWARDED_HOST' => $newHost,
         ]);
         $middleware = new ProxyForwardedMiddleware();
 
         $handler = function ($request) use (&$host) {
             $host = $request->getUri()->getHost();
+
             return new Response();
         };
 
@@ -161,13 +153,14 @@ class ProxyForwardedMiddlewareTest extends TestCase
         $this->assertEquals('foo.com', $host);
         $this->assertLessThan(0.02, microtime(true) - $start);
     }
+
     /**
      * @dataProvider getHostValidities
      */
     public function testHostValidity($newHost, $isValid, $expectedHost = null, $expectedPort = null)
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI' => '/',
+            'REQUEST_URI'    => '/',
             'REQUEST_METHOD' => 'GET',
             //'REMOTE_ADDR' => '10.0.0.1',
             'HTTP_HOST' => 'foo.com',
@@ -179,6 +172,7 @@ class ProxyForwardedMiddlewareTest extends TestCase
         $handler = function ($request) use (&$host, &$port) {
             $host = $request->getUri()->getHost();
             $port = $request->getUri()->getPort();
+
             return new Response();
         };
 
@@ -193,27 +187,28 @@ class ProxyForwardedMiddlewareTest extends TestCase
             $this->assertSame('foo.com', $host);
         }
     }
+
     public function getHostValidities()
     {
-        return array(
-            array('.a', false),
-            array('a..', false),
-            array('a.', true),
-            array("\xE9", false),
-            array('localhost', true),
-            array('localhost:8080', true, 'localhost', 8080),
+        return [
+            ['.a', false],
+            ['a..', false],
+            ['a.', true],
+            ["\xE9", false],
+            ['localhost', true],
+            ['localhost:8080', true, 'localhost', 8080],
             //@TODO : add a test for ipV6 host.
-            array('[::1]', true),
-            array('[::1]:8080', true, '[::1]', 8080),
-            array(str_repeat('.', 101), false),
-        );
+            ['[::1]', true],
+            ['[::1]:8080', true, '[::1]', 8080],
+            [str_repeat('.', 101), false],
+        ];
     }
+
     public function getLongHostNames()
     {
-        return array(
-            array('a'.str_repeat('.abc:xyz', 1024 * 1024)),
-            array(str_repeat(':', 101)),
-        );
+        return [
+            ['a' . str_repeat('.abc:xyz', 1024 * 1024)],
+            [str_repeat(':', 101)],
+        ];
     }
 }
-
