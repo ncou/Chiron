@@ -23,23 +23,10 @@ class LogExceptionMiddlewareTest extends TestCase
 {
     protected function setUp()
     {
-        $this->request = $this->prophesize(ServerRequestInterface::class);
-
-        set_error_handler(function ($errno, $errstr, $errfile, $errline) {
-            if (! (error_reporting() & $errno)) {
-                // error_reporting does not include this error
-                return;
-            }
-
-            throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
-        });
-
-        $this->errorReporting = error_reporting();
     }
 
     protected function tearDown()
     {
-        error_reporting($this->errorReporting);
     }
 
     public function createMiddleware()
@@ -68,14 +55,12 @@ class LogExceptionMiddlewareTest extends TestCase
     /**
      * @expectedException \ErrorException
      */
-    public function testReturnsErrorResponseIfHandlerDoesNotReturnAResponse()
+    public function testReturnsErrorResponseIfHandlerRaiseAnError()
     {
         $handler = $this->prophesize(RequestHandlerInterface::class);
         $handler
             ->handle(Argument::type(ServerRequestInterface::class))
-            ->will(function () {
-                trigger_error('Deprecated', E_USER_DEPRECATED);
-            });
+            ->willThrow(new ErrorException('Warning', 0, E_WARNING));
 
         $middleware = $this->createMiddleware();
 
