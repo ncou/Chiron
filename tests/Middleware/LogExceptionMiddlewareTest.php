@@ -17,6 +17,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
+use ErrorException;
 
 class LogExceptionMiddlewareTest extends TestCase
 {
@@ -65,14 +66,16 @@ class LogExceptionMiddlewareTest extends TestCase
     }
 
     /**
-     * @expectedException \TypeError
+     * @expectedException \ErrorException
      */
     public function testReturnsErrorResponseIfHandlerDoesNotReturnAResponse()
     {
         $handler = $this->prophesize(RequestHandlerInterface::class);
         $handler
             ->handle(Argument::type(ServerRequestInterface::class))
-            ->willReturn(null);
+            ->will(function () {
+                trigger_error('Deprecated', E_USER_DEPRECATED);
+            });
 
         $middleware = $this->createMiddleware();
 
