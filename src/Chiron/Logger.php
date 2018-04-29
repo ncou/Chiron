@@ -80,6 +80,7 @@ class Logger extends AbstractLogger
     private function format(string $level, string $message, array $context): string
     {
         $message = $this->interpolate($message, $context);
+
         return sprintf('%s [%s] %s', date(\DateTime::RFC3339), strtoupper($level), $message);
     }
 

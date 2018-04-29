@@ -9,20 +9,14 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
-use Chiron\Http\Response;
 use Chiron\Middleware\LogExceptionMiddleware;
-use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\NullLogger;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\NullLogger;
 use RuntimeException;
-use Throwable;
-use const E_USER_DEPRECATED;
-use function error_reporting;
-use function trigger_error;
 
 class LogExceptionMiddlewareTest extends TestCase
 {
@@ -38,6 +32,7 @@ class LogExceptionMiddlewareTest extends TestCase
     public function createMiddleware()
     {
         $loggerMiddleware = new LogExceptionMiddleware(new NullLogger());
+
         return $loggerMiddleware;
     }
 
@@ -70,8 +65,6 @@ class LogExceptionMiddlewareTest extends TestCase
         $middleware = $this->createMiddleware();
 
         $result = $middleware->process($this->request->reveal(), $handler->reveal());
-
-
     }
 
     /**
@@ -87,7 +80,5 @@ class LogExceptionMiddlewareTest extends TestCase
         $middleware = $this->createMiddleware();
 
         $result = $middleware->process($this->request->reveal(), $handler->reveal());
-
-
     }
 }
