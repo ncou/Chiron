@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Chiron\Tests\Middleware;
 
 use Chiron\Middleware\LogExceptionMiddleware;
-use ErrorException;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
@@ -18,11 +17,13 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
+use ErrorException;
 
 class LogExceptionMiddlewareTest extends TestCase
 {
     protected function setUp()
     {
+        $this->request = $this->prophesize(ServerRequestInterface::class);
     }
 
     protected function tearDown()
