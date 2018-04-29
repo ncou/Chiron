@@ -25,10 +25,8 @@ namespace Chiron\Container;
 
 // TODO : regarder comment engistrer des services comme dans simplex (methode extend et register) : https://github.com/mnapoli/simplex
 
-use Psr\Container\ContainerInterface;
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\NotFoundExceptionInterface;
 use Chiron\Container\Exception\EntryNotFoundException;
+use Psr\Container\ContainerInterface;
 
 class Container implements \ArrayAccess, ContainerInterface
 {

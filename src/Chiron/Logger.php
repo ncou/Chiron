@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron;
 
-use Psr\Log\InvalidArgumentException;
 use Psr\Log\AbstractLogger;
+use Psr\Log\InvalidArgumentException;
 use Psr\Log\LogLevel;
 
 /**
@@ -25,7 +25,9 @@ class Logger extends AbstractLogger
     ];
 
     private $minLevelIndex;
+
     private $formatter;
+
     private $handle;
 
     public function __construct($output = 'php://stderr', string $minLevel = LogLevel::ERROR, callable $formatter = null)
@@ -40,14 +42,14 @@ class Logger extends AbstractLogger
 
         // TODO : créer une méthode setMinLevel() pour permettre de modifier le niveau minimal de verbosité apres avoir instancié le logger.
         $this->minLevelIndex = self::LEVELS[$minLevel];
-        $this->formatter = $formatter ?: array($this, 'format');
+        $this->formatter = $formatter ?: [$this, 'format'];
     }
 
     /**
      * Log the message (string or Object with __string function) in the opened log file.
      *
      * @param string $level
-     * @param mixed $message Should be a string a scalar or an object with __string() function.
+     * @param mixed  $message Should be a string a scalar or an object with __string() function.
      * @param array  $context
      *
      * @return string
@@ -67,7 +69,7 @@ class Logger extends AbstractLogger
     }
 
     /**
-     * Default formatter if none is specified in the constructor
+     * Default formatter if none is specified in the constructor.
      *
      * @param string $level
      * @param string $message
@@ -78,6 +80,7 @@ class Logger extends AbstractLogger
     private function format(string $level, string $message, array $context): string
     {
         $message = $this->interpolate($message, $context);
+
         return sprintf('%s [%s] %s', date(\DateTime::RFC3339), strtoupper($level), $message);
     }
 
@@ -85,7 +88,8 @@ class Logger extends AbstractLogger
      * Interpolates context values into the message placeholders.
      *
      * @param string $message
-     * @param array $context
+     * @param array  $context
+     *
      * @return string
      */
     private function interpolate(string $message, array $context = [])
