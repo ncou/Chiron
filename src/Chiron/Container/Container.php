@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron;
+namespace Chiron\Container;
 
 // TODO : mettre en cache le container avec un serialize/unserialize : https://github.com/radarphp/Radar.Adr/blob/1.x/src/Boot.php#L79
 
@@ -26,6 +26,9 @@ namespace Chiron;
 // TODO : regarder comment engistrer des services comme dans simplex (methode extend et register) : https://github.com/mnapoli/simplex
 
 use Psr\Container\ContainerInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
+use Chiron\Container\Exception\EntryNotFoundException;
 
 class Container implements \ArrayAccess, ContainerInterface
 {
@@ -108,8 +111,8 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         //TODO : on devrait faire une vérif si le paramétre $alias est bien une string sinon on léve une exception !!!!!
         if (! $this->has($alias)) {
-            //throw new NotFoundException("$alias doesn't exists in the container");
-            throw new \InvalidArgumentException("'$alias' doesn't exists in the Container component");
+            throw new EntryNotFoundException($alias);
+            //throw new \InvalidArgumentException("'$alias' doesn't exists in the Container component");
         }
 
         if (! is_callable($this->container[$alias])) {

@@ -29,6 +29,7 @@ namespace Chiron;
 // TODO : regarder pour ajouter par défaut les middlewares dans la stack (à faire lorsqu'on va faire un run) sur le emitter/le requestHandler....etc : https://github.com/swoft-cloud/swoft-framework/blob/c105a87b667f06f01eddf0c17ff94f023008dae4/src/Web/DispatcherServer.php#L85
 //*****************************
 
+use Chiron\DefaultServicesProvider;
 use Chiron\Config\Config;
 use Chiron\Handler\CallableRequestHandlerDecorator;
 use Chiron\Handler\DeferredRequestHandler;
@@ -37,7 +38,6 @@ use Chiron\Handler\Stack\Utils\CallableMiddlewareDecorator;
 use Chiron\Handler\Stack\Utils\LazyLoadingMiddleware;
 use Chiron\Http\Response;
 use Chiron\Routing\Route;
-use Chiron\Routing\Router;
 use Closure;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
@@ -45,6 +45,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;
+use Chiron\Container\Container;
 
 class Application
 {
@@ -55,7 +56,7 @@ class Application
      *
      * @var LoggerInterface
      */
-    private $logger;
+    //private $logger;
 
     /**
      * Dependency injection container.
@@ -69,7 +70,7 @@ class Application
      *
      * @var RouterInterface // TODO : interface à créer !!!!
      */
-    private $router;
+    //private $router;
 
     private $requestHandler;
 
@@ -369,11 +370,11 @@ class Application
 
     /*
     // TODO : méthode à implémenter !!!!!!
-        public function setRouter(RouterInterface $router)
-        {
-            $this->router = $router;
-            return $this;
-        }*/
+    public function setRouter(RouterInterface $router)
+    {
+        $this->router = $router;
+        return $this;
+    }*/
 
     /*******************************************************************************
      * Container
@@ -417,13 +418,15 @@ class Application
      */
     public function getLogger(): LoggerInterface
     {
+        return $this->container->get('logger');
+
+/*
         // If a logger hasn't been set, use NullLogger
         if (! $this->logger instanceof LoggerInterface) {
             $this->logger = new NullLogger();
-            //$this->logger = new \Logger();
         }
 
-        return $this->logger;
+        return $this->logger;*/
     }
 
     /**
@@ -435,9 +438,11 @@ class Application
      */
     public function setLogger(LoggerInterface $logger): self
     {
-        $this->logger = $logger;
-
+        $this->container->set('logger', $logger);
         return $this;
+        /*
+        $this->logger = $logger;
+        return $this;*/
     }
 
     // TODO : ajouter 2 méthodes : $app->pipeRoutingMiddleware();   et  $app->pipeDispatchMiddleware();   pour l'ajout du routerMiddleware lui passer au constructeur l'object Router qui a une ionterface RouterInterface !!!!!
@@ -457,48 +462,6 @@ $app->pipeDispatchMiddleware();
 $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 */
 
-    /********************************************************************************
-     * Magic methods for convenience
-     *******************************************************************************/
-
-    // TODO : déplacer le container hors de l'appli, et mettre ces méthodes dans la classe du container.
-    // MAGIC METHODS
-    /*
-    public function __get($property){
-        return $this->getContainer()->get($property);
-    }
-
-    public function __isset($property){
-        //return $this->offsetExists($property);
-        return $this->getContainer()->has($property);
-    }
-    */
-
-    /**
-     * Calling a non-existant method on App checks to see if there's an item
-     * in the container that is callable and if so, calls it.
-     *
-     * @param string $method
-     * @param array  $args
-     *
-     * @return mixed
-     */
-    //https://github.com/slimphp/Slim/blob/3.x/Slim/App.php#L117
-    /*
-    public function __call($method, $args)
-    {
-        if ($this->container->has($method)) {
-            $obj = $this->container->get($method);
-            if (is_callable($obj)) {
-                return call_user_func_array($obj, $args);
-            }
-        }
-        throw new \BadMethodCallException("Method $method is not a valid method");
-    }
-    */
-
-    // TODO : regarder les méthodes magiques qu'il manque : https://github.com/ncou/klein.php-container-services-router/blob/master/src/Klein/ServiceProvider.php#L412
-    // __set / __unset
 
     /*******************************************************************************
      * Constructor
@@ -512,21 +475,8 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
      * @param array $values the parameters or objects
      */
     // TODO : lui passer un container en paramétre ?????
-    public function __construct(array $values = [])
-    { //, ContainerInterface $container = null){
-        //$this->router = new Router();
-
-        $this->container = new Container();
-
-        $this->container->set('router', function ($c) {
-            return new Router();
-        });
-
-        //$this->container = $ontainer;
-
-        $config = new Config($values);
-        $this->container->config = $config;
-
+    public function __construct(array $settings = [])
+    {
         // TODO : créer plutot une classe "EmptyResponseHandler" qui utilisera une responseFactory pour renvoyer une response vide. et c'est cette classe qu'on passera à la Stack.
         $emptyResponse = new CallableRequestHandlerDecorator(function ($request) {
             // TODO : passer le charset + version http 1.1 par défaut à cette réponse !!!!
@@ -536,132 +486,19 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
             return $response;
         });
-
         $this->requestHandler = new RequestHandlerStack($emptyResponse);
 
-        //$this->factory = new MiddlewareFactory($this->container);
+        $this->container = new Container();
 
-        //$this->loadConfig($config_path_or_file_or_array, $config_cache_file);
+        $services = new DefaultServicesProvider();
+        $services->register($this->container);
 
-        // TODO : déplacer ces initialisations dans le constructeur d'une classe CONTAINER externalisée
+        $config = new Config($settings);
+        $this->container->config = $config;
 
-        // TODO : ajouter l'initialisation d'un logger ?????
 
-        // TODO : vérifier l'utilité de mettre cela dans un container, normalement on va toujours passer par le router, donc le mettre dans un container n'est pas vraiment nécessaire, surtout que dans les controller on ne va pas réutiliser le router, car la méthode redirect ou getPathFor se trouve directement dans $app et pas dans la classe Router.
-        // register the router in the pimple container
 
-        /*
-            $this['session'] = function ($c) {
-                // TODO : déplacer la classe session dans le répertoire "components"
-                return new Session();
-            };
-        */
-
-        /*
-            $this['router'] = function ($c) {
-                return new Router($c->get('basePath'), $this->container);
-            };
-        */
-
-        // Create request class closure.
-        /*
-            $this['request'] = function ($c) {
-                return Request::fromGlobals();
-            };
-        */
-
-        // TODO : à virer car maintenant la réponse est créée directement dans le controler. il faudrait plutot utiliser une ResponseFactory appellé directement dans le controller !!!
-        // TODO : vérifier l'utilité de créer cette response ici !!!!! normalement chaque controller ou errorhandler va créer une nouvelle response...
-        $this->container['response'] = function ($c) {
-            //$headers = new Headers(['Content-Type' => 'text/html; charset=UTF-8']);
-            //$response = new Response(200, $headers);
-            //return $response->withProtocolVersion($container->get('settings')['httpVersion']);
-
-            // TODO : à améliorer il faut passer le header text/heml et charset UTF8 par défaut + le code de réposne à 200 + si c'est du http ou https !!!!!!!!!
-            $response = new Response();
-            // TODO : ajouter 2 lignes "Content-Type" avec text/html puis avec charset=XXXX, ca fera la même chose qu'une ligne séparée avec une virgule
-            // TODO : récuperer le charset directement dans la partie ->getContainer()->get('config') !!!!
-            $response = $response->withAddedHeader('Content-Type', 'text/html; charset=' . $c->get('charset'));
-            //$response->setProtocolVersion($c->get('httpVersion'));
-            return $response;
-        };
-
-        // TODO : initialiser un logger ici ???? et éventuellement créer une propriété pour changer le formater dans la restitution de la log. cf nanologger et la liste des todo pour mettre un formater custom à passer en paramétre du constructeur !!!!
-
-        // register the not found route exception
-        $this->container['404notFoundHandler'] = function ($c) {
-            return function ($request, $response, $e) use ($c) {
-                // TODO : penser à récupérer le charset déclaré dans le container, et le passer à la response !!!!
-                return $response->withStatus($e->getStatusCode())
-                    //->withHeader('Content-type', 'text/html')
-                    ->setBody('404 page not found!');
-            };
-        };
-
-        // register the method not allowed exception
-        $this->container['httpExceptionHandler'] = function ($c) {
-            return function ($request, $response, $e) use ($c) {
-                // TODO : penser à récupérer le charset déclaré dans le container, et le passer à la response !!!!
-                $response = $response->withStatus($e->getStatusCode())
-                //->withHeader('Content-type', 'text/html')
-                ->setBody($e->getMessage());
-
-                foreach ($e->getHeaders() as $header => $value) {
-                    $response = $response->withHeader($header, $value);
-                }
-
-                return $response;
-            };
-        };
-
-        // TODO : à virer suite au passage sous PHP7 !!!!!!!!!!!
-        $this->container['errorHandler'] = function ($c) {
-            return function ($request, $response, $e) use ($c) {
-                // TODO : corriger la méthode "expectsJson()"
-
-//                  if ($request->expectsJson()) {
-//                $response->setStatusCode(500)
-//                  ->addHeader('Content-Type', 'application/json')
-//                    ->setBody(json_encode(['status_code'   => $e->getCode(), 'reason_phrase' => $e->getMessage()]));
-//                } else {
-
-                // TODO : penser à récupérer le charset déclaré dans le container, et le passer à la response !!!!
-                return $response->withStatus(502)
-                    //->withHeader('Content-Type', 'text/html')
-                    ->setBody('Exception1: ' . "Code: ({$e->getCode()}); Message: ({$e->getMessage()}); in file: {$e->getFile()} [line: {$e->getLine()}]");
-                //->setBody('Something went wrong!');
-            //    }
-                //return $response;
-            };
-        };
-
-        $this->container['phpErrorHandler'] = function ($c) {
-            return function (ServerRequestInterface $request, ResponseInterface $response, \Throwable $e) use ($c) {
-                // TODO : corriger la méthode "expectsJson()"
-
-//                  if ($request->expectsJson()) {
-//                $response->setStatusCode(500)
-//                  ->addHeader('Content-Type', 'application/json')
-//                    ->setBody(json_encode(['status_code'   => $e->getCode(), 'reason_phrase' => $e->getMessage()]));
-//                } else {
-
-                // TODO : penser à récupérer le charset déclaré dans le container, et le passer à la response !!!!
-                return $response->withStatus(551)
-                    //->withHeader('Content-Type', 'text/html')
-                    ->setBody('Exception2: ' . "Code: ({$e->getCode()}); Message: ({$e->getMessage()}); in file: {$e->getFile()} [line: {$e->getLine()}]"); //$e->getTraceAsString()
-                    //->setBody('Something went wrong!');
-            //    }
-                //return $response;
-            };
-        };
-
-        /*
-            $this->container['callableResolver'] = function ($container) {
-                return new CallableResolver($container);
-            };
-        */
-
-        //        $this->container['debug'] = false;
+//        $this->container['debug'] = false;
 //        $this->container['charset'] = 'UTF-8';
 //        $this->container['httpVersion'] = '1.1';
 //        $this->container['logger'] = null;
@@ -671,7 +508,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $this->container['httpVersion'] = '1.1';
         $this->container['basePath'] = '';
 
-        foreach ($values as $key => $value) {
+        foreach ($settings as $key => $value) {
             $this->container[$key] = $value;
         }
 
@@ -892,96 +729,4 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
         return $this;
     }
-
-    /*
-     * The base path of the application installation.
-     *
-     * @var string
-     */
-    //protected $basePath;
-    /*
-     * Get the path to the application "app" directory.
-     *
-     * @return string
-     */
-    //https://github.com/laravel/lumen-framework/blob/5.5/src/Application.php#L706
-/*
-    public function path()
-    {
-        return $this->basePath . DIRECTORY_SEPARATOR . 'app';
-    }
-*/
-    /*
-     * Get the base path for the application.
-     *
-     * @param string|null $path
-     *
-     * @return string
-     */
-    /*
-    public function basePath($path = null)
-    {
-        if (isset($this->basePath)) {
-            return $this->basePath . ($path ? '/' . $path : $path);
-        }
-
-        // TODO : tester le cas quand on n'a pas déclaré dans l'application un paramétre de basePath passé au constructeur de l'application. Je pense que renvoyer "/" va poser un soucis !!!!
-        return '/';
-    }*/
-
-    //https://github.com/Kajna/K-Core/blob/master/Core/Util/Util.php#L21
-
-    /*
-     * Get site base url.
-     *
-     * @param string $path
-     *
-     * @return string
-     */
-    /*
-    public static function base($path = '')
-    {
-        // Check for cached version of base path
-        if (null !== self::$base) {
-            return self::$base . $path;
-        }
-        if (isset($_SERVER['HTTP_HOST'])) {
-            $base_url = isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off' ? 'https' : 'http';
-            $base_url .= '://' . $_SERVER['HTTP_HOST'];
-            $base_url .= str_replace(basename($_SERVER['SCRIPT_NAME']), '', $_SERVER['SCRIPT_NAME']);
-            self::$base = $base_url;
-
-            return $base_url . $path;
-        }
-
-        return '';
-    }*/
-
-    // TODO : dans un fichier séparé genre define.php :
-
-/*
-<?php
-use \Swoft\App;
-// Constants
-!defined('DS') && define('DS', DIRECTORY_SEPARATOR);
-// 系统名称
-!defined('APP_NAME') && define('APP_NAME', 'swoft');
-// 基础根目录
-!defined('BASE_PATH') && define('BASE_PATH', dirname(__DIR__, 1));
-// cli命名空间
-!defined('COMMAND_NS') && define('COMMAND_NS', "App\Commands");
-// 注册别名
-$aliases = [
-    '@root'       => BASE_PATH,
-    '@app'        => '@root/app',
-    '@res'        => '@root/resources',
-    '@runtime'    => '@root/runtime',
-    '@configs'    => '@root/config',
-    '@resources'  => '@root/resources',
-    '@beans'      => '@configs/beans',
-    '@properties' => '@configs/properties',
-    '@commands'   => '@app/Commands'
-];
-App::setAliases($aliases);
-*/
 }

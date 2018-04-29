@@ -270,10 +270,4 @@ class HttpExceptionHandler extends AbstractHandler
 
         return 'E_UNKNOWN';
     }
-
-    // TODO : en fait on devrait toujours avoir une HTTPException dans la request, donc cette méthode ne sert à rien !!!!
-    private function isHttpException(Throwable $e): bool
-    {
-        return $e instanceof HttpException;
-    }
 }

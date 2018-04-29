@@ -12,7 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 //use Psr\Container\ContainerInterface;
 
 //use Chiron\Exception\HttpException;
-//use Chiron\Http\Response;
+use Chiron\Http\Response;
 
 use Throwable;
 use UnexpectedValueException;
@@ -254,5 +254,10 @@ abstract class AbstractHandler implements RequestHandlerInterface
         }
 
         return $response->withStatus($statusCode);
+    }
+
+    protected function isHttpException(Throwable $e): bool
+    {
+        return $e instanceof HttpException;
     }
 }

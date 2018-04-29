@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron;
 
-use InvalidArgumentException;
+use Psr\Log\InvalidArgumentException;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 
@@ -25,10 +25,10 @@ class Logger extends AbstractLogger
     ];
 
     private $minLevelIndex;
-
+    private $formatter;
     private $handle;
 
-    public function __construct($output = 'php://stderr', string $minLevel = LogLevel::ERROR)
+    public function __construct($output = 'php://stderr', string $minLevel = LogLevel::ERROR, callable $formatter = null)
     {
         // TODO : creer une methode assertLevel() qui fait le throw de l'exception si le ne level n'est pas correct.
         if (! isset(self::LEVELS[$minLevel])) {
@@ -40,8 +40,18 @@ class Logger extends AbstractLogger
 
         // TODO : créer une méthode setMinLevel() pour permettre de modifier le niveau minimal de verbosité apres avoir instancié le logger.
         $this->minLevelIndex = self::LEVELS[$minLevel];
+        $this->formatter = $formatter ?: array($this, 'format');
     }
 
+    /**
+     * Log the message (string or Object with __string function) in the opened log file.
+     *
+     * @param string $level
+     * @param mixed $message Should be a string a scalar or an object with __string() function.
+     * @param array  $context
+     *
+     * @return string
+     */
     public function log($level, $message, array $context = [])
     {
         // TODO : creer une methode assertLevel() qui fait le throw de l'exception si le ne level n'est pas correct.
@@ -51,10 +61,14 @@ class Logger extends AbstractLogger
         if (self::LEVELS[$level] < $this->minLevelIndex) {
             return;
         }
-        fwrite($this->handle, $this->format($level, $message, $context));
+        // TODO : throw an exception if the $message IS NOT a string OR a scalar OR an object with __string() ?
+        $result = call_user_func_array($this->formatter, [$level, (string) $message, $context]);
+        fwrite($this->handle, $result);
     }
 
     /**
+     * Default formatter if none is specified in the constructor
+     *
      * @param string $level
      * @param string $message
      * @param array  $context
@@ -63,7 +77,20 @@ class Logger extends AbstractLogger
      */
     private function format(string $level, string $message, array $context): string
     {
-        if (false !== strpos($message, '{')) {
+        $message = $this->interpolate($message, $context);
+        return sprintf('%s [%s] %s', date(\DateTime::RFC3339), strtoupper($level), $message);
+    }
+
+    /**
+     * Interpolates context values into the message placeholders.
+     *
+     * @param string $message
+     * @param array $context
+     * @return string
+     */
+    private function interpolate(string $message, array $context = [])
+    {
+        if (strpos($message, '{') !== false) {
             $replacements = [];
             foreach ($context as $key => $val) {
                 if (null === $val || is_scalar($val) || (\is_object($val) && method_exists($val, '__toString'))) {
@@ -79,6 +106,6 @@ class Logger extends AbstractLogger
             $message = strtr($message, $replacements);
         }
 
-        return sprintf('%s [%s] %s', date(\DateTime::RFC3339), strtoupper($level), $message);
+        return $message;
     }
 }
