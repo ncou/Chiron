@@ -49,10 +49,6 @@ final class LogExceptionMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
-            // TODO : à virer c'est un test !!!!!!!!!!!
-            //trigger_error("This event WILL fire", E_USER_ERROR);
-            //throw new ErrorHandler($errstr, 0, $errno, $errfile, $errline);
-
             return $handler->handle($request);
         } catch (ErrorException $e) {
             $level = $this->errorLevelMap[$e->getSeverity()];

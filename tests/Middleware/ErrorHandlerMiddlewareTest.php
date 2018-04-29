@@ -9,15 +9,12 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
-//use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
 use Chiron\Middleware\ErrorHandlerMiddleware;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
-//use Chiron\Exception\HttpException;
-
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
@@ -49,7 +46,6 @@ class ErrorHandlerMiddlewareTest extends TestCase
         error_reporting($this->errorReporting);
     }
 
-    // TODO : utiliser le $isDevelopmentMode pour afficher/cacher le détail des exceptions !!!!
     public function createMiddleware($isDevelopmentMode = true)
     {
         $errorHandlerMiddleware = new ErrorHandlerMiddleware($isDevelopmentMode);
