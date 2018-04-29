@@ -77,6 +77,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
 
         $this->assertSame($expectedResponse, $result);
     }
+
     /**
      * @expectedException \RuntimeException
      */
