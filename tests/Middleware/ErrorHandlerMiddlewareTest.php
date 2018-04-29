@@ -77,6 +77,20 @@ class ErrorHandlerMiddlewareTest extends TestCase
 
         $this->assertSame($expectedResponse, $result);
     }
+    /**
+     * @expectedException \RuntimeException
+     */
+    public function testRethrowErrorIfHandlerIsNotDefined()
+    {
+        $handler = $this->prophesize(RequestHandlerInterface::class);
+        $handler
+            ->handle(Argument::type(ServerRequestInterface::class))
+            ->willThrow(new RuntimeException('Exception raised'));
+
+        $middleware = new ErrorHandlerMiddleware(true);
+
+        $result = $middleware->process($this->request->reveal(), $handler->reveal());
+    }
 
     public function testReturnsErrorResponseIfHandlerDoesNotReturnAResponse()
     {
