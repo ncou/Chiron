@@ -1,9 +1,10 @@
 <?php
 
 /**
- * Chiron (http://www.chironframework.com)
+ * Chiron (http://www.chironframework.com).
  *
- * @link      https://github.com/ncou/Chiron
+ * @see      https://github.com/ncou/Chiron
+ *
  * @license   https://github.com/ncou/Chiron/blob/master/licenses/LICENSE.md (MIT License)
  */
 
@@ -12,8 +13,8 @@
 
 namespace Chiron;
 
-use Psr\Container\ContainerInterface;
 use Chiron\Routing\Router;
+use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
 
 /**
@@ -30,9 +31,7 @@ class DefaultServicesProvider
      */
     public function register(ContainerInterface $container)
     {
-
         // TODO : initialiser un logger ici ???? et éventuellement créer une propriété pour changer le formater dans la restitution de la log. cf nanologger et la liste des todo pour mettre un formater custom à passer en paramétre du constructeur !!!!
-
 
         $container['router'] = function ($c) {
             return new Router();
@@ -42,13 +41,11 @@ class DefaultServicesProvider
             return new NullLogger();
         };
 
-
-         /*
-            $container['callableResolver'] = function ($container) {
-                return new CallableResolver($container);
-            };
+        /*
+           $container['callableResolver'] = function ($container) {
+               return new CallableResolver($container);
+           };
         */
-
 
         //$this->factory = new MiddlewareFactory($this->container);
 
@@ -96,8 +93,5 @@ class DefaultServicesProvider
             //$response->setProtocolVersion($c->get('httpVersion'));
             return $response;
         };
-
-
-
     }
 }

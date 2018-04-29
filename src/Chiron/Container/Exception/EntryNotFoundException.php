@@ -3,6 +3,7 @@
 namespace Chiron\Container\Exception;
 
 use Psr\Container\NotFoundExceptionInterface;
+
 /**
  * No entry was found in the container.
  *

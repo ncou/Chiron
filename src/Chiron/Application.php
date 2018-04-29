@@ -29,8 +29,8 @@ namespace Chiron;
 // TODO : regarder pour ajouter par défaut les middlewares dans la stack (à faire lorsqu'on va faire un run) sur le emitter/le requestHandler....etc : https://github.com/swoft-cloud/swoft-framework/blob/c105a87b667f06f01eddf0c17ff94f023008dae4/src/Web/DispatcherServer.php#L85
 //*****************************
 
-use Chiron\DefaultServicesProvider;
 use Chiron\Config\Config;
+use Chiron\Container\Container;
 use Chiron\Handler\CallableRequestHandlerDecorator;
 use Chiron\Handler\DeferredRequestHandler;
 use Chiron\Handler\Stack\RequestHandlerStack;
@@ -45,7 +45,6 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;
-use Chiron\Container\Container;
 
 class Application
 {
@@ -420,13 +419,13 @@ class Application
     {
         return $this->container->get('logger');
 
-/*
-        // If a logger hasn't been set, use NullLogger
-        if (! $this->logger instanceof LoggerInterface) {
-            $this->logger = new NullLogger();
-        }
-
-        return $this->logger;*/
+        /*
+                // If a logger hasn't been set, use NullLogger
+                if (! $this->logger instanceof LoggerInterface) {
+                    $this->logger = new NullLogger();
+                }
+        
+                return $this->logger;*/
     }
 
     /**
@@ -439,6 +438,7 @@ class Application
     public function setLogger(LoggerInterface $logger): self
     {
         $this->container->set('logger', $logger);
+
         return $this;
         /*
         $this->logger = $logger;
@@ -461,7 +461,6 @@ $app->pipe(\Zend\Expressive\Helper\UrlHelperMiddleware::class);
 $app->pipeDispatchMiddleware();
 $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 */
-
 
     /*******************************************************************************
      * Constructor
@@ -495,8 +494,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
         $config = new Config($settings);
         $this->container->config = $config;
-
-
 
 //        $this->container['debug'] = false;
 //        $this->container['charset'] = 'UTF-8';
