@@ -1,15 +1,17 @@
 <?php
 /**
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org).
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
  * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
+ *
+ * @see          http://cakephp.org CakePHP(tm) Project
  * @since         3.5.0
+ *
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
@@ -40,41 +42,37 @@ namespace Chiron\Middleware;
 //https://docs.spring.io/spring-security/site/docs/current/reference/html/headers.html
 //https://github.com/owncloud/core/issues/17613
 
-
 //namespace Cake\Http\Middleware;
-
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
-use InvalidArgumentException;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * Handles common security headers in a convenient way
+ * Handles common security headers in a convenient way.
  */
 class SecurityHeadersMiddleware implements MiddlewareInterface
 {
-
     private const CSP_DIRECTIVES = [
-            'default-src',
-            'base-uri',
-            'connect-src',
-            'font-src',
-            'form-action',
-            'frame-ancestors',
-            'frame-src',
-            'img-src',
-            'manifest-src',
-            'media-src',
-            'object-src',
-            'plugin-types',
-            'sandbox',
-            'script-src',
-            'style-src',
-            'worker-src',
-        ];
+        'default-src',
+        'base-uri',
+        'connect-src',
+        'font-src',
+        'form-action',
+        'frame-ancestors',
+        'frame-src',
+        'img-src',
+        'manifest-src',
+        'media-src',
+        'object-src',
+        'plugin-types',
+        'sandbox',
+        'script-src',
+        'style-src',
+        'worker-src',
+    ];
+
     /**
      * @var array
      */
@@ -102,6 +100,7 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
             if (empty($this->config['custom-csp'])) {
                 return [];
             }
+
             return ['Content-Security-Policy' => $this->config['custom-csp']];
         }
         //generated-csp
@@ -138,7 +137,7 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
      * Compile a subgroup into a policy string.
      *
      * @param string $directive
-     * @param mixed $policies
+     * @param mixed  $policies
      *
      * @return string
      */
@@ -213,6 +212,7 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
                 $ret[] = sprintf('%s', $scheme);
             }
         }
+
         return implode(' ', $ret);
     }
 
@@ -220,6 +220,7 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
      * Get HPKP header.
      *
      * @see https://developer.mozilla.org/fr/docs/Web/Security/Public_Key_Pinning
+     *
      * @return array
      */
     private function hpkp()
@@ -227,7 +228,7 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         if (empty($this->config['hpkp']['hashes'])) {
             return [];
         }
-// TODO : lever une exception si les champs hashes et max-age sont vide, il doivent tous les deux avoir une valeur chacun (cad un hash au minimum + un maxage)
+        // TODO : lever une exception si les champs hashes et max-age sont vide, il doivent tous les deux avoir une valeur chacun (cad un hash au minimum + un maxage)
         $values = [];
         foreach ($this->config['hpkp']['hashes'] as $hash) {
             $values[] = sprintf('pin-sha256="%s"', $hash);
@@ -264,6 +265,7 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         if ($this->config['hsts']['preload']) {
             $hsts .= '; preload';
         }
+
         return ['Strict-Transport-Security' => $hsts];
     }
 
@@ -299,16 +301,14 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
     {
         return array_filter([
             'X-Content-Type-Options' => $this->config['x-content-type-options'],
-            'X-Frame-Options' => $this->config['x-frame-options'],
-            'X-XSS-Protection' => $this->config['x-xss-protection'],
-            'Referrer-Policy' => $this->config['referrer-policy'],
+            'X-Frame-Options'        => $this->config['x-frame-options'],
+            'X-XSS-Protection'       => $this->config['x-xss-protection'],
+            'Referrer-Policy'        => $this->config['referrer-policy'],
         ]);
     }
 
     /**
      * Compile HTTP headers.
-     *
-     * @return void
      */
     public function getCompiledHeaders()
     {
@@ -320,12 +320,14 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
             $this->miscellaneous()
         );
     }
+
     /**
      * Serve assets if the path matches one.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request The request.
-     * @param \Psr\Http\Message\ResponseInterface $response The response.
-     * @param callable $next Callback to invoke the next middleware.
+     * @param \Psr\Http\Message\ServerRequestInterface $request  The request.
+     * @param \Psr\Http\Message\ResponseInterface      $response The response.
+     * @param callable                                 $next     Callback to invoke the next middleware.
+     *
      * @return \Psr\Http\Message\ResponseInterface A response
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -335,6 +337,7 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         foreach ($headers as $header => $value) {
             $response = $response->withHeader($header, $value);
         }
+
         return $response;
     }
 }

@@ -44,10 +44,10 @@ return [
      * Note : the experimental chrome flag 'preload' is automaticly used, register your site here : https://hstspreload.org/
      */
     'hsts' => [
-        'enable' => false,
-        'max-age' => 63072000,
+        'enable'              => false,
+        'max-age'             => 63072000,
         'include-sub-domains' => true,
-        'preload' => true
+        'preload'             => true,
     ],
     /*
      * Expect-CT
@@ -57,9 +57,9 @@ return [
      * Expect-CT will be ignored if 'enable' is false.
      */
     'ect' => [
-        'enable' => false,
-        'enforce' => false,
-        'max-age' => 63072000,
+        'enable'     => false,
+        'enforce'    => false,
+        'max-age'    => 63072000,
         'report-uri' => null,
     ],
     /*
@@ -74,9 +74,9 @@ return [
             // 'sha256-hash-value',
         ],
         'include-sub-domains' => false,
-        'max-age' => 63072000,
-        'report-only' => false,
-        'report-uri' => '',
+        'max-age'             => 63072000,
+        'report-only'         => false,
+        'report-uri'          => '',
     ],
     /*
      * Content Security Policy
@@ -88,13 +88,13 @@ return [
      * Note: custom-csp does not support report-only.
      */
     'custom-csp' => null,
-    'csp' => [
+    'csp'        => [
         'report-only' => false,
-        'report-uri' => '', // uri used for the report when 'report-only' is activated
+        'report-uri'  => '', // uri used for the report when 'report-only' is activated
         //https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/require-sri-for
         'require-sri-for' => '', // could be : 'script' / 'style' / 'script style'
         //https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/block-all-mixed-content
-        'block-all-mixed-content' => false,
+        'block-all-mixed-content'   => false,
         'upgrade-insecure-requests' => false,
         /*
          * Note: when directive value is empty, it will use `none` for that directive.
@@ -115,12 +115,12 @@ return [
                 // The colon character at the end is MANDATORY !
                 // 'http:', 'https:', 'blob:', 'data:', 'mediastream:', 'filesystem:'
             ],
-            'self' => false,
-            'unsafe-inline' => false,
-            'unsafe-eval' => false,
-            'strict-dynamic' => false,
+            'self'                     => false,
+            'unsafe-inline'            => false,
+            'unsafe-eval'              => false,
+            'strict-dynamic'           => false,
             'unsafe-hashed-attributes' => false,
-            'report-sample' => false
+            'report-sample'            => false,
         ],
         'style-src' => [
             'allow' => [
@@ -137,8 +137,8 @@ return [
             'schemes' => [
                 // 'https:',
             ],
-            'self' => false,
-            'unsafe-inline' => false
+            'self'          => false,
+            'unsafe-inline' => false,
         ],
         'img-src' => [
             //
