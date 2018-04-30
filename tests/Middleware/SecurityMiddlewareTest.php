@@ -50,6 +50,18 @@ class SecurityMiddlewareTest extends TestCase
         ], $headers, true);
     }
 
+    public function test_ect_report_only()
+    {
+        $config = require $this->configPath;
+        $config['ect']['enable'] = true;
+        $config['ect']['enforce'] = true;
+        $config['ect']['report-uri'] = 'www.example.com';
+        $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
+        $this->assertArraySubset([
+            'Expect-CT' => 'max-age=63072000, enforce, report-uri="www.example.com"',
+        ], $headers, true);
+    }
+
     public function test_hpkp()
     {
         $config = require $this->configPath;
@@ -59,6 +71,15 @@ class SecurityMiddlewareTest extends TestCase
         ];
         $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
         $this->assertArrayHasKey('Public-Key-Pins', $headers);
+    }
+
+    public function test_hpkp_report_only()
+    {
+        $config = require $this->configPath;
+        $config['hpkp']['hashes'] = ['foobar'];
+        $config['hpkp']['report-only'] = true;
+        $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
+        $this->assertArrayHasKey('Public-Key-Pins-Report-Only', $headers);
     }
 
     public function test_custom_csp_empty()

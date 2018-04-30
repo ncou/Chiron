@@ -25,6 +25,7 @@ namespace Chiron\Middleware;
 
 //https://github.com/BePsvPT/secure-headers/blob/master/src/Builder.php  +   https://github.com/BePsvPT/secure-headers/blob/master/src/SecureHeadersMiddleware.php
 //https://github.com/cakephp/cakephp/blob/master/src/Http/Middleware/SecurityHeadersMiddleware.php
+//https://github.com/paragonie/csp-builder/blob/master/src/CSPBuilder.php#L742
 
 // TODO : à améliorer à partir de ce lien : https://www.owasp.org/index.php/OWASP_Secure_Headers_Project#rp
 // TODO : regarder ici : https://github.com/HumanDevice/yii2-tools/blob/master/components/SafeResponse.php
@@ -340,4 +341,15 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
 
         return $response;
     }
+
+/*
+    public static function nonce(): string
+    {
+        // Algo A
+        static $nonce;
+        return $nonce ?: $nonce = bin2hex(random_bytes(16));
+        // Algo B
+        $nonce = base64_encode(random_bytes(18));
+    }
+    */
 }

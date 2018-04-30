@@ -73,7 +73,7 @@ return [
         'hashes' => [
             // 'sha256-hash-value',
         ],
-        'include-sub-domains' => false,
+        'include-sub-domains' => true,
         'max-age'             => 63072000,
         'report-only'         => false,
         'report-uri'          => '',
