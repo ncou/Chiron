@@ -9,18 +9,15 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
-use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Response;
 use Chiron\Middleware\SecurityHeadersMiddleware;
-use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
-class SecurityHeadersMiddlewareTest extends TestCase
+class SecurityMiddlewareTest extends TestCase
 {
     /**
      * @var string
      */
-    private $configPath = __DIR__.'/../config/secure-headers.php';
+    private $configPath = __DIR__ . '/../config/secure-headers.php';
 
     public function test_disable_header()
     {
@@ -91,5 +88,4 @@ class SecurityHeadersMiddlewareTest extends TestCase
     }
 
     //@TODO : add some tests on the middleware, to check if the headers are presents !!!!
-
 }
