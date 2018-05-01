@@ -75,9 +75,6 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         'worker-src',
     ];
 
-    /**
-     * @var array
-     */
     private $config = [];
 
     /**
@@ -100,7 +97,7 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         $values = [];
         foreach (self::CSP_DIRECTIVES as $directive) {
             if (isset($this->config['csp'][$directive])) {
-                $values[] = $this->compileDirective($directive, $this->config['csp'][$directive]);
+                $values[] = $this->compileCspDirective($directive, $this->config['csp'][$directive]);
             }
         }
         if (! empty($this->config['csp']['block-all-mixed-content'])) {
@@ -133,7 +130,7 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
      *
      * @return string
      */
-    private function compileDirective(string $directive, $policies): string
+    private function compileCspDirective(string $directive, $policies): string
     {
         // handle special directive first
         switch ($directive) {
@@ -176,12 +173,6 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
                 }
                 foreach ($hashes as $hashval) {
                     // skip invalid value
-                    //if (base64_encode(base64_decode($hashval, true)) !== $hashval) {
-                    //    continue;
-                    //}
-                    //$ret[] = sprintf("'%s-%s'", $algo, $hashval);
-                    //$ret[] = sprintf("'%s-%s'", preg_replace('/[^A-Za-z0-9]/', '', $algo), preg_replace('/[^A-Za-z0-9\+\/=]/', '', $hashval));
-                    //$ret[] = sprintf("'%s-%s'", $algo, preg_replace('/[^A-Za-z0-9\+\/=]/', '', $hashval));
                     $ret[] = sprintf("'%s-%s'", $algo, preg_replace('~[^A-Za-z0-9+/=]~', '', $hashval));
                 }
             }
@@ -189,11 +180,6 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         if (! empty($policies['nonces'])) {
             foreach ($policies['nonces'] as $nonce) {
                 // skip invalid value, https://www.w3.org/TR/CSP/#grammardef-nonce-source
-                //if (base64_encode(base64_decode($nonce, true)) !== $nonce) {
-                //    continue;
-                //}
-                //$ret[] = sprintf("'nonce-%s'", $nonce);
-                //$ret[] = sprintf("'nonce-%s'", preg_replace('/[^A-Za-z0-9\+\/=]/', '', $nonce));
                 $ret[] = sprintf("'nonce-%s'", preg_replace('~[^A-Za-z0-9+/=]~', '', $nonce));
             }
         }
@@ -217,7 +203,7 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
      */
     private function hpkp()
     {
-        // TODO : lever une exception si les champs hashes et max-age sont vide, il doivent tous les deux avoir une valeur chacun (cad un hash au minimum + un maxage)
+        // TODO : lever une exception si les champs hashes et max-age sont vide, car ils doivent tous les deux avoir une valeur chacun (cad un hash au minimum + un maxage)
         $values = [];
         foreach ($this->config['hpkp']['hashes'] as $hash) {
             $values[] = sprintf('pin-sha256="%s"', $hash);
@@ -323,15 +309,15 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
 
         return $response;
     }
+/*
+    public static function nonce(): string
+    {
+        // Algo A
+        static $nonce;
+        return $nonce ?: $nonce = bin2hex(random_bytes(16));
+        // Algo B
+        $nonce = base64_encode(random_bytes(18));
+    }
+*/
 
-    /*
-        public static function nonce(): string
-        {
-            // Algo A
-            static $nonce;
-            return $nonce ?: $nonce = bin2hex(random_bytes(16));
-            // Algo B
-            $nonce = base64_encode(random_bytes(18));
-        }
-        */
 }
