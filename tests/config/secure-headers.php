@@ -120,13 +120,13 @@ return [
             ],
             'hashes' => [
                 'sha256' => [
-                    //     'hash-value',
+                    // 'hash-value',
                 ],
                 'sha384' => [
-                    //     'hash-value',
+                    // 'hash-value',
                 ],
                 'sha512' => [
-                    //     'hash-value',
+                    // 'hash-value',
                 ],
             ],
             'nonces' => [
