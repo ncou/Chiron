@@ -78,8 +78,11 @@ class SecurityMiddlewareTest extends TestCase
         $config = require $this->configPath;
         $config['hpkp']['hashes'] = ['foobar'];
         $config['hpkp']['report-only'] = true;
+        $config['hpkp']['report-uri'] = 'www.example.com';
         $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
-        $this->assertArrayHasKey('Public-Key-Pins-Report-Only', $headers);
+        $this->assertArraySubset([
+            'Public-Key-Pins-Report-Only' => 'pin-sha256="foobar"; max-age=63072000; includeSubDomains; report-uri="www.example.com"',
+        ], $headers, true);
     }
 
     public function test_custom_csp_empty()
