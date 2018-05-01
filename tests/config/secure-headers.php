@@ -9,10 +9,10 @@ return [
      */
     'settings' => [
         'enable-extras' => true,
-        'enable-hsts' => false,
-        'enable-ect' => false,
-        'enable-hpkp' => false,
-        'enable-csp' => false
+        'enable-hsts'   => false,
+        'enable-ect'    => false,
+        'enable-hpkp'   => false,
+        'enable-csp'    => false,
     ],
     /*
      * Extras Headers for a better security
@@ -120,13 +120,13 @@ return [
             ],
             'hashes' => [
                 'sha256' => [
-                //     'hash-value',
+                    //     'hash-value',
                 ],
                 'sha384' => [
-                //     'hash-value',
+                    //     'hash-value',
                 ],
                 'sha512' => [
-                //     'hash-value',
+                    //     'hash-value',
                 ],
             ],
             'nonces' => [
