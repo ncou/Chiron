@@ -88,6 +88,40 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
     }
 
     /**
+     * Serve assets if the path matches one.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request  The request.
+     * @param \Psr\Http\Message\ResponseInterface      $response The response.
+     * @param callable                                 $next     Callback to invoke the next middleware.
+     *
+     * @return \Psr\Http\Message\ResponseInterface A response
+     */
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
+        $response = $handler->handle($request);
+        $headers = $this->getCompiledHeaders();
+        foreach ($headers as $header => $value) {
+            $response = $response->withHeader($header, $value);
+        }
+
+        return $response;
+    }
+
+    /**
+     * Compile HTTP headers.
+     */
+    public function getCompiledHeaders()
+    {
+        return array_merge(
+            $this->config['settings']['enable-csp'] ? $this->csp() : [],
+            $this->config['settings']['enable-hpkp'] ? $this->hpkp() : [],
+            $this->config['settings']['enable-hsts'] ? $this->hsts() : [],
+            $this->config['settings']['enable-ect'] ? $this->ect() : [],
+            $this->config['settings']['enable-extras'] ? $this->extras() : []
+        );
+    }
+
+    /**
      * Get CSP header.
      *
      * @return array
@@ -173,7 +207,9 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
                 }
                 foreach ($hashes as $hashval) {
                     // skip invalid value
+                    // TODO : il faudrait visiblement aussi  ajouter les caractéres - et _ dans la liste du regex pour le preg_replace !!!!
                     $ret[] = sprintf("'%s-%s'", $algo, preg_replace('~[^A-Za-z0-9+/=]~', '', $hashval));
+                    //$ret[] = sprintf("'%s-%s'", preg_replace('~[^A-Za-z0-9]~', '', $algo), preg_replace('~[^A-Za-z0-9+/=]~', '', $hashval));
                 }
             }
         }
@@ -276,40 +312,6 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         return array_filter($headers);
     }
 
-    /**
-     * Compile HTTP headers.
-     */
-    public function getCompiledHeaders()
-    {
-        return array_merge(
-            $this->config['settings']['enable-csp'] ? $this->csp() : [],
-            $this->config['settings']['enable-hpkp'] ? $this->hpkp() : [],
-            $this->config['settings']['enable-hsts'] ? $this->hsts() : [],
-            $this->config['settings']['enable-ect'] ? $this->ect() : [],
-            $this->config['settings']['enable-extras'] ? $this->extras() : []
-        );
-    }
-
-    /**
-     * Serve assets if the path matches one.
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request  The request.
-     * @param \Psr\Http\Message\ResponseInterface      $response The response.
-     * @param callable                                 $next     Callback to invoke the next middleware.
-     *
-     * @return \Psr\Http\Message\ResponseInterface A response
-     */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-    {
-        $response = $handler->handle($request);
-        $headers = $this->getCompiledHeaders();
-        foreach ($headers as $header => $value) {
-            $response = $response->withHeader($header, $value);
-        }
-
-        return $response;
-    }
-
     /*
         public static function nonce(): string
         {
@@ -318,6 +320,23 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
             return $nonce ?: $nonce = bin2hex(random_bytes(16));
             // Algo B
             $nonce = base64_encode(random_bytes(18));
+        }
+
+        private function cspGenerateNonce()
+        {
+            $nonce = base64_encode(
+                openssl_random_pseudo_bytes(30, $isCryptoStrong)
+            );
+            if ( ! $isCryptoStrong)
+            {
+                $this->addError(
+                    'OpenSSL (openssl_random_pseudo_bytes) reported that it did
+                    <strong>not</strong> use a cryptographically strong algorithm
+                    to generate the nonce for CSP.',
+                    E_USER_WARNING
+                );
+            }
+            return $nonce;
         }
     */
 }

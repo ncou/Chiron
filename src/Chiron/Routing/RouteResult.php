@@ -65,10 +65,19 @@ class RouteResult
     private $success;
 
     /**
+     * Only allow instantiation via factory methods.
+     */
+    //TODO : à virer !!! et créer un vrai constructeur !!!!
+    private function __construct()
+    {
+    }
+
+    /**
      * Create an instance representing a route succes from the matching route.
      *
      * @param array $params parameters associated with the matched route, if any
      */
+    //TODO : à virer !!!
     public static function fromRoute(Route $route, array $params = []): self
     {
         $result = new self();
@@ -85,6 +94,7 @@ class RouteResult
      * @param null|array $methods HTTP methods allowed for the current URI, if any.
      *                            null is equivalent to allowing any HTTP method; empty array means none.
      */
+    //TODO : à virer !!!
     public static function fromRouteFailure(?array $methods): self
     {
         $result = new self();
@@ -179,10 +189,4 @@ class RouteResult
         return $this->allowedMethods;
     }
 
-    /**
-     * Only allow instantiation via factory methods.
-     */
-    private function __construct()
-    {
-    }
 }

@@ -65,6 +65,9 @@ return [
      * Please ensure your website had set up ssl/tls before enable hsts.
      * HSTS will be ignored if 'enable' is false.
      * Note : the experimental chrome flag 'preload' is automaticly used, register your site here : https://hstspreload.org/
+     *
+     *   Don't forget to [manually submit](https://hstspreload.appspot.com/)
+     *   your domain to the HSTS preload list if you are using this option.
      */
     'hsts' => [
         'max-age'             => 63072000,
@@ -89,13 +92,13 @@ return [
      *
      */
     'hpkp' => [
+        'report-only'         => false,
+        'report-uri'          => '',
         'hashes' => [
             // 'sha256-hash-value',
         ],
         'include-sub-domains' => true,
-        'max-age'             => 63072000,
-        'report-only'         => false,
-        'report-uri'          => '',
+        'max-age'             => 63072000
     ],
     /*
      * Content Security Policy
