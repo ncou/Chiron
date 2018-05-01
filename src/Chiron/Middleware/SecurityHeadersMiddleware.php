@@ -309,15 +309,15 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
 
         return $response;
     }
-/*
-    public static function nonce(): string
-    {
-        // Algo A
-        static $nonce;
-        return $nonce ?: $nonce = bin2hex(random_bytes(16));
-        // Algo B
-        $nonce = base64_encode(random_bytes(18));
-    }
-*/
 
+    /*
+        public static function nonce(): string
+        {
+            // Algo A
+            static $nonce;
+            return $nonce ?: $nonce = bin2hex(random_bytes(16));
+            // Algo B
+            $nonce = base64_encode(random_bytes(18));
+        }
+    */
 }
