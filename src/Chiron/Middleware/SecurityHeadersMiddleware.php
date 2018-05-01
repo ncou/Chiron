@@ -56,6 +56,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class SecurityHeadersMiddleware implements MiddlewareInterface
 {
     private const CSP_DIRECTIVES = [
+        // child-src has been removed because it's deprecated !
         'default-src',
         'base-uri',
         'connect-src',
@@ -96,15 +97,6 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
      */
     private function csp()
     {
-        //custom-csp
-        if (! is_null($this->config['custom-csp'])) {
-            if (empty($this->config['custom-csp'])) {
-                return [];
-            }
-
-            return ['Content-Security-Policy' => $this->config['custom-csp']];
-        }
-        //generated-csp
         $values = [];
         foreach (self::CSP_DIRECTIVES as $directive) {
             if (isset($this->config['csp'][$directive])) {
@@ -120,13 +112,12 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
         if (! empty($this->config['csp']['require-sri-for'])) {
             $values[] = sprintf('require-sri-for %s', $this->config['csp']['require-sri-for']);
         }
-
         if (! empty($this->config['csp']['report-uri'])) {
             $values[] = sprintf('report-uri %s', $this->config['csp']['report-uri']);
             // support new navigator wich use now "report-to" instead of "report-uri"
             $values[] = sprintf('report-to %s', $this->config['csp']['report-uri']);
         }
-        // TODO : lever une exception si on utilise report-only mais que le report-uri n'est pas défini !!!!!!
+        // TODO : lever une exception si on utilise report-only mais que le report-uri n'est pas défini car on va consommer du CPU pour rien au final !!!!!!
         $header = ! empty($this->config['csp']['report-only'])
             ? 'Content-Security-Policy-Report-Only'
             : 'Content-Security-Policy';
@@ -226,9 +217,6 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
      */
     private function hpkp()
     {
-        if (empty($this->config['hpkp']['hashes'])) {
-            return [];
-        }
         // TODO : lever une exception si les champs hashes et max-age sont vide, il doivent tous les deux avoir une valeur chacun (cad un hash au minimum + un maxage)
         $values = [];
         foreach ($this->config['hpkp']['hashes'] as $hash) {
@@ -255,9 +243,6 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
      */
     private function hsts()
     {
-        if (! $this->config['hsts']['enable']) {
-            return [];
-        }
         $hsts = "max-age={$this->config['hsts']['max-age']}";
 
         if ($this->config['hsts']['include-sub-domains']) {
@@ -277,10 +262,6 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
      */
     private function ect()
     {
-        if (! $this->config['ect']['enable']) {
-            return [];
-        }
-
         $ect = "max-age={$this->config['ect']['max-age']}";
         if ($this->config['ect']['enforce']) {
             $ect .= ', enforce';
@@ -294,18 +275,19 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Get miscellaneous headers (array_filter will remove header if the value is : an empty string, a scalar 'false' or null).
+     * Get extras headers to add (array_filter will remove header if the value is : an empty string, a scalar 'false' or null).
      *
      * @return array
      */
-    private function miscellaneous()
+    private function extras()
     {
-        return array_filter([
-            'X-Content-Type-Options' => $this->config['x-content-type-options'],
-            'X-Frame-Options'        => $this->config['x-frame-options'],
-            'X-XSS-Protection'       => $this->config['x-xss-protection'],
-            'Referrer-Policy'        => $this->config['referrer-policy'],
-        ]);
+        $headers = [];
+
+        foreach ($this->config['extras'] as $header => $value) {
+            $headers[ucwords($header, '-')] = $value;
+        }
+
+        return array_filter($headers);
     }
 
     /**
@@ -314,11 +296,11 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
     public function getCompiledHeaders()
     {
         return array_merge(
-            $this->csp(),
-            $this->hpkp(),
-            $this->hsts(),
-            $this->ect(),
-            $this->miscellaneous()
+            $this->config['settings']['enable-csp'] ? $this->csp() : [],
+            $this->config['settings']['enable-hpkp'] ? $this->hpkp() : [],
+            $this->config['settings']['enable-hsts'] ? $this->hsts() : [],
+            $this->config['settings']['enable-ect'] ? $this->ect() : [],
+            $this->config['settings']['enable-extras'] ? $this->extras() : []
         );
     }
 

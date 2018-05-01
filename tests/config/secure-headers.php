@@ -2,38 +2,61 @@
 
 return [
     /*
-     * X-Content-Type-Options
+     * Apply user settings for the security middleware
      *
-     * Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+     * You can enable or disable the 5 major modules (Extras security headers, HSTS, ECT, HPKP, CSP)
      *
-     * Available Value: 'nosniff'
      */
-    'x-content-type-options' => 'nosniff',
+    'settings' => [
+        'enable-extras' => true,
+        'enable-hsts' => false,
+        'enable-ect' => false,
+        'enable-hpkp' => false,
+        'enable-csp' => false
+    ],
     /*
-     * X-Frame-Options
+     * Extras Headers for a better security
      *
-     * Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
-     *
-     * Available Value: 'deny', 'sameorigin', 'allow-from <uri>'
+     * It's the major knowed headers to improve you website security.
+     * You can add you own headers using a principle of "key = value" for "headername = headervalue".
+     * The header name will be camelCased, you just need to ensure the header name exist in the http spec
+     * example, you can add in the array : 'x-permitted-cross-domain-policies' => 'none'
      */
-    'x-frame-options' => 'sameorigin',
-    /*
-     * X-XSS-Protection
-     *
-     * Reference: https://blogs.msdn.microsoft.com/ieinternals/2011/01/31/controlling-the-xss-filter
-     *
-     * Available Value: '1', '0', '1; mode=block'
-     */
-    'x-xss-protection' => '1; mode=block',
-    /*
-     * Referrer-Policy
-     *
-     * Reference: https://w3c.github.io/webappsec-referrer-policy
-     *
-     * Available Value: 'no-referrer', 'no-referrer-when-downgrade', 'origin', 'origin-when-cross-origin',
-     *                  'same-origin', 'strict-origin', 'strict-origin-when-cross-origin', 'unsafe-url'
-     */
-    'referrer-policy' => 'no-referrer, strict-origin-when-cross-origin',
+    'extras' => [
+        /*
+         * X-Content-Type-Options
+         *
+         * Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+         *
+         * Available Value: 'nosniff'
+         */
+        'x-content-type-options' => 'nosniff',
+        /*
+         * X-Frame-Options
+         *
+         * Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+         *
+         * Available Value: 'deny', 'sameorigin', 'allow-from <uri>'
+         */
+        'x-frame-options' => 'sameorigin',
+        /*
+         * X-XSS-Protection
+         *
+         * Reference: https://blogs.msdn.microsoft.com/ieinternals/2011/01/31/controlling-the-xss-filter
+         *
+         * Available Value: '1', '0', '1; mode=block'
+         */
+        'x-xss-protection' => '1; mode=block',
+        /*
+         * Referrer-Policy
+         *
+         * Reference: https://w3c.github.io/webappsec-referrer-policy
+         *
+         * Available Value: 'no-referrer', 'no-referrer-when-downgrade', 'origin', 'origin-when-cross-origin',
+         *                  'same-origin', 'strict-origin', 'strict-origin-when-cross-origin', 'unsafe-url'
+         */
+        'referrer-policy' => 'no-referrer, strict-origin-when-cross-origin',
+    ],
     /*
      * HTTP Strict Transport Security
      *
@@ -44,7 +67,6 @@ return [
      * Note : the experimental chrome flag 'preload' is automaticly used, register your site here : https://hstspreload.org/
      */
     'hsts' => [
-        'enable'              => false,
         'max-age'             => 63072000,
         'include-sub-domains' => true,
         'preload'             => true,
@@ -54,10 +76,8 @@ return [
      *
      * Reference: https://tools.ietf.org/html/draft-ietf-httpbis-expect-ct-02
      *
-     * Expect-CT will be ignored if 'enable' is false.
      */
     'ect' => [
-        'enable'     => false,
         'enforce'    => false,
         'max-age'    => 63072000,
         'report-uri' => null,
@@ -67,7 +87,6 @@ return [
      *
      * Reference: https://developer.mozilla.org/en-US/docs/Web/Security/Public_Key_Pinning
      *
-     * hpkp will be ignored if hashes is empty.
      */
     'hpkp' => [
         'hashes' => [
@@ -83,11 +102,7 @@ return [
      *
      * Reference: https://developer.mozilla.org/en-US/docs/Web/Security/CSP
      *
-     * csp will be ignored if custom-csp is not null. To disable csp, set custom-csp to empty string.
-     *
-     * Note: custom-csp does not support report-only.
      */
-    'custom-csp' => null,
     'csp'        => [
         'report-only' => false,
         'report-uri'  => '', // uri used for the report when 'report-only' is activated
@@ -97,23 +112,34 @@ return [
         'block-all-mixed-content'   => false,
         'upgrade-insecure-requests' => false,
         /*
-         * Note: when directive value is empty, it will use `none` for that directive.
+         * Note: when directive value is empty, it will use 'none' for that directive.
          */
         'script-src' => [
             'allow' => [
                 // url,
             ],
             'hashes' => [
-                // 'sha256' => [
+                'sha256' => [
                 //     'hash-value',
-                // ],
+                ],
+                'sha384' => [
+                //     'hash-value',
+                ],
+                'sha512' => [
+                //     'hash-value',
+                ],
             ],
             'nonces' => [
                 // base64-encoded,
             ],
             'schemes' => [
-                // The colon character at the end is MANDATORY !
-                // 'http:', 'https:', 'blob:', 'data:', 'mediastream:', 'filesystem:'
+                // uncomment the wanted scheme. but keep the colon character at the end, because it's MANDATORY !!!
+                // 'http:',
+                // 'https:',
+                // 'blob:',
+                // 'data:',
+                // 'mediastream:',
+                // 'filesystem:'
             ],
             'self'                     => false,
             'unsafe-inline'            => false,
@@ -179,7 +205,8 @@ return [
         'plugin-types' => [
             // one or more mime type : 'application/x-shockwave-flash', 'application/pdf'
         ],
-        // uncomment the line '' to have a default sandbox flag. uncomment other lines to add some exeptions in the sandbox restriction rules
+        // uncomment the line '' to have a default sandbox header (with all the restriction).
+        // uncomment other lines to add some exceptions in the sandbox restrictions rules.
         'sandbox' => [
             //'',
             //'allow-forms',

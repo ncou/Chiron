@@ -31,7 +31,7 @@ class SecurityMiddlewareTest extends TestCase
     public function test_hsts()
     {
         $config = require $this->configPath;
-        $config['hsts']['enable'] = true;
+        $config['settings']['enable-hsts'] = true;
         $config['hsts']['include-sub-domains'] = true;
         $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
         $this->assertArraySubset([
@@ -42,7 +42,7 @@ class SecurityMiddlewareTest extends TestCase
     public function test_ect()
     {
         $config = require $this->configPath;
-        $config['ect']['enable'] = true;
+        $config['settings']['enable-ect'] = true;
         $config['ect']['enforce'] = true;
         $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
         $this->assertArraySubset([
@@ -53,7 +53,7 @@ class SecurityMiddlewareTest extends TestCase
     public function test_ect_report_only()
     {
         $config = require $this->configPath;
-        $config['ect']['enable'] = true;
+        $config['settings']['enable-ect'] = true;
         $config['ect']['enforce'] = true;
         $config['ect']['report-uri'] = 'www.example.com';
         $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
@@ -65,6 +65,7 @@ class SecurityMiddlewareTest extends TestCase
     public function test_hpkp()
     {
         $config = require $this->configPath;
+        $config['settings']['enable-hpkp'] = true;
         $config['hpkp']['hashes'] = [
             '5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9',
             '6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b',
@@ -76,6 +77,7 @@ class SecurityMiddlewareTest extends TestCase
     public function test_hpkp_report_only()
     {
         $config = require $this->configPath;
+        $config['settings']['enable-hpkp'] = true;
         $config['hpkp']['hashes'] = ['foobar'];
         $config['hpkp']['report-only'] = true;
         $config['hpkp']['report-uri'] = 'www.example.com';
@@ -85,30 +87,23 @@ class SecurityMiddlewareTest extends TestCase
         ], $headers, true);
     }
 
-    public function test_custom_csp_empty()
+    public function test_csp_report_only()
     {
         $config = require $this->configPath;
-        $config['custom-csp'] = '';
+        $config['settings']['enable-csp'] = true;
+        $config['csp']['report-only'] = true;
         $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
-        $this->assertArrayNotHasKey('Content-Security-Policy', $headers);
+        $this->assertArrayHasKey('Content-Security-Policy-Report-Only', $headers);
     }
 
-    public function test_custom_csp()
-    {
-        $config = require $this->configPath;
-        $config['custom-csp'] = 'foo';
-        $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
-        $this->assertArraySubset([
-            'Content-Security-Policy' => 'foo',
-        ], $headers, true);
-    }
-
+    //@TODO : add more tests for the CSP module
     public function test_csp()
     {
         $config = require $this->configPath;
-        $config['csp']['report-only'] = 'true';
+        $config['settings']['enable-csp'] = true;
+        $config['csp']['report-only'] = false;
         $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
-        $this->assertArrayHasKey('Content-Security-Policy-Report-Only', $headers);
+        $this->assertArrayHasKey('Content-Security-Policy', $headers);
     }
 
     //@TODO : add some tests on the middleware, to check if the headers are presents !!!!
