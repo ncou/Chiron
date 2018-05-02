@@ -188,5 +188,4 @@ class RouteResult
 
         return $this->allowedMethods;
     }
-
 }
