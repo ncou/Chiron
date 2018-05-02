@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
-use PHPUnit\Framework\TestCase;
 use Chiron\Application;
+use PHPUnit\Framework\TestCase;
 
-class AppTest extends TestCase
+class ApplicationTest extends TestCase
 {
-
     /********************************************************************************
      * Router proxy methods
      *******************************************************************************/
@@ -24,6 +23,7 @@ class AppTest extends TestCase
         $this->assertInstanceOf('\Chiron\Routing\Route', $route);
         $this->assertAttributeContains('GET', 'methods', $route);
     }
+
     public function testPostRoute()
     {
         $path = '/foo';
@@ -35,6 +35,7 @@ class AppTest extends TestCase
         $this->assertInstanceOf('\Chiron\Routing\Route', $route);
         $this->assertAttributeContains('POST', 'methods', $route);
     }
+
     public function testPutRoute()
     {
         $path = '/foo';
@@ -46,6 +47,7 @@ class AppTest extends TestCase
         $this->assertInstanceOf('\Chiron\Routing\Route', $route);
         $this->assertAttributeContains('PUT', 'methods', $route);
     }
+
     public function testPatchRoute()
     {
         $path = '/foo';
@@ -57,6 +59,7 @@ class AppTest extends TestCase
         $this->assertInstanceOf('\Chiron\Routing\Route', $route);
         $this->assertAttributeContains('PATCH', 'methods', $route);
     }
+
     public function testDeleteRoute()
     {
         $path = '/foo';
@@ -68,6 +71,7 @@ class AppTest extends TestCase
         $this->assertInstanceOf('\Chiron\Routing\Route', $route);
         $this->assertAttributeContains('DELETE', 'methods', $route);
     }
+
     public function testOptionsRoute()
     {
         $path = '/foo';
@@ -79,6 +83,7 @@ class AppTest extends TestCase
         $this->assertInstanceOf('\Chiron\Routing\Route', $route);
         $this->assertAttributeContains('OPTIONS', 'methods', $route);
     }
+
     public function testAnyRoute()
     {
         $path = '/foo';
@@ -95,6 +100,7 @@ class AppTest extends TestCase
         $this->assertAttributeContains('DELETE', 'methods', $route);
         $this->assertAttributeContains('OPTIONS', 'methods', $route);
     }
+
     public function testRouteRoute()
     {
         $path = '/foo';
@@ -107,5 +113,4 @@ class AppTest extends TestCase
         $this->assertAttributeContains('GET', 'methods', $route);
         $this->assertAttributeContains('POST', 'methods', $route);
     }
-
 }

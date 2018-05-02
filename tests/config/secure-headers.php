@@ -94,11 +94,11 @@ return [
     'hpkp' => [
         'report-only'         => false,
         'report-uri'          => '',
-        'hashes' => [
+        'hashes'              => [
             // 'sha256-hash-value',
         ],
         'include-sub-domains' => true,
-        'max-age'             => 63072000
+        'max-age'             => 63072000,
     ],
     /*
      * Content Security Policy
