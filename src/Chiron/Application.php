@@ -424,7 +424,7 @@ class Application
                 if (! $this->logger instanceof LoggerInterface) {
                     $this->logger = new NullLogger();
                 }
-        
+
                 return $this->logger;*/
     }
 
@@ -492,9 +492,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $services = new DefaultServicesProvider();
         $services->register($this->container);
 
-        $config = new Config($settings);
-        $this->container->config = $config;
-
 //        $this->container['debug'] = false;
 //        $this->container['charset'] = 'UTF-8';
 //        $this->container['httpVersion'] = '1.1';
@@ -509,11 +506,14 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
             $this->container[$key] = $value;
         }
 
+        $config = new Config($settings);
+        $this->container->config = $config;
+
         //$router->setBasePath($request->getUri()->getBasePath());
         //$this->basePath = $this->container['basePath'];
         //$this->setBasePath($this->container['basePath']);
 
-        $this->getRouter()->setBasePath($this->container->config['settings.basePath']);
+        $this->getRouter()->setBasePath($this->container->config['settings.basePath'] ?? '/');
 
         // initialise the Router constructor
     //parent::__construct($this->basePath, $this->container);
