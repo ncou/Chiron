@@ -84,6 +84,18 @@ class ApplicationTest extends TestCase
         $this->assertAttributeContains('OPTIONS', 'methods', $route);
     }
 
+    public function testHeadRoute()
+    {
+        $path = '/foo';
+        $callable = function ($req, $res) {
+            // Do something
+        };
+        $app = new Application();
+        $route = $app->head($path, $callable);
+        $this->assertInstanceOf('\Chiron\Routing\Route', $route);
+        $this->assertAttributeContains('HEAD', 'methods', $route);
+    }
+
     public function testAnyRoute()
     {
         $path = '/foo';
