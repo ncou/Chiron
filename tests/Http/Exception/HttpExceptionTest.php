@@ -14,24 +14,26 @@ use PHPUnit\Framework\TestCase;
 
 class HttpExceptionTest extends TestCase
 {
-     public function headerDataProvider()
+    public function headerDataProvider()
     {
-        return array(
-            array(array('X-Test' => 'Test')),
-            array(array('X-Test' => 1)),
-            array(
-                array(
-                    array('X-Test' => 'Test'),
-                    array('X-Test-2' => 'Test-2'),
-                ),
-            ),
-        );
+        return [
+            [['X-Test' => 'Test']],
+            [['X-Test' => 1]],
+            [
+                [
+                    ['X-Test' => 'Test'],
+                    ['X-Test-2' => 'Test-2'],
+                ],
+            ],
+        ];
     }
+
     public function testHeadersDefault()
     {
         $exception = $this->createException();
         $this->assertSame([], $exception->getHeaders());
     }
+
     /**
      * @dataProvider headerDataProvider
      */
@@ -41,6 +43,7 @@ class HttpExceptionTest extends TestCase
         $exception->setHeaders($headers);
         $this->assertSame($headers, $exception->getHeaders());
     }
+
     /**
      * @dataProvider headerDataProvider
      */
