@@ -30,8 +30,9 @@ class IpAddressMiddleware implements MiddlewareInterface
      * @var bool
      */
     protected $checkProxyHeaders;
+
     /**
-     * List of trusted proxy IP addresses
+     * List of trusted proxy IP addresses.
      *
      * If not empty, then one of these IP addresses must be in $_SERVER['REMOTE_ADDR']
      * in order for the proxy headers to be looked at.
@@ -39,14 +40,16 @@ class IpAddressMiddleware implements MiddlewareInterface
      * @var array
      */
     protected $trustedProxies;
-     /**
-     * Name of the attribute added to the ServerRequest object
+
+    /**
+     * Name of the attribute added to the ServerRequest object.
      *
      * @var string
      */
     protected $attributeName = 'ip_address';
+
     /**
-     * List of proxy headers inspected for the client IP address
+     * List of proxy headers inspected for the client IP address.
      *
      * @var array
      */
@@ -70,13 +73,13 @@ class IpAddressMiddleware implements MiddlewareInterface
         if ($attributeName) {
             $this->attributeName = $attributeName;
         }
-        if (!empty($headersToInspect)) {
+        if (! empty($headersToInspect)) {
             $this->headersToInspect = $headersToInspect;
         }
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      *
      * Set the "$attributeName" attribute to the client's IP address as determined from
      * the proxy header (X-Forwarded-For or from $_SERVER['REMOTE_ADDR']
@@ -99,23 +102,25 @@ class IpAddressMiddleware implements MiddlewareInterface
 
         return $localIp;
     }
-/*
-    private function determineClientIpAddress(ServerRequestInterface $request): ?string
-    {
-        $localIp = $this->getLocalIpAddress($request);
 
-        if (empty($this->trustedProxies) || !in_array($localIp, $this->trustedProxies)) {
+    /*
+        private function determineClientIpAddress(ServerRequestInterface $request): ?string
+        {
+            $localIp = $this->getLocalIpAddress($request);
+    
+            if (empty($this->trustedProxies) || !in_array($localIp, $this->trustedProxies)) {
+                return $localIp;
+            }
+    
+            $proxiedIp = $this->getIpAddressFromProxy($request);
+            if (! empty($proxiedIp)) {
+                return $proxiedIp;
+            }
+    
             return $localIp;
         }
+    */
 
-        $proxiedIp = $this->getIpAddressFromProxy($request);
-        if (! empty($proxiedIp)) {
-            return $proxiedIp;
-        }
-
-        return $localIp;
-    }
-*/
     /**
      * Returns the remote address of the request, if valid.
      *
@@ -133,11 +138,12 @@ class IpAddressMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Attempt to get the IP address for a proxied client
+     * Attempt to get the IP address for a proxied client.
      *
      * @see http://tools.ietf.org/html/draft-ietf-appsawg-http-forwarded-10#section-5.2
      *
      * @param ServerRequestInterface $request
+     *
      * @return null|string
      */
     private function getIpAddressFromProxy(ServerRequestInterface $request): ?string
@@ -170,6 +176,7 @@ class IpAddressMiddleware implements MiddlewareInterface
                 return $headerValue;
             }
         }
+
         return null;
     }
 
@@ -195,5 +202,4 @@ class IpAddressMiddleware implements MiddlewareInterface
     {
         return filter_var($ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6) !== false;
     }
-
 }
