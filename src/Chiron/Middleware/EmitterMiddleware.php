@@ -48,9 +48,28 @@ class EmitterMiddleware implements MiddlewareInterface
         $response = $handler->handle($request);
 
         // adjust the response headers to be RFC compliant
+        // TODO : à virer et à remplacer par un middleware contentlenghtMiddleware + ne pas envoyer le body
         $response = $this->finalizeResponse($response, $request);
-        // Send response
-        return $this->emit($response);
+
+        // Emit response (Headers + Body)
+        $this->sendHeaders($response);
+        // A response to a HEAD request "MUST NOT" include a message-body
+        if (! $request->isMethod('HEAD')) {
+            $this->sendBody($response);
+        }
+
+        $this->closeConnexion();
+
+        return $response;
+    }
+
+    private function closeConnexion() {
+        // FastCGI, close connexion faster (module available if PHP-FPM mod is installed)
+        if (function_exists('fastcgi_finish_request')) {
+            \fastcgi_finish_request();
+        } elseif ('cli' !== PHP_SAPI) {
+            static::closeOutputBuffers(0, true);
+        }
     }
 
     /*******************************************************************************
@@ -66,6 +85,8 @@ class EmitterMiddleware implements MiddlewareInterface
      */
     // TODO : regarder dans la classe SAPIEMitter et ici comment c'est fait : https://github.com/http-interop/response-sender/blob/master/src/functions.php
     //TODO : attention il y a deux throw exception dans cette méthode qui ne seront pas catchés en amont et donc pas transformées en Response(500) !!!!!!!!!!!!
+
+    // TODO : méthode à virer car plus utilisée !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public function emit(ResponseInterface $response): ResponseInterface
     {
         $this->sendHeaders($response);
@@ -95,7 +116,7 @@ class EmitterMiddleware implements MiddlewareInterface
      *
      * @param ResponseInterface $response
      */
-    public function sendHeaders(ResponseInterface $response): void
+    private function sendHeaders(ResponseInterface $response): void
     {
         /*
         if (headers_sent($file, $line)) {
@@ -164,8 +185,15 @@ class EmitterMiddleware implements MiddlewareInterface
     }
 
     // TODO : regarder comment c'est géré ici : https://github.com/symfony/http-foundation/blob/ed75b71c6498bd9c020dea99f723fd5b20aae986/Response.php#L336
-    public function sendBody(ResponseInterface $response): void
+    private function sendBody(ResponseInterface $response): void
     {
+
+        // exit if the response doesn't require a body
+        // TODO : remplacer ce test par un $response->isInformational() et $response->isEmpty()
+        if (static::isBodyEmpty($response)) {
+            return;
+        }
+
         set_time_limit(0); // Reset time limit for big files
         $chunkSize = 8 * 1024 * 1024; // 8MB per chunk
         //$chunkSize = 8 * 1024; // 8KB per chunk
@@ -266,6 +294,8 @@ class EmitterMiddleware implements MiddlewareInterface
             $response = $response->withHeader('Content-Type', $response->getHeaderLine('Content-Type') . '; charset=' . $charset);
         }
 
+
+
         if (! $response->hasHeader('Content-Length')) {
             $response = $response->withHeader('Content-Length', (string) $response->getBody()->getSize());
         }
@@ -274,7 +304,7 @@ class EmitterMiddleware implements MiddlewareInterface
         // TODO : externaliser ce test "if" dans l'objet Response et faire une méthode "isEmpty()" qui vérifie si le code = 204/205 ou 304
         // TODO : on doit faire la même chose (virer contenttype et contententlength et vider le body) si la réponse est "informational" cad avec un code entre
         if (($response->getStatusCode() >= 100 && $response->getStatusCode() < 200)
-        || in_array($response->getStatusCode(), [204, 205, 304])) {
+        || in_array($response->getStatusCode(), [204, 304])) {
             // TODO : faire un helper pour vider le body d'une response.
             $response = $response->withoutHeader('Content-Type')->withoutHeader('Content-Length')->withBody(new \Chiron\Http\Stream(fopen('php://temp', 'r+')));
             //return;
@@ -298,6 +328,30 @@ class EmitterMiddleware implements MiddlewareInterface
                 $response = $response->withHeader('Content-Length', $length);
             }
         }
+
+
+        /* According to RFC2616 section 4.4, we MUST ignore
+             Content-Length: headers if we are now receiving data
+             using chunked Transfer-Encoding.
+          */
+        //if ($headers->has('Transfer-Encoding')) {
+        //    $headers->remove('Content-Length');
+        //}
+
+/*
+             As Lukas alludet to, HTTP 1.1 prohibits Content-Length if there's a Transfer-Encoding set.
+
+Quoting http://www.ietf.org/rfc/rfc2616.txt:
+
+   3.If a Content-Length header field (section 14.13) is present, its
+     decimal value in OCTETs represents both the entity-length and the
+     transfer-length. The Content-Length header field MUST NOT be sent
+     if these two lengths are different (i.e., if a Transfer-Encoding
+     header field is present). If a message is received with both a
+     Transfer-Encoding header field and a Content-Length header field,
+     the latter MUST be ignored.
+     */
+
 
         return $response;
     }
@@ -378,8 +432,7 @@ class EmitterMiddleware implements MiddlewareInterface
      *
      * @final
      */
-    /*
-    public static function closeOutputBuffers(int $targetLevel, bool $flush)
+    private static function closeOutputBuffers(int $targetLevel, bool $flush)
     {
         $status = ob_get_status(true);
         $level = count($status);
@@ -391,5 +444,17 @@ class EmitterMiddleware implements MiddlewareInterface
                 ob_end_clean();
             }
         }
-    }*/
+
+        //while (@ob_end_flush());
+        /*
+        while (ob_get_level() > 0) {
+            ob_end_flush();
+        }*/
+    }
+
+    private static function isBodyEmpty(ResponseInterface $response): bool
+    {
+        // All 1xx (informational), 204 (no content), and 304 (not modified) responses MUST NOT include a message-body
+        return ($response->getStatusCode() >= 100 && $response->getStatusCode() < 200) || in_array($response->getStatusCode(), [204, 304]);
+    }
 }
