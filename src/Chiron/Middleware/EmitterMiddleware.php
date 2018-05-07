@@ -63,7 +63,8 @@ class EmitterMiddleware implements MiddlewareInterface
         return $response;
     }
 
-    private function closeConnexion() {
+    private function closeConnexion()
+    {
         // FastCGI, close connexion faster (module available if PHP-FPM mod is installed)
         if (function_exists('fastcgi_finish_request')) {
             \fastcgi_finish_request();
@@ -187,7 +188,6 @@ class EmitterMiddleware implements MiddlewareInterface
     // TODO : regarder comment c'est géré ici : https://github.com/symfony/http-foundation/blob/ed75b71c6498bd9c020dea99f723fd5b20aae986/Response.php#L336
     private function sendBody(ResponseInterface $response): void
     {
-
         // exit if the response doesn't require a body
         // TODO : remplacer ce test par un $response->isInformational() et $response->isEmpty()
         if (static::isBodyEmpty($response)) {
@@ -294,8 +294,6 @@ class EmitterMiddleware implements MiddlewareInterface
             $response = $response->withHeader('Content-Type', $response->getHeaderLine('Content-Type') . '; charset=' . $charset);
         }
 
-
-
         if (! $response->hasHeader('Content-Length')) {
             $response = $response->withHeader('Content-Length', (string) $response->getBody()->getSize());
         }
@@ -329,7 +327,6 @@ class EmitterMiddleware implements MiddlewareInterface
             }
         }
 
-
         /* According to RFC2616 section 4.4, we MUST ignore
              Content-Length: headers if we are now receiving data
              using chunked Transfer-Encoding.
@@ -338,20 +335,19 @@ class EmitterMiddleware implements MiddlewareInterface
         //    $headers->remove('Content-Length');
         //}
 
-/*
-             As Lukas alludet to, HTTP 1.1 prohibits Content-Length if there's a Transfer-Encoding set.
-
-Quoting http://www.ietf.org/rfc/rfc2616.txt:
-
-   3.If a Content-Length header field (section 14.13) is present, its
-     decimal value in OCTETs represents both the entity-length and the
-     transfer-length. The Content-Length header field MUST NOT be sent
-     if these two lengths are different (i.e., if a Transfer-Encoding
-     header field is present). If a message is received with both a
-     Transfer-Encoding header field and a Content-Length header field,
-     the latter MUST be ignored.
-     */
-
+        /*
+                     As Lukas alludet to, HTTP 1.1 prohibits Content-Length if there's a Transfer-Encoding set.
+        
+        Quoting http://www.ietf.org/rfc/rfc2616.txt:
+        
+           3.If a Content-Length header field (section 14.13) is present, its
+             decimal value in OCTETs represents both the entity-length and the
+             transfer-length. The Content-Length header field MUST NOT be sent
+             if these two lengths are different (i.e., if a Transfer-Encoding
+             header field is present). If a message is received with both a
+             Transfer-Encoding header field and a Content-Length header field,
+             the latter MUST be ignored.
+             */
 
         return $response;
     }
@@ -437,7 +433,7 @@ Quoting http://www.ietf.org/rfc/rfc2616.txt:
         $status = ob_get_status(true);
         $level = count($status);
         $flags = PHP_OUTPUT_HANDLER_REMOVABLE | ($flush ? PHP_OUTPUT_HANDLER_FLUSHABLE : PHP_OUTPUT_HANDLER_CLEANABLE);
-        while ($level-- > $targetLevel && ($s = $status[$level]) && (!isset($s['del']) ? !isset($s['flags']) || ($s['flags'] & $flags) === $flags : $s['del'])) {
+        while ($level-- > $targetLevel && ($s = $status[$level]) && (! isset($s['del']) ? ! isset($s['flags']) || ($s['flags'] & $flags) === $flags : $s['del'])) {
             if ($flush) {
                 ob_end_flush();
             } else {

@@ -1,8 +1,9 @@
 <?php
 /**
- * Chiron Framework
+ * Chiron Framework.
  *
  * @see      https://github.com/ncou/Chiron
+ *
  * @copyright Copyright (c) 2011-2018 Josh Lockhart
  * @license   https://github.com/ncou/Chiron/blob/master/LICENSE.md (MIT License)
  */
@@ -10,8 +11,8 @@ declare(strict_types=1);
 
 namespace Chiron\Middleware;
 
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class ContentLengthMiddleware implements MiddlewareInterface
 {
@@ -26,7 +27,7 @@ class ContentLengthMiddleware implements MiddlewareInterface
         $response = $handler->handle($request);
 
         $size = $response->getBody()->getSize();
-        if ($size !== null && !$response->hasHeader('Content-Length') && !$response->hasHeader('Transfer-Encoding')) {
+        if ($size !== null && ! $response->hasHeader('Content-Length') && ! $response->hasHeader('Transfer-Encoding')) {
             $response = $response->withHeader('Content-Length', (string) $size);
         }
 
