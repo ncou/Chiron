@@ -31,7 +31,9 @@ namespace Chiron;
 
 use Chiron\Config\Config;
 use Chiron\Container\Container;
-use Chiron\Handler\CallableRequestHandlerDecorator;
+// TODO : virer la classe CallableRequestHandlerDecorator !!!!!!!!!!!!!
+//use Chiron\Handler\CallableRequestHandlerDecorator;
+use Chiron\Handler\FixedResponseHandler;
 use Chiron\Handler\DeferredRequestHandler;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Handler\Stack\Utils\CallableMiddlewareDecorator;
@@ -476,6 +478,8 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     // TODO : lui passer un container en paramétre ?????
     public function __construct(array $settings = [])
     {
+
+/*
         // TODO : créer plutot une classe "EmptyResponseHandler" qui utilisera une responseFactory pour renvoyer une response vide. et c'est cette classe qu'on passera à la Stack.
         $emptyResponse = new CallableRequestHandlerDecorator(function ($request) {
             // TODO : passer le charset + version http 1.1 par défaut à cette réponse !!!!
@@ -485,6 +489,9 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
             return $response;
         });
+*/
+        $emptyResponse = new FixedResponseHandler(new Response(204));
+
         $this->requestHandler = new RequestHandlerStack($emptyResponse);
 
         $this->container = new Container();

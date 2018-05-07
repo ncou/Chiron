@@ -118,7 +118,6 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
         switch ($type) {
             case 'int':
                 $value = (int) $value;
-
                 break;
             case 'string':
                 $value = (string) $value; // TODO : à virer ca cela est inutile !!!! on a toujours une string !!!!
