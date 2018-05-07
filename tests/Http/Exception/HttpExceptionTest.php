@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace Tests\Http\Exception;
 
-use PHPUnit\Framework\TestCase;
 use Chiron\Http\Exception\HttpException;
+use PHPUnit\Framework\TestCase;
 
 class HttpExceptionTest extends TestCase
 {
-    public function headerDataProvider()
+     public function headerDataProvider()
     {
         return array(
             array(array('X-Test' => 'Test')),
@@ -30,15 +30,7 @@ class HttpExceptionTest extends TestCase
     public function testHeadersDefault()
     {
         $exception = $this->createException();
-        $this->assertSame(array(), $exception->getHeaders());
-    }
-    /**
-     * @dataProvider headerDataProvider
-     */
-    public function testHeadersConstructor($headers)
-    {
-        $exception = new HttpException(200, null, null, $headers);
-        $this->assertSame($headers, $exception->getHeaders());
+        $this->assertSame([], $exception->getHeaders());
     }
     /**
      * @dataProvider headerDataProvider
@@ -49,6 +41,16 @@ class HttpExceptionTest extends TestCase
         $exception->setHeaders($headers);
         $this->assertSame($headers, $exception->getHeaders());
     }
+    /**
+     * @dataProvider headerDataProvider
+     */
+    public function testHeadersConstructorAndStatus($headers)
+    {
+        $exception = new HttpException(200, null, null, $headers);
+        $this->assertSame($headers, $exception->getHeaders());
+        $this->assertSame(200, $exception->getStatusCode());
+    }
+
     protected function createException()
     {
         return new HttpException(200);
