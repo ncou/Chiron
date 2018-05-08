@@ -7,27 +7,26 @@ namespace Chiron\Tests\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
 use Chiron\Http\Uri;
-
 use Chiron\Middleware\ForceHttpsMiddleware;
-
 use Chiron\Tests\Utils\HandlerProxy2;
-
 use PHPUnit\Framework\TestCase;
 
 class ForceHttpsMiddlewareTest extends TestCase
 {
     protected $middleware;
+
     public $request;
 
-    public function setUp()
+    protected function setUp()
     {
         parent::setUp();
         $this->middleware = new ForceHttpsMiddleware();
         $this->request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET'
+            'REQUEST_METHOD'         => 'GET',
         ]);
     }
+
     public function testIsHttps()
     {
         $request = $this->request->withUri(
@@ -40,6 +39,7 @@ class ForceHttpsMiddlewareTest extends TestCase
         $result = $middleware->process($request, new HandlerProxy2($handler));
         $this->assertEquals(json_encode('SUCCESS'), (string) $result->getBody());
     }
+
     public function testNotHttps()
     {
         $request = $this->request->withUri(
@@ -93,6 +93,4 @@ class ForceHttpsMiddlewareTest extends TestCase
         $result = $middleware->process($request, new HandlerProxy2($handler));
         $this->assertEquals(json_encode('SUCCESS'), (string) $result->getBody());
     }
-
-
 }

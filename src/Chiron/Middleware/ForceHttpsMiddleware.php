@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Chiron\Middleware;
 
+use Chiron\Http\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-use Chiron\Http\Response;
-
 class ForceHttpsMiddleware implements MiddlewareInterface
 {
     /** @var int */
     private $statusCode;
+
     /** @var array list of uri who need to bypass the https redirection */
     private $except = [];
 
@@ -32,7 +32,7 @@ class ForceHttpsMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Redirect to HTTPS schema if necessary
+     * Redirect to HTTPS schema if necessary.
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -50,7 +50,6 @@ class ForceHttpsMiddleware implements MiddlewareInterface
      * @param ServerRequestInterface $request PSR7 Request
      *
      * @return bool
-     *
      */
     protected function isHttps(ServerRequestInterface $request): bool
     {
@@ -62,7 +61,7 @@ class ForceHttpsMiddleware implements MiddlewareInterface
     /**
      * Determine if the request URI matches a configured exception.
      *
-     * @param  ServerRequestInterface  $request
+     * @param ServerRequestInterface $request
      *
      * @return bool
      */
@@ -82,25 +81,24 @@ class ForceHttpsMiddleware implements MiddlewareInterface
             // to make it convenient to check if the strings starts with the given
             // pattern such as "library/*", making any string check convenient.
             $pattern = str_replace('\*', '.*', $pattern);
-            if (preg_match('#^'.$pattern.'\z#u', $value) === 1) {
+            if (preg_match('#^' . $pattern . '\z#u', $value) === 1) {
                 return true;
             }
         }
+
         return false;
     }
 
     /**
-     * Redirect to HTTPS (with code = 301 for moved permently)
+     * Redirect to HTTPS (with code = 301 for moved permently).
      *
-     * @param ServerRequestInterface  $request  PSR7 Request
+     * @param ServerRequestInterface $request PSR7 Request
      *
      * @return ResponseInterface
-     *
      */
     protected function redirect(ServerRequestInterface $request, int $statusCode): ResponseInterface
     {
-
-// TODO : passer une responseFactory en paramétre dans le constructeur
+        // TODO : passer une responseFactory en paramétre dans le constructeur
         $response = new Response();
 
         $uri = $request->getUri()
