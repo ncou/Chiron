@@ -17,6 +17,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 // TODO : regarder ici comment c'est fait : https://github.com/jasny/http-message/blob/master/src/Emitter.php
 
+// TODO : s'inpirer de cette classe : https://github.com/zendframework/zend-diactoros/blob/master/src/Response/SapiEmitterTrait.php
+// TODO : regarder dans la classe SAPIEMitter et ici comment c'est fait : https://github.com/http-interop/response-sender/blob/master/src/functions.php
+
 /**
  * Middleware Emitter.
  *
@@ -33,9 +36,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class EmitterMiddleware implements MiddlewareInterface
 {
     /**
-     * Handle the middleware pipeline call. This calls the next middleware
-     * in the queue and after the rest of the middleware pipeline is done
-     * the response will be sent to the client.
+     * Emit the http response (headers+body) to the client.
      *
      * @param RequestInterface  $request
      * @param ResponseInterface $response
@@ -60,55 +61,6 @@ class EmitterMiddleware implements MiddlewareInterface
 
         $this->closeConnexion();
 
-        return $response;
-    }
-
-    private function closeConnexion()
-    {
-        // FastCGI, close connexion faster (module available if PHP-FPM mod is installed)
-        if (function_exists('fastcgi_finish_request')) {
-            \fastcgi_finish_request();
-        } elseif ('cli' !== PHP_SAPI) {
-            static::closeOutputBuffers(0, true);
-        }
-    }
-
-    /*******************************************************************************
-     * Send Response
-     ******************************************************************************/
-
-    // TODO : s'inpirer de cette classe : https://github.com/zendframework/zend-diactoros/blob/master/src/Response/SapiEmitterTrait.php
-
-    /**
-     * Emit the response (headers+body) to the client.
-     *
-     * @param ResponseInterface $response
-     */
-    // TODO : regarder dans la classe SAPIEMitter et ici comment c'est fait : https://github.com/http-interop/response-sender/blob/master/src/functions.php
-    //TODO : attention il y a deux throw exception dans cette méthode qui ne seront pas catchés en amont et donc pas transformées en Response(500) !!!!!!!!!!!!
-
-    // TODO : méthode à virer car plus utilisée !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    public function emit(ResponseInterface $response): ResponseInterface
-    {
-        $this->sendHeaders($response);
-        $this->sendBody($response);
-
-        // Close connexion faster (module available if PHP-FPM mod is installed)
-        if (function_exists('fastcgi_finish_request')) {
-            \fastcgi_finish_request();
-        }
-        /*
-              if (function_exists('fastcgi_finish_request')) {
-                    fastcgi_finish_request();
-                } elseif ('cli' !== PHP_SAPI) {
-                    static::closeOutputBuffers(0, true);
-                }
-
-
-              if (function_exists('fastcgi_finish_request')) {
-                  @fastcgi_finish_request();
-              }
-        */
         return $response;
     }
 
@@ -212,6 +164,16 @@ class EmitterMiddleware implements MiddlewareInterface
         }
 
         $stream->close();
+    }
+
+    private function closeConnexion()
+    {
+        // FastCGI, close connexion faster (module available if PHP-FPM mod is installed)
+        if (function_exists('fastcgi_finish_request')) {
+            \fastcgi_finish_request();
+        } elseif ('cli' !== PHP_SAPI) {
+            static::closeOutputBuffers(0, true);
+        }
     }
 
     /*
@@ -337,9 +299,9 @@ class EmitterMiddleware implements MiddlewareInterface
 
         /*
                      As Lukas alludet to, HTTP 1.1 prohibits Content-Length if there's a Transfer-Encoding set.
-        
+
         Quoting http://www.ietf.org/rfc/rfc2616.txt:
-        
+
            3.If a Content-Length header field (section 14.13) is present, its
              decimal value in OCTETs represents both the entity-length and the
              transfer-length. The Content-Length header field MUST NOT be sent

@@ -723,8 +723,13 @@ class Response extends ResponsePsr7
     {
         // default encodingOptions is 79 => JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES
 
-        $response = $this->withBody(new Body('php://temp', 'r+'));
-        $response->stream->write($json = json_encode($data, $encodingOptions));
+        //$response = $this->withBody(new Body('php://temp', 'r+'));
+        //$response->stream->write($json = json_encode($data, $encodingOptions));
+
+        $body = Body::createFromStringOrResource('php://temp', 'r+');
+        $body->write($json = json_encode($data, $encodingOptions));
+
+        $response = $this->withBody($body);
 
         // Ensure that the json encoding passed successfully
         if ($json === false) {
