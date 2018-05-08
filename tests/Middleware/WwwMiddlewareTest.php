@@ -7,11 +7,8 @@ namespace Chiron\Tests\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
 use Chiron\Http\Uri;
-
 use Chiron\Middleware\WwwMiddleware;
-
 use Chiron\Tests\Utils\HandlerProxy2;
-
 use PHPUnit\Framework\TestCase;
 
 class WwwMiddlewareTest extends TestCase
@@ -37,6 +34,7 @@ class WwwMiddlewareTest extends TestCase
             [false, '', ''],
         ];
     }
+
     /**
      * @dataProvider wwwProvider
      */
@@ -44,7 +42,7 @@ class WwwMiddlewareTest extends TestCase
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET'
+            'REQUEST_METHOD'         => 'GET',
         ]);
 
         $request = $request->withUri(
@@ -52,7 +50,7 @@ class WwwMiddlewareTest extends TestCase
         );
 
         $handler = function ($request) {
-            return (new Response(200));
+            return new Response(200);
         };
         $middleware = new WwwMiddleware($addWww);
         $response = $middleware->process($request, new HandlerProxy2($handler));
@@ -64,5 +62,4 @@ class WwwMiddlewareTest extends TestCase
             $this->assertEquals($result, $response->getHeaderLine('Location'));
         }
     }
-
 }
