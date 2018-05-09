@@ -61,6 +61,56 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
     }
 
     /**
+     * Decrypt the non bypassed cookie values attached to the given request
+     * and return a new request with those values.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     *
+     * @return \Psr\Http\Message\ServerRequestInterface
+     */
+    private function withDecryptedCookies(ServerRequestInterface $request): ServerRequestInterface
+    {
+        $cookies = $request->getCookieParams();
+        $decrypted = [];
+        foreach ($cookies as $name => $value) {
+            $decrypted[$name] = in_array($name, $this->bypassed) ? $value : $this->decrypt($value);
+        }
+
+        return $request->withCookieParams($decrypted);
+    }
+
+    /**
+     * Encode cookies from a response's Set-Cookie header.
+     *
+     * @param \Psr\Http\Message\ResponseInterface $response The response to encode cookies in.
+     *
+     * @return \Psr\Http\Message\ResponseInterface Updated response with encoded cookies.
+     */
+    protected function withEncryptedCookies(ResponseInterface $response): ResponseInterface
+    {
+        $cookiesManager = new CookiesManager();
+        //$cookies = CookiesManager::parseHeaders($response->getHeader('Set-Cookie'));
+
+        $cookies = CookiesManager::parseSetCookieHeader($response->getHeader('Set-Cookie'));
+
+        // remove all the cookies
+        $response = $response->withoutHeader('Set-Cookie');
+
+        $header = [];
+        foreach ($cookies as $name => $cookie) {
+            if (! in_array($name, $this->bypassed)) {
+                $cookie['value'] = $this->encrypt($cookie['value']);
+            }
+
+            //$cookiesManager->set($name, $value);
+            // add again all the cookies (and some are now encrypted)
+            $response = $response->withAddedHeader('Set-Cookie', CookiesManager::toHeader($name, $cookie));
+        }
+
+        return $response;
+    }
+
+    /**
      * Encrypt the given value using the key.
      *
      * @param string $value
@@ -88,95 +138,5 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
             // @TODO : Add a silent log message if there is an error in the cookie decrypt function.
             return '';
         }
-    }
-
-    /**
-     * Decrypt the non bypassed cookie values attached to the given request
-     * and return a new request with those values.
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     *
-     * @return \Psr\Http\Message\ServerRequestInterface
-     */
-    private function withDecryptedCookies(ServerRequestInterface $request): ServerRequestInterface
-    {
-        $cookies = $request->getCookieParams();
-        $decrypted = [];
-        foreach ($cookies as $name => $value) {
-            $decrypted[$name] = in_array($name, $this->bypassed) ? $value : $this->decrypt($value);
-        }
-
-        return $request->withCookieParams($decrypted);
-    }
-
-    /**
-     * Encrypt the non bypassed cookie values attached to the given response
-     * and return a new response with those values.
-     *
-     * @param \Psr\Http\Message\ResponseInterface $response
-     *
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    private function withEncryptedCookies2(ResponseInterface $response): ResponseInterface
-    {
-        $cookies = (SetCookies::fromResponse($response))->getAll();
-        foreach ($cookies as $cookie) {
-            $name = $cookie->getName();
-            if (in_array($name, $this->bypassed)) {
-                continue;
-            }
-            $response = FigResponseCookies::modify($response, $name, function (SetCookie $cookie) {
-                $value = $cookie->getValue();
-                $encrypted = $this->encrypt($value);
-
-                return $cookie->withValue($encrypted);
-            });
-        }
-
-        return $response;
-    }
-
-    /**
-     * Encode cookies from a response's Set-Cookie header.
-     *
-     * @param \Psr\Http\Message\ResponseInterface $response The response to encode cookies in.
-     *
-     * @return \Psr\Http\Message\ResponseInterface Updated response with encoded cookies.
-     */
-    protected function withEncryptedCookies(ResponseInterface $response): ResponseInterface
-    {
-        /*
-        $cookies = CookieCollection::createFromHeader($response->getHeader('Set-Cookie'));
-        $header = [];
-        foreach ($cookies as $cookie) {
-            if (in_array($cookie->getName(), $this->cookieNames, true)) {
-                $value = $this->_encrypt($cookie->getValue(), $this->cipherType);
-                $cookie = $cookie->withValue($value);
-            }
-            $header[] = $cookie->toHeaderValue();
-        }
-        return $response->withHeader('Set-Cookie', $header);
-*/
-
-        $cookiesManager = new CookiesManager();
-        //$cookies = CookiesManager::parseHeaders($response->getHeader('Set-Cookie'));
-
-        $cookies = CookiesManager::parseSetCookieHeader($response->getHeader('Set-Cookie'));
-
-        // remove all the cookies
-        $response = $response->withoutHeader('Set-Cookie');
-
-        $header = [];
-        foreach ($cookies as $name => $cookie) {
-            if (! in_array($name, $this->bypassed)) {
-                $cookie['value'] = $this->crypter->encrypt($cookie['value'], $this->password);
-            }
-
-            //$cookiesManager->set($name, $value);
-            // add again all the cookies (and some are now encrypted)
-            $response = $response->withAddedHeader('Set-Cookie', CookiesManager::toHeader($name, $cookie));
-        }
-
-        return $response;
     }
 }
