@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
+use Chiron\CookiesManager;
+use Chiron\CryptManager;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
+use Chiron\Middleware\EncryptCookiesMiddleware;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
-
-use Chiron\Middleware\EncryptCookiesMiddleware;
-use Chiron\CryptManager;
-use Chiron\CookiesManager;
 
 class EncryptCookiesMiddlewareTest extends TestCase
 {
     private $middleware;
+
     private $crypter;
 
     private function getCookieEncryptionKey()
@@ -24,9 +24,9 @@ class EncryptCookiesMiddlewareTest extends TestCase
     }
 
     /**
-     * Setup
+     * Setup.
      */
-    public function setUp()
+    protected function setUp()
     {
         $this->crypter = new CryptManager();
         $this->middleware = new EncryptCookiesMiddleware(
@@ -34,10 +34,9 @@ class EncryptCookiesMiddlewareTest extends TestCase
             ['plain']
         );
     }
+
     /**
-     * Test decoding request cookies
-     *
-     * @return void
+     * Test decoding request cookies.
      */
     public function testDecodeRequestCookies()
     {
@@ -46,23 +45,23 @@ class EncryptCookiesMiddlewareTest extends TestCase
             'REQUEST_METHOD'         => 'GET',
         ]);
         $request = $request->withCookieParams([
-            'plain' => 'always plain',
-            'secret' => $this->crypter->encrypt('decoded', $this->getCookieEncryptionKey())
+            'plain'  => 'always plain',
+            'secret' => $this->crypter->encrypt('decoded', $this->getCookieEncryptionKey()),
         ]);
         $handler = function ($request) {
             $response = new Response();
             $this->assertSame('decoded', $request->getCookieParam('secret'));
             $this->assertSame('always plain', $request->getCookieParam('plain'));
+
             return $response->withHeader('called', 'yes');
         };
         $middleware = $this->middleware;
         $response = $middleware->process($request, new HandlerProxy2($handler));
         $this->assertSame('yes', $response->getHeaderLine('called'), 'Inner middleware not invoked');
     }
+
     /**
      * Test encoding cookies in the set-cookie header.
-     *
-     * @return void
      */
     public function testEncodeResponseSetCookieHeader()
     {
@@ -72,6 +71,7 @@ class EncryptCookiesMiddlewareTest extends TestCase
         ]);
         $handler = function ($request) {
             $response = new Response();
+
             return $response->withAddedHeader('Set-Cookie', 'secret=be%20quiet')
                 ->withAddedHeader('Set-Cookie', 'plain=in%20clear')
                 ->withAddedHeader('Set-Cookie', 'ninja=shuriken');
@@ -87,7 +87,8 @@ class EncryptCookiesMiddlewareTest extends TestCase
             $this->crypter->decrypt($cookies['ninja']['value'], $this->getCookieEncryptionKey())
         );
     }
-    /**
+
+    /*
      * Test encoding cookies in the cookie collection.
      *
      * @return void
@@ -113,5 +114,4 @@ class EncryptCookiesMiddlewareTest extends TestCase
             $this->crypter->decrypt($response->getCookieParam('ninja')['value'], $this->getCookieEncryptionKey())
         );
     }*/
-
 }

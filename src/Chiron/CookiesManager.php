@@ -1,44 +1,47 @@
 <?php
 /**
- * Slim Framework (https://slimframework.com)
+ * Slim Framework (https://slimframework.com).
  *
- * @link      https://github.com/slimphp/Slim
+ * @see      https://github.com/slimphp/Slim
+ *
  * @copyright Copyright (c) 2011-2017 Josh Lockhart
  * @license   https://github.com/slimphp/Slim/blob/3.x/LICENSE.md (MIT License)
  */
+
 namespace Chiron;
 
-use InvalidArgumentException;
 use DateTimeImmutable;
 
 /**
- * Cookie helper
+ * Cookie helper.
  */
 class CookiesManager
 {
     /**
-     * Cookies for HTTP response
+     * Cookies for HTTP response.
      *
      * @var array
      */
     protected $responseCookies = [];
+
     /**
-     * Default cookie properties
+     * Default cookie properties.
      *
      * @var array
      */
     protected $defaults = [
-        'value' => '',
-        'domain' => null,
+        'value'    => '',
+        'domain'   => null,
         'hostonly' => null,
-        'path' => null,
-        'expires' => null,
-        'secure' => false,
+        'path'     => null,
+        'expires'  => null,
+        'secure'   => false,
         'httponly' => false,
-        'samesite' => null
+        'samesite' => null,
     ];
+
     /**
-     * Set default cookie properties
+     * Set default cookie properties.
      *
      * @param array $settings
      */
@@ -46,21 +49,23 @@ class CookiesManager
     {
         $this->defaults = array_replace($this->defaults, $settings);
     }
+
     /**
-     * Set response cookie
+     * Set response cookie.
      *
      * @param string       $name  Cookie name
      * @param string|array $value Cookie value, or cookie properties
      */
     public function set($name, $value)
     {
-        if (!is_array($value)) {
-            $value = ['value' => (string)$value];
+        if (! is_array($value)) {
+            $value = ['value' => (string) $value];
         }
         $this->responseCookies[$name] = array_replace($this->defaults, $value);
     }
+
     /**
-     * Convert to `Set-Cookie` headers
+     * Convert to `Set-Cookie` headers.
      *
      * @return string[]
      */
@@ -70,13 +75,15 @@ class CookiesManager
         foreach ($this->responseCookies as $name => $properties) {
             $headers[] = self::toHeader($name, $properties);
         }
+
         return $headers;
     }
+
     /**
-     * Convert to `Set-Cookie` header
+     * Convert to `Set-Cookie` header.
      *
-     * @param  string $name       Cookie name
-     * @param  array  $properties Cookie properties
+     * @param string $name       Cookie name
+     * @param array  $properties Cookie properties
      *
      * @return string
      */
@@ -93,7 +100,7 @@ class CookiesManager
             if (is_string($properties['expires'])) {
                 $timestamp = strtotime($properties['expires']);
             } else {
-                $timestamp = (int)$properties['expires'];
+                $timestamp = (int) $properties['expires'];
             }
             if ($timestamp !== 0) {
                 $result .= '; expires=' . gmdate('D, d-M-Y H:i:s e', $timestamp);
@@ -112,14 +119,15 @@ class CookiesManager
             // While strtolower is needed for correct comparison, the RFC doesn't care about case
             $result .= '; SameSite=' . $properties['samesite'];
         }
+
         return $result;
     }
 
-
     /**
-     * Parse Set-Cookie headers into array
+     * Parse Set-Cookie headers into array.
      *
      * @param array $values List of Set-Cookie Header values.
+     *
      * @return array An array of cookies with all the settings
      */
     public static function parseSetCookieHeader(array $values): array
@@ -131,13 +139,13 @@ class CookiesManager
             $name = false;
             // TODO : utiliser plutot le tableau des settings par défaut qui est défini en variable de classe
             $cookie = [
-                'value' => '',
-                'path' => '',
-                'domain' => '',
-                'secure' => false,
+                'value'    => '',
+                'path'     => '',
+                'domain'   => '',
+                'secure'   => false,
                 'httponly' => false,
-                'expires' => null,
-                'max-age' => null
+                'expires'  => null,
+                'max-age'  => null,
             ];
             foreach ($parts as $i => $part) {
                 if (strpos($part, '=') !== false) {
@@ -149,10 +157,11 @@ class CookiesManager
                 if ($i === 0) {
                     $name = $key;
                     $cookie['value'] = urldecode($value);
+
                     continue;
                 }
                 $key = strtolower($key);
-                if (array_key_exists($key, $cookie) && !strlen($cookie[$key])) {
+                if (array_key_exists($key, $cookie) && ! strlen($cookie[$key])) {
                     $cookie[$key] = $value;
                 }
             }
@@ -165,6 +174,7 @@ class CookiesManager
 
             $cookies[$name] = $cookie;
         }
+
         return $cookies;
     }
 }
