@@ -81,7 +81,7 @@ class ServerRequest extends ServerRequestPsr7
      *
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param string $name     the attribute name
+     * @param string $name    the attribute name
      * @param mixed  $default default value to return if the attribute does not exist
      *
      * @return mixed
@@ -101,7 +101,8 @@ class ServerRequest extends ServerRequestPsr7
      * Note: This method is not part of the PSR-7 standard.
      *
      * @param string $name
-     * @return boolean
+     *
+     * @return bool
      */
     public function hasCookie(string $name): bool
     {

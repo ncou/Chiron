@@ -1,18 +1,21 @@
 <?php
 /**
- * Simple PHP Encrypter/Decrypter
+ * Simple PHP Encrypter/Decrypter.
  *
  * @author  ncou
- * @link    https://github.com/ncou/chiron-encrypter
+ *
+ * @see    https://github.com/ncou/chiron-encrypter
+ *
  * @license https://github.com/ncou/chiron-encrypter/blob/master/LICENSE.md (MIT License)
  */
+
 namespace Chiron;
 
-use RuntimeException;
 use InvalidArgumentException;
+use RuntimeException;
 
 /**
- * Encrypter
+ * Encrypter.
  *
  * This class encrypts and decrypts the given value. It uses OpenSSL extension
  * with AES-256 cipher for encryption and HMAC-SHA-256 for hash.
@@ -24,21 +27,24 @@ class CryptManager
      * @var string AES-256 cipher identifier that will be passed to openssl
      */
     private const CIPHER = 'AES-256-CTR';
+
     /**
      * @var int Size of initialization vector in bytes
      */
     private const IVSIZE = 16;
+
     /**
      * @var string Hardcoded hashing algo string.
      */
     private const ALGO = 'sha256';
+
     /**
      * @var int Size of checksum in bytes
      */
     private const CKSIZE = 32;
 
     /**
-     * Create a new encrypter instance, and check library requirements
+     * Create a new encrypter instance, and check library requirements.
      *
      * @throws RuntimeException
      */
@@ -51,11 +57,13 @@ class CryptManager
             throw new RuntimeException('Multibyte String extension is not available.');
         }
     }
+
     /**
-     * Encrypt the given data
+     * Encrypt the given data.
      *
-     * @param  mixed  $data     The data to encrypt
+     * @param mixed  $data     The data to encrypt
      * @param string $password Password used to encrypt data.
+     *
      * @return string
      */
     public function encrypt(string $data, string $password): string
@@ -77,21 +85,23 @@ class CryptManager
 
         return $encrypted;
     }
+
     /**
-     * Decrypt the given data
+     * Decrypt the given data.
      *
-     * @param  string $data       The Data to decrypt
+     * @param string $data     The Data to decrypt
      * @param string $password Password that should be used to decrypt input data
+     *
      * @return string
      */
     public function decrypt(string $data, string $password): string
     {
         // Find the IV at the beginning of the cypher text
-        $iv         = self::substr($data, 0, self::IVSIZE);
+        $iv = self::substr($data, 0, self::IVSIZE);
         // Gather the checksum portion of the encrypted text
-        $checksum   = self::substr($data, self::IVSIZE, self::CKSIZE);
+        $checksum = self::substr($data, self::IVSIZE, self::CKSIZE);
         // Gather message portion of encrypted text after iv and checksum
-        $cyphertext  = self::substr($data, self::IVSIZE + self::CKSIZE, null);
+        $cyphertext = self::substr($data, self::IVSIZE + self::CKSIZE, null);
 
         // Derive key from password
         $key = $this->hash($iv, $password);
@@ -109,22 +119,25 @@ class CryptManager
 
         return $decrypted;
     }
+
     /**
-     * generate initialization vector
+     * generate initialization vector.
+     *
+     * @throws GenericEncryptionException
      *
      * @return string
-     * @throws GenericEncryptionException
      */
     private function generateIv()
     {
         return \random_bytes(self::IVSIZE);
     }
+
     /**
      * Perform a single hmac iteration. This adds an extra layer of safety because hash_hmac can return false if algo
      * is not valid. Return type hint will throw an exception if this happens.
      *
      *
-     * @param  string $data Data to hash
+     * @param string $data Data to hash
      * @param string $key  Key to use to authenticate the hash.
      *
      * @return string
@@ -133,6 +146,7 @@ class CryptManager
     {
         return \hash_hmac(self::ALGO, $data, $key, true);
     }
+
     /**
      * Returns part of a string.
      *
