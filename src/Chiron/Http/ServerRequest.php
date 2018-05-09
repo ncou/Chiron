@@ -81,20 +81,31 @@ class ServerRequest extends ServerRequestPsr7
      *
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param string $key     the attribute name
+     * @param string $name     the attribute name
      * @param mixed  $default default value to return if the attribute does not exist
      *
      * @return mixed
      */
-    public function getCookieParam($key, $default = null)
+    public function getCookieParam($name, $default = null)
     {
-        $cookies = $this->getCookieParams();
-        $result = $default;
-        if (isset($cookies[$key])) {
-            $result = $cookies[$key];
+        if (! $this->hasCookie($name)) {
+            return $default;
         }
 
-        return $result;
+        return $this->getCookieParams()[$name];
+    }
+
+    /**
+     * Check if the cookie exist in the request.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @param string $name
+     * @return boolean
+     */
+    public function hasCookie(string $name): bool
+    {
+        return array_key_exists($name, $this->getCookieParams());
     }
 
     /**
@@ -113,6 +124,8 @@ class ServerRequest extends ServerRequestPsr7
      *
      * @return static
      */
+    // TODO : il faudrait pas plutot faire un array_merge ? ou un array_replace ? pour éviter de perdre les attributs existants
+    // TODO : créer une méthode withoutAttributes pour vider tous les attributs. non ? ou directement un setAttributes($array, $merge = false) ?
     public function withAttributes(array $attributes)
     {
         $clone = clone $this;

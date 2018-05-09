@@ -810,6 +810,281 @@ class Response extends ResponsePsr7
         return $this;
     }
 
+    //*****************************************************************************
+    //****************************** cakePHP Response *****************************
+    //*****************************************************************************
+
+    /**
+     * Convenience method to set a string into the response body
+     *
+     * @param string $string The string to be sent
+     * @return static
+     */
+    public function withStringBody($string)
+    {
+        $new = clone $this;
+        $new->_createStream();
+        $new->stream->write((string)$string);
+        return $new;
+    }
+
+    /**
+     * Create a new response with the Content-Length header set.
+     *
+     * @param int|string $bytes Number of bytes
+     * @return static
+     */
+    public function withLength($bytes)
+    {
+        return $this->withHeader('Content-Length', (string)$bytes);
+    }
+
+    /**
+     * Create a new instance with the Etag header set.
+     *
+     * Etags are a strong indicative that a response can be cached by a
+     * HTTP client. A bad way of generating Etags is creating a hash of
+     * the response output, instead generate a unique hash of the
+     * unique components that identifies a request, such as a
+     * modification time, a resource Id, and anything else you consider it
+     * that makes the response unique.
+     *
+     * The second parameter is used to inform clients that the content has
+     * changed, but semantically it is equivalent to existing cached values. Consider
+     * a page with a hit counter, two different page views are equivalent, but
+     * they differ by a few bytes. This permits the Client to decide whether they should
+     * use the cached data.
+     *
+     * @param string $hash The unique hash that identifies this response
+     * @param bool $weak Whether the response is semantically the same as
+     *   other with the same hash or not. Defaults to false
+     * @return static
+     */
+    public function withEtag2($hash, $weak = false)
+    {
+        $hash = sprintf('%s"%s"', $weak ? 'W/' : null, $hash);
+        return $this->withHeader('Etag', $hash);
+    }
+
+    /**
+     * Create a new instance with the Vary header set.
+     *
+     * If an array is passed values will be imploded into a comma
+     * separated string. If no parameters are passed, then an
+     * array with the current Vary header value is returned
+     *
+     * @param string|array $cacheVariances A single Vary string or an array
+     *   containing the list for variances.
+     * @return static
+     */
+    public function withVary2($cacheVariances)
+    {
+        return $this->withHeader('Vary', (array)$cacheVariances);
+    }
+
+    /**
+     * Create a new instance as 'not modified'
+     *
+     * This will remove any body contents set the status code
+     * to "304" and removing headers that describe
+     * a response body.
+     *
+     * @return static
+     */
+    public function withNotModified2()
+    {
+        $new = $this->withStatus(304);
+        $new->_createStream();
+        $remove = [
+            'Allow',
+            'Content-Encoding',
+            'Content-Language',
+            'Content-Length',
+            'Content-MD5',
+            'Content-Type',
+            'Last-Modified'
+        ];
+        foreach ($remove as $header) {
+            $new = $new->withoutHeader($header);
+        }
+        return $new;
+    }
+
+    /**
+     * Create a new response with a cookie set.
+     *
+     * ### Options
+     *
+     * - `value`: Value of the cookie
+     * - `expire`: Time the cookie expires in
+     * - `path`: Path the cookie applies to
+     * - `domain`: Domain the cookie is for.
+     * - `secure`: Is the cookie https?
+     * - `httpOnly`: Is the cookie available in the client?
+     *
+     * ### Examples
+     *
+     * ```
+     * // set scalar value with defaults
+     * $response = $response->withCookie('remember_me', 1);
+     *
+     * // customize cookie attributes
+     * $response = $response->withCookie('remember_me', ['path' => '/login']);
+     *
+     * // add a cookie object
+     * $response = $response->withCookie(new Cookie('remember_me', 1));
+     * ```
+     *
+     * @param string|\Cake\Http\Cookie\Cookie $name The name of the cookie to set, or a cookie object
+     * @param array|string $data Either a string value, or an array of cookie options.
+     * @return static
+     */
+    public function withCookie2($name, $data = '')
+    {
+        if ($name instanceof Cookie) {
+            $cookie = $name;
+        } else {
+            if (!is_array($data)) {
+                $data = ['value' => $data];
+            }
+            $data += [
+                'value' => '',
+                'expire' => 0,
+                'path' => '/',
+                'domain' => '',
+                'secure' => false,
+                'httpOnly' => false
+            ];
+            $expires = $data['expire'] ? new DateTime('@' . $data['expire']) : null;
+            $cookie = new Cookie(
+                $name,
+                $data['value'],
+                $expires,
+                $data['path'],
+                $data['domain'],
+                $data['secure'],
+                $data['httpOnly']
+            );
+        }
+        $new = clone $this;
+        $new->_cookies = $new->_cookies->add($cookie);
+        return $new;
+    }
+    /**
+     * Create a new response with an expired cookie set.
+     *
+     * ### Options
+     *
+     * - `path`: Path the cookie applies to
+     * - `domain`: Domain the cookie is for.
+     * - `secure`: Is the cookie https?
+     * - `httpOnly`: Is the cookie available in the client?
+     *
+     * ### Examples
+     *
+     * ```
+     * // set scalar value with defaults
+     * $response = $response->withExpiredCookie('remember_me');
+     *
+     * // customize cookie attributes
+     * $response = $response->withExpiredCookie('remember_me', ['path' => '/login']);
+     *
+     * // add a cookie object
+     * $response = $response->withExpiredCookie(new Cookie('remember_me'));
+     * ```
+     *
+     * @param string|\Cake\Http\Cookie\CookieInterface $name The name of the cookie to expire, or a cookie object
+     * @param array $options An array of cookie options.
+     * @return static
+     */
+    public function withExpiredCookie($name, $options = [])
+    {
+        if ($name instanceof CookieInterface) {
+            $cookie = $name->withExpired();
+        } else {
+            $options += [
+                'path' => '/',
+                'domain' => '',
+                'secure' => false,
+                'httpOnly' => false
+            ];
+            $cookie = new Cookie(
+                $name,
+                '',
+                DateTime::createFromFormat('U', 1),
+                $options['path'],
+                $options['domain'],
+                $options['secure'],
+                $options['httpOnly']
+            );
+        }
+        $new = clone $this;
+        $new->_cookies = $new->_cookies->add($cookie);
+        return $new;
+    }
+    /**
+     * Read a single cookie from the response.
+     *
+     * This method provides read access to pending cookies. It will
+     * not read the `Set-Cookie` header if set.
+     *
+     * @param string $name The cookie name you want to read.
+     * @return array|null Either the cookie data or null
+     */
+    public function getCookie($name)
+    {
+        if (!$this->_cookies->has($name)) {
+            return null;
+        }
+        $cookie = $this->_cookies->get($name);
+        return $this->convertCookieToArray($cookie);
+    }
+    /**
+     * Get all cookies in the response.
+     *
+     * Returns an associative array of cookie name => cookie data.
+     *
+     * @return array
+     */
+    public function getCookies()
+    {
+        $out = [];
+        foreach ($this->_cookies as $cookie) {
+            $out[$cookie->getName()] = $this->convertCookieToArray($cookie);
+        }
+        return $out;
+    }
+    /**
+     * Convert the cookie into an array of its properties.
+     *
+     * This method is compatible with the historical behavior of Cake\Http\Response,
+     * where `httponly` is `httpOnly` and `expires` is `expire`
+     *
+     * @param \Cake\Http\Cookie\CookieInterface $cookie Cookie object.
+     * @return array
+     */
+    protected function convertCookieToArray(CookieInterface $cookie)
+    {
+        return [
+            'name' => $cookie->getName(),
+            'value' => $cookie->getStringValue(),
+            'path' => $cookie->getPath(),
+            'domain' => $cookie->getDomain(),
+            'secure' => $cookie->isSecure(),
+            'httpOnly' => $cookie->isHttpOnly(),
+            'expire' => $cookie->getExpiresTimestamp()
+        ];
+    }
+    /**
+     * Get the CookieCollection from the response
+     *
+     * @return \Cake\Http\Cookie\CookieCollection
+     */
+    public function getCookieCollection()
+    {
+        return $this->_cookies;
+    }
+
     //*************************************************************
 
     /**

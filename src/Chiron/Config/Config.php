@@ -16,6 +16,8 @@ namespace Chiron\Config;
 //https://github.com/mrjgreen/config/blob/master/src/Config/Repository.php
 //https://github.com/pinepain/php-simple-config/blob/master/src/Config.php
 
+//https://github.com/adbario/php-dot-notation/blob/2.x/src/Dot.php
+
 class Config implements \ArrayAccess, \Iterator, \Countable
 {
     /**
