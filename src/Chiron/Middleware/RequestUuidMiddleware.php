@@ -6,13 +6,11 @@ namespace Chiron\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 class RequestUuidMiddleware implements MiddlewareInterface
 {
-
     /**
      * Add a unique ID for each HTTP request.
      *
@@ -47,9 +45,10 @@ class RequestUuidMiddleware implements MiddlewareInterface
      */
     public static function uuid(): string
     {
-        $bytes = unpack("v*", random_bytes(16));
+        $bytes = unpack('v*', random_bytes(16));
         $bytes[4] = $bytes[4] & 0x0fff | 0x4000;
         $bytes[5] = $bytes[5] & 0x3fff | 0x8000;
+
         return vsprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', $bytes);
     }
 }
