@@ -30,18 +30,20 @@ class RequestUuidMiddlewareTest extends TestCase
             'A middleware must have a handle method.'
         );
     }
+
     public function testRequestIdShouldBeFilledIfDoesNotExistInRequestAndResponse()
     {
-        $request  = (new ServerRequestFactory())->createServerRequestFromArray([
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
             'REQUEST_METHOD'         => 'GET',
         ]);
         $handler = function ($request) use (&$uuid) {
             $uuid = $request->getHeaderLine('X-Request-Id');
             $this->assertNotEmpty($uuid);
+
             return new Response();
         };
-        $response   = $this->middleware->process($request, new HandlerProxy2($handler));
+        $response = $this->middleware->process($request, new HandlerProxy2($handler));
 
         $this->assertEquals(
             $response->getHeaderLine('X-Request-Id'),
@@ -49,6 +51,7 @@ class RequestUuidMiddlewareTest extends TestCase
             'The same X-Request-Id must be set in request and response.'
         );
     }
+
     public function testPropagateRequestIdToResponseIfProvidedInRequest()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
@@ -62,14 +65,14 @@ class RequestUuidMiddlewareTest extends TestCase
                 $request->getHeaderLine('X-Request-Id'),
                 'The Request header must not be modified.'
             );
+
             return new Response();
         };
-        $response   = $this->middleware->process($request, new HandlerProxy2($handler));
+        $response = $this->middleware->process($request, new HandlerProxy2($handler));
         $this->assertEquals(
             '09226165-364a-461a-bf5c-e859d70d907e',
             $response->getHeaderLine('X-Request-Id'),
             'The request X-Request-ID header must be set in the response.'
         );
     }
-
 }

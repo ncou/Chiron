@@ -6,7 +6,6 @@ namespace Chiron\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -37,6 +36,6 @@ class RequestUuidMiddleware implements MiddlewareInterface
         return $response;
     }
 
-    // TODO : regarder pour conditionner l'ajout du header sur la rÃ©ponse seulement si c'est dÃ©fini par l'utilisateur, et possibilitÃ© d'utiliser un autre header name
+    // TODO : regarder pour conditionner l'ajout du header sur la réponse seulement si c'est défini par l'utilisateur, et possibilité d'utiliser un autre header name
     // https://github.com/qandidate-labs/stack-request-id/blob/master/src/Qandidate/Stack/RequestId.php#L58
 }
