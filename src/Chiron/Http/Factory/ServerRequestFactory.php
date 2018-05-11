@@ -187,7 +187,6 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             $uri = $uri->withScheme('on' === $server['HTTPS'] ? 'https' : 'http');
         }
 
-
         $hasPort = false;
         if (isset($server['HTTP_HOST'])) {
             $hostHeaderParts = explode(':', $server['HTTP_HOST']);

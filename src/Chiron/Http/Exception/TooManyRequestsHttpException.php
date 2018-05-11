@@ -11,7 +11,7 @@ class TooManyRequestsHttpException extends HttpException
      * @param int        $code       The internal exception code
      * @param array      $headers
      */
-    public function __construct($retryAfter = null, string $message = null, \Throwable $previous = null, array $headers = array())
+    public function __construct($retryAfter = null, string $message = null, \Throwable $previous = null, array $headers = [])
     {
         if ($retryAfter) {
             $headers['Retry-After'] = $retryAfter;

@@ -1,11 +1,11 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Chiron\Middleware;
 
-use ComposerLocator;
 use Chiron\Http\Response;
+use ComposerLocator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -29,10 +29,12 @@ class ReferralSpamMiddleware implements MiddlewareInterface
      * @var array|null
      */
     private $blackList;
+
     public function __construct(array $blackList = null)
     {
         $this->blackList = $blackList;
     }
+
     /**
      * Process a request and return a response.
      */
@@ -55,11 +57,11 @@ class ReferralSpamMiddleware implements MiddlewareInterface
                 return new Response(403); // TODO : renvoyer plutot un code 451 non ?
             }
         }
+
         return $handler->handle($request);
     }
 
-
-    private function getUrlDomain(string $url) : string
+    private function getUrlDomain(string $url): string
     {
         // Remove all illegal characters from a url
         $url = filter_var($url, FILTER_SANITIZE_URL);
@@ -89,13 +91,12 @@ class ReferralSpamMiddleware implements MiddlewareInterface
         //$spammerList = config('app.referral_spam_list_location', base_path('vendor/matomo/referrer-spam-blacklist/spammers.txt'));
         $path = __DIR__ . '/spammers.txt';
 
-
-        if (!is_file($path)) {
+        if (! is_file($path)) {
             // @codeCoverageIgnoreStart
             throw new RuntimeException('Unable to locate the piwik referrer spam blacklist file');
             // @codeCoverageIgnoreEnd
         }
+
         return file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     }
-
 }

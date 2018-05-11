@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Chiron\Middleware;
 
@@ -11,11 +11,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use RuntimeException;
 
 class UserAgentBlockerMiddleware implements MiddlewareInterface
 {
-
     /**
      * Process a request and return a response.
      */
@@ -42,7 +40,7 @@ class UserAgentBlockerMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    /**
+    /*
      * Compile the regex patterns into one regex string.
      *
      * @param array
@@ -56,7 +54,6 @@ class UserAgentBlockerMiddleware implements MiddlewareInterface
         return '('.implode('|', $patterns).')';
     }*/
 
-
 /*
 //https://github.com/JayBizzle/Crawler-Detect/blob/master/src/CrawlerDetect.php
     $this->compiledRegex = $this->compileRegex($this->crawlers->getAll());
@@ -65,5 +62,4 @@ class UserAgentBlockerMiddleware implements MiddlewareInterface
     $result = preg_match('/'.$this->compiledRegex.'/i', trim($agent), $matches);
    return (bool) $result;
 */
-
 }

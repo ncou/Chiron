@@ -10,7 +10,7 @@ class PreconditionRequiredHttpException extends HttpException
      * @param int        $code     The internal exception code
      * @param array      $headers
      */
-    public function __construct(string $message = null, \Throwable $previous = null, array $headers = array())
+    public function __construct(string $message = null, \Throwable $previous = null, array $headers = [])
     {
         parent::__construct(428, $message, $previous, $headers);
     }

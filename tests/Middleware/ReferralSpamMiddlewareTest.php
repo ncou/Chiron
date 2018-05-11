@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
@@ -10,7 +10,7 @@ use Chiron\Middleware\ReferralSpamMiddleware;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
-class ReferrerSpamTest extends TestCase
+class ReferralSpamMiddlewareTest extends TestCase
 {
     public function referrerSpamProvider()
     {
@@ -20,6 +20,7 @@ class ReferrerSpamTest extends TestCase
             [true, 'http://youtube.com'],
         ];
     }
+
     /**
      * @dataProvider referrerSpamProvider
      */

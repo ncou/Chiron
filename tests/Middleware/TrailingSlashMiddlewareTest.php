@@ -21,6 +21,7 @@ class TrailingSlashMiddlewareTest extends TestCase
             ['', '/'],
         ];
     }
+
     /**
      * @dataProvider removeProvider
      */
@@ -34,6 +35,7 @@ class TrailingSlashMiddlewareTest extends TestCase
         $middleware = new TrailingSlashMiddleware();
         $handler = function ($request) use (&$path) {
             $path = $request->getUri()->getPath();
+
             return new Response();
         };
 
@@ -41,6 +43,7 @@ class TrailingSlashMiddlewareTest extends TestCase
 
         $this->assertEquals($result, $path);
     }
+
     public function addProvider(): array
     {
         return [
@@ -52,6 +55,7 @@ class TrailingSlashMiddlewareTest extends TestCase
             ['/index', '/index/'],
         ];
     }
+
     /**
      * @dataProvider addProvider
      */
@@ -65,6 +69,7 @@ class TrailingSlashMiddlewareTest extends TestCase
         $middleware = new TrailingSlashMiddleware(true);
         $handler = function ($request) use (&$path) {
             $path = $request->getUri()->getPath();
+
             return new Response();
         };
 
@@ -72,6 +77,7 @@ class TrailingSlashMiddlewareTest extends TestCase
 
         $this->assertEquals($result, $path);
     }
+
     public function testRedirect()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
