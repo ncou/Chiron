@@ -9,28 +9,22 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Exception;
 
-use Chiron\Http\Exception\ServiceUnavailableHttpException;
+use Chiron\Http\Exception\UnauthorizedHttpException;
 
-class ServiceUnavailableHttpExceptionTest extends HttpExceptionTest
+class UnauthorizedHttpExceptionTest extends HttpExceptionTest
 {
-    public function testHeadersDefaultRetryAfter()
+    public function testHeadersDefault()
     {
-        $exception = new ServiceUnavailableHttpException(10);
-        $this->assertSame(['Retry-After' => 10], $exception->getHeaders());
+        $exception = new UnauthorizedHttpException('Challenge');
+        $this->assertSame(array('WWW-Authenticate' => 'Challenge'), $exception->getHeaders());
     }
-
     /**
      * @dataProvider headerDataProvider
      */
     public function testHeadersSetter($headers)
     {
-        $exception = new ServiceUnavailableHttpException(10);
+        $exception = new UnauthorizedHttpException('Challenge');
         $exception->setHeaders($headers);
         $this->assertSame($headers, $exception->getHeaders());
-    }
-
-    protected function createException()
-    {
-        return new ServiceUnavailableHttpException();
     }
 }

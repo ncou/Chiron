@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Exception;
 
-use Chiron\Http\Exception\NotFoundHttpException;
+use Chiron\Http\Exception\UnsupportedMediaTypeHttpException;
 
-class NotFoundHttpExceptionTest extends HttpExceptionTest
+class UnsupportedMediaTypeHttpExceptionTest extends HttpExceptionTest
 {
     protected function createException()
     {
-        return new NotFoundHttpException();
+        return new UnsupportedMediaTypeHttpException();
     }
 }

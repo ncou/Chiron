@@ -9,28 +9,27 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Exception;
 
-use Chiron\Http\Exception\ServiceUnavailableHttpException;
+use Chiron\Http\Exception\TooManyRequestsHttpException;
 
-class ServiceUnavailableHttpExceptionTest extends HttpExceptionTest
+class TooManyRequestsHttpExceptionTest extends HttpExceptionTest
 {
-    public function testHeadersDefaultRetryAfter()
+    public function testHeadersDefaultRertyAfter()
     {
-        $exception = new ServiceUnavailableHttpException(10);
-        $this->assertSame(['Retry-After' => 10], $exception->getHeaders());
+        $exception = new TooManyRequestsHttpException(10);
+        $this->assertSame(array('Retry-After' => 10), $exception->getHeaders());
     }
-
     /**
      * @dataProvider headerDataProvider
      */
     public function testHeadersSetter($headers)
     {
-        $exception = new ServiceUnavailableHttpException(10);
+        $exception = new TooManyRequestsHttpException(10);
         $exception->setHeaders($headers);
         $this->assertSame($headers, $exception->getHeaders());
     }
 
     protected function createException()
     {
-        return new ServiceUnavailableHttpException();
+        return new TooManyRequestsHttpException();
     }
 }

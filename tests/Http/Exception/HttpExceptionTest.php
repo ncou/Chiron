@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Tests\Http\Exception;
+namespace Chiron\Tests\Http\Exception;
 
 use Chiron\Http\Exception\HttpException;
 use PHPUnit\Framework\TestCase;

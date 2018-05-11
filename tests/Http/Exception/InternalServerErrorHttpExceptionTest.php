@@ -9,12 +9,12 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Exception;
 
-use Chiron\Http\Exception\NotFoundHttpException;
+use Chiron\Http\Exception\InternalServerErrorHttpException;
 
-class NotFoundHttpExceptionTest extends HttpExceptionTest
+class InternalServerErrorHttpExceptionTest extends HttpExceptionTest
 {
     protected function createException()
     {
-        return new NotFoundHttpException();
+        return new InternalServerErrorHttpException();
     }
 }
