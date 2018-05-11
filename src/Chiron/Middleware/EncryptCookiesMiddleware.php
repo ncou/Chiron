@@ -16,7 +16,7 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
     /**
      * The defuse encryption keu.
      *
-     * @var \Defuse\Crypto\Key
+     * @var string
      */
     private $password;
 
@@ -33,7 +33,7 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
      * Set up a encrypt cookie middleware with the given defuse key and an array
      * of bypassed cookie names.
      *
-     * @param \Defuse\Crypto\Key $password
+     * @param string $password
      * @param array              $bypassed
      */
     public function __construct(string $password, array $bypassed = [])

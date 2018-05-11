@@ -11,7 +11,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 //use Psr\Container\ContainerInterface;
 
-//use Chiron\Exception\HttpException;
+use Chiron\Exception\HttpException;
 use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 use UnexpectedValueException;
