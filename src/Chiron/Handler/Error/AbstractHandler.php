@@ -6,12 +6,12 @@ namespace Chiron\Handler\Error;
 
 // TODO : regarder ici pour gérer les formater pour les messages : https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Error/ExceptionHandlerManager.php
 
+use Chiron\Exception\HttpException;
 use Chiron\Http\Response;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 //use Psr\Container\ContainerInterface;
 
-use Chiron\Exception\HttpException;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 use UnexpectedValueException;
