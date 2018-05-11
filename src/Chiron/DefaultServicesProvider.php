@@ -13,10 +13,10 @@
 
 namespace Chiron;
 
+use Chiron\Http\Response;
 use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
-use Chiron\Http\Response;
 
 /**
  * Chiron system services provider.

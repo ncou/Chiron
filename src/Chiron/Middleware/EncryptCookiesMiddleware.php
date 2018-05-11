@@ -34,7 +34,7 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
      * of bypassed cookie names.
      *
      * @param string $password
-     * @param array              $bypassed
+     * @param array  $bypassed
      */
     public function __construct(string $password, array $bypassed = [])
     {
