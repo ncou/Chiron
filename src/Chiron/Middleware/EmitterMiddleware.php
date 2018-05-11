@@ -266,7 +266,7 @@ class EmitterMiddleware implements MiddlewareInterface
         if (($response->getStatusCode() >= 100 && $response->getStatusCode() < 200)
         || in_array($response->getStatusCode(), [204, 304])) {
             // TODO : faire un helper pour vider le body d'une response.
-            $response = $response->withoutHeader('Content-Type')->withoutHeader('Content-Length')->withBody(new \Chiron\Http\Body(fopen('php://temp', 'r+')));
+            $response = $response->withoutHeader('Content-Type')->withoutHeader('Content-Length')->withBody(\Chiron\Http\Body::createFromStringOrResource(fopen('php://temp', 'r+')));
             //return;
         }
 

@@ -73,7 +73,7 @@ class Router
     /**
      * Collection of routes.
      *
-     * @var Chiron\Routing\Route[]
+     * @var Route[]
      */
     protected $routes = [];
 
@@ -309,7 +309,7 @@ class Router
     /**
      * Get list of routes.
      *
-     * @return Chiron\Routing\Route[]
+     * @return Route[]
      */
     public function getRoutes(): array
     {
