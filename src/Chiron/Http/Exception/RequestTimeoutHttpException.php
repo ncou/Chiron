@@ -5,13 +5,13 @@ namespace Chiron\Http\Exception;
 class RequestTimeoutHttpException extends HttpException
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string     $message
      * @param \Exception $previous
-     * @param integer    $code
+     * @param int        $code
      */
-    public function __construct(string $message = 'Request Timeout', \Throwable $previous = null, array $headers = array())
+    public function __construct(string $message = 'Request Timeout', \Throwable $previous = null, array $headers = [])
     {
         parent::__construct(408, $message, $previous, $headers);
     }

@@ -18,10 +18,12 @@ class TrailingSlashMiddleware implements MiddlewareInterface
      * @var bool Add or remove the slash
      */
     private $trailingSlash;
+
     /**
      * @var bool Returns a redirect response or not
      */
     private $redirect = false;
+
     /**
      * Configure whether add or remove the slash.
      */
@@ -29,6 +31,7 @@ class TrailingSlashMiddleware implements MiddlewareInterface
     {
         $this->trailingSlash = $trailingSlash;
     }
+
     /**
      * Whether returns a 301 response to the new path.
      */
@@ -38,6 +41,7 @@ class TrailingSlashMiddleware implements MiddlewareInterface
 
         return $this;
     }
+
     /**
      * Process a request and return a response.
      */
@@ -56,6 +60,7 @@ class TrailingSlashMiddleware implements MiddlewareInterface
 
         return $handler->handle($request->withUri($uri->withPath($path)));
     }
+
     /**
      * Normalize the trailing slash.
      */
@@ -67,13 +72,14 @@ class TrailingSlashMiddleware implements MiddlewareInterface
         if (strlen($path) > 1) {
             if ($this->trailingSlash) {
                 // check if it's not a root path or an extension path like xxx/api.json
-                if (substr($path, -1) !== '/' && !pathinfo($path, PATHINFO_EXTENSION)) {
-                    return $path.'/';
+                if (substr($path, -1) !== '/' && ! pathinfo($path, PATHINFO_EXTENSION)) {
+                    return $path . '/';
                 }
             } else {
                 return rtrim($path, '/\\');
             }
         }
+
         return $path;
     }
 }

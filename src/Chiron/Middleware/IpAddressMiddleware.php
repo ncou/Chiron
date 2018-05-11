@@ -63,7 +63,7 @@ class IpAddressMiddleware implements MiddlewareInterface
         'X-Real-IP',
         'X-Cluster-Client-Ip',
         'Client-Ip',
-        'CF-Connecting-IP'
+        'CF-Connecting-IP',
     ];
 
     public function __construct(
@@ -204,7 +204,7 @@ class IpAddressMiddleware implements MiddlewareInterface
 
     private static function isValidIpAddress(string $ipAddress): bool
     {
-        $options  = FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6;
+        $options = FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6;
         // TODO : changer les options comme ci dessous + mettre à jour les tests pour ne pas utiliser des ip en 192.xxxx
         //$options  = FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE;
         return false !== filter_var($ipAddress, FILTER_VALIDATE_IP, $options);

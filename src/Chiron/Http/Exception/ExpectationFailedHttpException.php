@@ -5,13 +5,13 @@ namespace Chiron\Http\Exception;
 class ExpectationFailedHttpException extends HttpException
 {
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string     $message
      * @param \Exception $previous
-     * @param integer    $code
+     * @param int        $code
      */
-    public function __construct(string $message = 'Expectation Failed', \Throwable $previous = null, array $headers = array())
+    public function __construct(string $message = 'Expectation Failed', \Throwable $previous = null, array $headers = [])
     {
         parent::__construct(417, $message, $previous, $headers);
     }
