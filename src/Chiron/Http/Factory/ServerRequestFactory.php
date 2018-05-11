@@ -178,7 +178,16 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
     public function marshalUriFromServer(array $server)
     {
         $uri = new Uri('');
-        $uri = $uri->withScheme(! empty($server['HTTPS']) && $server['HTTPS'] !== 'off' ? 'https' : 'http');
+        // TODO : vérifier si on a vraiment besoin d'alimenter le scheme. actuellement cela n'est pas fait dans les autres factories.
+        //$uri = $uri->withScheme(! empty($server['HTTPS']) && $server['HTTPS'] !== 'off' ? 'https' : 'http');
+
+        if (isset($server['REQUEST_SCHEME'])) {
+            $uri = $uri->withScheme($server['REQUEST_SCHEME']);
+        } elseif (isset($server['HTTPS'])) {
+            $uri = $uri->withScheme('on' === $server['HTTPS'] ? 'https' : 'http');
+        }
+
+
         $hasPort = false;
         if (isset($server['HTTP_HOST'])) {
             $hostHeaderParts = explode(':', $server['HTTP_HOST']);

@@ -12,6 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class RequestUuidMiddleware implements MiddlewareInterface
 {
+    private const HEADER_NAME = 'X-Request-Id';
 
     /**
      * Add a unique ID for each HTTP request.
@@ -23,33 +24,19 @@ class RequestUuidMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $uuid = $request->getHeader('X-Request-Id');
+        $uuid = $request->getHeader(self::HEADER_NAME);
         if (empty($uuid)) {
-            $uuid = self::uuid();
-            $request = $request->withHeader('X-Request-Id', $uuid);
+            // generate a 32 char string unique user id
+            $uuid = bin2hex(random_bytes(16));
+            $request = $request->withHeader(self::HEADER_NAME, $uuid);
         }
 
         $response = $handler->handle($request);
-        $response = $response->withHeader('X-Request-Id', $uuid);
+        $response = $response->withHeader(self::HEADER_NAME, $uuid);
 
         return $response;
     }
 
-    /**
-     * Generates a v4 random UUID (Universally Unique IDentifier).
-     *
-     * The version 4 UUID is purely random (except the version).
-     * It doesn't contain meaningful information such as MAC address, time, etc.
-     *
-     * See RFC 4122 for details of UUID.
-     *
-     * @return string
-     */
-    public static function uuid(): string
-    {
-        $bytes = unpack("v*", random_bytes(16));
-        $bytes[4] = $bytes[4] & 0x0fff | 0x4000;
-        $bytes[5] = $bytes[5] & 0x3fff | 0x8000;
-        return vsprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', $bytes);
-    }
+    // TODO : regarder pour conditionner l'ajout du header sur la réponse seulement si c'est défini par l'utilisateur, et possibilité d'utiliser un autre header name
+    // https://github.com/qandidate-labs/stack-request-id/blob/master/src/Qandidate/Stack/RequestId.php#L58
 }

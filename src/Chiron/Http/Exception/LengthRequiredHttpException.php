@@ -2,7 +2,7 @@
 
 namespace Chiron\Http\Exception;
 
-class NotFoundHttpException extends HttpException
+class LengthRequiredHttpException extends HttpException
 {
     /**
      * @param string     $message  The internal exception message
@@ -10,8 +10,8 @@ class NotFoundHttpException extends HttpException
      * @param int        $code     The internal exception code
      * @param array      $headers
      */
-    public function __construct(string $message = 'Not Found', \Throwable $previous = null, array $headers = [])
+    public function __construct(string $message = null, \Throwable $previous = null, array $headers = array())
     {
-        parent::__construct(404, $message, $previous, $headers);
+        parent::__construct(411, $message, $previous, $headers);
     }
 }

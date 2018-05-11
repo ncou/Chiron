@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+// TODO ; regarder ici pour les header + pour récupérer l'IP : https://github.com/threenine/StopWebCrawlers/blob/master/includes/swc-core.php
+
 //https://github.com/litphp/middleware-ip-address/blob/master/IpAddress.php
 
 //https://github.com/akrabat/ip-address-middleware/blob/master/src/IpAddress.php
@@ -55,11 +57,13 @@ class IpAddressMiddleware implements MiddlewareInterface
      */
     protected $headersToInspect = [
         'Forwarded',
+        'Forwarded-For',
         'X-Forwarded-For',
         'X-Forwarded',
         'X-Real-IP',
         'X-Cluster-Client-Ip',
         'Client-Ip',
+        'CF-Connecting-IP'
     ];
 
     public function __construct(
@@ -107,16 +111,16 @@ class IpAddressMiddleware implements MiddlewareInterface
         private function determineClientIpAddress(ServerRequestInterface $request): ?string
         {
             $localIp = $this->getLocalIpAddress($request);
-    
+
             if (empty($this->trustedProxies) || !in_array($localIp, $this->trustedProxies)) {
                 return $localIp;
             }
-    
+
             $proxiedIp = $this->getIpAddressFromProxy($request);
             if (! empty($proxiedIp)) {
                 return $proxiedIp;
             }
-    
+
             return $localIp;
         }
     */
@@ -200,6 +204,9 @@ class IpAddressMiddleware implements MiddlewareInterface
 
     private static function isValidIpAddress(string $ipAddress): bool
     {
-        return filter_var($ipAddress, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6) !== false;
+        $options  = FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6;
+        // TODO : changer les options comme ci dessous + mettre à jour les tests pour ne pas utiliser des ip en 192.xxxx
+        //$options  = FILTER_FLAG_IPV4 | FILTER_FLAG_IPV6 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE;
+        return false !== filter_var($ipAddress, FILTER_VALIDATE_IP, $options);
     }
 }

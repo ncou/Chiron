@@ -24,6 +24,7 @@ class ProxyForwardedMiddlewareTest extends TestCase
             'REQUEST_METHOD'         => 'GET',
             'REMOTE_ADDR'            => '192.168.0.1',
             'HTTP_HOST'              => 'foo.com',
+            'REQUEST_SCHEME'         => 'http',
             'HTTP_X_FORWARDED_PROTO' => 'https',
             'HTTP_X_FORWARDED_HOST'  => 'example.com:1234',
         ]);
@@ -51,6 +52,7 @@ class ProxyForwardedMiddlewareTest extends TestCase
             'REQUEST_METHOD'         => 'GET',
             'REMOTE_ADDR'            => '192.168.0.1',
             'HTTP_HOST'              => 'foo.com',
+            'REQUEST_SCHEME'         => 'http',
             'HTTP_X_FORWARDED_PROTO' => 'https',
             'HTTP_X_FORWARDED_HOST'  => 'example.com',
             'HTTP_X_FORWARDED_PORT'  => '1234',
@@ -79,6 +81,7 @@ class ProxyForwardedMiddlewareTest extends TestCase
             'REQUEST_METHOD'         => 'GET',
             'REMOTE_ADDR'            => '192.168.0.1',
             'HTTP_HOST'              => 'foo.com',
+            'REQUEST_SCHEME'         => 'http',
             'HTTP_X_FORWARDED_PROTO' => 'https',
             'HTTP_X_FORWARDED_HOST'  => 'example.com:1000',
             'HTTP_X_FORWARDED_PORT'  => '2000',
@@ -106,6 +109,7 @@ class ProxyForwardedMiddlewareTest extends TestCase
             'REQUEST_URI'           => '/',
             'REQUEST_METHOD'        => 'GET',
             'REMOTE_ADDR'           => '10.0.0.1',
+            'REQUEST_SCHEME'        => 'http',
             'HTTP_HOST'             => 'foo.com',
             'HTTP_X_FORWARDED_HOST' => 'example.com:1234',
         ]);
