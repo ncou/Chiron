@@ -6,11 +6,11 @@ namespace Chiron\Tests\Middleware;
 
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
-use Chiron\Middleware\RequestUuidMiddleware;
+use Chiron\Middleware\RequestIdMiddleware;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
-class RequestUuidMiddlewareTest extends TestCase
+class RequestIdMiddlewareTest extends TestCase
 {
     private $middleware;
 
@@ -19,7 +19,7 @@ class RequestUuidMiddlewareTest extends TestCase
      */
     protected function setUp()
     {
-        $this->middleware = new RequestUuidMiddleware();
+        $this->middleware = new RequestIdMiddleware();
     }
 
     public function testRequestIdIsAnObject()
