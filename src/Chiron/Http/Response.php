@@ -772,10 +772,6 @@ class Response extends ResponsePsr7
         return json_encode($content);
     }
 
-
-
-
-
     /**
      * Add a cookie to the response.
      * Note: This method is not part of the PSR-7 standard.
@@ -843,8 +839,6 @@ class Response extends ResponsePsr7
 
     /**
      * Creates the stream object.
-     *
-     * @return void
      */
     protected function _createStream()
     {
@@ -1977,17 +1971,12 @@ class Response extends ResponsePsr7
         return $this->withBody(Body::createFromStringOrResource('php://temp', 'rw+'));
     }
 
-
-
-
     //*******************************************************************
     //https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php#L1300
     //*******************************************************************
 
-
-
     /**
-     * Create a new instance with headers to instruct the client to not cache the response
+     * Create a new instance with headers to instruct the client to not cache the response.
      *
      * @return static
      */
@@ -1998,8 +1987,7 @@ class Response extends ResponsePsr7
             ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
     }
 
-
-     /**
+    /**
      * Create a new instance with the Last-Modified header set.
      *
      * ### Examples:
@@ -2013,20 +2001,22 @@ class Response extends ResponsePsr7
      * ```
      *
      * @param string|\DateTime $time Valid time string or \DateTime instance.
+     *
      * @return static
      */
     public function withModified($time)
     {
         $date = $this->_getUTCDate($time);
+
         return $this->withHeader('Last-Modified', $date->format('D, j M Y H:i:s') . ' GMT');
     }
 
-
     /**
      * Returns a DateTime object initialized at the $time param and using UTC
-     * as timezone
+     * as timezone.
      *
      * @param string|int|\DateTime|null $time Valid time string or \DateTime instance.
+     *
      * @return \DateTime
      */
     //https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php#L1860
@@ -2041,23 +2031,7 @@ class Response extends ResponsePsr7
             $result = new DateTime($time);
         }
         $result->setTimezone(new DateTimeZone('UTC'));
+
         return $result;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
