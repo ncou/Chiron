@@ -12,7 +12,7 @@ namespace Chiron\Config;
 //https://github.com/zendframework/zend-config-aggregator/blob/master/src/ConfigAggregator.php
 
 //https://github.com/PHLAK/Config/blob/master/src/Config.php
-//https://github.com/hassankhan/config/blob/master/src/AbstractConfig.php
+//https://github.com/hassankhan/config/blob/master/src/AbstractConfig.php   +    https://github.com/hassankhan/config/blob/master/src/Config.php
 //https://github.com/mrjgreen/config/blob/master/src/Config/Repository.php
 //https://github.com/pinepain/php-simple-config/blob/master/src/Config.php
 
@@ -136,6 +136,7 @@ class Config implements \ArrayAccess, \Iterator, \Countable
      *
      * @return object This Config object
      */
+    // TODO : renommer en mergeConfigArray($array) + créer une méthode mergeConfigFrom($filepath) ou même mergeConfigFile($path) cf : https://laracasts.com/discuss/channels/general-discussion/how-does-mergeconfigfrom-work
     public function merge(array $data, bool $override = true)
     {
         if ($override) {

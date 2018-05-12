@@ -29,6 +29,21 @@ namespace Chiron;
 // TODO : regarder pour ajouter par défaut les middlewares dans la stack (à faire lorsqu'on va faire un run) sur le emitter/le requestHandler....etc : https://github.com/swoft-cloud/swoft-framework/blob/c105a87b667f06f01eddf0c17ff94f023008dae4/src/Web/DispatcherServer.php#L85
 //*****************************
 
+// TODO : vérifier si les extensions de base sont bien activées l'extension 'intl' est bien chargée sinon lever une exception, ca sert pour le middleware referralspam pour convertir le domain et punycode
+/*
+if (! extension_loaded('intl')) {
+    throw new RuntimeException('Intl extension is not available.');
+}
+if (! extension_loaded('openssl')) {
+   throw new RuntimeException('OpenSSL extension is not available.');
+}
+if (! extension_loaded('mbstring')) {
+   throw new RuntimeException('Multibyte String extension is not available.');
+}
+
+*/
+
+
 use Chiron\Config\Config;
 use Chiron\Container\Container;
 // TODO : virer la classe CallableRequestHandlerDecorator !!!!!!!!!!!!!
@@ -485,7 +500,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
                     //$this->container['charset'] et $this->container['httpVersion']
                     // TODO : regarder ici pour créer un truc vide genre un Home.php => https://github.com/Zegnat/php-website-starter/blob/develop/app/RequestHandler/Home.php
                     $response = new Response(204);
-        
+
                     return $response;
                 });
         */

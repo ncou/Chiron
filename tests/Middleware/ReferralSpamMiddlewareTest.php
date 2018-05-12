@@ -17,6 +17,7 @@ class ReferralSpamMiddlewareTest extends TestCase
         return [
             [false, 'http://www.0n-line.tv'],
             [false, 'http://xn--90acenikpebbdd4f6d.xn--p1ai'], // it's the puny code for the IDN : 'http://холодныйобзвон.рф'
+            [false, 'http://холодныйобзвон.рф'],
             [true, 'http://youtube.com'],
         ];
     }

@@ -13,6 +13,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 
 // TODO : récupérer la liste ici : https://github.com/nabble/semalt-blocker
+//https://github.com/mitchellkrogza/apache-ultimate-bad-bot-blocker/blob/master/_htaccess_versions/htaccess-mod_rewrite.txt
 
 /*
 https://github.com/DougSisk/Laravel-BlockReferralSpam/blob/master/src/Middleware/BlockReferralSpam.php
@@ -63,23 +64,16 @@ class ReferralSpamMiddleware implements MiddlewareInterface
 
     private function getUrlDomain(string $url): string
     {
-        // Remove all illegal characters from a url
-        $url = filter_var($url, FILTER_SANITIZE_URL);
-
+        //$scheme = parse_url($url, PHP_URL_SCHEME);
         $host = parse_url($url, PHP_URL_HOST);
-        //@TODO : convert the host as punycode for better IDN support
-        //$punycode = new Punycode();
-        //$url = str_replace($host, $punycode->encode($host), $url);
+        // Strip the 'www.' to get only the full domain name
+        $domain = preg_replace('/^(www\.)/i', '', $host);
+        // Encode the international domain as punycode
+        $domain = idn_to_ascii($domain);
+        // Satitize the result ascii domain
+        //$domain = filter_var($domain, FILTER_SANITIZE_URL);
 
-        return preg_replace('/^(www\.)/i', '', $host);
-
-        // TODO : ajouter un sanity check genre :
-        // Sanity check
-        /*
-        if (filter_var('http://' . $url, FILTER_VALIDATE_URL) === false) {
-            throw new Exception("Error with Sanity check");
-        }
-        */
+        return $domain;
     }
 
     /**

@@ -219,6 +219,7 @@ class EmitterMiddleware implements MiddlewareInterface
      *
      * @return ResponseInterface
      */
+    // TODO : regarder aussi ici : https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php#L593   notamment pour le charset !!!!!
     // TODO : méthode à déplacer dans la classe Response ???? OUI et à renommer en finalize ou prepare !!!!!
     // TODO : regarder plutot cette méthode "$response->prepare()" : https://github.com/symfony/http-foundation/blob/master/Response.php#L256
     // TODO : regarder ici : https://github.com/Hail-Team/framework/blob/7a314adbaa6216d1d1d3b3c44e172ce0cf65f978/src/Http/Response.php#L421

@@ -718,7 +718,7 @@ class Response extends ResponsePsr7
     const DEFAULT_ENCODING_OPTIONS = 15;
     protected $encodingOptions = self::DEFAULT_ENCODING_OPTIONS;
 */
-    //TODO : à renommer en "writeJson()" ?????
+    //TODO : à renommer en "writeJson()" ????? ou plutot en withJsonBody
     public function withJson($data, $status = null, $encodingOptions = 79)
     {
         // default encodingOptions is 79 => JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES
@@ -753,9 +753,7 @@ class Response extends ResponsePsr7
      */
     protected function shouldBeJson($content)
     {
-        return $content instanceof Arrayable ||
-               $content instanceof Jsonable ||
-               $content instanceof ArrayObject ||
+        return $content instanceof ArrayObject ||
                $content instanceof JsonSerializable ||
                is_array($content);
     }
@@ -768,16 +766,15 @@ class Response extends ResponsePsr7
      *
      * @return string
      */
+    // TODO : méthode à virer ou alors à minima lui passer en paramétre les options pour l'encodage en JSON
     protected function morphToJson($content)
     {
-        if ($content instanceof Jsonable) {
-            return $content->toJson();
-        } elseif ($content instanceof Arrayable) {
-            return json_encode($content->toArray());
-        }
-
         return json_encode($content);
     }
+
+
+
+
 
     /**
      * Add a cookie to the response.
@@ -828,6 +825,30 @@ class Response extends ResponsePsr7
         $new->stream->write((string) $string);
 
         return $new;
+    }
+
+    /**
+     * Stream target or resource object.
+     *
+     * @var string|resource
+     */
+    protected $_streamTarget = 'php://memory';
+
+    /**
+     * Stream mode options.
+     *
+     * @var string
+     */
+    protected $_streamMode = 'wb+';
+
+    /**
+     * Creates the stream object.
+     *
+     * @return void
+     */
+    protected function _createStream()
+    {
+        $this->stream = new Stream($this->_streamTarget, $this->_streamMode);
     }
 
     /**
@@ -1265,6 +1286,7 @@ class Response extends ResponsePsr7
      *
      * @return ResponseInterface A new PSR7 response object with `Cache-Control` header
      */
+    // TODO : il faut surement ajouter un must-revalidate : exemple : https://github.com/micheh/psr7-cache/blob/master/src/Header/ResponseCacheControl.php#L199
     public function denyCache(ResponseInterface $response)
     {
         return $response->withHeader('Cache-Control', 'no-store,no-cache');
@@ -1954,4 +1976,88 @@ class Response extends ResponsePsr7
     {
         return $this->withBody(Body::createFromStringOrResource('php://temp', 'rw+'));
     }
+
+
+
+
+    //*******************************************************************
+    //https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php#L1300
+    //*******************************************************************
+
+
+
+    /**
+     * Create a new instance with headers to instruct the client to not cache the response
+     *
+     * @return static
+     */
+    public function withDisabledCache()
+    {
+        return $this->withHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT')
+            ->withHeader('Last-Modified', gmdate('D, d M Y H:i:s') . ' GMT')
+            ->withHeader('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
+    }
+
+
+     /**
+     * Create a new instance with the Last-Modified header set.
+     *
+     * ### Examples:
+     *
+     * ```
+     * // Will Expire the response cache now
+     * $response->withModified('now')
+     *
+     * // Will set the expiration in next 24 hours
+     * $response->withModified(new DateTime('+1 day'))
+     * ```
+     *
+     * @param string|\DateTime $time Valid time string or \DateTime instance.
+     * @return static
+     */
+    public function withModified($time)
+    {
+        $date = $this->_getUTCDate($time);
+        return $this->withHeader('Last-Modified', $date->format('D, j M Y H:i:s') . ' GMT');
+    }
+
+
+    /**
+     * Returns a DateTime object initialized at the $time param and using UTC
+     * as timezone
+     *
+     * @param string|int|\DateTime|null $time Valid time string or \DateTime instance.
+     * @return \DateTime
+     */
+    //https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php#L1860
+    //https://github.com/micheh/psr7-cache/blob/master/src/CacheUtil.php#L423
+    protected function _getUTCDate($time = null)
+    {
+        if ($time instanceof DateTime) {
+            $result = clone $time;
+        } elseif (is_int($time)) {
+            $result = new DateTime(date('Y-m-d H:i:s', $time));
+        } else {
+            $result = new DateTime($time);
+        }
+        $result->setTimezone(new DateTimeZone('UTC'));
+        return $result;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
