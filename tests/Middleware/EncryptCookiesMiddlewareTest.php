@@ -88,6 +88,28 @@ class EncryptCookiesMiddlewareTest extends TestCase
         );
     }
 
+    /**
+     * Test encoding cookies in the set-cookie header.
+     */
+    public function testErrorDecodeRequestCookies()
+    {
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+        $request = $request->withCookieParams([
+            'secret' => 'wrong-encoded-cookie',
+        ]);
+        $handler = function ($request) {
+            // cookie is emptie if the decoding doesn't work !!!!
+            $this->assertSame('', $request->getCookieParam('secret'));
+
+            return new Response();
+        };
+        $middleware = $this->middleware;
+        $response = $middleware->process($request, new HandlerProxy2($handler));
+    }
+
     /*
      * Test encoding cookies in the cookie collection.
      *
