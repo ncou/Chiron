@@ -43,7 +43,6 @@ if (! extension_loaded('mbstring')) {
 
 */
 
-
 use Chiron\Config\Config;
 use Chiron\Container\Container;
 // TODO : virer la classe CallableRequestHandlerDecorator !!!!!!!!!!!!!
