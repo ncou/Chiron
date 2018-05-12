@@ -6,7 +6,6 @@ namespace Chiron\Tests\Middleware;
 
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
-use Chiron\Http\Uri;
 use Chiron\Middleware\MethodOverrideMiddleware;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
@@ -33,10 +32,12 @@ class MethodOverrideMiddlewareTest extends TestCase
 
         $handler = function ($request) {
             $this->assertEquals('POST', $request->getMethod());
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
     }
+
     public function testGETMethodOverrideWithCaseSensitive()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
@@ -47,62 +48,71 @@ class MethodOverrideMiddlewareTest extends TestCase
 
         $handler = function ($request) {
             $this->assertEquals('PosT', $request->getMethod());
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
     }
+
     public function testPOSTMethodOverride()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
             'REQUEST_METHOD'         => 'POST',
         ]);
-        $request = $request->withParsedBody(["_method" => "GET"]);
+        $request = $request->withParsedBody(['_method' => 'GET']);
 
         $handler = function ($request) {
             $this->assertEquals('GET', $request->getMethod());
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
     }
+
     public function testPOSTMethodOverrideCaseSensitive()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
             'REQUEST_METHOD'         => 'POST',
         ]);
-        $request = $request->withParsedBody(["_method" => "GeT"]);
+        $request = $request->withParsedBody(['_method' => 'GeT']);
 
         $handler = function ($request) {
             $this->assertEquals('GeT', $request->getMethod());
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
     }
+
     public function testHeaderMethodOverride()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
             'REQUEST_METHOD'         => 'GET',
         ]);
-        $request = $request->withHeader("X-Http-Method-Override", "PUT");
+        $request = $request->withHeader('X-Http-Method-Override', 'PUT');
 
         $handler = function ($request) {
             $this->assertEquals('PUT', $request->getMethod());
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
     }
+
     public function testHeaderMethodOverrideCaseSensitive()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
             'REQUEST_METHOD'         => 'GET',
         ]);
-        $request = $request->withHeader("X-Http-Method-Override", "PuT");
+        $request = $request->withHeader('X-Http-Method-Override', 'PuT');
 
         $handler = function ($request) {
             $this->assertEquals('PuT', $request->getMethod());
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
