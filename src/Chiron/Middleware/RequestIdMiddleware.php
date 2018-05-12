@@ -28,6 +28,7 @@ class RequestIdMiddleware implements MiddlewareInterface
             // generate a 32 char string unique user id
             $uuid = bin2hex(random_bytes(16));
             $request = $request->withHeader(self::HEADER_NAME, $uuid);
+            // TODO : ajouter aussi ce UUID directement dans les attributs de la request ????
         }
 
         $response = $handler->handle($request);
