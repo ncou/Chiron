@@ -20,13 +20,6 @@ use Chiron\Routing\RouteResult;
  */
 class RouteResultTest extends TestCase
 {
-    private $middleware;
-
-    public function setUp()
-    {
-        $this->middleware = function ($req, $res, $next) {
-        };
-    }
     public function testRouteNameIsNotRetrievable()
     {
         $result = RouteResult::fromRouteFailure([]);
