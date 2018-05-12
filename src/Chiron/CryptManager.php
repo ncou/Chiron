@@ -69,9 +69,9 @@ class CryptManager
     public function encrypt(string $data, string $password): string
     {
         // Generate IV of appropriate size.
-        $iv = $this->generateIv();
+        $iv = self::generateIv();
         // Derive key from password
-        $key = $this->hash($iv, $password);
+        $key = self::hash($iv, $password);
         // Encrypt the given data
         $cyphertext = openssl_encrypt($data, self::CIPHER, $key, OPENSSL_RAW_DATA, $iv);
 
@@ -81,7 +81,7 @@ class CryptManager
             // @codeCoverageIgnoreEnd
         }
         // Checksum : Create a keyed hash for the encrypted data
-        $checksum = $this->hash($iv . $cyphertext, $key);
+        $checksum = self::hash($iv . $cyphertext, $key);
         // concat all the elements in the final encrypted string
         $encrypted = $iv . $checksum . $cyphertext;
 
@@ -106,9 +106,9 @@ class CryptManager
         $cyphertext = self::substr($data, self::IVSIZE + self::CKSIZE, null);
 
         // Derive key from password
-        $key = $this->hash($iv, $password);
+        $key = self::hash($iv, $password);
         // Checksum : Create a keyed hash for the decrypted data
-        $sum = $this->hash($iv . $cyphertext, $key);
+        $sum = self::hash($iv . $cyphertext, $key);
 
         if (! hash_equals($checksum, $sum)) {
             throw new InvalidArgumentException('Decryption can not proceed due to invalid cyphertext checksum.');
@@ -131,7 +131,7 @@ class CryptManager
      *
      * @return string
      */
-    private function generateIv()
+    private static function generateIv()
     {
         return \random_bytes(self::IVSIZE);
     }
@@ -146,7 +146,7 @@ class CryptManager
      *
      * @return string
      */
-    private function hash(string $data, string $key): string
+    private static function hash(string $data, string $key): string
     {
         return \hash_hmac(self::ALGO, $data, $key, true);
     }
