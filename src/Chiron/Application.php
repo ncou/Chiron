@@ -186,7 +186,7 @@ class Application
      * @param callable|string                           $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
-     * @return \Slim\Interfaces\RouteInterface
+     * @return \Chiron\Http\Route
      */
     public function get(string $pattern, $handler, $middlewares = null)
     {
@@ -204,7 +204,7 @@ class Application
      * @param callable|string                           $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
-     * @return \Slim\Interfaces\RouteInterface
+     * @return \Chiron\Http\Route
      */
     // TODO : vérifier l'utilité de cette méthode. Et il manque encore la partie CONNECT et TRACE !!!! dans ces helpers
     public function head(string $pattern, $handler, $middlewares = null)
@@ -219,7 +219,7 @@ class Application
      * @param callable|string                           $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
-     * @return \Slim\Interfaces\RouteInterface
+     * @return \Chiron\Http\Route
      */
     public function post(string $pattern, $handler, $middlewares = null)
     {
@@ -233,7 +233,7 @@ class Application
      * @param callable|string                           $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
-     * @return \Slim\Interfaces\RouteInterface
+     * @return \Chiron\Http\Route
      */
     public function put(string $pattern, $handler, $middlewares = null)
     {
@@ -251,7 +251,7 @@ class Application
      * @param callable|string                           $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
-     * @return \Slim\Interfaces\RouteInterface
+     * @return \Chiron\Http\Route
      */
     public function patch(string $pattern, $handler, $middlewares = null)
     {
@@ -265,7 +265,7 @@ class Application
      * @param callable|string                           $callable   The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
-     * @return \Slim\Interfaces\RouteInterface
+     * @return \Chiron\Http\Route
      */
     public function delete(string $pattern, $handler, $middlewares = null)
     {
@@ -279,7 +279,7 @@ class Application
      * @param callable|string                           $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
-     * @return \Slim\Interfaces\RouteInterface
+     * @return \Chiron\Http\Route
      */
     // TODO : vérifier l'utilité de cette méthode !!!!
     public function options(string $pattern, $handler, $middlewares = null)
@@ -294,7 +294,7 @@ class Application
      * @param callable|string                           $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
-     * @return \Slim\Interfaces\RouteInterface
+     * @return \Chiron\Http\Route
      */
     // TODO : voir si on conserve cette méthode (qui finalement est un alias de "->map()")
     public function any(string $pattern, $handler, $middlewares = null)
@@ -310,7 +310,7 @@ class Application
      * @param RequestHandlerInterface|callable|string   $handler    The route callback routine
      * @param string|array|callable|MiddlewareInterface $middleware
      *
-     * @return RouteInterface
+     * @return \Chiron\Http\Route
      */
     // TODO : créer une classe RouteInterface qui servira comme type de retour (il faudra aussi l'ajouter dans le use en début de classe) !!!!!
     // TODO : méthode à renommer en "route()" ????
@@ -357,7 +357,7 @@ class Application
      * @param string   $baseRoute The route sub pattern to mount the callbacks on
      * @param callable $fn        The callback method
      */
-    public function mount(string $prefix, Closure $closure)
+    public function mount(string $prefix, Closure $closure): void
     {
         // Track current base route
         $curBasePath = $this->getRouter()->getBasePath();
@@ -734,7 +734,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
      * @param array  $settings
      * @param string $prefix   Key prefix to prepend to array values (used to map . separated INI values)
      *
-     * @return Zend_Application
+     * @return Application
      */
     private function setPhpSettings(array $settings)
     {
