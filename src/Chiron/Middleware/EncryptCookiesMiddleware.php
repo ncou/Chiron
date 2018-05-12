@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Middleware;
 
 use Chiron\CookiesManager;
-use Chiron\CryptManager;
+use Chiron\EncryptionManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -40,7 +40,7 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
     {
         $this->password = $password;
         $this->bypassed = $bypassed;
-        $this->crypter = new CryptManager();
+        $this->crypter = new EncryptionManager();
     }
 
     /**

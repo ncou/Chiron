@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Tests\Middleware;
 
 use Chiron\CookiesManager;
-use Chiron\CryptManager;
+use Chiron\EncryptionManager;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
 use Chiron\Middleware\EncryptCookiesMiddleware;
@@ -28,7 +28,7 @@ class EncryptCookiesMiddlewareTest extends TestCase
      */
     protected function setUp()
     {
-        $this->crypter = new CryptManager();
+        $this->crypter = new EncryptionManager();
         $this->middleware = new EncryptCookiesMiddleware(
             $this->getCookieEncryptionKey(),
             ['plain']
