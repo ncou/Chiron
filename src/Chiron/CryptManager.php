@@ -76,7 +76,9 @@ class CryptManager
         $cyphertext = openssl_encrypt($data, self::CIPHER, $key, OPENSSL_RAW_DATA, $iv);
 
         if ($cyphertext === false) {
+            // @codeCoverageIgnoreStart
             throw new RuntimeException('Encryption library: Encryption (symmetric) of content failed: ' . openssl_error_string());
+            // @codeCoverageIgnoreEnd
         }
         // Checksum : Create a keyed hash for the encrypted data
         $checksum = $this->hash($iv . $cyphertext, $key);
@@ -114,7 +116,9 @@ class CryptManager
         // Decrypt the given data
         $decrypted = openssl_decrypt($cyphertext, self::CIPHER, $key, OPENSSL_RAW_DATA, $iv);
         if ($decrypted === false) {
+            // @codeCoverageIgnoreStart
             throw new RuntimeException('Encryption library: Decryption (symmetric) of content failed: ' . openssl_error_string());
+            // @codeCoverageIgnoreEnd
         }
 
         return $decrypted;
