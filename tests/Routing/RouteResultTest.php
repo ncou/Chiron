@@ -14,7 +14,7 @@ use Chiron\Routing\RouteResult;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Zend\Expressive\Router\RouteResult
+ * @covers \Chiron\Routing\RouteResult
  */
 class RouteResultTest extends TestCase
 {
