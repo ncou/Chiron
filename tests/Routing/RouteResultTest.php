@@ -18,7 +18,6 @@ use PHPUnit\Framework\TestCase;
  */
 class RouteResultTest extends TestCase
 {
-
     public function testRouteNameIsNotRetrievable()
     {
         $result = RouteResult::fromRouteFailure([]);
