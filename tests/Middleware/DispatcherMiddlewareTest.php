@@ -1,6 +1,7 @@
 <?php
 /**
  * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
+ *
  * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (https://www.zend.com)
  * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
  */
@@ -8,6 +9,8 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
+use Chiron\Middleware\DispatcherMiddleware;
+use Chiron\Routing\RouteResult;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -15,26 +18,28 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-use Chiron\Middleware\DispatcherMiddleware;
-use Chiron\Routing\RouteResult;
-
-class DispatchMiddlewareTest extends TestCase
+class DispatcherMiddlewareTest extends TestCase
 {
     /** @var RequestHandlerInterface|ObjectProphecy */
     private $handler;
+
     /** @var DispatchMiddleware */
     private $middleware;
+
     /** @var ServerRequestInterface|ObjectProphecy */
     private $request;
+
     /** @var ResponseInterface|ObjectProphecy */
     private $response;
-    public function setUp()
+
+    protected function setUp()
     {
-        $this->response   = $this->prophesize(ResponseInterface::class)->reveal();
-        $this->request    = $this->prophesize(ServerRequestInterface::class);
-        $this->handler    = $this->prophesize(RequestHandlerInterface::class);
+        $this->response = $this->prophesize(ResponseInterface::class)->reveal();
+        $this->request = $this->prophesize(ServerRequestInterface::class);
+        $this->handler = $this->prophesize(RequestHandlerInterface::class);
         $this->middleware = new DispatcherMiddleware();
     }
+
     public function testInvokesHandlerIfRequestDoesNotContainRouteResult()
     {
         $this->request->getAttribute(RouteResult::class, false)->willReturn(false);
@@ -42,6 +47,7 @@ class DispatchMiddlewareTest extends TestCase
         $response = $this->middleware->process($this->request->reveal(), $this->handler->reveal());
         $this->assertSame($this->response, $response);
     }
+
     public function testInvokesRouteResultWhenPresent()
     {
         $this->handler->handle(Argument::any())->shouldNotBeCalled();
