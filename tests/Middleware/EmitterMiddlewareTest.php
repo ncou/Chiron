@@ -6,12 +6,10 @@ namespace Chiron\Tests\Middleware;
 
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
-use Chiron\Http\Uri;
 use Chiron\Middleware\EmitterMiddleware;
 use Chiron\Tests\Utils\HandlerProxy2;
-use PHPUnit\Framework\TestCase;
-
 use Chiron\Tests\Utils\HeaderStack;
+use PHPUnit\Framework\TestCase;
 
 class EmitterMiddlewareTest extends TestCase
 {
@@ -26,7 +24,7 @@ class EmitterMiddlewareTest extends TestCase
         HeaderStack::reset();
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         HeaderStack::reset();
     }
