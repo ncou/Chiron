@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use RuntimeException;
+use InvalidArgumentException;
 
 // TODO : récupérer la liste ici : https://github.com/nabble/semalt-blocker
 //https://github.com/mitchellkrogza/apache-ultimate-bad-bot-blocker/blob/master/_htaccess_versions/htaccess-mod_rewrite.txt
@@ -40,7 +40,7 @@ class ReferralSpamMiddleware implements MiddlewareInterface
     public function loadBlackListFromFile(string $pathFile): self
     {
         if (! is_file($pathFile)) {
-            throw new RuntimeException('Unable to locate the referrer spam blacklist file.');
+            throw new InvalidArgumentException('Unable to locate the referrer spam blacklist file.');
         }
         $this->blackList = file($pathFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         return $this;

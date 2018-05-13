@@ -72,4 +72,12 @@ class ReferralSpamMiddlewareTest extends TestCase
             $this->assertEquals(403, $response->getStatusCode());
         }
     }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testExceptionWhenFilePathIsInvalid()
+    {
+        $middleware = (new ReferralSpamMiddleware())->loadBlackListFromFile('bad/path');
+    }
 }
