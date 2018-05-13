@@ -22,8 +22,6 @@ function headers_sent($file = null, $line = null): bool
  * @param string   $string
  * @param bool     $replace
  * @param null|int $statusCode
- *
- * @return void
  */
 function header($string, $replace = true, $statusCode = null): void
 {
