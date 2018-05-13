@@ -33,7 +33,7 @@ class ReferralSpamMiddlewareTest extends TestCase
         ]);
         $request = $request->withHeader('Referer', $refererHeader);
 
-        $middleware = (new ReferralSpamMiddleware())->loadBlackListFromArray(['0n-line.tv','xn--90acenikpebbdd4f6d.xn--p1ai']);
+        $middleware = (new ReferralSpamMiddleware())->loadBlackListFromArray(['0n-line.tv', 'xn--90acenikpebbdd4f6d.xn--p1ai']);
 
         $handler = function ($request) {
             return new Response();

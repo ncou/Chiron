@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Chiron\Middleware;
 
 use Chiron\Http\Response;
-use ComposerLocator;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -34,6 +33,7 @@ class ReferralSpamMiddleware implements MiddlewareInterface
     public function loadBlackListFromArray(array $blackListed): self
     {
         $this->blackList = $blackListed;
+
         return $this;
     }
 
@@ -43,6 +43,7 @@ class ReferralSpamMiddleware implements MiddlewareInterface
             throw new InvalidArgumentException('Unable to locate the referrer spam blacklist file.');
         }
         $this->blackList = file($pathFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+
         return $this;
     }
 
