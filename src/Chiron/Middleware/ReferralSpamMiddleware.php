@@ -77,7 +77,7 @@ class ReferralSpamMiddleware implements MiddlewareInterface
         $domain = preg_replace('/^(www\.)/i', '', $host);
         // Encode the international domain as punycode
         $domain = idn_to_ascii($domain);
-        // Satitize the result ascii domain
+        // Sanitize the result ascii domain
         $domain = filter_var($domain, FILTER_SANITIZE_URL);
 
         return $domain;

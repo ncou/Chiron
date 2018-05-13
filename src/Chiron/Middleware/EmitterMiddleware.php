@@ -52,7 +52,7 @@ class EmitterMiddleware implements MiddlewareInterface
         // TODO : à virer et à remplacer par un middleware contentlenghtMiddleware + ne pas envoyer le body
         //$response = $this->finalizeResponse($response, $request);
 
-        // Emit response (Headers + Body)
+        // Emit response (Headers + Status + Body)
         $this->sendHeaders($response);
         // A response to a HEAD request "MUST NOT" include a message-body
         if (! $request->isMethod('HEAD')) {
@@ -63,6 +63,32 @@ class EmitterMiddleware implements MiddlewareInterface
 
         return $response;
     }
+
+    /**
+     * Sets the default template charset.
+     *
+     * @param string $charset The default charset
+     */
+    /*
+    public function setCharset($charset)
+    {
+        if ('UTF8' === $charset = strtoupper($charset)) {
+            // iconv on Windows requires "UTF-8" instead of "UTF8"
+            $charset = 'UTF-8';
+        }
+        $this->charset = $charset;
+    }*/
+    /**
+     * Gets the default template charset.
+     *
+     * @return string The default charset
+     */
+    /*
+    public function getCharset()
+    {
+        return $this->charset;
+    }
+*/
 
     /**
      * Send HTTP Headers.
@@ -226,6 +252,18 @@ class EmitterMiddleware implements MiddlewareInterface
     // TODO : séparer la fonction finalize dans un middleware dédié, et regarder ici pour ajouter le "Expect" Header + content-type + content-length....etc : https://github.com/guzzle/guzzle/blob/master/src/PrepareBodyMiddleware.php
     private function finalizeResponse(ResponseInterface $response, ServerRequestInterface $request): ResponseInterface
     {
+
+
+/*
+        if ($this->hasHeader('Location') && $this->_status === 200) {
+            $this->statusCode(302);
+        }
+*/
+
+
+
+
+
         /*
                 if (!isset($this->headers['cache-control'])) {
                     $this->set('Cache-Control', '');
@@ -312,8 +350,43 @@ class EmitterMiddleware implements MiddlewareInterface
              the latter MUST be ignored.
              */
 
+
+             // TODO : regarder pourquoi cakephp ajout le contenttype uniquement si on a du plain-text !!!!!
+             //https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php#L587
+
+
+
         return $response;
     }
+
+    /**
+     * Formats the Content-Type header based on the configured contentType and charset
+     * the charset will only be set in the header if the response is of type text/*
+     *
+     * @return void
+     */
+    /*
+    protected function _setContentType()
+    {
+        if (in_array($this->_status, [304, 204])) {
+            $this->_clearHeader('Content-Type');
+            return;
+        }
+        $whitelist = [
+            'application/javascript', 'application/json', 'application/xml', 'application/rss+xml'
+        ];
+        $charset = false;
+        if ($this->_charset &&
+            (strpos($this->_contentType, 'text/') === 0 || in_array($this->_contentType, $whitelist))
+        ) {
+            $charset = true;
+        }
+        if ($charset) {
+            $this->_setHeader('Content-Type', "{$this->_contentType}; charset={$this->_charset}");
+        } else {
+            $this->_setHeader('Content-Type', (string)$this->_contentType);
+        }
+    }*/
 
     private function initDate()
     {

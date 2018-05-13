@@ -94,5 +94,39 @@ class DefaultServicesProvider
             //$response->setProtocolVersion($c->get('httpVersion'));
             return $response;
         };
+
+
+
+
+        // -----------------------------------------------------------------------------
+        // Service providers
+        // -----------------------------------------------------------------------------
+        // Twig
+        // TODO : s'inspirer de ce bout de code pour passer des variables global directement à phpRenderer
+        /*
+        $view = new \Slim\Views\Twig(
+            $app->settings['view']['template_path'],
+            $app->settings['view']['twig']
+        );
+        $view->addExtension(new Twig_Extension_Debug());
+        $view->addExtension(new \Slim\Views\TwigExtension($app->router, $app->request->getUri()));
+        */
+        /** @var \Twig_Environment $env */
+        /*
+        $env = $view->getEnvironment();
+        foreach ($app->settings['view']['globals'] as $global => $value) {
+            $env->addGlobal($global, $value);
+        }
+        $container->register($view);*/
+
+
+        // LOAD Referral Spammer List
+        //$spammerList = config('app.referral_spam_list_location', base_path('vendor/matomo/referrer-spam-blacklist/spammers.txt'));
+
+
+
+
+
+
     }
 }
