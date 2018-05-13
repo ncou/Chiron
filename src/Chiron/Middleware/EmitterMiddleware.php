@@ -50,7 +50,7 @@ class EmitterMiddleware implements MiddlewareInterface
 
         // adjust the response headers to be RFC compliant
         // TODO : à virer et à remplacer par un middleware contentlenghtMiddleware + ne pas envoyer le body
-        $response = $this->finalizeResponse($response, $request);
+        //$response = $this->finalizeResponse($response, $request);
 
         // Emit response (Headers + Body)
         $this->sendHeaders($response);

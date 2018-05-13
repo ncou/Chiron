@@ -25,6 +25,7 @@
         }
     },
     "autoload-dev" : {
+        "files": ["tests/OverwritePhpFunctions.php"],
         "psr-4": { "Chiron\\Tests\\" : "tests/" }
     },
     "scripts": {
