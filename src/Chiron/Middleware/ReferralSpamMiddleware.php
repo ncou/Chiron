@@ -27,13 +27,23 @@ https://github.com/wpmaintainer/referer-spam-blocker/blob/master/lib/referer-spa
 class ReferralSpamMiddleware implements MiddlewareInterface
 {
     /**
-     * @var array|null
+     * @var array
      */
-    private $blackList;
+    private $blackList = [];
 
-    public function __construct(array $blackList = null)
+    public function loadBlackListFromArray(array $blackListed): self
     {
-        $this->blackList = $blackList;
+        $this->blackList = $blackListed;
+        return $this;
+    }
+
+    public function loadBlackListFromFile(string $pathFile): self
+    {
+        if (! is_file($pathFile)) {
+            throw new RuntimeException('Unable to locate the referrer spam blacklist file.');
+        }
+        $this->blackList = file($pathFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        return $this;
     }
 
     /**
@@ -42,10 +52,6 @@ class ReferralSpamMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($request->hasHeader('Referer')) {
-            if ($this->blackList === null) {
-                $this->blackList = self::getBlackList();
-            }
-
             $referer = $request->getHeaderLine('Referer');
             $domain = $this->getUrlDomain($referer);
 
@@ -71,26 +77,8 @@ class ReferralSpamMiddleware implements MiddlewareInterface
         // Encode the international domain as punycode
         $domain = idn_to_ascii($domain);
         // Satitize the result ascii domain
-        //$domain = filter_var($domain, FILTER_SANITIZE_URL);
+        $domain = filter_var($domain, FILTER_SANITIZE_URL);
 
         return $domain;
-    }
-
-    /**
-     * Returns the piwik's referrer spam blacklist.
-     */
-    private static function getBlackList(): array
-    {
-        //$path = ComposerLocator::getPath('piwik/referrer-spam-blacklist').'/spammers.txt';
-        //$spammerList = config('app.referral_spam_list_location', base_path('vendor/matomo/referrer-spam-blacklist/spammers.txt'));
-        $path = __DIR__ . '/spammers.txt';
-
-        if (! is_file($path)) {
-            // @codeCoverageIgnoreStart
-            throw new RuntimeException('Unable to locate the piwik referrer spam blacklist file');
-            // @codeCoverageIgnoreEnd
-        }
-
-        return file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     }
 }

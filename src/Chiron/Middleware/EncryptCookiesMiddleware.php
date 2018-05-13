@@ -88,7 +88,7 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
      */
     protected function withEncryptedCookies(ResponseInterface $response): ResponseInterface
     {
-        $cookiesManager = new CookiesManager();
+        //$cookiesManager = new CookiesManager();
         //$cookies = CookiesManager::parseHeaders($response->getHeader('Set-Cookie'));
 
         $cookies = CookiesManager::parseSetCookieHeader($response->getHeader('Set-Cookie'));
@@ -96,7 +96,7 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
         // remove all the cookies
         $response = $response->withoutHeader('Set-Cookie');
 
-        $header = [];
+        //$header = [];
         foreach ($cookies as $name => $cookie) {
             if (! in_array($name, $this->bypassed)) {
                 $cookie['value'] = $this->encrypt($cookie['value']);

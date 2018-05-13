@@ -25,7 +25,7 @@ class ReferralSpamMiddlewareTest extends TestCase
     /**
      * @dataProvider referrerSpamProvider
      */
-    public function testReferrerSpam(bool $allowed, string $refererHeader)
+    public function testReferrerSpamFromArray(bool $allowed, string $refererHeader)
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
@@ -33,7 +33,33 @@ class ReferralSpamMiddlewareTest extends TestCase
         ]);
         $request = $request->withHeader('Referer', $refererHeader);
 
-        $middleware = new ReferralSpamMiddleware();
+        $middleware = (new ReferralSpamMiddleware())->loadBlackListFromArray(['0n-line.tv','xn--90acenikpebbdd4f6d.xn--p1ai']);
+
+        $handler = function ($request) {
+            return new Response();
+        };
+
+        $response = $middleware->process($request, new HandlerProxy2($handler));
+
+        if ($allowed) {
+            $this->assertEquals(200, $response->getStatusCode());
+        } else {
+            $this->assertEquals(403, $response->getStatusCode());
+        }
+    }
+
+    /**
+     * @dataProvider referrerSpamProvider
+     */
+    public function testReferrerSpamFromFile(bool $allowed, string $refererHeader)
+    {
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+        $request = $request->withHeader('Referer', $refererHeader);
+
+        $middleware = (new ReferralSpamMiddleware())->loadBlackListFromFile(__DIR__ . '/asset/spammers.txt');
         $handler = function ($request) {
             return new Response();
         };
