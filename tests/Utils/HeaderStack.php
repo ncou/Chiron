@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Chiron\Tests\Utils;
@@ -9,15 +10,15 @@ class HeaderStack
      * @var string[][]
      */
     private static $data = [];
+
     /**
      * Reset state.
-     *
-     * @return void
      */
     public static function reset(): void
     {
         self::$data = [];
     }
+
     /**
      * Push a header on the stack.
      *
@@ -27,6 +28,7 @@ class HeaderStack
     {
         self::$data[] = $header;
     }
+
     /**
      * Return the current header stack.
      *
@@ -36,6 +38,7 @@ class HeaderStack
     {
         return self::$data;
     }
+
     /**
      * Verify if there's a header line on the stack.
      *
@@ -50,6 +53,7 @@ class HeaderStack
                 return true;
             }
         }
+
         return false;
     }
 }
