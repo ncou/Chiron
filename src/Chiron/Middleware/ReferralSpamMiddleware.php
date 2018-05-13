@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Chiron\Middleware;
 
 use Chiron\Http\Response;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use InvalidArgumentException;
 
 // TODO : récupérer la liste ici : https://github.com/nabble/semalt-blocker
 //https://github.com/mitchellkrogza/apache-ultimate-bad-bot-blocker/blob/master/_htaccess_versions/htaccess-mod_rewrite.txt
