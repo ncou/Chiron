@@ -55,14 +55,12 @@ class UserAgentBlockerMiddleware implements MiddlewareInterface
     }
 
     /*
-     * Compile the regex patterns into one regex string.
+     * Check if the given user-agent is listed in the bad agents array.
      *
-     * @param array
+     * @param string
      *
-     * @return string
+     * @return bool
      */
-    //https://github.com/JayBizzle/Crawler-Detect/blob/master/src/CrawlerDetect.php
-
     public function isBadAgent(string $userAgent): bool
     {
         // protect the specials characters that are used in the regular expression syntax
