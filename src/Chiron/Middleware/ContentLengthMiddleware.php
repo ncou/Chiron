@@ -28,11 +28,18 @@ class ContentLengthMiddleware implements MiddlewareInterface
     {
         $response = $handler->handle($request);
 
-        $size = $response->getBody()->getSize();
-        //@TODO : check the value of transfert-encoding = 'chunked' ? perhaps create a new methode in the response isStreaming() to return a bool if the header Transfert-Encoding is found and the value === 'chunked'
-        // TODO : enlever le header content-length si il existe et si il y aussi le header transfer-encoding ???? pour éviter d'avoir les 2 headers à la fois ????
-        if ($size !== null && ! $response->hasHeader('Content-Length') && ! $response->hasHeader('Transfer-Encoding')) {
-            $response = $response->withHeader('Content-Length', (string) $size);
+        // Don't add the content-length header if transfert-encoding is present.
+        if ($response->hasHeader('Transfer-Encoding')) {
+            // And remove content-length if both headers are presents (according to RFC2616).
+            if ($response->hasHeader('Content-Length')) {
+                $response = $response->withoutHeader('Content-Length');
+            }
+        } elseif (! $response->hasHeader('Content-Length')) {
+            $size = $response->getBody()->getSize();
+
+            if ($size !== null) {
+                $response = $response->withHeader('Content-Length', (string) $size);
+            }
         }
 
         return $response;
