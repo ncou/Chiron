@@ -68,21 +68,23 @@ class UserAgentBlockerMiddleware implements MiddlewareInterface
     public function isBadAgent(string $userAgent): bool
     {
         // protect the specials characters that are used in the regular expression syntax
-        $badAgents = array_map(function($value) {return preg_quote($value, '/');}, $this->badAgents);
+        $badAgents = array_map(function ($value) {
+            return preg_quote($value, '/');
+        }, $this->badAgents);
         // create a large regex with all the values to search
-        $pattern = '('.implode('|', $badAgents).')';
+        $pattern = '(' . implode('|', $badAgents) . ')';
         // search the bad bots ! (result is : 0, 1 or FALSE if there is an error)
-        $result = preg_match('/'.$pattern.'/i', $userAgent);
+        $result = preg_match('/' . $pattern . '/i', $userAgent);
 
         return (bool) $result;
     }
 
-/*
-//https://github.com/JayBizzle/Crawler-Detect/blob/master/src/CrawlerDetect.php
-    $this->compiledRegex = $this->compileRegex($this->crawlers->getAll());
-
-
-    $result = preg_match('/'.$this->compiledRegex.'/i', trim($agent), $matches);
-   return (bool) $result;
-*/
+    /*
+    //https://github.com/JayBizzle/Crawler-Detect/blob/master/src/CrawlerDetect.php
+        $this->compiledRegex = $this->compileRegex($this->crawlers->getAll());
+    
+    
+        $result = preg_match('/'.$this->compiledRegex.'/i', trim($agent), $matches);
+       return (bool) $result;
+    */
 }
