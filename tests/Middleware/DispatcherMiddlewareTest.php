@@ -11,6 +11,7 @@ namespace Chiron\Tests\Middleware;
 
 use Chiron\Middleware\DispatcherMiddleware;
 use Chiron\Routing\RouteResult;
+use Chiron\Routing\Route;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -63,9 +64,14 @@ class DispatcherMiddlewareTest extends TestCase
             )
             ->willReturn($this->response);
 
+        $route = $this->prophesize(Route::class);
+        $route
+            ->getHandler()
+            ->willReturn($routeHandler);
+
         $routeResult
             ->getMatchedRoute()
-            ->willReturn($routeHandler);
+            ->willReturn($route);
 
         $this->request->getAttribute(RouteResult::class, false)->will([$routeResult, 'reveal']);
         $response = $this->middleware->process($this->request->reveal(), $this->handler->reveal());

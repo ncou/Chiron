@@ -216,4 +216,30 @@ class ResponseTest extends TestCase
         $r = $r->withoutBody()->write('data=test&value=ok');
         $this->assertSame('URLENCODED', $r->detectFormat());
     }
+
+    /**
+     * @covers Chiron\Http\Response::withRedirect
+     */
+    public function testWithRedirect()
+    {
+        $r = $this->createResponse(200);;
+        $clone = $r->withRedirect('/foo', 301);
+        $cloneWithDefaultStatus = $r->withRedirect('/foo');
+        $cloneWithStatusMethod = $r->withStatus(301)->withRedirect('/foo');
+
+        $this->assertSame(200, $r->getStatusCode());
+        $this->assertFalse($r->hasHeader('Location'));
+
+        $this->assertSame(301, $clone->getStatusCode());
+        $this->assertTrue($clone->hasHeader('Location'));
+        $this->assertEquals('/foo', $clone->getHeaderLine('Location'));
+
+        $this->assertSame(302, $cloneWithDefaultStatus->getStatusCode());
+        $this->assertTrue($cloneWithDefaultStatus->hasHeader('Location'));
+        $this->assertEquals('/foo', $cloneWithDefaultStatus->getHeaderLine('Location'));
+
+        $this->assertSame(301, $cloneWithStatusMethod->getStatusCode());
+        $this->assertTrue($cloneWithStatusMethod->hasHeader('Location'));
+        $this->assertEquals('/foo', $cloneWithStatusMethod->getHeaderLine('Location'));
+    }
 }

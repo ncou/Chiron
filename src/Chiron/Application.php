@@ -313,7 +313,7 @@ class Application
      * @return \Chiron\Routing\Route
      */
     // TODO : créer une classe RouteInterface qui servira comme type de retour (il faudra aussi l'ajouter dans le use en début de classe) !!!!!
-    // TODO : méthode à renommer en "route()" ????
+    // TODO : lever une exception si le type du handler n'est pas correct, par exemple si on lui passe un integer ou un objet non callable !!!!!
     public function route(string $pattern, $handler, $middlewares = null): Route
     {
         if (! isset($middlewares)) {

@@ -22,7 +22,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  *
  * @author <milos@caenazzo.com>
  */
-class Route implements RequestHandlerInterface
+class Route //implements RequestHandlerInterface
 {
     private $requirements = [];
 
@@ -92,17 +92,17 @@ class Route implements RequestHandlerInterface
         return $this->url;
     }
 
-    // TODO ; vérifier l'utilité de cette méthode
-    /*
     public function getHandler()
     {
         return $this->handler;
-    }*/
+    }
 
+/*
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         return $this->handler->handle($request);
     }
+*/
 
     /**
      * Compile the regex for a given route (EXPENSIVE).

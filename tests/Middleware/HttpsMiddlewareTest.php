@@ -7,11 +7,11 @@ namespace Chiron\Tests\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
 use Chiron\Http\Uri;
-use Chiron\Middleware\ForceHttpsMiddleware;
+use Chiron\Middleware\HttpsMiddleware;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
-class ForceHttpsMiddlewareTest extends TestCase
+class HttpsMiddlewareTest extends TestCase
 {
     protected $middleware;
 
@@ -20,7 +20,7 @@ class ForceHttpsMiddlewareTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->middleware = new ForceHttpsMiddleware();
+        $this->middleware = new HttpsMiddleware();
         $this->request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
             'REQUEST_METHOD'         => 'GET',
@@ -62,7 +62,7 @@ class ForceHttpsMiddlewareTest extends TestCase
         $handler = function ($request) {
             throw new \Exception('Should not make it here');
         };
-        $middleware = new ForceHttpsMiddleware(307);
+        $middleware = new HttpsMiddleware(307);
         $result = $middleware->process($request, new HandlerProxy2($handler));
         $this->assertEquals(307, $result->getStatusCode());
         $this->assertEquals('https://domain.com', $result->getHeaderLine('Location'));
@@ -76,7 +76,7 @@ class ForceHttpsMiddlewareTest extends TestCase
         $handler = function ($request) {
             return (new Response())->withJson('SUCCESS');
         };
-        $middleware = new ForceHttpsMiddleware(301, ['http://domain.com']);
+        $middleware = new HttpsMiddleware(301, ['http://domain.com']);
         $result = $middleware->process($request, new HandlerProxy2($handler));
         $this->assertEquals(json_encode('SUCCESS'), (string) $result->getBody());
     }
@@ -89,7 +89,7 @@ class ForceHttpsMiddlewareTest extends TestCase
         $handler = function ($request) {
             return (new Response())->withJson('SUCCESS');
         };
-        $middleware = new ForceHttpsMiddleware(301, ['http://domain.com/*']);
+        $middleware = new HttpsMiddleware(301, ['http://domain.com/*']);
         $result = $middleware->process($request, new HandlerProxy2($handler));
         $this->assertEquals(json_encode('SUCCESS'), (string) $result->getBody());
     }

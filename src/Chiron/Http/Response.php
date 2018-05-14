@@ -682,9 +682,11 @@ class Response extends ResponsePsr7
             $status = 302;
         }
         if (! is_null($status)) {
+            // TODO : on devrait pas vérifier si le code est dans l'interval 3xx ?????
             $responseWithRedirect = $responseWithRedirect->withStatus($status);
         }
 
+        // a message is better when doing a redirection.
         $urlHtml = htmlentities($url);
         $responseWithRedirect->getBody()->write('You are being redirected to <a href="' . $urlHtml . '">' . $urlHtml . '</a>', 'text/html');
 

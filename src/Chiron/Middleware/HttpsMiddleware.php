@@ -10,7 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class ForceHttpsMiddleware implements MiddlewareInterface
+class HttpsMiddleware implements MiddlewareInterface
 {
     /** @var int */
     private $statusCode;
