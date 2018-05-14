@@ -44,6 +44,7 @@ class ContentLengthMiddlewareTest extends TestCase
             $response = new Response();
             // destroy the body ressource so the size can't be calculated !
             $response->getBody()->detach();
+
             return $response;
         };
         $middleware = $this->middleware;
@@ -96,5 +97,4 @@ class ContentLengthMiddlewareTest extends TestCase
         $result = $middleware->process($this->request, new HandlerProxy2($handler));
         $this->assertEquals(4, $result->getHeaderLine('Content-Length'));
     }
-
 }
