@@ -70,9 +70,9 @@ class UserAgentBlockerMiddleware implements MiddlewareInterface
             return preg_quote($value, '/');
         }, $this->badAgents);
         // create a large regex with all the values to search
-        $pattern = '('.implode('|', $badAgents).')';
+        $pattern = '(' . implode('|', $badAgents) . ')';
         // search the bad bots ! (result is : 0, 1 or FALSE if there is an error)
-        $result = preg_match('/'.$pattern.'/i', $userAgent);
+        $result = preg_match('/' . $pattern . '/i', $userAgent);
 
         return (bool) $result;
     }

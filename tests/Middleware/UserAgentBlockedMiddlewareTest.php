@@ -10,7 +10,7 @@ use Chiron\Middleware\UserAgentBlockerMiddleware;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
-class UserAgentBlockerMiddlewareTest extends TestCase
+class UserAgentBlockedMiddlewareTest extends TestCase
 {
     public function badAgentsProvider()
     {

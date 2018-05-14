@@ -252,17 +252,11 @@ class EmitterMiddleware implements MiddlewareInterface
     // TODO : séparer la fonction finalize dans un middleware dédié, et regarder ici pour ajouter le "Expect" Header + content-type + content-length....etc : https://github.com/guzzle/guzzle/blob/master/src/PrepareBodyMiddleware.php
     private function finalizeResponse(ResponseInterface $response, ServerRequestInterface $request): ResponseInterface
     {
-
-
-/*
-        if ($this->hasHeader('Location') && $this->_status === 200) {
-            $this->statusCode(302);
-        }
-*/
-
-
-
-
+        /*
+                if ($this->hasHeader('Location') && $this->_status === 200) {
+                    $this->statusCode(302);
+                }
+        */
 
         /*
                 if (!isset($this->headers['cache-control'])) {
@@ -350,20 +344,15 @@ class EmitterMiddleware implements MiddlewareInterface
              the latter MUST be ignored.
              */
 
-
-             // TODO : regarder pourquoi cakephp ajout le contenttype uniquement si on a du plain-text !!!!!
-             //https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php#L587
-
-
+        // TODO : regarder pourquoi cakephp ajout le contenttype uniquement si on a du plain-text !!!!!
+        //https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php#L587
 
         return $response;
     }
 
     /**
      * Formats the Content-Type header based on the configured contentType and charset
-     * the charset will only be set in the header if the response is of type text/*
-     *
-     * @return void
+     * the charset will only be set in the header if the response is of type text/*.
      */
     /*
     protected function _setContentType()
