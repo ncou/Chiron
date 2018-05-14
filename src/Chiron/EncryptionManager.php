@@ -44,21 +44,6 @@ class EncryptionManager
     private const CKSIZE = 32;
 
     /**
-     * Create a new encrypter instance, and check library requirements.
-     *
-     * @throws RuntimeException
-     */
-    public function __construct()
-    {
-        if (! extension_loaded('openssl')) {
-            throw new RuntimeException('OpenSSL extension is not available.');
-        }
-        if (! extension_loaded('mbstring')) {
-            throw new RuntimeException('Multibyte String extension is not available.');
-        }
-    }
-
-    /**
      * Encrypt the given data.
      *
      * @param mixed  $data     The data to encrypt
@@ -66,7 +51,7 @@ class EncryptionManager
      *
      * @return string
      */
-    public function encrypt(string $data, string $password): string
+    public static function encrypt(string $data, string $password): string
     {
         // Generate IV of appropriate size.
         $iv = self::generateIv();
@@ -96,7 +81,7 @@ class EncryptionManager
      *
      * @return string
      */
-    public function decrypt(string $data, string $password): string
+    public static function decrypt(string $data, string $password): string
     {
         // Find the IV at the beginning of the cypher text
         $iv = self::substr($data, 0, self::IVSIZE);
@@ -131,7 +116,7 @@ class EncryptionManager
      *
      * @return string
      */
-    private static function generateIv()
+    private static function generateIv(): string
     {
         return \random_bytes(self::IVSIZE);
     }

@@ -27,8 +27,6 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
      */
     private $bypassed;
 
-    private $crypter;
-
     /**
      * Set up a encrypt cookie middleware with the given defuse key and an array
      * of bypassed cookie names.
@@ -40,7 +38,6 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
     {
         $this->password = $password;
         $this->bypassed = $bypassed;
-        $this->crypter = new EncryptionManager();
     }
 
     /**
@@ -119,7 +116,7 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
      */
     private function encrypt(string $value): string
     {
-        return $this->crypter->encrypt($value, $this->password);
+        return EncryptionManager::encrypt($value, $this->password);
     }
 
     /**
@@ -133,7 +130,7 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
     private function decrypt(string $value): string
     {
         try {
-            return $this->crypter->decrypt($value, $this->password);
+            return EncryptionManager::decrypt($value, $this->password);
         } catch (\Throwable $t) {
             // @TODO : Add a silent log message if there is an error in the cookie decrypt function.
             return '';
