@@ -28,21 +28,21 @@ class ReferralSpamMiddleware implements MiddlewareInterface
     /**
      * @var array
      */
-    private $blackList = [];
+    private $badReferers = [];
 
-    public function loadBlackListFromArray(array $blackListed): self
+    public function loadBadReferersListFromArray(array $badReferers): self
     {
-        $this->blackList = $blackListed;
+        $this->badReferers = $badReferers;
 
         return $this;
     }
 
-    public function loadBlackListFromFile(string $pathFile): self
+    public function loadBadReferersListFromFile(string $pathFile): self
     {
         if (! is_file($pathFile)) {
-            throw new InvalidArgumentException('Unable to locate the referrer spam blacklist file.');
+            throw new InvalidArgumentException('Unable to locate the referral spam blacklist file.');
         }
-        $this->blackList = file($pathFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $this->badReferers = file($pathFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
         return $this;
     }
@@ -54,9 +54,9 @@ class ReferralSpamMiddleware implements MiddlewareInterface
     {
         if ($request->hasHeader('Referer')) {
             $referer = $request->getHeaderLine('Referer');
-            $domain = $this->getUrlDomain($referer);
+            $domain = $this->getDomainFromUrl($referer);
 
-            if (in_array($domain, $this->blackList)) {
+            if (in_array($domain, $this->badReferers)) {
                 // TODO : passer une responseFactory en paramétre dans le constructeur
                 // TODO : créer une exception pour la code 403 et faire un throw !!!!
 
@@ -69,15 +69,15 @@ class ReferralSpamMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    private function getUrlDomain(string $url): string
+    private function getDomainFromUrl(string $url): string
     {
-        //$scheme = parse_url($url, PHP_URL_SCHEME);
         $host = parse_url($url, PHP_URL_HOST);
-        // Strip the 'www.' to get only the full domain name
-        $domain = preg_replace('/^(www\.)/i', '', $host);
-        // Encode the international domain as punycode
+        // Strip the 'www.' (SubDomain) to get only the Domain name
+        //$domain = (substr(strtolower($host), 0, 4) === 'www.') ? substr($host, 4) : $host;
+        $domain = preg_replace('/^www\./i', '', $host);
+        // Encode the international domain name as punycode
         $domain = idn_to_ascii($domain);
-        // Sanitize the result ascii domain
+        // Sanitize the output result (just in case)
         $domain = filter_var($domain, FILTER_SANITIZE_URL);
 
         return $domain;
