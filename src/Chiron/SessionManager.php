@@ -20,11 +20,9 @@
 //      https://github.com/zendframework/zend-expressive-session-ext/blob/master/src/PhpSessionPersistence.php
 // Avec un autorefresh : https://github.com/adbario/slim-secure-session-middleware/blob/master/src/SessionMiddleware.php#L160
 
-
 //https://github.com/bryanjhv/slim-session/blob/master/src/Slim/Middleware/Session.php
 //https://github.com/akrabat/rka-slim-session-middleware/blob/master/RKA/SessionMiddleware.php
 //https://github.com/juliangut/slim-session-middleware/blob/master/src/SessionMiddleware.php
-
 
 /*
 // Session middleware
@@ -33,7 +31,7 @@ $app->add(function (Request $request, Response $response, $next) {
     $session->start();
     $response = $next($request, $response);
     $session->save(); //<= ca correspond à .commit()
-    
+
     return $response;
 });
 */
@@ -43,7 +41,6 @@ $app->add(function (Request $request, Response $response, $next) {
 //https://github.com/middlewares/aura-session/blob/master/src/AuraSession.php
 //https://github.com/middlewares/php-session/blob/master/src/PhpSession.php
 
-
 //https://github.com/kodus/session/blob/master/src/SessionMiddleware.php
 //      avec cookies : https://github.com/kodus/session/blob/master/src/SessionService.php
 
@@ -52,54 +49,45 @@ $app->add(function (Request $request, Response $response, $next) {
 // comment créer un cookie header : https://github.com/jasny/session-middleware/blob/master/src/SessionMiddleware.php#L207
 
 //-------------------------------------------------------
-// Créer un cookie : 
+// Créer un cookie :
 // !!!!!!!!!!!!!!!!!!!
 // https://github.com/zendframework/zend-http/blob/master/src/Header/SetCookie.php
 // https://github.com/guzzle/guzzle/blob/master/src/Cookie/SetCookie.php
-// 
+//
 
 /**
- *
  * This file is part of Aura for PHP.
  *
  * @license http://opensource.org/licenses/bsd-license.php BSD
- *
  */
 
 namespace Chiron\Session;
 
-use LogicException;
 use InvalidArgumentException;
+use LogicException;
 
 /**
- *
  * A central control point for new session segments, PHP session management
  * values, and CSRF token checking.
- *
- * @package Aura.Session
- *
  */
 class SessionManager
 {
     /**
-     *
      * Incoming cookies from the client, typically a copy of the $_COOKIE
      * superglobal.
      *
      * @var array
-     *
      */
     protected $cookies;
+
     /**
-     *
      * Session cookie parameters.
      *
      * @var array
-     *
      */
-    protected $cookie_params = array();
+    protected $cookie_params = [];
+
     /**
-     *
      * A callable to invoke when deleting the session cookie. The callable
      * should have the signature ...
      *
@@ -110,40 +98,35 @@ class SessionManager
      * @var callable|null
      *
      * @see setDeleteCookie()
-     *
      */
     protected $delete_cookie;
+
     /**
-     *
-     * Constructor
+     * Constructor.
      *
      * @param CsrfTokenFactory $csrf_token_factory A CSRF token factory.
-     *
-     * @param array $cookies Optional: An array of cookies from the client, typically a
-     * copy of $_COOKIE. Empty array by default.
-     *
-     * @param callable|null $delete_cookie Optional: An alternative callable
-     * to invoke when deleting the session cookie. Defaults to `null`.
-     *
+     * @param array            $cookies            Optional: An array of cookies from the client, typically a
+     *                                             copy of $_COOKIE. Empty array by default.
+     * @param callable|null    $delete_cookie      Optional: An alternative callable
+     *                                             to invoke when deleting the session cookie. Defaults to `null`.
      */
     public function __construct(
-        array $cookies = array(),
+        array $cookies = [],
         $delete_cookie = null
     ) {
-        $this->cookies            = $cookies;
+        $this->cookies = $cookies;
         $this->setDeleteCookie($delete_cookie);
         $this->cookie_params = session_get_cookie_params();
     }
+
     /**
-     *
      * Sets the delete-cookie callable.
      *
      * If parameter is `null`, the session cookie will be deleted using the
      * traditional way, i.e. using an expiration date in the past.
      *
      * @param callable|null $delete_cookie The callable to invoke when deleting the
-     * session cookie.
-     *
+     *                                     session cookie.
      */
     // TODO : https://github.com/zendframework/zend-session/blob/master/src/SessionManager.php#L437
     public function setDeleteCookie($delete_cookie)
@@ -164,48 +147,45 @@ class SessionManager
             };
         }
     }
+
     /**
-     *
      * Is a session available to be resumed?
      *
      * @return bool
-     *
      */
     public function isResumable()
     {
         $name = $this->getName();
+
         return isset($this->cookies[$name]);
     }
+
     /**
-     *
      * Is the session already started?
      *
      * @return bool
-     *
      */
     public function isStarted()
     {
         return session_status() === \PHP_SESSION_ACTIVE;
     }
+
     /**
-     *
      * Starts a new or existing session.
      *
      * @return bool
-     *
      */
     // TODO : regarder ici : https://github.com/symfony/symfony/blob/3.4/src/Symfony/Component/HttpFoundation/Session/Storage/NativeSessionStorage.php#L130
     public function start()
     {
         return session_start();
     }
+
     /**
-     *
      * Resumes a session, but does not start a new one if there is no
      * existing one.
      *
      * @return bool
-     *
      */
     public function resume()
     {
@@ -215,39 +195,33 @@ class SessionManager
         if ($this->isResumable()) {
             return $this->start();
         }
+
         return false;
     }
+
     /**
-     *
      * Clears all session variables.
-     *
-     * @return null
-     *
      */
     public function clear()
     {
         return session_unset();
     }
+
     /**
-     *
      * Writes session data and ends the session.
-     *
-     * @return null
-     *
      */
     // TODO : renommer cette méthode en .save() ????
     public function commit()
     {
         return session_write_close();
     }
+
     /**
-     *
      * Destroys the session entirely.
      *
      * @return bool
      *
      * @see http://php.net/manual/en/function.session-destroy.php
-     *
      */
     public function destroy()
     {
@@ -261,14 +235,16 @@ class SessionManager
         if ($destroyed) {
             call_user_func($this->delete_cookie, $name, $params);
         }
+
         return $destroyed;
     }
+
     // =======================================================================
     //
     // support and admin methods
     //
+
     /**
-     *
      * Sets the session cache expire time.
      *
      * @param int $expire The expiration time in seconds.
@@ -276,27 +252,25 @@ class SessionManager
      * @return int
      *
      * @see session_cache_expire()
-     *
      */
     public function setCacheExpire($expire)
     {
         return session_cache_expire($expire);
     }
+
     /**
-     *
      * Gets the session cache expire time.
      *
      * @return int The cache expiration time in seconds.
      *
      * @see session_cache_expire()
-     *
      */
     public function getCacheExpire()
     {
         return session_cache_expire();
     }
+
     /**
-     *
      * Sets the session cache limiter value.
      *
      * @param string $limiter The limiter value.
@@ -304,28 +278,26 @@ class SessionManager
      * @return string
      *
      * @see session_cache_limiter()
-     *
      */
     public function setCacheLimiter($limiter)
     {
         return session_cache_limiter($limiter);
     }
+
     /**
-     *
      * Gets the session cache limiter value.
      *
      * @return string The limiter value.
      *
      * @see session_cache_limiter()
-     *
      */
     public function getCacheLimiter()
     {
         return session_cache_limiter();
     }
+
     /**
-     *
-     * Sets the session cookie params.  Param array keys are:
+     * Sets the session cookie params.  Param array keys are:.
      *
      * - `lifetime` : Lifetime of the session cookie, defined in seconds.
      *
@@ -343,10 +315,7 @@ class SessionManager
      *
      * @param array $params The array of session cookie param keys and values.
      *
-     * @return null
-     *
      * @see session_set_cookie_params()
-     *
      */
     public function setCookieParams(array $params)
     {
@@ -359,36 +328,33 @@ class SessionManager
             $this->cookie_params['httponly']
         );
     }
-    /**
-     * {@inheritDoc}
-     */
+
     public function setCookieParams2(int $lifetime, string $path = null, string $domain = null, bool $secure = false, bool $httpOnly = false): void
     {
         session_set_cookie_params($lifetime, $path, $domain, $secure, $httpOnly);
     }
+
     /**
-     *
      * Gets the session cookie params.
      *
      * @return array
-     *
      */
     public function getCookieParams()
     {
         return $this->cookie_params;
         //return session_get_cookie_params();
     }
+
     /**
-     *
      * Gets the current session id.
      *
      * @return string
-     *
      */
     public function getId()
     {
         return session_id();
     }
+
     /**
      * Sets the session ID.
      *
@@ -403,20 +369,21 @@ class SessionManager
         }
         session_id($id);
     }
+
     /**
-     *
-     * Regenerates and replaces the current session id;
+     * Regenerates and replaces the current session id;.
      *
      * @return bool True if regeneration worked, false if not.
-     *
      */
+
     /**
-     * Regenerate id
+     * Regenerate id.
      *
      * Regenerate the session ID, using session save handler's
      * native ID generation Can safely be called in the middle of a session.
      *
-     * @param  bool $deleteOldSession
+     * @param bool $deleteOldSession
+     *
      * @return SessionManager
      */
     public function regenerateId(bool $deleteOldSession = true)
@@ -433,7 +400,6 @@ class SessionManager
     }
 
     /**
-     *
      * Sets the current session name.
      *
      * @param string $name The session name to use.
@@ -441,7 +407,6 @@ class SessionManager
      * @return string
      *
      * @see session_name()
-     *
      */
     public function setName(string $name)
     {
@@ -452,21 +417,21 @@ class SessionManager
         if (! preg_match('/^[a-zA-Z0-9]+$/', $name)) {
             throw new InvalidArgumentException('Session name provided contains invalid characters; must be alphanumeric only');
         }
+
         return session_name($name);
     }
+
     /**
-     *
      * Returns the current session name.
      *
      * @return string
-     *
      */
     public function getName()
     {
         return session_name();
     }
+
     /**
-     *
      * Sets the session save path.
      *
      * @param string $path The new save path.
@@ -474,20 +439,18 @@ class SessionManager
      * @return string
      *
      * @see session_save_path()
-     *
      */
     public function setSavePath($path)
     {
         return session_save_path($path);
     }
+
     /**
-     *
      * Gets the session save path.
      *
      * @return string
      *
      * @see session_save_path()
-     *
      */
     public function getSavePath()
     {
@@ -509,39 +472,34 @@ class SessionManager
         if (headers_sent() || \PHP_SESSION_ACTIVE === session_status()) {
             return;
         }
-        $validOptions = array_flip(array(
+        $validOptions = array_flip([
             'cache_limiter', 'cache_expire', 'cookie_domain', 'cookie_httponly',
             'cookie_lifetime', 'cookie_path', 'cookie_secure',
             'gc_divisor', 'gc_maxlifetime', 'gc_probability', 'auto_start',
-            'lazy_write', 'name', 'referer_check', 'save_path', 'save_handler', 
+            'lazy_write', 'name', 'referer_check', 'save_path', 'save_handler',
             'serialize_handler', 'use_strict_mode', 'use_cookies',
             'use_only_cookies', 'use_trans_sid', 'upload_progress.enabled',
             'upload_progress.cleanup', 'upload_progress.prefix', 'upload_progress.name',
             'upload_progress.freq', 'upload_progress.min_freq', 'url_rewriter.tags',
             'sid_length', 'sid_bits_per_character', 'trans_sid_hosts', 'trans_sid_tags',
-        ));
+        ]);
         foreach ($options as $key => $value) {
             if (isset($validOptions[$key])) {
-                ini_set('url_rewriter.tags' !== $key ? 'session.'.$key : $key, $value);
+                ini_set('url_rewriter.tags' !== $key ? 'session.' . $key : $key, $value);
             }
         }
     }
 
-     /**
-     * {@inheritDoc}
-     */
     public function getOptions(): array
     {
         $config = [];
         foreach (ini_get_all('session') as $key => $value) {
             $config[substr($key, 8)] = $value['local_value'];
         }
+
         return $config;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function regenerate($destroy = false, $lifetime = null)
     {
         // Cannot regenerate the session ID for non-active sessions.
@@ -561,11 +519,12 @@ class SessionManager
         // The reference to $_SESSION in session bags is lost in PHP7 and we need to re-create it.
         // @see https://bugs.php.net/bug.php?id=70013
         $this->loadSession();
+
         return $isRegenerated;
     }
 
     /**
-     * Destroy all session data
+     * Destroy all session data.
      *
      * @return $this
      */
@@ -577,7 +536,7 @@ class SessionManager
             session_destroy();
             session_write_close();
 
-// TODO : utiliser 42000 comme nombre au lieu de -1heure => https://github.com/odan/slim-session/blob/master/src/Slim/Session/Adapter/PhpSessionAdapter.php#L39
+            // TODO : utiliser 42000 comme nombre au lieu de -1heure => https://github.com/odan/slim-session/blob/master/src/Slim/Session/Adapter/PhpSessionAdapter.php#L39
             // delete the session cookie => lifetime = -1h (60 * 60)
             if (ini_get('session.use_cookies')) {
                 $params = session_get_cookie_params();
@@ -591,55 +550,37 @@ class SessionManager
                     $params['httponly']
                 );
             }
-
         }
 
         //return $this->clear(false);
     }
 
-
-
-
-
-
-
-
-        /**
-     * {@inheritDoc}
-     */
     public function has(string $name): bool
     {
         if (empty($_SESSION)) {
             return false;
         }
+
         return array_key_exists($name, $_SESSION);
     }
-    /**
-     * {@inheritDoc}
-     */
+
     public function get(string $name, $default = null)
     {
         return $this->has($name)
             ? $_SESSION[$name]
             : $default;
     }
-    /**
-     * {@inheritDoc}
-     */
+
     public function set(string $name, $value)
     {
         $_SESSION[$name] = $value;
     }
-    /**
-     * {@inheritDoc}
-     */
+
     public function replace(array $values): void
     {
         $_SESSION = array_replace_recursive($_SESSION, $values);
     }
-    /**
-     * {@inheritDoc}
-     */
+
     public function remove(string $name): void
     {
         // TODO : vérifier si un has() est necessaire à faire avant le unset.
@@ -649,33 +590,22 @@ class SessionManager
             unset($_SESSION[$key]);
         }*/
     }
-    /**
-     * {@inheritDoc}
-     */
+
     public function clear(): void
     {
         $_SESSION = [];
     }
-    /**
-     * {@inheritDoc}
-     */
+
     public function count(): int
     {
         return count($_SESSION);
     }
-    /**
-     * {@inheritDoc}
-     */
+
     public function save(): void
     {
         session_write_close();
     }
 
-
-
-    /**
-     * {@inheritDoc}
-     */
     public function destroy3(): bool
     {
         $this->clear();
@@ -696,30 +626,27 @@ class SessionManager
             session_unset();
         }
         session_write_close();
+
         return true;
     }
 
     public static function destroy4()
     {
         $_SESSION = [];
-        if (ini_get("session.use_cookies")) {
+        if (ini_get('session.use_cookies')) {
             $params = session_get_cookie_params();
             setcookie(
                 session_name(),
                 '',
                 time() - 42000,
-                $params["path"],
-                $params["domain"],
-                $params["secure"],
-                $params["httponly"]
+                $params['path'],
+                $params['domain'],
+                $params['secure'],
+                $params['httponly']
             );
         }
         if (session_status() == PHP_SESSION_ACTIVE) {
             session_destroy();
         }
     }
-
-
-
-
 }

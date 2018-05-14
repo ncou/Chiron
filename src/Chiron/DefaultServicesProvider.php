@@ -95,9 +95,6 @@ class DefaultServicesProvider
             return $response;
         };
 
-
-
-
         // -----------------------------------------------------------------------------
         // Service providers
         // -----------------------------------------------------------------------------
@@ -111,7 +108,7 @@ class DefaultServicesProvider
         $view->addExtension(new Twig_Extension_Debug());
         $view->addExtension(new \Slim\Views\TwigExtension($app->router, $app->request->getUri()));
         */
-        /** @var \Twig_Environment $env */
+        /* @var \Twig_Environment $env */
         /*
         $env = $view->getEnvironment();
         foreach ($app->settings['view']['globals'] as $global => $value) {
@@ -119,14 +116,7 @@ class DefaultServicesProvider
         }
         $container->register($view);*/
 
-
         // LOAD Referral Spammer List
         //$spammerList = config('app.referral_spam_list_location', base_path('vendor/matomo/referrer-spam-blacklist/spammers.txt'));
-
-
-
-
-
-
     }
 }
