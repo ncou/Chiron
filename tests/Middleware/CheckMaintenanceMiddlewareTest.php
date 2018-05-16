@@ -34,6 +34,7 @@ class CheckMaintenanceMiddlewareTest extends TestCase
             [120, '120'],
             [new \DateTime('2016/12/12 10:10:30'), 'Mon, 12 Dec 2016 10:10:30 GMT'],
             [new \DateTimeImmutable('2016/12/12 10:10:30'), 'Mon, 12 Dec 2016 10:10:30 GMT'],
+            ['Mon, 12 Dec 2016 10:10:30 GMT', 'Mon, 12 Dec 2016 10:10:30 GMT'],
         ];
     }
 
