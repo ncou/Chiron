@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
+use Chiron\Http\Exception\ServiceUnavailableHttpException;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
 use Chiron\Middleware\CheckMaintenanceMiddleware;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
-
-use Chiron\Http\Exception\ServiceUnavailableHttpException;
 
 class CheckMaintenanceMiddlewareTest extends TestCase
 {
@@ -87,5 +86,4 @@ class CheckMaintenanceMiddlewareTest extends TestCase
             $this->assertEquals($header, $e->getHeaders()['Retry-After']);
         }
     }
-
 }
