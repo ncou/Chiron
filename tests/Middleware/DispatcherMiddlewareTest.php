@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace Chiron\Tests\Middleware;
 
 use Chiron\Middleware\DispatcherMiddleware;
-use Chiron\Routing\RouteResult;
 use Chiron\Routing\Route;
+use Chiron\Routing\RouteResult;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\Prophecy\ObjectProphecy;
