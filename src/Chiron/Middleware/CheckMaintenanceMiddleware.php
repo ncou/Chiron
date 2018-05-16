@@ -44,7 +44,6 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
      */
     //private $container;
 
-
     //private const RETRY_AFTER = 'Retry-After';
     //private $handler;
     private $retryAfter;
@@ -76,12 +75,14 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
         }
 
         $this->retryAfter = $retryAfter;
+
         return $this;
     }
 
     public function isDownForMaintenance(bool $isDown): self
     {
         $this->isDown = $isDown;
+
         return $this;
     }
 
@@ -121,12 +122,11 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
 
             //$retryAfter = $config['settings.maintenanceRetryAfter'];
 
-/*
-            if (is_int($retryAfter)) {
-                $retryAfter = (string) $retryAfter;
-            }
-*/
-
+            /*
+                        if (is_int($retryAfter)) {
+                            $retryAfter = (string) $retryAfter;
+                        }
+            */
 
             throw new ServiceUnavailableHttpException($this->retryAfter);
         }

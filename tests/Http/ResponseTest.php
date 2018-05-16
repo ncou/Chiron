@@ -243,37 +243,37 @@ class ResponseTest extends TestCase
         $this->assertEquals('/foo', $cloneWithStatusMethod->getHeaderLine('Location'));
     }
 
-/*
-    public function testWithJson()
-    {
-        $data = ['foo' => 'bar1&bar2'];
-        $originalResponse = new Response();
-        $response = $originalResponse->withJson($data, 201);
-        $this->assertNotEquals($response->getStatusCode(), $originalResponse->getStatusCode());
-        $this->assertEquals(201, $response->getStatusCode());
-        $this->assertEquals('application/json;charset=utf-8', $response->getHeaderLine('Content-Type'));
-        $body = $response->getBody();
-        $body->rewind();
-        $dataJson = $body->getContents(); //json_decode($body->getContents(), true);
-        $originalBody = $originalResponse->getBody();
-        $originalBody->rewind();
-        $originalContents = $originalBody->getContents();
-        // test the original body hasn't be replaced
-        $this->assertNotEquals($dataJson, $originalContents);
-        $this->assertEquals('{"foo":"bar1&bar2"}', $dataJson);
-        $this->assertEquals($data['foo'], json_decode($dataJson, true)['foo']);
-        // Test encoding option
-        $response = $response->withJson($data, 200, JSON_HEX_AMP);
-        $body = $response->getBody();
-        $body->rewind();
-        $dataJson = $body->getContents();
-        $this->assertEquals('{"foo":"bar1\u0026bar2"}', $dataJson);
-        $this->assertEquals($data['foo'], json_decode($dataJson, true)['foo']);
-        $response = $response->withStatus(201)->withJson([]);
-        $this->assertEquals($response->getStatusCode(), 201);
-    }
-    */
-    /**
+    /*
+        public function testWithJson()
+        {
+            $data = ['foo' => 'bar1&bar2'];
+            $originalResponse = new Response();
+            $response = $originalResponse->withJson($data, 201);
+            $this->assertNotEquals($response->getStatusCode(), $originalResponse->getStatusCode());
+            $this->assertEquals(201, $response->getStatusCode());
+            $this->assertEquals('application/json;charset=utf-8', $response->getHeaderLine('Content-Type'));
+            $body = $response->getBody();
+            $body->rewind();
+            $dataJson = $body->getContents(); //json_decode($body->getContents(), true);
+            $originalBody = $originalResponse->getBody();
+            $originalBody->rewind();
+            $originalContents = $originalBody->getContents();
+            // test the original body hasn't be replaced
+            $this->assertNotEquals($dataJson, $originalContents);
+            $this->assertEquals('{"foo":"bar1&bar2"}', $dataJson);
+            $this->assertEquals($data['foo'], json_decode($dataJson, true)['foo']);
+            // Test encoding option
+            $response = $response->withJson($data, 200, JSON_HEX_AMP);
+            $body = $response->getBody();
+            $body->rewind();
+            $dataJson = $body->getContents();
+            $this->assertEquals('{"foo":"bar1\u0026bar2"}', $dataJson);
+            $this->assertEquals($data['foo'], json_decode($dataJson, true)['foo']);
+            $response = $response->withStatus(201)->withJson([]);
+            $this->assertEquals($response->getStatusCode(), 201);
+        }
+        */
+    /*
      * @expectedException \RuntimeException
      */
     /*
