@@ -43,5 +43,29 @@ class ContentLengthMiddleware implements MiddlewareInterface
         }
 
         return $response;
+
+/*
+        // Don't add the content-length header if transfert-encoding is present.
+        if ($response->hasHeader('Transfer-Encoding')) {
+            if ($response->hasHeader('Content-Length')) {
+                // And remove content-length if both headers are presents (according to RFC2616).
+                return $response->withoutHeader('Content-Length');
+            }
+            return $response;
+        }
+
+        if ($response->hasHeader('Content-Length')) {
+            return $response;
+        }
+
+        $size = $response->getBody()->getSize();
+        if ($size === null) {
+            return $response;
+        }
+
+        return $response->withHeader('Content-Length', (string) $size);
+*/
+
     }
+
 }

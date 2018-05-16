@@ -32,6 +32,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+//https://github.com/php-middleware/maintenance/blob/master/src/MaintenanceMiddleware.php
+//https://github.com/middlewares/shutdown/blob/master/src/Shutdown.php
+
 class CheckMaintenanceMiddleware implements MiddlewareInterface
 {
     /**
@@ -39,16 +42,47 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
      *
      * @var ContainerInterface
      */
-    private $container;
+    //private $container;
+
+
+    //private const RETRY_AFTER = 'Retry-After';
+    //private $handler;
+    private $retryAfter;
+
+    /* @var bool */
+    private $isDown = false;
 
     /**
      * Set container.
      *
      * @param ContainerInterface $container
      */
+    /*
     public function setContainer(ContainerInterface $container)
     {
         $this->container = $container;
+    }*/
+
+    /**
+     * Estimated time when the downtime will be complete.
+     * (integer for relative seconds or DateTimeInterface).
+     *
+     * @param DateTimeInterface|string|int $retryAfter
+     */
+    public function retryAfter($retryAfter): self
+    {
+        if ($retryAfter instanceof DateTimeInterface) {
+            $retryAfter = $retryAfter->format('D, d M Y H:i:s \G\M\T'); //$retryAfter->format(DateTime::RFC2822);  //'D, d M Y H:i:s e' // j'ai aussi vu un formatage en RFC1123
+        }
+
+        $this->retryAfter = $retryAfter;
+        return $this;
+    }
+
+    public function isDownForMaintenance(bool $isDown): self
+    {
+        $this->isDown = $isDown;
+        return $this;
     }
 
     /**
@@ -80,17 +114,21 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
         */
 
         //if ($this->app->isDownForMaintenance() && !in_array($this->request->getClientIp(), ['86.10.190.248', '86.4.7.24']))
-        $config = $this->container->config;
-        if ($config['settings.isDownForMaintenance']) {
+//        $config = $this->container->config;
+        //if ($config['settings.isDownForMaintenance']) {
+        if ($this->isDown === true) {
             //return (new Response(503))->withHeader('Refresh', 10)->write('Be right back !');
 
-            $retryAfter = $config['settings.maintenanceRetryAfter'];
+            //$retryAfter = $config['settings.maintenanceRetryAfter'];
 
-            if ($retryAfter instanceof DateTimeInterface) {
-                $retryAfter = $retryAfter->format('D, d M Y H:i:s \G\M\T'); //$retryAfter->format(DateTime::RFC2822);  //'D, d M Y H:i:s e' // j'ai aussi vu un formatage en RFC1123
+/*
+            if (is_int($retryAfter)) {
+                $retryAfter = (string) $retryAfter;
             }
+*/
 
-            throw new ServiceUnavailableHttpException($retryAfter);
+
+            throw new ServiceUnavailableHttpException($this->retryAfter);
         }
 
         /*

@@ -47,4 +47,8 @@ class HttpException extends RuntimeException //implements \ExceptionInterface
     {
         $this->headers = $headers;
     }
+
+    // TODO : ajouter une méthode hasHeader() ????
+    // TODO ; ajouter une méthode getHeader() ????
+    // TODO : creer une fonction getHeaderLine() ???
 }

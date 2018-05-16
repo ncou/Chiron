@@ -1,7 +1,5 @@
 <?php
 
-//namespace Symfony\Component\HttpKernel\Exception;
-
 namespace Chiron\Http\Exception;
 
 /**

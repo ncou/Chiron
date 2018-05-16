@@ -2036,4 +2036,58 @@ class Response extends ResponsePsr7
 
         return $result;
     }
+
+//https://github.com/micheh/psr7-cache/blob/master/src/CacheUtil.php#L390
+
+    /**
+     * Returns a formatted timestamp of the time parameter, to use in the HTTP headers. The time
+     * parameter can be an UNIX timestamp, a parseable string or a DateTime object.
+     *
+     * @link https://secure.php.net/manual/en/datetime.formats.php
+     *
+     * @param int|string|DateTime $time Timestamp, date string or DateTime object
+     * @return string Formatted timestamp
+     * @throws InvalidArgumentException If the time could not be parsed
+     */
+    protected function getTimeFromValue($time)
+    {
+        $format = 'D, d M Y H:i:s \G\M\T';
+        if (is_int($time)) {
+            return gmdate($format, $time);
+        }
+        if (is_string($time)) {
+            try {
+                $time = new DateTime($time);
+            } catch (Exception $exception) {
+                // if it is an invalid date string an exception is thrown below
+            }
+        }
+        if ($time instanceof DateTime) {
+            $time = clone $time;
+            $time->setTimezone(new DateTimeZone('UTC'));
+            return $time->format($format);
+        }
+        throw new InvalidArgumentException('Could not create a valid date from ' . gettype($time) . '.');
+    }
+    /**
+     * Returns the Unix timestamp of the time parameter. The parameter can be an Unix timestamp,
+     * string or a DateTime object.
+     *
+     * @param int|string|DateTime $time
+     * @return int Unix timestamp
+     * @throws InvalidArgumentException If the time could not be parsed
+     */
+    protected function getTimestampFromValue($time)
+    {
+        if (is_int($time)) {
+            return $time;
+        }
+        if ($time instanceof DateTime) {
+            return $time->getTimestamp();
+        }
+        if (is_string($time)) {
+            return strtotime($time);
+        }
+        throw new InvalidArgumentException('Could not create timestamp from ' . gettype($time) . '.');
+    }
 }
