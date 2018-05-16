@@ -222,7 +222,7 @@ class ResponseTest extends TestCase
      */
     public function testWithRedirect()
     {
-        $r = $this->createResponse(200);;
+        $r = $this->createResponse(200);
         $clone = $r->withRedirect('/foo', 301);
         $cloneWithDefaultStatus = $r->withRedirect('/foo');
         $cloneWithStatusMethod = $r->withStatus(301)->withRedirect('/foo');
