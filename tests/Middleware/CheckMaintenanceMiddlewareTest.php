@@ -1,0 +1,90 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Chiron\Tests\Middleware;
+
+use Chiron\Http\Factory\ServerRequestFactory;
+use Chiron\Http\Response;
+use Chiron\Middleware\CheckMaintenanceMiddleware;
+use Chiron\Tests\Utils\HandlerProxy2;
+use PHPUnit\Framework\TestCase;
+
+use Chiron\Http\Exception\ServiceUnavailableHttpException;
+
+class CheckMaintenanceMiddlewareTest extends TestCase
+{
+    protected $middleware;
+
+    public $request;
+
+    protected function setUp()
+    {
+        parent::setUp();
+        $this->middleware = new CheckMaintenanceMiddleware();
+        $this->request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+    }
+
+    public function retryAfterProvider(): array
+    {
+        return [
+            [120, '120'],
+            [new \DateTime('2016/12/12 10:10:30'), 'Mon, 12 Dec 2016 10:10:30 GMT'],
+            [new \DateTimeImmutable('2016/12/12 10:10:30'), 'Mon, 12 Dec 2016 10:10:30 GMT'],
+        ];
+    }
+
+    public function testShutdownDefaultConstructor()
+    {
+        $handler = function ($request) {
+            return new Response();
+        };
+        $middleware = $this->middleware;
+
+        $result = $middleware->process($this->request, new HandlerProxy2($handler));
+        $this->assertEquals(200, $result->getStatusCode());
+    }
+
+    public function testShutdown()
+    {
+        $handler = function ($request) {
+            return new Response();
+        };
+        $middleware = $this->middleware;
+        $middleware->isDownForMaintenance(true);
+
+        try {
+            $middleware->process($this->request, new HandlerProxy2($handler));
+        } catch (ServiceUnavailableHttpException $e) {
+            $this->assertEquals(503, $e->getStatusCode());
+            $this->assertFalse(isset($e->getHeaders()['Retry-After']));
+        }
+    }
+
+    /**
+     * @dataProvider retryAfterProvider
+     *
+     * @param int|DateTimeInterface $duration
+     */
+    public function testRetryAfter($duration, string $header)
+    {
+        $handler = function ($request) {
+            return new Response();
+        };
+        $middleware = $this->middleware;
+        $middleware->isDownForMaintenance(true);
+        $middleware->retryAfter($duration);
+
+        try {
+            $middleware->process($this->request, new HandlerProxy2($handler));
+        } catch (ServiceUnavailableHttpException $e) {
+            $this->assertEquals(503, $e->getStatusCode());
+            $this->assertTrue(isset($e->getHeaders()['Retry-After']));
+            $this->assertEquals($header, $e->getHeaders()['Retry-After']);
+        }
+    }
+
+}
