@@ -97,12 +97,12 @@ class Route //implements RequestHandlerInterface
         return $this->handler;
     }
 
-/*
-    public function handle(ServerRequestInterface $request): ResponseInterface
-    {
-        return $this->handler->handle($request);
-    }
-*/
+    /*
+        public function handle(ServerRequestInterface $request): ResponseInterface
+        {
+            return $this->handler->handle($request);
+        }
+    */
 
     /**
      * Compile the regex for a given route (EXPENSIVE).
