@@ -22,10 +22,10 @@ require_once __DIR__ . '/../../../../vendor/nyholm/psr7/src/Uri.php';
 
 //namespace Viserio\Component\HttpFactory;
 
-use Chiron\Http\ServerRequest;
-//use Nyholm\Psr7\Uri;
-use Chiron\Http\Uri;
 use Chiron\Http\Body;
+//use Nyholm\Psr7\Uri;
+use Chiron\Http\ServerRequest;
+use Chiron\Http\Uri;
 use Interop\Http\Factory\ServerRequestFactoryInterface;
 use InvalidArgumentException;
 
@@ -141,7 +141,6 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
                 preg_match('/^HTTP\/([\d.]+)$/', $_SERVER['SERVER_PROTOCOL'], $match);
                 $protocol = isset($match[1]) ? $protocol = $match[1] : '1.1';
         */
-
 
         //$body = 'php://input'; //new LazyOpenStream('php://input', 'r+');
         $body = Body::createFromStringOrResource('php://input', 'r+');
@@ -447,4 +446,3 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         return $normalizedFiles;
     }
 }
-
