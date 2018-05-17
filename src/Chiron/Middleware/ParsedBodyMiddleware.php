@@ -28,6 +28,8 @@ class ParsedBodyMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        // TODO : ajouter un test quand la méthode n'est pas la bonne
+        // TODO : vérifier quels méthodes ont un body !!!!!
         if (empty($request->getParsedBody()) && ! in_array($request->getMethod(), ['GET', 'HEAD'])) {
             $body = (string) $request->getBody();
             $mediaType = $this->getMediaType($request);
@@ -36,9 +38,9 @@ class ParsedBodyMiddleware implements MiddlewareInterface
             //if (preg_match('~^application/([a-z.]+\+)?json($|;)~', $mediaType)) {
             //return (bool) preg_match('#[/+]json$#', trim($mime));
             if (preg_match('~application/([a-z.]+\+)?json~', $mediaType)) {
-                $parsed = json_decode($body, true);
-                if (! is_array($parsed)) {
-                    $parsed = null;
+                $body = json_decode($body, true);
+                if (! is_array($body)) {
+                    $body = null;
                 }
                 // Throw error if we are unable to decode body
                 //if (is_null($parsed)) throw new BadRequest('Could not deserialize body (Json)');
@@ -55,13 +57,13 @@ class ParsedBodyMiddleware implements MiddlewareInterface
                 // parse XML and disable internet connection when parsing XML
                 //$parsed = simplexml_load_string($body);
                 // TODO : regarder un autre exemple ici : https://github.com/yiisoft/yii2-httpclient/blob/master/src/XmlParser.php
-                $parsed = simplexml_load_string($body, 'SimpleXMLElement', LIBXML_NONET);
+                $body = simplexml_load_string($body, 'SimpleXMLElement', LIBXML_NONET);
                 // restore lib settings
                 libxml_disable_entity_loader($backup);
                 libxml_clear_errors();
                 libxml_use_internal_errors($backup_errors);
-                if ($parsed === false) {
-                    $parsed = null;
+                if ($body === false) {
+                    $body = null;
                 }
             }
 
@@ -72,7 +74,12 @@ class ParsedBodyMiddleware implements MiddlewareInterface
                             return $data;
                         });
             */
-            $request = $request->withParsedBody($parsed);
+
+            if (preg_match('~application/x-www-form-urlencoded~', $mediaType)) {
+                parse_str($body, $body);
+            }
+
+            $request = $request->withParsedBody($body);
         }
 
         return $handler->handle($request);
