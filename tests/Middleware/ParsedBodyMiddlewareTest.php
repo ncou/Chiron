@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
+use Chiron\Http\Body;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
-use Chiron\Http\Body;
 use Chiron\Middleware\ParsedBodyMiddleware;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
-
 
 class ParsedBodyMiddlewareTest extends TestCase
 {
@@ -36,12 +35,14 @@ class ParsedBodyMiddlewareTest extends TestCase
 
         $handler = function ($request) use (&$parsedBody) {
             $parsedBody = $request->getParsedBody();
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
 
         $this->assertEquals(['foo' => 'bar'], $parsedBody);
     }
+
     public function testGetParsedBodyJson()
     {
         $request = $this->request->withHeader('Content-Type', 'application/json;charset=utf8');
@@ -51,12 +52,14 @@ class ParsedBodyMiddlewareTest extends TestCase
 
         $handler = function ($request) use (&$parsedBody) {
             $parsedBody = $request->getParsedBody();
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
 
         $this->assertEquals(['foo' => 'bar'], $parsedBody);
     }
+
     public function testGetParsedBodyInvalidJson()
     {
         $request = $this->request->withHeader('Content-Type', 'application/json;charset=utf8');
@@ -66,12 +69,14 @@ class ParsedBodyMiddlewareTest extends TestCase
 
         $handler = function ($request) use (&$parsedBody) {
             $parsedBody = $request->getParsedBody();
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
 
         $this->assertNull($parsedBody);
     }
+
     public function testGetParsedBodySemiValidJson()
     {
         $request = $this->request->withHeader('Content-Type', 'application/json;charset=utf8');
@@ -81,12 +86,14 @@ class ParsedBodyMiddlewareTest extends TestCase
 
         $handler = function ($request) use (&$parsedBody) {
             $parsedBody = $request->getParsedBody();
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
 
         $this->assertNull($parsedBody);
     }
+
     public function testGetParsedBodyWithJsonStructuredSuffix()
     {
         $request = $this->request->withHeader('Content-Type', 'application/vnd.api+json;charset=utf8');
@@ -96,12 +103,14 @@ class ParsedBodyMiddlewareTest extends TestCase
 
         $handler = function ($request) use (&$parsedBody) {
             $parsedBody = $request->getParsedBody();
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
 
         $this->assertEquals(['foo' => 'bar'], $parsedBody);
     }
+
     public function testGetParsedBodyXml()
     {
         $request = $this->request->withHeader('Content-Type', 'application/xml;charset=utf8');
@@ -111,12 +120,14 @@ class ParsedBodyMiddlewareTest extends TestCase
 
         $handler = function ($request) use (&$parsedBody) {
             $parsedBody = $request->getParsedBody();
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
 
         $this->assertEquals('Josh', $parsedBody->name);
     }
+
     public function testGetParsedBodyWithXmlStructuredSuffix()
     {
         $request = $this->request->withHeader('Content-Type', 'application/hal+xml;charset=utf8');
@@ -126,12 +137,14 @@ class ParsedBodyMiddlewareTest extends TestCase
 
         $handler = function ($request) use (&$parsedBody) {
             $parsedBody = $request->getParsedBody();
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
 
         $this->assertEquals('Josh', $parsedBody->name);
     }
+
     public function testGetParsedBodyXmlWithTextXMLMediaType()
     {
         $request = $this->request->withHeader('Content-Type', 'text/xml');
@@ -141,14 +154,16 @@ class ParsedBodyMiddlewareTest extends TestCase
 
         $handler = function ($request) use (&$parsedBody) {
             $parsedBody = $request->getParsedBody();
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
 
         $this->assertEquals('Josh', $parsedBody->name);
     }
+
     /**
-     * Will fail if a simple_xml warning is created
+     * Will fail if a simple_xml warning is created.
      */
     public function testInvalidXmlIsQuietForTextXml()
     {
@@ -159,14 +174,16 @@ class ParsedBodyMiddlewareTest extends TestCase
 
         $handler = function ($request) use (&$parsedBody) {
             $parsedBody = $request->getParsedBody();
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
 
         $this->assertEquals(null, $parsedBody);
     }
+
     /**
-     * Will fail if a simple_xml warning is created
+     * Will fail if a simple_xml warning is created.
      */
     public function testInvalidXmlIsQuietForApplicationXml()
     {
@@ -177,12 +194,14 @@ class ParsedBodyMiddlewareTest extends TestCase
 
         $handler = function ($request) use (&$parsedBody) {
             $parsedBody = $request->getParsedBody();
+
             return new Response();
         };
         $this->middleware->process($request, new HandlerProxy2($handler));
 
         $this->assertEquals(null, $parsedBody);
     }
+
     /*
     public function testGetParsedBodyWhenAlreadyParsed()
     {
@@ -222,7 +241,7 @@ class ParsedBodyMiddlewareTest extends TestCase
         $request->reparseBody();
         $this->assertEquals(['abc' => '123'], $request->getParsedBody());
     }*/
-    /**
+    /*
      * @expectedException \RuntimeException
      */
     /*
@@ -295,7 +314,7 @@ class ParsedBodyMiddlewareTest extends TestCase
         $request->getBody()->write('foo,bar,baz');
         $this->assertNull($request->getParsedBody());
     }*/
-    /**
+    /*
      * @expectedException \InvalidArgumentException
      */
     /*
@@ -303,7 +322,7 @@ class ParsedBodyMiddlewareTest extends TestCase
     {
         $this->requestFactory()->withParsedBody(2);
     }*/
-    /**
+    /*
      * @expectedException \InvalidArgumentException
      */
     /*
@@ -311,5 +330,4 @@ class ParsedBodyMiddlewareTest extends TestCase
     {
         $this->requestFactory()->withParsedBody(false);
     }*/
-
 }
