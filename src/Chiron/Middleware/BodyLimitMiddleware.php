@@ -56,10 +56,6 @@ class BodyLimitMiddleware implements MiddlewareInterface
                 return $byte * 1024 * 1024;
             case 'G':
                 return $byte * 1024 * 1024 * 1024;
-            case 'T':
-                return $byte * 1024 * 1024 * 1024 * 1024;
-            case 'P':
-                return $byte * 1024 * 1024 * 1024 * 1024 * 1024;
             default:
                 return $byte;
         }
