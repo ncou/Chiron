@@ -65,7 +65,7 @@ class Route //implements RequestHandlerInterface
         ''   => '[^/\.]++',
     ];
 
-// TODO : on devrait pas plutot déporter cette variable dans la classe "Router" ????
+    // TODO : on devrait pas plutot déporter cette variable dans la classe "Router" ????
     public const REGEX_PATTERN = '`(/|\.|)\[([^:\]]*+)(?::([^:\]]*+))?\](\?|)`';
 
     /**

@@ -6,7 +6,6 @@ namespace Chiron\Tests\Middleware;
 
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
-use Chiron\Http\Uri;
 use Chiron\Middleware\BodyLimitMiddleware;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;

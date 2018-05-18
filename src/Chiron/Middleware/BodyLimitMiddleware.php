@@ -6,25 +6,19 @@ namespace Chiron\Middleware;
 
 //https://github.com/withelmo/CakePHP-PostMaxSizeException/blob/master/Lib/PostMaxSizeChecker.php
 
-use Chiron\Http\Exception\ServiceUnavailableHttpException;
-use DateTimeInterface;
-use Psr\Container\ContainerInterface;
+use Chiron\Http\Exception\RequestEntityTooLargeHttpException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-use Chiron\Http\Exception\RequestEntityTooLargeHttpException;
-
 class BodyLimitMiddleware implements MiddlewareInterface
 {
-
     /**
      * Process a request and return a response.
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-
         /*
             if (! ($request->isMethod('POST') || $resquest->isMethod('PUT'))) {
                 return $handler->handle($request);
@@ -71,7 +65,7 @@ class BodyLimitMiddleware implements MiddlewareInterface
         }
     }
 
-    /**
+    /*
      * Gets maximum post request size of attachment from php ini settings.
      * post_max_size specifies maximum size of a post request,
      * we are uploading attachment using post method
@@ -112,7 +106,7 @@ class BodyLimitMiddleware implements MiddlewareInterface
         return $val;
     }*/
 
-    /**
+    /*
      * Determine the server 'post_max_size' as bytes.
      *
      * @return int
@@ -157,8 +151,7 @@ class BodyLimitMiddleware implements MiddlewareInterface
         return $bytes;
     }*/
 
-
-    /**
+    /*
      * byte変換
      * ※10MBの文字列を10485760のようなbyte数に変換
      *
@@ -204,7 +197,4 @@ class BodyLimitMiddleware implements MiddlewareInterface
         }
         return $result;
     }*/
-
-
 }
-
