@@ -65,6 +65,7 @@ class Route //implements RequestHandlerInterface
         ''   => '[^/\.]++',
     ];
 
+// TODO : on devrait pas plutot déporter cette variable dans la classe "Router" ????
     public const REGEX_PATTERN = '`(/|\.|)\[([^:\]]*+)(?::([^:\]]*+))?\](\?|)`';
 
     /**
@@ -167,7 +168,7 @@ class Route //implements RequestHandlerInterface
     {
         $url = $this->url;
 
-        if (preg_match_all(self::REGEX_PATTERN, $this->url, $matches, PREG_SET_ORDER)) {
+        if (preg_match_all(self::REGEX_PATTERN, $url, $matches, PREG_SET_ORDER)) {
             foreach ($matches as $match) {
                 list($block, $pre, $type, $param, $optional) = $match;
 

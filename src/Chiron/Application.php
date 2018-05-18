@@ -366,6 +366,8 @@ class Application
         // Bind the $this var, to app instance.
         $closure = $closure->bindTo($this);
         //$callback = Closure::bind($closure, $this, get_class());
+        // TODO : créer un objet RouteGroup avec uniquement les méthode get/post/put...etc pour éviter de passer à la closure tout l'objet 'Application' :(
+        //https://github.com/Rareloop/router/blob/master/src/RouteGroup.php     +   https://github.com/Rareloop/router/blob/master/src/Router.php#L176
         // Call the callable
         $closure($this);
         // TODO : regarder ici pour des arguments à passer au mount : https://github.com/nezamy/route/blob/master/system/Route.php#L185

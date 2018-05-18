@@ -713,6 +713,21 @@ class ServerRequest extends ServerRequestPsr7
         }
     }
 
+    /**
+     * Get request media type, if known.
+     *
+     * @param ServerRequestInterface $request request
+     *
+     * @return string|null The request media type, minus content-type params
+     */
+    // TODO : Méthode de Slim
+    private function getMediaType2(ServerRequestInterface $request)
+    {
+        $parts = explode(';', $request->getHeaderLine('Content-Type'));
+
+        return strtolower(trim(array_shift($parts)));
+    }
+
     // ------------------------------------
     // https://github.com/symfony/http-foundation/blob/f5c38b8dafc947dae251045d52deaab15c3496ab/Request.php#L1203
 

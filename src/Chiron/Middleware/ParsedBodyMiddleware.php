@@ -279,4 +279,38 @@ class ParsedBodyMiddleware implements MiddlewareInterface
         return $request->withParsedBody($parsedBody);
     }
 */
+
+
+    /**
+     * Does HTTP method carry body content.
+     *
+     * @param string $method
+     *
+     * @return bool
+     */
+    /*
+    private function methodCarriesBody($method)
+    {
+        return !in_array($method, ['GET', 'HEAD', 'OPTIONS', 'CONNECT', 'TRACE']);
+    }*/
+
+
+    /**
+     * List of request methods that do not have any defined body semantics, and thus
+     * will not have the body parsed.
+     *
+     * @see https://tools.ietf.org/html/rfc7231
+     *
+     * @var array
+     */
+    /*
+    private $nonBodyRequests = [
+        'GET',
+        'HEAD',
+        'OPTIONS',
+    ];*/
+
+    // GET, HEAD, DELETE, OPTIONS and CONNECT
+
+
 }

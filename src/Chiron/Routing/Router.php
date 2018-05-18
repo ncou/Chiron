@@ -156,7 +156,7 @@ class Router
      *
      * @return array
      */
-    //TODO : méthode à renommer en "dispatch" ????
+    //TODO : Méthode à dépoerter dans une classe Matcher.php ou UrlMatcher.php : https://github.com/symfony/routing/blob/master/Matcher/UrlMatcher.php
     public function match(ServerRequestInterface $request): RouteResult
     {
         $requestUrl = $request->getUri()->getPath();
@@ -211,6 +211,7 @@ class Router
         // If there are no allowed methods the route simply does not exist
         if ($allowedMethods) {
             //return [self::METHOD_NOT_ALLOWED, array_unique($allowedMethods)];
+            // TODO : vérifier si le array_unique est nécessaire !!!!!!
             return RouteResult::fromRouteFailure(array_unique($allowedMethods));
         }
         //return [self::NOT_FOUND];
