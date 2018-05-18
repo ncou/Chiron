@@ -280,8 +280,7 @@ class ParsedBodyMiddleware implements MiddlewareInterface
     }
 */
 
-
-    /**
+    /*
      * Does HTTP method carry body content.
      *
      * @param string $method
@@ -294,8 +293,7 @@ class ParsedBodyMiddleware implements MiddlewareInterface
         return !in_array($method, ['GET', 'HEAD', 'OPTIONS', 'CONNECT', 'TRACE']);
     }*/
 
-
-    /**
+    /*
      * List of request methods that do not have any defined body semantics, and thus
      * will not have the body parsed.
      *
@@ -311,6 +309,4 @@ class ParsedBodyMiddleware implements MiddlewareInterface
     ];*/
 
     // GET, HEAD, DELETE, OPTIONS and CONNECT
-
-
 }
