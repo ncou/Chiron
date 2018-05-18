@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Middleware;
 
+//https://github.com/withelmo/CakePHP-PostMaxSizeException/blob/master/Lib/PostMaxSizeChecker.php
+
 use Chiron\Http\Exception\ServiceUnavailableHttpException;
 use DateTimeInterface;
 use Psr\Container\ContainerInterface;
@@ -60,6 +62,10 @@ class BodyLimitMiddleware implements MiddlewareInterface
                 return $byte * 1024 * 1024;
             case 'G':
                 return $byte * 1024 * 1024 * 1024;
+            case 'T':
+                return $byte * 1024 * 1024 * 1024 * 1024;
+            case 'P':
+                return $byte * 1024 * 1024 * 1024 * 1024 * 1024;
             default:
                 return $byte;
         }
@@ -149,6 +155,54 @@ class BodyLimitMiddleware implements MiddlewareInterface
         if ($bytes == '')
             $bytes = null;
         return $bytes;
+    }*/
+
+
+    /**
+     * byte変換
+     * ※10MBの文字列を10485760のようなbyte数に変換
+     *
+     * @param string $size ini_get('upload_max_filesize')の戻り値である「10M」のような文字列
+     * @return (number|boolean)
+     */
+    /*
+    private function __toByte($size = null) {
+        if (empty($size)) {
+            return false;
+        }
+        preg_match_all('/^(\d*)(K|M|G|T|P)$/i', $size, $matches);
+        $base = null;
+        if (!empty($matches[1][0])) {
+            $base = $matches[1][0];
+        }
+        $unit = null;
+        if (!empty($matches[2][0])) {
+            $unit = strtoupper($matches[2][0]);
+        }
+        if (empty($base) || empty($unit)) {
+            return false;
+        }
+        switch ($unit) {
+            case 'K':
+                $result = $base * 1024;
+                break;
+            case 'M':
+                $result = $base * 1024 * 1024;
+                break;
+            case 'G':
+                $result = $base * 1024 * 1024 * 1024;
+                break;
+            case 'T':
+                $result = $base * 1024 * 1024 * 1024 * 1024;
+                break;
+            case 'P':
+                $result = $base * 1024 * 1024 * 1024 * 1024 * 1024;
+                break;
+            default:
+                $result = false;
+                break;
+        }
+        return $result;
     }*/
 
 
