@@ -97,7 +97,7 @@ class ServerRequestTest extends TestCase
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
             'REQUEST_METHOD'         => 'GET',
-            'REQUEST_SCHEME'         => 'https'
+            'REQUEST_SCHEME'         => 'https',
         ]);
 
         $this->assertSame('https', $request->getScheme());
@@ -110,7 +110,7 @@ class ServerRequestTest extends TestCase
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
             'REQUEST_METHOD'         => 'GET',
-            'REQUEST_SCHEME'         => 'http'
+            'REQUEST_SCHEME'         => 'http',
         ]);
 
         $this->assertSame('http', $request->getScheme());
