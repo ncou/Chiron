@@ -181,8 +181,7 @@ class CookiesManager
         return $cookies;
     }
 
-
-    /**
+    /*
      * Validates the cookie name
      *
      * @param string $name Name of the cookie
