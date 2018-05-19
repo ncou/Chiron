@@ -12,7 +12,7 @@ namespace Chiron\Tests\Middleware;
 use Chiron\Middleware\SecurityHeadersMiddleware;
 use PHPUnit\Framework\TestCase;
 
-class SecurityMiddlewareTest extends TestCase
+class SecurityHeadersMiddlewareTest extends TestCase
 {
     /**
      * @var string
@@ -23,7 +23,7 @@ class SecurityMiddlewareTest extends TestCase
     {
         $config = require $this->configPath;
         $config['x-download-options'] = null;
-        $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
+        $headers = (new SecurityHeadersMiddleware($config))->compileHeaders();
         $this->assertArrayHasKey('X-Frame-Options', $headers);
         $this->assertArrayNotHasKey('X-Download-Options', $headers);
     }
@@ -33,7 +33,7 @@ class SecurityMiddlewareTest extends TestCase
         $config = require $this->configPath;
         $config['settings']['enable-hsts'] = true;
         $config['hsts']['include-sub-domains'] = true;
-        $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
+        $headers = (new SecurityHeadersMiddleware($config))->compileHeaders();
         $this->assertArraySubset([
             'Strict-Transport-Security' => 'max-age=63072000; includeSubDomains; preload',
         ], $headers, true);
@@ -44,7 +44,7 @@ class SecurityMiddlewareTest extends TestCase
         $config = require $this->configPath;
         $config['settings']['enable-ect'] = true;
         $config['ect']['enforce'] = true;
-        $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
+        $headers = (new SecurityHeadersMiddleware($config))->compileHeaders();
         $this->assertArraySubset([
             'Expect-CT' => 'max-age=63072000, enforce',
         ], $headers, true);
@@ -56,7 +56,7 @@ class SecurityMiddlewareTest extends TestCase
         $config['settings']['enable-ect'] = true;
         $config['ect']['enforce'] = true;
         $config['ect']['report-uri'] = 'www.example.com';
-        $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
+        $headers = (new SecurityHeadersMiddleware($config))->compileHeaders();
         $this->assertArraySubset([
             'Expect-CT' => 'max-age=63072000, enforce, report-uri="www.example.com"',
         ], $headers, true);
@@ -70,7 +70,7 @@ class SecurityMiddlewareTest extends TestCase
             '5feceb66ffc86f38d952786c6d696c79c2dbc239dd4e91b46729d73a27fb57e9',
             '6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b',
         ];
-        $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
+        $headers = (new SecurityHeadersMiddleware($config))->compileHeaders();
         $this->assertArrayHasKey('Public-Key-Pins', $headers);
     }
 
@@ -81,7 +81,7 @@ class SecurityMiddlewareTest extends TestCase
         $config['hpkp']['hashes'] = ['foobar'];
         $config['hpkp']['report-only'] = true;
         $config['hpkp']['report-uri'] = 'www.example.com';
-        $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
+        $headers = (new SecurityHeadersMiddleware($config))->compileHeaders();
         $this->assertArraySubset([
             'Public-Key-Pins-Report-Only' => 'pin-sha256="foobar"; max-age=63072000; includeSubDomains; report-uri="www.example.com"',
         ], $headers, true);
@@ -92,7 +92,7 @@ class SecurityMiddlewareTest extends TestCase
         $config = require $this->configPath;
         $config['settings']['enable-csp'] = true;
         $config['csp']['report-only'] = true;
-        $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
+        $headers = (new SecurityHeadersMiddleware($config))->compileHeaders();
         $this->assertArrayHasKey('Content-Security-Policy-Report-Only', $headers);
     }
 
@@ -102,7 +102,7 @@ class SecurityMiddlewareTest extends TestCase
         $config = require $this->configPath;
         $config['settings']['enable-csp'] = true;
         $config['csp']['report-only'] = false;
-        $headers = (new SecurityHeadersMiddleware($config))->getCompiledHeaders();
+        $headers = (new SecurityHeadersMiddleware($config))->compileHeaders();
         $this->assertArrayHasKey('Content-Security-Policy', $headers);
     }
 

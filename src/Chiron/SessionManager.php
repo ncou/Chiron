@@ -1,6 +1,10 @@
 <?php
 
 
+//https://github.com/relayphp/Relay.Middleware/blob/1.x/src/SessionHeadersHandler.php
+
+
+
 // TODO : rememberMe : https://github.com/zendframework/zend-session/blob/master/src/SessionManager.php#L347
 //https://github.com/ctidigital/Zend/blob/master/lib/Zend/Session.php#L330
 

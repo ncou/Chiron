@@ -175,7 +175,7 @@ class Container implements \ArrayAccess, ContainerInterface
      *
      * @param string $name The unique identifier for the parameter or object
      *
-     * @throws UnknownIdentifierException If the identifier is not defined
+     * @throws EntryNotFoundException If the identifier is not defined
      *
      * @return mixed The value of the parameter or an object
      */
@@ -196,7 +196,6 @@ class Container implements \ArrayAccess, ContainerInterface
      * @param string $name    The unique identifier for the parameter or object
      * @param mixed  $service The value of the parameter or a closure to define an object
      *
-     * @throws FrozenServiceException Prevent override of a frozen service
      */
     public function offsetSet($name, $service)
     {
@@ -224,4 +223,27 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         return $this->has($name);
     }
+
+    /**
+     *
+     * Returns a reference to various property arrays.
+     *
+     * @param string $name The property name to return.
+     *
+     * @return array
+     *
+     * @throws EntryNotFoundException
+     *
+     */
+    public function __get($name)
+    {
+        return $this->get($name);
+    }
+
+
+    public function __set($name, $service)
+    {
+        $this->set($name, $service);
+    }
+
 }

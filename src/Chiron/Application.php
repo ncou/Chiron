@@ -423,6 +423,15 @@ class Application
     }
 
     /*******************************************************************************
+     * Config
+     ******************************************************************************/
+
+    public function getConfig(): Config
+    {
+        return $this->container->get('config');
+    }
+
+    /*******************************************************************************
      * Logger
      ******************************************************************************/
     // TODO : on met le logger plutot dans le container ???? via un serviceRegister par exemple : https://github.com/slimphp/Slim/blob/3.x/Slim/DefaultServicesProvider.php
@@ -529,7 +538,9 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         }
 
         $config = new Config($settings);
-        $this->container->config = $config;
+        $this->container['config'] = $config;
+        //$this->container->config = $config;
+        //$this->container->set('config', $config);
 
         //$router->setBasePath($request->getUri()->getBasePath());
         //$this->basePath = $this->container['basePath'];
@@ -706,7 +717,8 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     private function boot()
     {
         // Set up any global PHP settings from the config service.
-        $config = $this->container->config;
+        //$config = $this->container->config;
+        $config = $this->container['config'];
 
         // TODO : regarder ici pour configurer les paramétres PHP pour logger les erreurs+exceptions : https://github.com/zendtech/zend-server-php-buildpack/blob/master/conf/zend/etc/php.ini   +   https://www.loggly.com/ultimate-guide/php-logging-basics/     +     http://cgit.drupalcode.org/drupalci_environments/tree/php/7.1-apache/conf/php/php-cli.ini?id=d75d2dd15e88674b150c1bdf1de26169ad5cbcb2
 

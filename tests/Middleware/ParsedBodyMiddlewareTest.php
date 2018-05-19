@@ -28,7 +28,7 @@ class ParsedBodyMiddlewareTest extends TestCase
      ******************************************************************************/
     public function testGetParsedBodyForm()
     {
-        $request = $this->request->withHeader('Content-Type', 'application/x-www-form-urlencoded;charset=utf8');
+        $request = $this->request->withHeader('Content-Type', 'application/x-www-form-urlencoded ;charset=utf8');
         $body = Body::createFromStringOrResource('php://temp', 'rw+');
         $body->write('foo=bar');
         $request = $request->withBody($body);
@@ -45,7 +45,7 @@ class ParsedBodyMiddlewareTest extends TestCase
 
     public function testGetParsedBodyJson()
     {
-        $request = $this->request->withHeader('Content-Type', 'application/json;charset=utf8');
+        $request = $this->request->withHeader('Content-Type', 'application/json ;charset=utf8');
         $body = Body::createFromStringOrResource('php://temp', 'rw+');
         $body->write('{"foo":"bar"}');
         $request = $request->withBody($body);
@@ -62,7 +62,7 @@ class ParsedBodyMiddlewareTest extends TestCase
 
     public function testGetParsedBodyInvalidJson()
     {
-        $request = $this->request->withHeader('Content-Type', 'application/json;charset=utf8');
+        $request = $this->request->withHeader('Content-Type', 'application/json ;charset=utf8');
         $body = Body::createFromStringOrResource('php://temp', 'rw+');
         $body->write('{foo}bar');
         $request = $request->withBody($body);
@@ -79,7 +79,7 @@ class ParsedBodyMiddlewareTest extends TestCase
 
     public function testGetParsedBodySemiValidJson()
     {
-        $request = $this->request->withHeader('Content-Type', 'application/json;charset=utf8');
+        $request = $this->request->withHeader('Content-Type', 'application/json ;charset=utf8');
         $body = Body::createFromStringOrResource('php://temp', 'rw+');
         $body->write('"foo bar"');
         $request = $request->withBody($body);
@@ -113,7 +113,7 @@ class ParsedBodyMiddlewareTest extends TestCase
 
     public function testGetParsedBodyXml()
     {
-        $request = $this->request->withHeader('Content-Type', 'application/xml;charset=utf8');
+        $request = $this->request->withHeader('Content-Type', 'application/xml ;charset=utf8');
         $body = Body::createFromStringOrResource('php://temp', 'rw+');
         $body->write('<person><name>Josh</name></person>');
         $request = $request->withBody($body);

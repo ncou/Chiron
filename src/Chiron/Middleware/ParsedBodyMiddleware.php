@@ -29,18 +29,21 @@ class ParsedBodyMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         // TODO : ajouter un test quand la méthode n'est pas la bonne
-        // TODO : vérifier quels méthodes ont un body !!!!!
-        if (empty($request->getParsedBody()) && ! in_array($request->getMethod(), ['GET', 'HEAD'])) {
+        // TODO : vérifier quelles méthodes ont un body !!!!!
+        if (empty($request->getParsedBody()) && ! in_array($request->getMethod(), ['GET', 'HEAD', 'OPTIONS'])) {
             $body = (string) $request->getBody();
+            $parsedBody = null;
+
             $mediaType = $this->getMediaType($request);
 
             // Regex for : 'application/json' or 'application/*+json'
             //if (preg_match('~^application/([a-z.]+\+)?json($|;)~', $mediaType)) {
             //return (bool) preg_match('#[/+]json$#', trim($mime));
             if (preg_match('~application/([a-z.]+\+)?json~', $mediaType)) {
-                $body = json_decode($body, true);
-                if (! is_array($body)) {
-                    $body = null;
+                $parsedBody = json_decode($body, true);
+                if (! is_array($parsedBody)) {
+                    // TODO : on devrait peut etre lever une exception 400 BadRequestHttpException
+                    $parsedBody = null;
                 }
                 // Throw error if we are unable to decode body
                 //if (is_null($parsed)) throw new BadRequest('Could not deserialize body (Json)');
@@ -57,13 +60,14 @@ class ParsedBodyMiddleware implements MiddlewareInterface
                 // parse XML and disable internet connection when parsing XML
                 //$parsed = simplexml_load_string($body);
                 // TODO : regarder un autre exemple ici : https://github.com/yiisoft/yii2-httpclient/blob/master/src/XmlParser.php
-                $body = simplexml_load_string($body, 'SimpleXMLElement', LIBXML_NONET);
+                $parsedBody = simplexml_load_string($body, 'SimpleXMLElement', LIBXML_NONET);
                 // restore lib settings
                 libxml_disable_entity_loader($backup);
                 libxml_clear_errors();
                 libxml_use_internal_errors($backup_errors);
-                if ($body === false) {
-                    $body = null;
+                if ($parsedBody === false) {
+                    // TODO : on devrait peut etre lever une exception 400 BadRequestHttpException
+                    $parsedBody = null;
                 }
             }
 
@@ -75,11 +79,15 @@ class ParsedBodyMiddleware implements MiddlewareInterface
                         });
             */
 
+            // in real life application, this part of code is not used because the request factory initialize the parsedBody with the global $_POST variable which is already parsed.
             if (preg_match('~application/x-www-form-urlencoded~', $mediaType)) {
-                parse_str($body, $body);
+                parse_str($body, $parsedBody);
             }
 
-            $request = $request->withParsedBody($body);
+            // TODO : lever une exception 415 UnsupportedMediaTypeHttpException() si aucun deserializer n'est trouvé (cad si empty($parsedBody)=== true) ????
+            // TODO : eventuellement créer un second middleware qui serai executé aprés, et si il y a un objet body non vide, mais un objet ParsedBody empty c'est qu'on n'a pas réussi à trouver un deserializer pour faire le travail et dans ce cas on leverai une exception !!!!
+
+            $request = $request->withParsedBody($parsedBody);
         }
 
         return $handler->handle($request);
