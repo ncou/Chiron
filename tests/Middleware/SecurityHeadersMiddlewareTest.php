@@ -9,9 +9,9 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
-use Chiron\Middleware\SecurityHeadersMiddleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
+use Chiron\Middleware\SecurityHeadersMiddleware;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
@@ -143,26 +143,26 @@ class SecurityHeadersMiddlewareTest extends TestCase
         );
     }
 
-/*
-    public function test_csp_report_only()
-    {
-        $config = require $this->configPath;
-        $config['settings']['enable-csp'] = true;
-        $config['csp']['report-only'] = true;
-        $headers = (new SecurityHeadersMiddleware($config))->compileHeaders();
-        $this->assertArrayHasKey('Content-Security-Policy-Report-Only', $headers);
-    }
-
-    //@TODO : add more tests for the CSP module
-    public function test_csp()
-    {
-        $config = require $this->configPath;
-        $config['settings']['enable-csp'] = true;
-        $config['csp']['report-only'] = false;
-        $headers = (new SecurityHeadersMiddleware($config))->compileHeaders();
-        $this->assertArrayHasKey('Content-Security-Policy', $headers);
-    }
-*/
+    /*
+        public function test_csp_report_only()
+        {
+            $config = require $this->configPath;
+            $config['settings']['enable-csp'] = true;
+            $config['csp']['report-only'] = true;
+            $headers = (new SecurityHeadersMiddleware($config))->compileHeaders();
+            $this->assertArrayHasKey('Content-Security-Policy-Report-Only', $headers);
+        }
+    
+        //@TODO : add more tests for the CSP module
+        public function test_csp()
+        {
+            $config = require $this->configPath;
+            $config['settings']['enable-csp'] = true;
+            $config['csp']['report-only'] = false;
+            $headers = (new SecurityHeadersMiddleware($config))->compileHeaders();
+            $this->assertArrayHasKey('Content-Security-Policy', $headers);
+        }
+    */
 
     //@TODO : add some tests on the middleware, to check if the headers are presents !!!!
 }
