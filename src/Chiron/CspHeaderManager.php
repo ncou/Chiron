@@ -5,9 +5,6 @@ declare(strict_types=1);
 namespace Chiron;
 
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * Manage the CSP Header.
@@ -54,6 +51,7 @@ class CspHeaderManager
      * as it implements MessageInterface.
      *
      * @param \Psr\Http\ResponseInterface $response
+     *
      * @return \Psr\Http\ResponseInterface
      */
     public function injectCSPHeader(ResponseInterface $response): ResponseInterface
@@ -179,7 +177,8 @@ class CspHeaderManager
      * Add a new nonce to the existing CSP. Returns the nonce generated.
      *
      * @param string $directive
-     * @param string $nonce (if empty, it will be generated)
+     * @param string $nonce     (if empty, it will be generated)
+     *
      * @return string
      */
     public function nonce(string $directive = 'script-src', string $nonce = ''): string
@@ -191,15 +190,17 @@ class CspHeaderManager
             $nonce = bin2hex(random_bytes(16));
         }
         $this->csp[$directive]['nonces'][] = $nonce;
+
         return $nonce;
     }
 
     /**
-     * Add a new hash to the existing CSP
+     * Add a new hash to the existing CSP.
      *
      * @param string $directive
      * @param string $script
      * @param string $algorithm
+     *
      * @return self
      */
     public function hash(
@@ -210,15 +211,17 @@ class CspHeaderManager
         if (\in_array($directive, self::CSP_DIRECTIVES)) {
             $this->csp[$directive]['hashes'][$algorithm][] = base64_encode(\hash($algorithm, $script, true));
         }
+
         return $this;
     }
 
     /**
-     * Add a new (pre-calculated) base64-encoded hash to the existing CSP
+     * Add a new (pre-calculated) base64-encoded hash to the existing CSP.
      *
      * @param string $directive
      * @param string $hash
      * @param string $algorithm
+     *
      * @return self
      */
     public function preHash(
@@ -229,6 +232,7 @@ class CspHeaderManager
         if (\in_array($directive, self::CSP_DIRECTIVES)) {
             $this->csp[$directive]['hashes'][$algorithm][] = $hash;
         }
+
         return $this;
     }
 }
