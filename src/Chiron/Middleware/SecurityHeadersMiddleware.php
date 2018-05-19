@@ -96,7 +96,7 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
      *
      * @return array
      */
-    public function compileHeaders(): array
+    private function compileHeaders(): array
     {
         return array_merge(
             $this->security['settings']['enable-hpkp'] ? $this->hpkp() : [],
