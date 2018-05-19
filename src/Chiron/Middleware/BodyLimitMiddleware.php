@@ -41,6 +41,7 @@ class BodyLimitMiddleware implements MiddlewareInterface
      *
      * @return int
      */
+    // TODO : ajouter aussi la gestion de P et T pour petaoctet et teraoctets
     protected function getPostMaxSize(): int
     {
         $postMaxSize = strtoupper(trim(ini_get('post_max_size')));
