@@ -320,11 +320,10 @@ class ParsedBodyMiddleware implements MiddlewareInterface
 
     // GET, HEAD, DELETE, OPTIONS and CONNECT
 
-    /**
+    /*
      * The HTTP methods to parse data on.
      *
      * @var array
      */
     //protected $methods = ['PUT', 'POST', 'PATCH', 'DELETE'];
-
 }

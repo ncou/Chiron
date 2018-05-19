@@ -143,6 +143,7 @@ class ServerRequest extends ServerRequestPsr7
     {
         return $this->isMethod('GET');
     }
+
     /**
      * Is this a POST request?
      *
@@ -154,6 +155,7 @@ class ServerRequest extends ServerRequestPsr7
     {
         return $this->isMethod('POST');
     }
+
     /**
      * Is this a PUT request?
      *
@@ -165,6 +167,7 @@ class ServerRequest extends ServerRequestPsr7
     {
         return $this->isMethod('PUT');
     }
+
     /**
      * Is this a PATCH request?
      *
@@ -176,6 +179,7 @@ class ServerRequest extends ServerRequestPsr7
     {
         return $this->isMethod('PATCH');
     }
+
     /**
      * Is this a DELETE request?
      *
@@ -187,6 +191,7 @@ class ServerRequest extends ServerRequestPsr7
     {
         return $this->isMethod('DELETE');
     }
+
     /**
      * Is this a HEAD request?
      *
@@ -198,6 +203,7 @@ class ServerRequest extends ServerRequestPsr7
     {
         return $this->isMethod('HEAD');
     }
+
     /**
      * Is this a OPTIONS request?
      *
@@ -209,6 +215,7 @@ class ServerRequest extends ServerRequestPsr7
     {
         return $this->isMethod('OPTIONS');
     }
+
     /**
      * Returns whether this is an AJAX (XMLHttpRequest) request.
      *
@@ -223,8 +230,9 @@ class ServerRequest extends ServerRequestPsr7
     {
         return $this->getHeaderLine('X-Requested-With') === 'XMLHttpRequest';
     }
+
     /**
-     * Is this an XHR request? it's an alias for isAjax()
+     * Is this an XHR request? it's an alias for isAjax().
      *
      * Note: This method is not part of the PSR-7 standard.
      *
@@ -246,6 +254,7 @@ class ServerRequest extends ServerRequestPsr7
     {
         return $this->IsAjax() && $this->hasHeader('X-Pjax');
     }
+
     /**
      * Get request content type.
      *
@@ -256,8 +265,10 @@ class ServerRequest extends ServerRequestPsr7
     public function getContentType()
     {
         $result = $this->getHeader('Content-Type');
+
         return $result ? $result[0] : null;
     }
+
     /**
      * Get request media type, if known.
      *
@@ -270,10 +281,11 @@ class ServerRequest extends ServerRequestPsr7
         $contentType = $this->getContentType();
         if ($contentType) {
             $contentTypeParts = preg_split('/\s*[;,]\s*/', $contentType);
+
             return strtolower($contentTypeParts[0]);
         }
-        return null;
     }
+
     /**
      * Get request media type params, if known.
      *
@@ -293,8 +305,10 @@ class ServerRequest extends ServerRequestPsr7
                 $contentTypeParams[strtolower($paramParts[0])] = $paramParts[1];
             }
         }
+
         return $contentTypeParams;
     }
+
     /**
      * Get request content character set, if known.
      *
@@ -308,8 +322,8 @@ class ServerRequest extends ServerRequestPsr7
         if (isset($mediaTypeParams['charset'])) {
             return $mediaTypeParams['charset'];
         }
-        return null;
     }
+
     /**
      * Get request content length, if known.
      *
@@ -320,7 +334,8 @@ class ServerRequest extends ServerRequestPsr7
     public function getContentLength()
     {
         $result = $this->headers->get('Content-Length');
-        return $result ? (int)$result[0] : null;
+
+        return $result ? (int) $result[0] : null;
     }
 
     /**
@@ -336,7 +351,6 @@ class ServerRequest extends ServerRequestPsr7
             return $this->getMethod() === strtoupper($method);
         }
     */
-
 
     /**
      * Is the request secure?
@@ -432,13 +446,15 @@ class ServerRequest extends ServerRequestPsr7
      *
      * Note: This method is not part of the PSR-7 standard.
      *
-     * @param  string $key
-     * @param  mixed  $default
+     * @param string $key
+     * @param mixed  $default
+     *
      * @return mixed
      */
     public function getServerParam(string $key, $default = null)
     {
         $serverParams = $this->getServerParams();
+
         return isset($serverParams[$key]) ? $serverParams[$key] : $default;
     }
 
@@ -473,7 +489,7 @@ class ServerRequest extends ServerRequestPsr7
      * Note: This method is not part of the PSR-7 standard.
      *
      * @param string $key     the parameter key
-     * @param mixed $default the default value
+     * @param mixed  $default the default value
      *
      * @return mixed the parameter value
      */
@@ -950,12 +966,12 @@ class ServerRequest extends ServerRequestPsr7
         return strtolower(trim(array_shift($parts)));
     }
 
-
-// TODO : récupéré de cakePHP
+    // TODO : récupéré de cakePHP
     private function getMediaType3(ServerRequestInterface $request)
     {
         list($type) = explode(';', $request->getHeaderLine('Content-Type'));
         $type = strtolower($type);
+
         return $type;
     }
 
@@ -1037,8 +1053,6 @@ class ServerRequest extends ServerRequestPsr7
     }
 
     //------------------------------------- END
-
-
 
     /**
      * Gets the request IP address.
@@ -1430,8 +1444,6 @@ function getIP()
         //return $this->_scriptUrl;
         return $scriptUrl;
     }
-
-
 
     //https://github.com/symfony/symfony/blob/master/src/Symfony/Component/HttpFoundation/Request.php
     /**
@@ -2724,35 +2736,46 @@ function getIP()
         return $security->unmaskToken($clientSuppliedToken) === $security->unmaskToken($trueToken);
     }
 
-//https://github.com/yiisoft/yii/blob/master/framework/base/CSecurityManager.php#L626
+    //https://github.com/yiisoft/yii/blob/master/framework/base/CSecurityManager.php#L626
+
     /**
      * Masks a token to make it uncompressible.
      * Applies a random mask to the token and prepends the mask used to the result making the string always unique.
      * Used to mitigate BREACH attack by randomizing how token is outputted on each request.
+     *
      * @param string $token An unmasked token.
+     *
      * @return string A masked token.
+     *
      * @since 1.1.18
      */
     public function maskToken($token)
     {
         // The number of bytes in a mask is always equal to the number of bytes in a token.
-        $mask=$this->generateRandomString($this->strlen($token));
-        return strtr(base64_encode($mask.($mask^$token)),'+/','-_');
+        $mask = $this->generateRandomString($this->strlen($token));
+
+        return strtr(base64_encode($mask . ($mask ^ $token)), '+/', '-_');
     }
+
     /**
      * Unmasks a token previously masked by `maskToken`.
+     *
      * @param string $maskedToken A masked token.
+     *
      * @return string An unmasked token, or an empty string in case of token format is invalid.
+     *
      * @since 1.1.18
      */
     public function unmaskToken($maskedToken)
     {
-        $decoded=base64_decode(strtr($maskedToken,'-_','+/'));
-        $length=$this->strlen($decoded)/2;
+        $decoded = base64_decode(strtr($maskedToken, '-_', '+/'));
+        $length = $this->strlen($decoded) / 2;
         // Check if the masked token has an even length.
-        if(!is_int($length))
+        if (! is_int($length)) {
             return '';
-        return $this->substr($decoded,$length,$length)^$this->substr($decoded,0,$length);
+        }
+
+        return $this->substr($decoded, $length, $length) ^ $this->substr($decoded, 0, $length);
     }
 
     //******************************************* END ******************************************
