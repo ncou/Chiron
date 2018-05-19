@@ -356,6 +356,12 @@ class ServerRequest extends ServerRequestPsr7
         return $this->getScheme() === 'https';
     }
 
+    // it's an alias for the function isSecure()
+    public function isSsl()
+    {
+        return $this->isSecure();
+    }
+
     //https://github.com/symfony/symfony/blob/master/src/Symfony/Component/HttpFoundation/Request.php
 
     /**
