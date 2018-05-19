@@ -10,10 +10,7 @@ declare(strict_types=1);
 namespace Tests\Http\Response;
 
 use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Response;
 use PHPUnit\Framework\TestCase;
-
-use Psr\Http\Message\StreamInterface;
 
 class ServerRequestTest extends TestCase
 {

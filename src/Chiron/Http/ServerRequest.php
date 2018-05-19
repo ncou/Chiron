@@ -135,7 +135,6 @@ class ServerRequest extends ServerRequestPsr7
         return $clone;
     }
 
-
     /**
      * Does this request use a given method?
      *
