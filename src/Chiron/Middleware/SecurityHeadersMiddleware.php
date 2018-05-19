@@ -110,6 +110,7 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
      * Get HSTS header.
      *
      * @see https://tools.ietf.org/html/rfc6797
+     *
      * @return array
      */
     private function hsts(): array
