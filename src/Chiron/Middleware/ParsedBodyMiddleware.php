@@ -6,6 +6,8 @@ namespace Chiron\Middleware;
 
 // TODO : regarder ici : https://github.com/juliangut/body-parser/blob/master/src/Parser.php   +  https://github.com/juliangut/body-parser/tree/master/src/Decoder
 
+//https://github.com/cakephp/cakephp/blob/master/src/Http/Middleware/BodyParserMiddleware.php
+
 // TODO : regarder ici : https://github.com/phapi/middleware-postbox/blob/master/src/Phapi/Middleware/PostBox/PostBox.php
 // TODO : regarder ici : https://github.com/relayphp/Relay.Middleware/blob/1.x/src/ContentHandler.php    +     https://github.com/relayphp/Relay.Middleware/blob/1.x/src/JsonContentHandler.php
 
@@ -317,4 +319,12 @@ class ParsedBodyMiddleware implements MiddlewareInterface
     ];*/
 
     // GET, HEAD, DELETE, OPTIONS and CONNECT
+
+    /**
+     * The HTTP methods to parse data on.
+     *
+     * @var array
+     */
+    //protected $methods = ['PUT', 'POST', 'PATCH', 'DELETE'];
+
 }

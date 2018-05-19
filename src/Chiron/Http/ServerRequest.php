@@ -77,25 +77,6 @@ class ServerRequest extends ServerRequestPsr7
     }
 
     /**
-     * Fetch cookie value from cookies sent by the client to the server.
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * @param string $name    the attribute name
-     * @param mixed  $default default value to return if the attribute does not exist
-     *
-     * @return mixed
-     */
-    public function getCookieParam($name, $default = null)
-    {
-        if (! $this->hasCookie($name)) {
-            return $default;
-        }
-
-        return $this->getCookieParams()[$name];
-    }
-
-    /**
      * Check if the cookie exist in the request.
      *
      * Note: This method is not part of the PSR-7 standard.
@@ -152,6 +133,197 @@ class ServerRequest extends ServerRequestPsr7
     }
 
     /**
+     * Is this a GET request?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return bool
+     */
+    public function isGet()
+    {
+        return $this->isMethod('GET');
+    }
+    /**
+     * Is this a POST request?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return bool
+     */
+    public function isPost()
+    {
+        return $this->isMethod('POST');
+    }
+    /**
+     * Is this a PUT request?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return bool
+     */
+    public function isPut()
+    {
+        return $this->isMethod('PUT');
+    }
+    /**
+     * Is this a PATCH request?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return bool
+     */
+    public function isPatch()
+    {
+        return $this->isMethod('PATCH');
+    }
+    /**
+     * Is this a DELETE request?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return bool
+     */
+    public function isDelete()
+    {
+        return $this->isMethod('DELETE');
+    }
+    /**
+     * Is this a HEAD request?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return bool
+     */
+    public function isHead()
+    {
+        return $this->isMethod('HEAD');
+    }
+    /**
+     * Is this a OPTIONS request?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return bool
+     */
+    public function isOptions()
+    {
+        return $this->isMethod('OPTIONS');
+    }
+    /**
+     * Returns whether this is an AJAX (XMLHttpRequest) request.
+     *
+     * Note that jQuery doesn't set the header in case of cross domain
+     * requests: https://stackoverflow.com/questions/8163703/cross-domain-ajax-doesnt-send-x-requested-with-header
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return bool whether this is an AJAX (XMLHttpRequest) request
+     */
+    public function isAjax()
+    {
+        return $this->getHeaderLine('X-Requested-With') === 'XMLHttpRequest';
+    }
+    /**
+     * Is this an XHR request? it's an alias for isAjax()
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return bool
+     */
+    public function isXhr()
+    {
+        return $this->isAjax();
+    }
+
+    /**
+     * Returns whether this is a PJAX request.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return bool whether this is a PJAX request
+     */
+    public function IsPjax()
+    {
+        return $this->IsAjax() && $this->hasHeader('X-Pjax');
+    }
+    /**
+     * Get request content type.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return string|null The request content type, if known
+     */
+    public function getContentType()
+    {
+        $result = $this->getHeader('Content-Type');
+        return $result ? $result[0] : null;
+    }
+    /**
+     * Get request media type, if known.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return string|null The request media type, minus content-type params
+     */
+    public function getMediaType()
+    {
+        $contentType = $this->getContentType();
+        if ($contentType) {
+            $contentTypeParts = preg_split('/\s*[;,]\s*/', $contentType);
+            return strtolower($contentTypeParts[0]);
+        }
+        return null;
+    }
+    /**
+     * Get request media type params, if known.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return array
+     */
+    public function getMediaTypeParams()
+    {
+        $contentType = $this->getContentType();
+        $contentTypeParams = [];
+        if ($contentType) {
+            $contentTypeParts = preg_split('/\s*[;,]\s*/', $contentType);
+            $contentTypePartsLength = count($contentTypeParts);
+            for ($i = 1; $i < $contentTypePartsLength; $i++) {
+                $paramParts = explode('=', $contentTypeParts[$i]);
+                $contentTypeParams[strtolower($paramParts[0])] = $paramParts[1];
+            }
+        }
+        return $contentTypeParams;
+    }
+    /**
+     * Get request content character set, if known.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return string|null
+     */
+    public function getContentCharset()
+    {
+        $mediaTypeParams = $this->getMediaTypeParams();
+        if (isset($mediaTypeParams['charset'])) {
+            return $mediaTypeParams['charset'];
+        }
+        return null;
+    }
+    /**
+     * Get request content length, if known.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return int|null
+     */
+    public function getContentLength()
+    {
+        $result = $this->headers->get('Content-Length');
+        return $result ? (int)$result[0] : null;
+    }
+
+    /**
      * Checks if the request method is of specified type.
      *
      * @param string $method Uppercase request method (GET, POST etc)
@@ -165,9 +337,135 @@ class ServerRequest extends ServerRequestPsr7
         }
     */
 
+
+    /**
+     * Is the request secure?
+     *
+     * @return bool
+     */
+    /*
+    public function isSecure()
+    {
+        $https = $this->getServerParam('HTTPS');
+
+        return ! empty($https) && ('off' !== strtolower($https));
+    }*/
+
+    public function isSecure()
+    {
+        return $this->getScheme() === 'https';
+    }
+
+    //https://github.com/symfony/symfony/blob/master/src/Symfony/Component/HttpFoundation/Request.php
+
+    /**
+     * Gets the request's scheme.
+     *
+     * @return string
+     */
+    // TODO : helper à virer, attention à bien modifier la méthode isSecure qui est dépendante de cette méthode !!!!
+    public function getScheme()
+    {
+        return $this->getUri()->getScheme();
+    }
+
+    //*******************************************
+    // https://github.com/Guzzle3/http/blob/master/Message/Request.php
+    //******************************************* START ******************************************
+
+    public function getPath()
+    {
+        return '/' . ltrim($this->getUri()->getPath(), '/');
+    }
+
+    public function getPort()
+    {
+        return $this->getUri()->getPort();
+    }
+
     /*******************************************************************************
      * Parameters (e.g., POST and GET data)
      ******************************************************************************/
+
+    /**
+     * Fetch parameter value from query string.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function getQueryParam(string $key, $default = null)
+    {
+        $getParams = $this->getQueryParams();
+        $result = $default;
+        if (isset($getParams[$key])) {
+            $result = $getParams[$key];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Fetch cookie value from cookies sent by the client to the server.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @param string $name    the cookie name
+     * @param mixed  $default default value to return if the attribute does not exist
+     *
+     * @return mixed
+     */
+    public function getCookieParam(string $name, $default = null)
+    {
+        if (! $this->hasCookie($name)) {
+            return $default;
+        }
+
+        return $this->getCookieParams()[$name];
+    }
+
+    /**
+     * Retrieve a server parameter.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @param  string $key
+     * @param  mixed  $default
+     * @return mixed
+     */
+    public function getServerParam(string $key, $default = null)
+    {
+        $serverParams = $this->getServerParams();
+        return isset($serverParams[$key]) ? $serverParams[$key] : $default;
+    }
+
+    /**
+     * Fetch parameter value from request body.
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    public function getParsedBodyParam(string $key, $default = null)
+    {
+        $postParams = $this->getParsedBody();
+        $result = $default;
+        if (is_array($postParams) && isset($postParams[$key])) {
+            $result = $postParams[$key];
+        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
+            $result = $postParams->$key;
+        }
+
+        return $result;
+    }
+
+    // TODO : il faudrait éventuellement créer la méthode : getUploadedFile(string $name, $default = null);
 
     /**
      * Fetch request parameter value from body or query string (in that order).
@@ -175,11 +473,12 @@ class ServerRequest extends ServerRequestPsr7
      * Note: This method is not part of the PSR-7 standard.
      *
      * @param string $key     the parameter key
-     * @param string $default the default value
+     * @param mixed $default the default value
      *
      * @return mixed the parameter value
      */
-    public function getParam($key, $default = null)
+    // TODO : méthode pas vraiment utile !!!
+    public function getParam(string $key, $default = null)
     {
         $postParams = $this->getParsedBody();
         $getParams = $this->getQueryParams();
@@ -196,50 +495,6 @@ class ServerRequest extends ServerRequestPsr7
     }
 
     /**
-     * Fetch parameter value from request body.
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * @param string $key
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    public function getParsedBodyParam($key, $default = null)
-    {
-        $postParams = $this->getParsedBody();
-        $result = $default;
-        if (is_array($postParams) && isset($postParams[$key])) {
-            $result = $postParams[$key];
-        } elseif (is_object($postParams) && property_exists($postParams, $key)) {
-            $result = $postParams->$key;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Fetch parameter value from query string.
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * @param string $key
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    public function getQueryParam($key, $default = null)
-    {
-        $getParams = $this->getQueryParams();
-        $result = $default;
-        if (isset($getParams[$key])) {
-            $result = $getParams[$key];
-        }
-
-        return $result;
-    }
-
-    /**
      * Fetch associative array of body and query string parameters.
      *
      * Note: This method is not part of the PSR-7 standard.
@@ -248,6 +503,7 @@ class ServerRequest extends ServerRequestPsr7
      *
      * @return array|null
      */
+    // TODO : méthode pas vraiment utile !!!
     public function getParams(array $only = null)
     {
         $params = $this->getQueryParams();
@@ -304,10 +560,11 @@ class ServerRequest extends ServerRequestPsr7
      *
      * @return string
      */
+    /*
     public function getOriginalMethod()
     {
         return $this->method;
-    }
+    }*/
 
     /**
      * Gets the "real" request method.
@@ -465,27 +722,6 @@ class ServerRequest extends ServerRequestPsr7
         return $this->headers->get('CONTENT_LENGTH');
     }
     */
-
-    /**
-     * Is the request from Ajax.
-     *
-     * @return bool
-     */
-    public function isAjax()
-    {
-        return 'XMLHttpRequest' === $this->headers['X-Requested-With'];
-        // TODO : regarder ici comment c'est testé => https://benjaminlistwon.com/blog/adding-more-robust-ajax-detection-in-laravel/
-    }
-
-    /**
-     * Returns whether this is a PJAX request.
-     *
-     * @return bool whether this is a PJAX request
-     */
-    public function isPjax()
-    {
-        return $this->isAjax() && $this->headers->exists('HTTP_X_PJAX');
-    }
 
     /**
      * Determine if the request is sending JSON.
@@ -683,28 +919,13 @@ class ServerRequest extends ServerRequestPsr7
     //------------------------------------  END
 
     /**
-     * Get request content type.
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * @return string|null The request content type, if known
-     */
-    public function getContentType2()
-    {
-        //$result = $this->getHeader('Content-Type');
-        $result = $this->headers['Content-Type'];
-
-        return $result ? $result[0] : null;
-    }
-
-    /**
      * Get request media type, if known.
      *
      * Note: This method is not part of the PSR-7 standard.
      *
      * @return string|null The request media type, minus content-type params
      */
-    public function getMediaType()
+    public function getMediaType1()
     {
         $contentType = $this->getContentType2();
         if ($contentType) {
@@ -729,6 +950,15 @@ class ServerRequest extends ServerRequestPsr7
         return strtolower(trim(array_shift($parts)));
     }
 
+
+// TODO : récupéré de cakePHP
+    private function getMediaType3(ServerRequestInterface $request)
+    {
+        list($type) = explode(';', $request->getHeaderLine('Content-Type'));
+        $type = strtolower($type);
+        return $type;
+    }
+
     // ------------------------------------
     // https://github.com/symfony/http-foundation/blob/f5c38b8dafc947dae251045d52deaab15c3496ab/Request.php#L1203
 
@@ -737,7 +967,7 @@ class ServerRequest extends ServerRequestPsr7
      *
      * @return string|null The format (null if no content type is present)
      */
-    public function getContentType()
+    public function getContentType1()
     {
         return $this->getFormat($this->headers->get('CONTENT_TYPE'));
     }
@@ -808,17 +1038,7 @@ class ServerRequest extends ServerRequestPsr7
 
     //------------------------------------- END
 
-    /**
-     * Is the request secure?
-     *
-     * @return bool
-     */
-    public function isSecure()
-    {
-        $https = $this->getServerParam('HTTPS');
 
-        return ! empty($https) && ('off' !== strtolower($https));
-    }
 
     /**
      * Gets the request IP address.
@@ -1211,18 +1431,7 @@ function getIP()
         return $scriptUrl;
     }
 
-    //https://github.com/symfony/symfony/blob/master/src/Symfony/Component/HttpFoundation/Request.php
 
-    /**
-     * Gets the request's scheme.
-     *
-     * @return string
-     */
-    public function getScheme()
-    {
-        return $this->uri->getScheme();
-        //return $this->isSecure() ? 'https' : 'http';
-    }
 
     //https://github.com/symfony/symfony/blob/master/src/Symfony/Component/HttpFoundation/Request.php
     /**
@@ -1304,20 +1513,6 @@ function getIP()
         $output .= (string) $this->getBody();
 
         return $output;
-    }
-
-    //*******************************************
-    // https://github.com/Guzzle3/http/blob/master/Message/Request.php
-    //******************************************* START ******************************************
-
-    public function getPath()
-    {
-        return '/' . ltrim($this->url->getPath(), '/');
-    }
-
-    public function getPort()
-    {
-        return $this->url->getPort();
     }
 
     //******************************************* END ******************************************
@@ -1998,99 +2193,6 @@ function getIP()
     //******************************************* START ******************************************
 
     /**
-     * Returns whether this is a GET request.
-     *
-     * @return bool whether this is a GET request
-     */
-    public function getIsGet()
-    {
-        return $this->getMethod() === 'GET';
-    }
-
-    /**
-     * Returns whether this is an OPTIONS request.
-     *
-     * @return bool whether this is a OPTIONS request
-     */
-    public function getIsOptions()
-    {
-        return $this->getMethod() === 'OPTIONS';
-    }
-
-    /**
-     * Returns whether this is a HEAD request.
-     *
-     * @return bool whether this is a HEAD request
-     */
-    public function getIsHead()
-    {
-        return $this->getMethod() === 'HEAD';
-    }
-
-    /**
-     * Returns whether this is a POST request.
-     *
-     * @return bool whether this is a POST request
-     */
-    public function getIsPost()
-    {
-        return $this->getMethod() === 'POST';
-    }
-
-    /**
-     * Returns whether this is a DELETE request.
-     *
-     * @return bool whether this is a DELETE request
-     */
-    public function getIsDelete()
-    {
-        return $this->getMethod() === 'DELETE';
-    }
-
-    /**
-     * Returns whether this is a PUT request.
-     *
-     * @return bool whether this is a PUT request
-     */
-    public function getIsPut()
-    {
-        return $this->getMethod() === 'PUT';
-    }
-
-    /**
-     * Returns whether this is a PATCH request.
-     *
-     * @return bool whether this is a PATCH request
-     */
-    public function getIsPatch()
-    {
-        return $this->getMethod() === 'PATCH';
-    }
-
-    /**
-     * Returns whether this is an AJAX (XMLHttpRequest) request.
-     *
-     * Note that jQuery doesn't set the header in case of cross domain
-     * requests: https://stackoverflow.com/questions/8163703/cross-domain-ajax-doesnt-send-x-requested-with-header
-     *
-     * @return bool whether this is an AJAX (XMLHttpRequest) request
-     */
-    public function getIsAjax()
-    {
-        return $this->headers->get('X-Requested-With') === 'XMLHttpRequest';
-    }
-
-    /**
-     * Returns whether this is a PJAX request.
-     *
-     * @return bool whether this is a PJAX request
-     */
-    public function getIsPjax()
-    {
-        return $this->getIsAjax() && $this->headers->has('X-Pjax');
-    }
-
-    /**
      * Returns the schema and host part of the current request URL.
      *
      * The returned URL does not have an ending slash.
@@ -2620,6 +2722,37 @@ function getIP()
         $security = Yii::$app->security;
 
         return $security->unmaskToken($clientSuppliedToken) === $security->unmaskToken($trueToken);
+    }
+
+//https://github.com/yiisoft/yii/blob/master/framework/base/CSecurityManager.php#L626
+    /**
+     * Masks a token to make it uncompressible.
+     * Applies a random mask to the token and prepends the mask used to the result making the string always unique.
+     * Used to mitigate BREACH attack by randomizing how token is outputted on each request.
+     * @param string $token An unmasked token.
+     * @return string A masked token.
+     * @since 1.1.18
+     */
+    public function maskToken($token)
+    {
+        // The number of bytes in a mask is always equal to the number of bytes in a token.
+        $mask=$this->generateRandomString($this->strlen($token));
+        return strtr(base64_encode($mask.($mask^$token)),'+/','-_');
+    }
+    /**
+     * Unmasks a token previously masked by `maskToken`.
+     * @param string $maskedToken A masked token.
+     * @return string An unmasked token, or an empty string in case of token format is invalid.
+     * @since 1.1.18
+     */
+    public function unmaskToken($maskedToken)
+    {
+        $decoded=base64_decode(strtr($maskedToken,'-_','+/'));
+        $length=$this->strlen($decoded)/2;
+        // Check if the masked token has an even length.
+        if(!is_int($length))
+            return '';
+        return $this->substr($decoded,$length,$length)^$this->substr($decoded,0,$length);
     }
 
     //******************************************* END ******************************************

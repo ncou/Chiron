@@ -9,6 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+//https://github.com/cakephp/cakephp/blob/master/src/Http/ResponseEmitter.php
 //https://github.com/narrowspark/http-emitter/blob/master/src/AbstractSapiEmitter.php
 //https://github.com/narrowspark/http-emitter/blob/master/src/SapiStreamEmitter.php
 

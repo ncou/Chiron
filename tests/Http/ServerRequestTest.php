@@ -64,4 +64,56 @@ class ServerRequestTest extends TestCase
         $this->assertSame('bar', $request->getCookieParam('foo'));
         $this->assertSame('bar', $request->getCookieParam('not_exist', 'bar'));
     }
+
+    public function testServerRequestGetSchemeHTTPS_on()
+    {
+        $_COOKIE['foo'] = 'bar';
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/',
+            'REQUEST_METHOD'         => 'GET',
+            'HTTPS'                  => 'on',
+        ]);
+
+        $this->assertSame('https', $request->getScheme());
+        $this->assertTrue($request->isSecure());
+    }
+
+    public function testServerRequestGetSchemeHTTPS_off()
+    {
+        $_COOKIE['foo'] = 'bar';
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/',
+            'REQUEST_METHOD'         => 'GET',
+            'HTTPS'                  => 'off',
+        ]);
+
+        $this->assertSame('http', $request->getScheme());
+        $this->assertFalse($request->isSecure());
+    }
+
+    public function testServerRequestGetSchemeHTTPS()
+    {
+        $_COOKIE['foo'] = 'bar';
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/',
+            'REQUEST_METHOD'         => 'GET',
+            'REQUEST_SCHEME'         => 'https'
+        ]);
+
+        $this->assertSame('https', $request->getScheme());
+        $this->assertTrue($request->isSecure());
+    }
+
+    public function testServerRequestGetSchemeHTTP()
+    {
+        $_COOKIE['foo'] = 'bar';
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/',
+            'REQUEST_METHOD'         => 'GET',
+            'REQUEST_SCHEME'         => 'http'
+        ]);
+
+        $this->assertSame('http', $request->getScheme());
+        $this->assertFalse($request->isSecure());
+    }
 }

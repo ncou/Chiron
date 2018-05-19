@@ -8,6 +8,8 @@
  * @license   https://github.com/slimphp/Slim/blob/3.x/LICENSE.md (MIT License)
  */
 
+//https://github.com/cakephp/cakephp/blob/master/src/Http/Cookie/CookieCollection.php#L338
+
 namespace Chiron;
 
 use DateTimeImmutable;
@@ -87,6 +89,7 @@ class CookiesManager
      *
      * @return string
      */
+    //https://github.com/cakephp/cakephp/blob/master/src/Http/Cookie/Cookie.php#L159
     public static function toHeader($name, array $properties)
     {
         $result = rawurlencode($name) . '=' . rawurlencode($properties['value']);
@@ -177,4 +180,27 @@ class CookiesManager
 
         return $cookies;
     }
+
+
+    /**
+     * Validates the cookie name
+     *
+     * @param string $name Name of the cookie
+     * @return void
+     * @throws \InvalidArgumentException
+     * @link https://tools.ietf.org/html/rfc2616#section-2.2 Rules for naming cookies.
+     */
+    //https://github.com/cakephp/cakephp/blob/master/src/Http/Cookie/Cookie.php#L224
+    /*
+    protected function validateName($name)
+    {
+        if (preg_match("/[=,;\t\r\n\013\014]/", $name)) {
+            throw new InvalidArgumentException(
+                sprintf('The cookie name `%s` contains invalid characters.', $name)
+            );
+        }
+        if (empty($name)) {
+            throw new InvalidArgumentException('The cookie name cannot be empty.');
+        }
+    }*/
 }

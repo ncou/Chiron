@@ -6,6 +6,8 @@ namespace Chiron;
 
 use Psr\Http\Message\ResponseInterface;
 
+//https://github.com/paragonie/csp-builder/blob/master/src/CSPBuilder.php
+
 /**
  * Manage the CSP Header.
  */
