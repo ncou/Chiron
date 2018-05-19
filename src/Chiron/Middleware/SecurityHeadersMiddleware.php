@@ -99,17 +99,37 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
     private function compileHeaders(): array
     {
         return array_merge(
-            $this->security['settings']['enable-hpkp'] ? $this->hpkp() : [],
             $this->security['settings']['enable-hsts'] ? $this->hsts() : [],
+            $this->security['settings']['enable-hpkp'] ? $this->hpkp() : [],
             $this->security['settings']['enable-ect'] ? $this->ect() : [],
             $this->security['settings']['enable-extras'] ? $this->extras() : []
         );
     }
 
     /**
+     * Get HSTS header.
+     *
+     * @see https://tools.ietf.org/html/rfc6797
+     * @return array
+     */
+    private function hsts(): array
+    {
+        $hsts = "max-age={$this->security['hsts']['max-age']}";
+
+        if ($this->security['hsts']['include-sub-domains']) {
+            $hsts .= '; includeSubDomains';
+        }
+        if ($this->security['hsts']['preload']) {
+            $hsts .= '; preload';
+        }
+
+        return ['Strict-Transport-Security' => $hsts];
+    }
+
+    /**
      * Get HPKP header.
      *
-     * @see https://developer.mozilla.org/fr/docs/Web/Security/Public_Key_Pinning
+     * @see https://tools.ietf.org/html/rfc7469
      *
      * @return array
      */
@@ -135,26 +155,9 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Get HSTS header.
+     * Get Expect-CT header.
      *
-     * @return array
-     */
-    private function hsts(): array
-    {
-        $hsts = "max-age={$this->security['hsts']['max-age']}";
-
-        if ($this->security['hsts']['include-sub-domains']) {
-            $hsts .= '; includeSubDomains';
-        }
-        if ($this->security['hsts']['preload']) {
-            $hsts .= '; preload';
-        }
-
-        return ['Strict-Transport-Security' => $hsts];
-    }
-
-    /**
-     * Get Expected CT header.
+     * @see https://tools.ietf.org/html/draft-ietf-httpbis-expect-ct-03
      *
      * @return array
      */

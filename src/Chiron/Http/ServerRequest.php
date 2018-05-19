@@ -135,6 +135,37 @@ class ServerRequest extends ServerRequestPsr7
         return $clone;
     }
 
+
+    /**
+     * Does this request use a given method?
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @param string $method HTTP method
+     *
+     * @return bool
+     */
+    public function isMethod(string $method): bool
+    {
+        // TODO : on devrait pas faire un === aprés avoir fait un lowercase sur la méthode ?
+        //return $this->getMethod() === $method;
+        return strcasecmp($this->getMethod(), $method) === 0;
+    }
+
+    /**
+     * Checks if the request method is of specified type.
+     *
+     * @param string $method Uppercase request method (GET, POST etc)
+     *
+     * @return bool
+     */
+    /*
+        public function isMethod($method)
+        {
+            return $this->getMethod() === strtoupper($method);
+        }
+    */
+
     /*******************************************************************************
      * Parameters (e.g., POST and GET data)
      ******************************************************************************/
@@ -291,35 +322,6 @@ class ServerRequest extends ServerRequestPsr7
     {
         return strtoupper($this->server->get('REQUEST_METHOD', 'GET'));
     }*/
-
-    /**
-     * Does this request use a given method?
-     *
-     * Note: This method is not part of the PSR-7 standard.
-     *
-     * @param string $method HTTP method
-     *
-     * @return bool
-     */
-    public function isMethod($method)
-    {
-        // TODO : on devrait pas faire un === aprés avoir fait un lowercase sur la méthode ?
-        return $this->getMethod() === $method;
-    }
-
-    /**
-     * Checks if the request method is of specified type.
-     *
-     * @param string $method Uppercase request method (GET, POST etc)
-     *
-     * @return bool
-     */
-    /*
-        public function isMethod($method)
-        {
-            return $this->getMethod() === strtoupper($method);
-        }
-    */
 
     /**
      * Get request URI segment.
