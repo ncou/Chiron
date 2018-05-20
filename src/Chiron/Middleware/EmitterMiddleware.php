@@ -9,7 +9,17 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+//https://framework.zend.com/blog/2017-09-14-diactoros-emitters.html
 //https://github.com/cakephp/cakephp/blob/master/src/Http/ResponseEmitter.php
+
+// http://infinityquest.com/php-tutorials/program-http-range-in-php/     <== gestion des erreurs 416 quand le header "Range" n'est pas correct + un code 206 pour la response partielle.
+//https://github.com/pomle/php-serveFilePartial/blob/master/ServeFilePartial.inc.php
+//https://github.com/mukesh-kumar11/EasyCatalog/blob/aa028b4837ca961636938fea433ad39fdca7a74a/vendor/sabre/dav/lib/DAV/Server.php#L634
+//https://github.com/mukesh-kumar11/EasyCatalog/blob/aa028b4837ca961636938fea433ad39fdca7a74a/vendor/sabre/dav/lib/DAV/CorePlugin.php#L152
+
+//https://github.com/zendframework/zend-diactoros/blob/master/src/Response/SapiEmitter.php
+//https://github.com/zendframework/zend-diactoros/blob/master/src/Response/SapiStreamEmitter.php
+
 //https://github.com/narrowspark/http-emitter/blob/master/src/AbstractSapiEmitter.php
 //https://github.com/narrowspark/http-emitter/blob/master/src/SapiStreamEmitter.php
 
@@ -180,7 +190,7 @@ class EmitterMiddleware implements MiddlewareInterface
         //https://github.com/http-interop/response-sender/blob/master/src/functions.php#L28
         $stream = $response->getBody();
 
-        // rewind the stream in case the cursor il not at the start of the stream (if you have used ->getContent() before the cursor will be at the end of the stream)
+        // rewind the stream in case the cursor is not at the start of the stream (if you have used ->getContent() before the cursor will be at the end of the stream)
         if ($stream->isSeekable()) {
             $stream->rewind();
         }

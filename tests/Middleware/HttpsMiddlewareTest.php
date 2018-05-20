@@ -40,6 +40,19 @@ class HttpsMiddlewareTest extends TestCase
         $this->assertEquals(json_encode('SUCCESS'), (string) $result->getBody());
     }
 
+    public function testIsHttpsCaseSensitive()
+    {
+        $request = $this->request->withUri(
+            new Uri('hTTpS://domain.com')
+        );
+        $handler = function ($request) {
+            return (new Response())->withJson('SUCCESS');
+        };
+        $middleware = $this->middleware;
+        $result = $middleware->process($request, new HandlerProxy2($handler));
+        $this->assertEquals(json_encode('SUCCESS'), (string) $result->getBody());
+    }
+
     public function testNotHttps()
     {
         $request = $this->request->withUri(

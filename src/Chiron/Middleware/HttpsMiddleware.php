@@ -53,9 +53,7 @@ class HttpsMiddleware implements MiddlewareInterface
      */
     protected function isHttps(ServerRequestInterface $request): bool
     {
-        $uri = $request->getUri();
-        // TODO : rajouter un helper dans la classe request du genre 'isSecure()' qui retourne si la connexion est en https. ca sera plus simple
-        return strtolower($uri->getScheme()) === 'https';
+        return $request->getUri()->getScheme() === 'https';
     }
 
     /**
