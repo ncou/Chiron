@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
-use Chiron\Http\Factory\StreamFactory;
 use Chiron\Http\Factory\ServerRequestFactory;
+use Chiron\Http\Factory\StreamFactory;
 use Chiron\Http\Response;
 use Chiron\Middleware\ParsedBodyMiddleware;
 use Chiron\Tests\Utils\HandlerProxy2;

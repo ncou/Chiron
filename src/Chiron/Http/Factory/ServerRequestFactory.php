@@ -22,12 +22,11 @@ require_once __DIR__ . '/../../../../vendor/nyholm/psr7/src/Uri.php';
 
 //namespace Viserio\Component\HttpFactory;
 
-use Chiron\Http\Factory\StreamFactory;
-use Nyholm\Psr7\Uri;
 use Chiron\Http\ServerRequest;
-//use Chiron\Http\Uri;
 use Interop\Http\Factory\ServerRequestFactoryInterface;
+//use Chiron\Http\Uri;
 use InvalidArgumentException;
+use Nyholm\Psr7\Uri;
 
 //use Psr\Http\Message\UploadedFileInterface;
 
