@@ -48,7 +48,6 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class EmitterMiddleware implements MiddlewareInterface
 {
-
     /** @var int max buffer size (8Kb) */
     private $maxBufferLength = 8 * 1024;
 
@@ -72,7 +71,6 @@ class EmitterMiddleware implements MiddlewareInterface
         // Emit response (Headers + Status + Body)
         $this->emitHeaders($response);
 
-
         // Response to a HEAD request "MUST NOT" include a message-body
         if (! $request->isMethod('HEAD')) {
             $range = $this->parseContentRange($response->getHeaderLine('Content-Range'));
@@ -81,7 +79,6 @@ class EmitterMiddleware implements MiddlewareInterface
             } else {
                 $this->emitBody($response, $this->maxBufferLength);
             }
-
         }
 
         $this->closeConnexion();
@@ -92,6 +89,7 @@ class EmitterMiddleware implements MiddlewareInterface
     public function setMaxBufferLength(int $length): self
     {
         $this->maxBufferLength = $length;
+
         return $this;
     }
 
@@ -128,7 +126,6 @@ class EmitterMiddleware implements MiddlewareInterface
      * the response; if a reason phrase is available, it, too, is emitted.
      *
      * @param \Psr\Http\Message\ResponseInterface $response The response to emit
-     * @return void
      */
     /*
     protected function emitStatusLine(ResponseInterface $response)
@@ -218,10 +215,8 @@ class EmitterMiddleware implements MiddlewareInterface
     /**
      * Emit the message body.
      *
-     * @param \Psr\Http\Message\ResponseInterface $response The response to emit
-     * @param int $maxBufferLength The chunk size to emit
-     *
-     * @return void
+     * @param \Psr\Http\Message\ResponseInterface $response        The response to emit
+     * @param int                                 $maxBufferLength The chunk size to emit
      */
     // TODO : regarder comment c'est géré ici : https://github.com/symfony/http-foundation/blob/ed75b71c6498bd9c020dea99f723fd5b20aae986/Response.php#L336
     private function emitBody(ResponseInterface $response, int $chunkSize): void
@@ -246,6 +241,7 @@ class EmitterMiddleware implements MiddlewareInterface
 
         if (! $body->isReadable()) {
             echo $body;
+
             return;
         }
 
@@ -260,11 +256,9 @@ class EmitterMiddleware implements MiddlewareInterface
     /**
      * Emit a range of the message body.
      *
-     * @param array $range
+     * @param array             $range
      * @param ResponseInterface $response
-     * @param int $maxBufferLength
-     *
-     * @return void
+     * @param int               $maxBufferLength
      */
     private function emitBodyRange(array $range, ResponseInterface $response, int $chunkSize): void
     {
@@ -279,12 +273,13 @@ class EmitterMiddleware implements MiddlewareInterface
 
         if (! $body->isReadable()) {
             echo substr($body->getContents(), $first, $length);
+
             return;
         }
 
         $remaining = $length;
         while ($remaining >= $chunkSize && ! $body->eof()) {
-            $contents   = $body->read($chunkSize);
+            $contents = $body->read($chunkSize);
             $remaining -= strlen($contents);
             echo $contents;
         }
@@ -293,8 +288,6 @@ class EmitterMiddleware implements MiddlewareInterface
             echo $body->read($remaining);
         }
     }
-
-
 
     private function closeConnexion(): void
     {
@@ -605,22 +598,24 @@ class EmitterMiddleware implements MiddlewareInterface
 
     /**
      * Parse content-range header
-     * https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.16
+     * https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.16.
      *
      * @param string $header The Content-Range header to parse.
+     *
      * @return false|array [unit, first, last, length]; returns false if no
-     *     content range or an invalid content range is provided
+     *                     content range or an invalid content range is provided
      */
     protected function parseContentRange($header)
     {
         if (preg_match('/(?P<unit>[\w]+)\s+(?P<first>\d+)-(?P<last>\d+)\/(?P<length>\d+|\*)/', $header, $matches)) {
             return [
                 $matches['unit'],
-                (int)$matches['first'],
-                (int)$matches['last'],
-                $matches['length'] === '*' ? '*' : (int)$matches['length'],
+                (int) $matches['first'],
+                (int) $matches['last'],
+                $matches['length'] === '*' ? '*' : (int) $matches['length'],
             ];
         }
+
         return false;
     }
 }
