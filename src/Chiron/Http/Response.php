@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Http;
 
+// TODO : faire un implement de cette classe avec la classe "https://github.com/php-fig/http-message-util" StatusCodeInterface
+
 // cookies :     https://github.com/michaelbromley/drawACatApp/tree/master/api/Slim/Http
 
 //https://github.com/Guzzle3/http/blob/master/Message/Response.php

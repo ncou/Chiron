@@ -192,29 +192,26 @@ class Router
             if ($match) {
                 // check HTTP method requirement
                 if ($requiredMethods = $route->getAllowedMethods()) {
-                    // HEAD and GET are equivalent as per RFC
-                    if ('HEAD' === $method = $requestMethod) {
-                        $method = 'GET';
-                    }
-                    if (! in_array($method, $requiredMethods)) {
+                    if (! in_array($requestMethod, $requiredMethods)) {
                         $allowedMethods = array_merge($allowedMethods, $requiredMethods);
-
                         continue;
                     }
                 }
 
-                //return [self::FOUND, $route, $this->mergeDefaults($params, $route->getDefaults())];
                 return RouteResult::fromRoute($route, $this->mergeDefaults($params, $route->getDefaults()));
             }
         }
 
-        // If there are no allowed methods the route simply does not exist
+        // If there are no allowed methods, it means the route simply does not exist
         if ($allowedMethods) {
-            //return [self::METHOD_NOT_ALLOWED, array_unique($allowedMethods)];
+            // handle the special case for "HEAD" as per RFC, an HEAD request is like a GET but without the body.
+            // We try again to do a match if the request is an HEAD, but we simulate a GET request.
+            if ($requestMethod === 'HEAD') {
+                return $this->match($request->withMethod('GET'));
+            }
             // TODO : vérifier si le array_unique est nécessaire !!!!!!
             return RouteResult::fromRouteFailure(array_unique($allowedMethods));
         }
-        //return [self::NOT_FOUND];
         return RouteResult::fromRouteFailure(RouteResult::HTTP_METHOD_ANY);
     }
 

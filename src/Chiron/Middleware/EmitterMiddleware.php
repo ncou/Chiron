@@ -72,14 +72,14 @@ class EmitterMiddleware implements MiddlewareInterface
         $this->emitHeaders($response);
 
         // Response to a HEAD request "MUST NOT" include a message-body
-        if (! $request->isMethod('HEAD')) {
+//        if (! $request->isMethod('HEAD')) {
             $range = $this->parseContentRange($response->getHeaderLine('Content-Range'));
             if (is_array($range) && $range[0] === 'bytes') {
                 $this->emitBodyRange($range, $response, $this->maxBufferLength);
             } else {
                 $this->emitBody($response, $this->maxBufferLength);
             }
-        }
+//        }
 
         $this->closeConnexion();
 

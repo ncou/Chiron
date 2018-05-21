@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Http;
 
+// TODO : faire un implement de cette classe avec la classe "https://github.com/php-fig/http-message-util" RequestMethodInterface
+
 /*
 require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/MessageFactory.php';
 require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/ServerRequestFactory.php';

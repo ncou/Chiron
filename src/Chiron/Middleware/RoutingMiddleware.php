@@ -11,6 +11,8 @@ namespace Chiron\Middleware;
 
 use Chiron\Http\Exception\MethodNotAllowedHttpException;
 use Chiron\Http\Exception\NotFoundHttpException;
+use Chiron\Http\NullStream;
+use Chiron\Http\Response;
 use Chiron\Routing\Router;
 use Chiron\Routing\RouteResult;
 use Psr\Http\Message\ResponseInterface;
@@ -39,8 +41,14 @@ class RoutingMiddleware implements MiddlewareInterface
         $matched = $this->router->match($request);
 
         if ($matched->isMethodFailure()) {
-            // TODO : utiliser un middleware pour gérer ce cas là : https://github.com/zendframework/zend-expressive-router/blob/master/src/Middleware/MethodNotAllowedMiddleware.php
-            throw new MethodNotAllowedHttpException($matched->getAllowedMethods());
+            $allowedMethods = $matched->getAllowedMethods();
+            // The OPTIONS request should send back a response with some headers like "Allow" header.
+            // TODO : vérifier le comportement avec CORS.
+            if ($request->getMethod() === 'OPTIONS') {
+                //array_unshift($allowedMethods, 'OPTIONS');
+                return (new Response())->withHeader('Allow', implode(', ', array_merge(['OPTIONS'], $allowedMethods)));
+            }
+            throw new MethodNotAllowedHttpException($allowedMethods);
         } elseif ($matched->isFailure()) {
             throw new NotFoundHttpException();
         }
@@ -53,8 +61,16 @@ class RoutingMiddleware implements MiddlewareInterface
         foreach ($matched->getMatchedParams() as $param => $value) {
             $request = $request->withAttribute($param, $value);
         }
+        // Inject the actual route result in the request
+        $request = $request->withAttribute(RouteResult::class, $matched);
+        // Execute the next handler
+        $response = $handler->handle($request);
+        // As per RFC, HEAD request can't have a body.
+        // TODO : déplacer ce bout de code dans le EmitterMiddleware ????
+        if ($request->getMethod() === 'HEAD') {
+            $response = $response->withBody(new NullStream());
+        }
 
-        // Inject the actual route result in the request and execute the next handler
-        return $handler->handle($request->withAttribute(RouteResult::class, $matched));
+        return $response;
     }
 }

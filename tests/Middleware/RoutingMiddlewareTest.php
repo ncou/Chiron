@@ -11,15 +11,20 @@ declare(strict_types=1);
 namespace Chiron\Tests\Middleware;
 
 use Chiron\Middleware\RoutingMiddleware;
+use Chiron\Middleware\DispatcherMiddleware;
 use Chiron\Routing\Route;
 use Chiron\Routing\Router;
 use Chiron\Routing\RouteResult;
 //use Psr\Http\Server\MiddlewareInterface;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Prophecy\ObjectProphecy;
+//use Prophecy\Prophecy\ObjectProphecy;
+use Chiron\Tests\Utils\HandlerProxy2;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Chiron\Http\Factory\ServerRequestFactory;
+use Chiron\Http\Response;
+use Chiron\Handler\Stack\RequestHandlerStack;
 
 class RoutingMiddlewareTest extends TestCase
 {
@@ -40,58 +45,282 @@ class RoutingMiddlewareTest extends TestCase
 
     protected function setUp()
     {
-        $this->router = $this->prophesize(Router::class);
-        $this->request = $this->prophesize(ServerRequestInterface::class);
-        $this->response = $this->prophesize(ResponseInterface::class);
-        $this->handler = $this->prophesize(RequestHandlerInterface::class);
-        $this->middleware = new RoutingMiddleware($this->router->reveal());
+        $this->empty = function ($request) {
+            return new Response(204);
+        };
+    }
+
+    public function testRouteFound()
+    {
+        $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foo',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+
+        $handler = function ($request) {
+            $response = (new Response(200))->withHeader('X-Custom', 'foobar');
+            $response->getBody()->write('Found!');
+            return $response;
+        };
+
+        $router = new Router();
+        $router->map('/foo', new HandlerProxy2($handler))->method('GET');
+
+        $middlewareRouting = new RoutingMiddleware($router);
+        $middlewareDispatcher = new DispatcherMiddleware();
+
+
+        $requestHandler->prepend($middlewareRouting);
+        $requestHandler->prepend($middlewareDispatcher);
+
+
+        //$response = $middleware->process($request, new HandlerProxy2($this->empty));
+        $response = $requestHandler->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($response->hasHeader('X-Custom'));
+        $this->assertSame('Found!', (string) $response->getBody());
+    }
+
+    public function testRouteFoundWithAttributes()
+    {
+        $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foo/123456/',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+
+        $handler = function ($request) {
+            $id = $request->getAttribute('id');
+            $response = new Response(200);
+            $response->getBody()->write('Found! id='.$id);
+            return $response;
+        };
+
+        $router = new Router();
+        $router->map('/foo/[i:id]/', new HandlerProxy2($handler))->method('GET');
+
+        $middlewareRouting = new RoutingMiddleware($router);
+        $middlewareDispatcher = new DispatcherMiddleware();
+
+
+        $requestHandler->prepend($middlewareRouting);
+        $requestHandler->prepend($middlewareDispatcher);
+
+
+        //$response = $middleware->process($request, new HandlerProxy2($this->empty));
+        $response = $requestHandler->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame('Found! id=123456', (string) $response->getBody());
+    }
+
+    public function testRouteFoundWithoutBodyFromHEADMethod()
+    {
+        $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foo',
+            'REQUEST_METHOD'         => 'HEAD',
+        ]);
+
+        $handler = function ($request) {
+            $response = (new Response(200))->withHeader('X-Custom', 'foobar');
+            $response->getBody()->write('Found!');
+            return $response;
+        };
+
+        $router = new Router();
+        $router->map('/foo', new HandlerProxy2($handler))->method('GET');
+
+        $middlewareRouting = new RoutingMiddleware($router);
+        $middlewareDispatcher = new DispatcherMiddleware();
+
+
+        $requestHandler->prepend($middlewareRouting);
+        $requestHandler->prepend($middlewareDispatcher);
+
+
+        //$response = $middleware->process($request, new HandlerProxy2($this->empty));
+        $response = $requestHandler->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($response->hasHeader('X-Custom'));
+        $this->assertSame('', (string) $response->getBody());
+    }
+
+    public function testRouteFoundWithoutBodyFromHEADMethodWithCustomHandler()
+    {
+        $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foo',
+            'REQUEST_METHOD'         => 'HEAD',
+        ]);
+
+        $handler = function ($request) {
+            $response = (new Response(200))->withHeader('X-Custom', 'foobar');
+            $response->getBody()->write('Found!');
+            return $response;
+        };
+        $handlerCustom = function ($request) {
+            $response = (new Response(200))->withHeader('X-Custom-HEAD', 'bar');
+            $response->getBody()->write('Custom Handler for HEAD!');
+            return $response;
+        };
+
+        $router = new Router();
+        $router->map('/foo', new HandlerProxy2($handler))->method('GET');
+        $router->map('/foo', new HandlerProxy2($handlerCustom))->method('HEAD');
+
+        $middlewareRouting = new RoutingMiddleware($router);
+        $middlewareDispatcher = new DispatcherMiddleware();
+
+
+        $requestHandler->prepend($middlewareRouting);
+        $requestHandler->prepend($middlewareDispatcher);
+
+
+        //$response = $middleware->process($request, new HandlerProxy2($this->empty));
+        $response = $requestHandler->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($response->hasHeader('X-Custom-HEAD'));
+        $this->assertSame('', (string) $response->getBody());
+    }
+
+    public function testRouteFoundWithAllowHeaderForOPTIONSMethod()
+    {
+        $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foo',
+            'REQUEST_METHOD'         => 'OPTIONS',
+        ]);
+
+        $handler = function ($request) {
+            $response = (new Response(200))->withHeader('X-Custom', 'foobar');
+            $response->getBody()->write('Found!');
+            return $response;
+        };
+
+        $router = new Router();
+        $router->map('/foo', new HandlerProxy2($handler))->method('GET');
+
+        $middlewareRouting = new RoutingMiddleware($router);
+        $middlewareDispatcher = new DispatcherMiddleware();
+
+
+        $requestHandler->prepend($middlewareRouting);
+        $requestHandler->prepend($middlewareDispatcher);
+
+
+        //$response = $middleware->process($request, new HandlerProxy2($this->empty));
+        $response = $requestHandler->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertFalse($response->hasHeader('X-Custom'));
+        $this->assertTrue($response->hasHeader('Allow'));
+        $this->assertSame('OPTIONS, GET', $response->getHeaderLine('Allow'));
+        $this->assertSame('', (string) $response->getBody());
+    }
+
+    public function testRouteFoundWithCustomHandlerForOPTIONSMethod()
+    {
+        $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foo',
+            'REQUEST_METHOD'         => 'OPTIONS',
+        ]);
+
+        $handler = function ($request) {
+            $response = (new Response(200))->withHeader('X-Custom', 'foobar');
+            $response->getBody()->write('Found!');
+            return $response;
+        };
+
+        $handlerCustom = function ($request) {
+            $response = (new Response(200))->withHeader('X-Custom', 'foobar');
+            $response->getBody()->write('Custom Handler for OPTIONS!');
+            return $response;
+        };
+
+        $router = new Router();
+        $router->map('/foo', new HandlerProxy2($handler))->method('GET');
+        $router->map('/foo', new HandlerProxy2($handlerCustom))->method('OPTIONS');
+
+        $middlewareRouting = new RoutingMiddleware($router);
+        $middlewareDispatcher = new DispatcherMiddleware();
+
+
+        $requestHandler->prepend($middlewareRouting);
+        $requestHandler->prepend($middlewareDispatcher);
+
+
+        //$response = $middleware->process($request, new HandlerProxy2($this->empty));
+        $response = $requestHandler->handle($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertTrue($response->hasHeader('X-Custom'));
+        $this->assertSame('Custom Handler for OPTIONS!', (string) $response->getBody());
     }
 
     /**
-     * @expectedException Chiron\Http\Exception\MethodNotAllowedHttpException
+     * @expectedException \Chiron\Http\Exception\NotFoundHttpException
      */
-    public function testRoutingFailureDueToHttpMethodCallsHandlerWithRequestComposingRouteResult()
+    public function testRouteNotFound()
     {
-        $result = RouteResult::fromRouteFailure(['GET', 'POST']);
-        $this->router->match($this->request->reveal())->willReturn($result);
-        $this->handler->handle($this->request->reveal())->will([$this->response, 'reveal']);
-        $this->request->withAttribute(RouteResult::class, $result)->will([$this->request, 'reveal']);
-        $response = $this->middleware->process($this->request->reveal(), $this->handler->reveal());
-        //$this->assertSame($this->response->reveal(), $response);
+        $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foobar',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+
+        $handler = function ($request) {
+            $response = (new Response(200))->withHeader('X-Custom', 'foobar');
+            $response->getBody()->write('Found!');
+            return $response;
+        };
+
+        $router = new Router();
+        $router->map('/foo', new HandlerProxy2($handler))->method('GET');
+
+        $middlewareRouting = new RoutingMiddleware($router);
+        $middlewareDispatcher = new DispatcherMiddleware();
+
+
+        $requestHandler->prepend($middlewareRouting);
+        $requestHandler->prepend($middlewareDispatcher);
+
+        $response = $requestHandler->handle($request);
     }
 
     /**
-     * @expectedException Chiron\Http\Exception\NotFoundHttpException
+     * @expectedException \Chiron\Http\Exception\MethodNotAllowedHttpException
      */
-    public function testGeneralRoutingFailureInvokesHandlerWithRequestComposingRouteResult()
+    public function testRouteMethodNotAllowed()
     {
-        $result = RouteResult::fromRouteFailure(null);
-        $this->router->match($this->request->reveal())->willReturn($result);
-        $this->handler->handle($this->request->reveal())->will([$this->response, 'reveal']);
-        $this->request->withAttribute(RouteResult::class, $result)->will([$this->request, 'reveal']);
-        $response = $this->middleware->process($this->request->reveal(), $this->handler->reveal());
-        //$this->assertSame($this->response->reveal(), $response);
+        $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foo',
+            'REQUEST_METHOD'         => 'PUT',
+        ]);
+
+        $handler = function ($request) {
+            $response = (new Response(200))->withHeader('X-Custom', 'foobar');
+            $response->getBody()->write('Found!');
+            return $response;
+        };
+
+        $router = new Router();
+        $router->map('/foo', new HandlerProxy2($handler))->method('POST');
+
+        $middlewareRouting = new RoutingMiddleware($router);
+        $middlewareDispatcher = new DispatcherMiddleware();
+
+
+        $requestHandler->prepend($middlewareRouting);
+        $requestHandler->prepend($middlewareDispatcher);
+
+        $response = $requestHandler->handle($request);
     }
 
-    public function testRoutingSuccessInvokesHandlerWithRequestComposingRouteResultAndAttributes()
-    {
-        $middleware = $this->prophesize(RequestHandlerInterface::class)->reveal();
-        $parameters = ['foo' => 'bar', 'baz' => 'bat'];
-        $result = RouteResult::fromRoute(new Route('/foo', $middleware), $parameters);
-
-        $this->router->match($this->request->reveal())->willReturn($result);
-        $this->request
-            ->withAttribute(RouteResult::class, $result)
-            ->will([$this->request, 'reveal']);
-        foreach ($parameters as $key => $value) {
-            $this->request
-                ->withAttribute($key, $value)
-                ->will([$this->request, 'reveal']);
-        }
-        $this->handler
-            ->handle($this->request->reveal())
-            ->will([$this->response, 'reveal']);
-        $response = $this->middleware->process($this->request->reveal(), $this->handler->reveal());
-        $this->assertSame($this->response->reveal(), $response);
-    }
 }
