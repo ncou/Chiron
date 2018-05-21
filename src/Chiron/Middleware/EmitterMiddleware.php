@@ -9,6 +9,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+// Range : https://tools.ietf.org/html/rfc7233#section-4.3
+
 //https://framework.zend.com/blog/2017-09-14-diactoros-emitters.html
 //https://github.com/cakephp/cakephp/blob/master/src/Http/ResponseEmitter.php
 
@@ -46,6 +48,10 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class EmitterMiddleware implements MiddlewareInterface
 {
+
+    /** @var int max buffer size (8Kb) */
+    private $maxBufferLength = 8 * 1024;
+
     /**
      * Emit the http response (headers+body) to the client.
      *
@@ -64,15 +70,29 @@ class EmitterMiddleware implements MiddlewareInterface
         //$response = $this->finalizeResponse($response, $request);
 
         // Emit response (Headers + Status + Body)
-        $this->sendHeaders($response);
-        // A response to a HEAD request "MUST NOT" include a message-body
+        $this->emitHeaders($response);
+
+
+        // Response to a HEAD request "MUST NOT" include a message-body
         if (! $request->isMethod('HEAD')) {
-            $this->sendBody($response);
+            $range = $this->parseContentRange($response->getHeaderLine('Content-Range'));
+            if (is_array($range) && $range[0] === 'bytes') {
+                $this->emitBodyRange($range, $response, $this->maxBufferLength);
+            } else {
+                $this->emitBody($response, $this->maxBufferLength);
+            }
+
         }
 
         $this->closeConnexion();
 
         return $response;
+    }
+
+    public function setMaxBufferLength(int $length): self
+    {
+        $this->maxBufferLength = $length;
+        return $this;
     }
 
     /**
@@ -102,11 +122,32 @@ class EmitterMiddleware implements MiddlewareInterface
 */
 
     /**
+     * Emit the status line.
+     *
+     * Emits the status line using the protocol version and status code from
+     * the response; if a reason phrase is available, it, too, is emitted.
+     *
+     * @param \Psr\Http\Message\ResponseInterface $response The response to emit
+     * @return void
+     */
+    /*
+    protected function emitStatusLine(ResponseInterface $response)
+    {
+        $reasonPhrase = $response->getReasonPhrase();
+        header(sprintf(
+            'HTTP/%s %d%s',
+            $response->getProtocolVersion(),
+            $response->getStatusCode(),
+            ($reasonPhrase ? ' ' . $reasonPhrase : '')
+        ));
+    }*/
+
+    /**
      * Send HTTP Headers.
      *
      * @param ResponseInterface $response
      */
-    private function sendHeaders(ResponseInterface $response): void
+    private function emitHeaders(ResponseInterface $response): void
     {
         /*
         if (headers_sent($file, $line)) {
@@ -174,8 +215,16 @@ class EmitterMiddleware implements MiddlewareInterface
       }*/
     }
 
+    /**
+     * Emit the message body.
+     *
+     * @param \Psr\Http\Message\ResponseInterface $response The response to emit
+     * @param int $maxBufferLength The chunk size to emit
+     *
+     * @return void
+     */
     // TODO : regarder comment c'est géré ici : https://github.com/symfony/http-foundation/blob/ed75b71c6498bd9c020dea99f723fd5b20aae986/Response.php#L336
-    private function sendBody(ResponseInterface $response): void
+    private function emitBody(ResponseInterface $response, int $chunkSize): void
     {
         // exit if the response doesn't require a body
         // TODO : remplacer ce test par un $response->isInformational() et $response->isEmpty()
@@ -183,27 +232,71 @@ class EmitterMiddleware implements MiddlewareInterface
             return;
         }
 
-        set_time_limit(0); // Reset time limit for big files
-        $chunkSize = 8 * 1024 * 1024; // 8MB per chunk
+        //set_time_limit(0); // Reset time limit for big files
+        //$chunkSize = 8 * 1024 * 1024; // 8MB per chunk
         //$chunkSize = 8 * 1024; // 8KB per chunk
 
         //https://github.com/http-interop/response-sender/blob/master/src/functions.php#L28
-        $stream = $response->getBody();
+        $body = $response->getBody();
 
         // rewind the stream in case the cursor is not at the start of the stream (if you have used ->getContent() before the cursor will be at the end of the stream)
-        if ($stream->isSeekable()) {
-            $stream->rewind();
+        if ($body->isSeekable()) {
+            $body->rewind();
         }
 
-        while (! $stream->eof()) {
-            echo $stream->read($chunkSize);
-            flush(); // Free up memory. Otherwise large files will trigger PHP's memory limit.
+        if (! $body->isReadable()) {
+            echo $body;
+            return;
         }
 
-        $stream->close();
+        while (! $body->eof()) {
+            echo $body->read($chunkSize);
+            //flush(); // Free up memory. Otherwise large files will trigger PHP's memory limit.
+        }
+
+        //$body->close();
     }
 
-    private function closeConnexion()
+    /**
+     * Emit a range of the message body.
+     *
+     * @param array $range
+     * @param ResponseInterface $response
+     * @param int $maxBufferLength
+     *
+     * @return void
+     */
+    private function emitBodyRange(array $range, ResponseInterface $response, int $chunkSize): void
+    {
+        list($unit, $first, $last, $length) = $range;
+        $body = $response->getBody();
+        $length = $last - $first + 1;
+
+        if ($body->isSeekable()) {
+            $body->seek($first);
+            $first = 0;
+        }
+
+        if (! $body->isReadable()) {
+            echo substr($body->getContents(), $first, $length);
+            return;
+        }
+
+        $remaining = $length;
+        while ($remaining >= $chunkSize && ! $body->eof()) {
+            $contents   = $body->read($chunkSize);
+            $remaining -= strlen($contents);
+            echo $contents;
+        }
+
+        if ($remaining > 0 && ! $body->eof()) {
+            echo $body->read($remaining);
+        }
+    }
+
+
+
+    private function closeConnexion(): void
     {
         // FastCGI, close connexion faster (module available if PHP-FPM mod is installed)
         if (function_exists('fastcgi_finish_request')) {
@@ -488,5 +581,46 @@ class EmitterMiddleware implements MiddlewareInterface
     {
         // All 1xx (informational), 204 (no content), and 304 (not modified) responses MUST NOT include a message-body
         return ($response->getStatusCode() >= 100 && $response->getStatusCode() < 200) || in_array($response->getStatusCode(), [204, 304]);
+    }
+
+    /**
+     * Checks to see if content has previously been sent.
+     *
+     * If either headers have been sent or the output buffer contains content,
+     * raises an exception.
+     *
+     * @throws RuntimeException if headers have already been sent.
+     * @throws RuntimeException if output is present in the output buffer.
+     */
+    /*
+    private function assertNoPreviousOutput()
+    {
+        if (headers_sent()) {
+            throw new RuntimeException('Unable to emit response; headers already sent');
+        }
+        if (ob_get_level() > 0 && ob_get_length() > 0) {
+            throw new RuntimeException('Output has been emitted previously; cannot emit response');
+        }
+    }*/
+
+    /**
+     * Parse content-range header
+     * https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.16
+     *
+     * @param string $header The Content-Range header to parse.
+     * @return false|array [unit, first, last, length]; returns false if no
+     *     content range or an invalid content range is provided
+     */
+    protected function parseContentRange($header)
+    {
+        if (preg_match('/(?P<unit>[\w]+)\s+(?P<first>\d+)-(?P<last>\d+)\/(?P<length>\d+|\*)/', $header, $matches)) {
+            return [
+                $matches['unit'],
+                (int)$matches['first'],
+                (int)$matches['last'],
+                $matches['length'] === '*' ? '*' : (int)$matches['length'],
+            ];
+        }
+        return false;
     }
 }
