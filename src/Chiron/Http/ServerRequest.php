@@ -26,9 +26,9 @@ namespace Chiron\Http;
 //use Klein\DataCollection\HeaderDataCollection;
 //use Klein\DataCollection\ServerDataCollection;
 
+use Fig\Http\Message\RequestMethodInterface;
 use Nyholm\Psr7\ServerRequest as ServerRequestPsr7;
 use Psr\Http\Message\UriInterface;
-use Fig\Http\Message\RequestMethodInterface;
 
 // TODO : gérer le cas du 405 MéthodenotAllowed : https://github.com/cakephp/cakephp/blob/master/src/Http/ServerRequest.php#L1840
 // TODO : ajouter des helpers pour manipuler la classe request comme un tableau ArrayAccess : https://github.com/cakephp/cakephp/blob/master/src/Http/ServerRequest.php#L2197
