@@ -10,13 +10,11 @@ namespace Chiron\Tests\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
 use Chiron\Middleware\EmitterMiddleware;
-use Chiron\Tests\Utils\HandlerProxy2;
 use Chiron\Tests\Utils\CallbackStream;
+use Chiron\Tests\Utils\HandlerProxy2;
 use Chiron\Tests\Utils\HeaderStack;
 use PHPUnit\Framework\TestCase;
-
 use Prophecy\Argument;
-use Psr\Http\Message\StreamInterface;
 
 class EmitterMiddlewareTest extends TestCase
 {
@@ -184,9 +182,7 @@ class EmitterMiddlewareTest extends TestCase
     }
 
     /**
-     * Test emitting a no-content response
-     *
-     * @return void
+     * Test emitting a no-content response.
      */
     // TODO : faire aussi ce test avec un emitBodyRange !!!!! et pas seulement avec la méthode emitBody !!!!!
     public function testEmitNoContentResponse()
@@ -224,8 +220,6 @@ class EmitterMiddlewareTest extends TestCase
 
     /**
      * Test valid body ranges.
-     *
-     * @return void
      */
     public function testEmitResponseBodyRange()
     {
@@ -257,8 +251,6 @@ class EmitterMiddlewareTest extends TestCase
 
     /**
      * Test valid body ranges.
-     *
-     * @return void
      */
     public function testEmitResponseBodyRangeComplete()
     {
@@ -281,10 +273,9 @@ class EmitterMiddlewareTest extends TestCase
         $this->middleware->setMaxBufferLength(2);
         $this->middleware->process($request, new HandlerProxy2($handler));
     }
+
     /**
      * Test out of bounds body ranges.
-     *
-     * @return void
      */
     public function testEmitResponseBodyRangeOverflow()
     {
@@ -308,9 +299,7 @@ class EmitterMiddlewareTest extends TestCase
     }
 
     /**
-     * Test malformed content-range header
-     *
-     * @return void
+     * Test malformed content-range header.
      */
     public function testEmitResponseBodyRangeMalformed()
     {
@@ -332,10 +321,9 @@ class EmitterMiddlewareTest extends TestCase
 
         $this->middleware->process($request, new HandlerProxy2($handler));
     }
-     /**
-     * Test malformed content-range header
-     *
-     * @return void
+
+    /**
+     * Test malformed content-range header.
      */
     public function testEmitResponseBodyRangeWithBadUnit()
     {
@@ -409,54 +397,58 @@ class EmitterMiddlewareTest extends TestCase
         $this->middleware->process($request, new HandlerProxy2($handler));
     }
 
-
     // *************************************************************
     // *************** ADVANCED TESTS FOR BODY RANGE ***************
     // *************************************************************
 
     /**
-    * Create a new stream prophecy and setup common promises
-    *
-    * @param string|callable $contents              Stream contents.
-    * @param integer         $size                  Size of stream contents.
-    * @param integer         $startPosition         Start position of internal stream data pointer.
-    * @param callable|null   $trackPeakBufferLength Called on "read" calls.
-    *                                               Receives data length (i.e. data length <= buffer length).
-    * @return ObjectProphecy                        Returns new stream prophecy.
-    */
+     * Create a new stream prophecy and setup common promises.
+     *
+     * @param string|callable $contents              Stream contents.
+     * @param int             $size                  Size of stream contents.
+     * @param int             $startPosition         Start position of internal stream data pointer.
+     * @param callable|null   $trackPeakBufferLength Called on "read" calls.
+     *                                               Receives data length (i.e. data length <= buffer length).
+     *
+     * @return ObjectProphecy Returns new stream prophecy.
+     */
     private function setUpStreamProphecy($contents, $size, $startPosition, callable $trackPeakBufferLength = null)
     {
         $position = $startPosition;
         $stream = $this->prophesize('Psr\Http\Message\StreamInterface');
-        $stream->__toString()->will(function () use ($contents, $size, & $position) {
+        $stream->__toString()->will(function () use ($contents, $size, &$position) {
             if (is_callable($contents)) {
                 $data = $contents(0);
             } else {
                 $data = $contents;
             }
             $position = $size;
+
             return $data;
         });
         $stream->getSize()->willReturn($size);
-        $stream->tell()->will(function () use (& $position) {
+        $stream->tell()->will(function () use (&$position) {
             return $position;
         });
-        $stream->eof()->will(function () use ($size, & $position) {
-            return ($position >= $size);
+        $stream->eof()->will(function () use ($size, &$position) {
+            return $position >= $size;
         });
-        $stream->seek(Argument::type('integer'), Argument::any())->will(function ($args) use ($size, & $position) {
+        $stream->seek(Argument::type('integer'), Argument::any())->will(function ($args) use ($size, &$position) {
             if ($args[0] < $size) {
                 $position = $args[0];
+
                 return true;
             }
+
             return false;
         });
-        $stream->rewind()->will(function () use (& $position) {
+        $stream->rewind()->will(function () use (&$position) {
             $position = 0;
+
             return true;
         });
         $stream->read(Argument::type('integer'))
-            ->will(function ($args) use ($contents, & $position, & $trackPeakBufferLength) {
+            ->will(function ($args) use ($contents, &$position, &$trackPeakBufferLength) {
                 if (is_callable($contents)) {
                     $data = $contents($position, $args[0]);
                 } else {
@@ -466,19 +458,23 @@ class EmitterMiddlewareTest extends TestCase
                     $trackPeakBufferLength($args[0]);
                 }
                 $position += strlen($data);
+
                 return $data;
             });
-        $stream->getContents()->will(function () use ($contents, & $position) {
+        $stream->getContents()->will(function () use ($contents, &$position) {
             if (is_callable($contents)) {
                 $remainingContents = $contents($position);
             } else {
                 $remainingContents = substr($contents, $position);
             }
             $position += strlen($remainingContents);
+
             return $remainingContents;
         });
+
         return $stream;
     }
+
     public function emitStreamResponseProvider()
     {
         return [
@@ -508,11 +504,12 @@ class EmitterMiddlewareTest extends TestCase
             [false, false, '01234567890987654321012',  100],
         ];
     }
+
     /**
-     * @param boolean $seekable                 Indicates if stream is seekable
-     * @param boolean $readable                 Indicates if stream is readable
-     * @param string  $contents                 Contents stored in stream
-     * @param integer $maxBufferLength          Maximum buffer length used in the emitter call.
+     * @param bool   $seekable        Indicates if stream is seekable
+     * @param bool   $readable        Indicates if stream is readable
+     * @param string $contents        Contents stored in stream
+     * @param int    $maxBufferLength Maximum buffer length used in the emitter call.
      * @dataProvider emitStreamResponseProvider
      */
     public function testEmitStreamResponse($seekable, $readable, $contents, $maxBufferLength)
@@ -526,7 +523,7 @@ class EmitterMiddlewareTest extends TestCase
             $contents,
             $size,
             $startPosition,
-            function ($bufferLength) use (& $peakBufferLength) {
+            function ($bufferLength) use (&$peakBufferLength) {
                 if ($bufferLength > $peakBufferLength) {
                     $peakBufferLength = $bufferLength;
                 }
@@ -554,7 +551,7 @@ class EmitterMiddlewareTest extends TestCase
         $emittedContents = ob_get_clean();
 
         if ($seekable) {
-            $rewindPredictionClosure = function () use (& $rewindCalled) {
+            $rewindPredictionClosure = function () use (&$rewindCalled) {
                 $rewindCalled = true;
             };
             $stream->rewind()->should($rewindPredictionClosure);
@@ -570,7 +567,7 @@ class EmitterMiddlewareTest extends TestCase
             $stream->eof()->shouldBeCalled();
             $stream->getContents()->shouldNotBeCalled();
         } else {
-            $fullContentsPredictionClosure = function () use (& $fullContentsCalled) {
+            $fullContentsPredictionClosure = function () use (&$fullContentsCalled) {
                 $fullContentsCalled = true;
             };
             $stream->__toString()->should($fullContentsPredictionClosure);
@@ -642,12 +639,13 @@ class EmitterMiddlewareTest extends TestCase
             [false, false, ['bytes', 10, 100, '*'], '01234567890987654321012', 100],
         ];
     }
+
     /**
-     * @param boolean $seekable                 Indicates if stream is seekable
-     * @param boolean $readable                 Indicates if stream is readable
-     * @param array   $range                    Emitted range of data [$unit, $first, $last, $length]
-     * @param string  $contents                 Contents stored in stream
-     * @param integer $maxBufferLength          Maximum buffer length used in the emitter call.
+     * @param bool   $seekable        Indicates if stream is seekable
+     * @param bool   $readable        Indicates if stream is readable
+     * @param array  $range           Emitted range of data [$unit, $first, $last, $length]
+     * @param string $contents        Contents stored in stream
+     * @param int    $maxBufferLength Maximum buffer length used in the emitter call.
      * @dataProvider emitRangeStreamResponseProvider
      */
     public function testEmitRangeStreamResponse($seekable, $readable, array $range, $contents, $maxBufferLength)
@@ -665,7 +663,7 @@ class EmitterMiddlewareTest extends TestCase
             $contents,
             $size,
             $startPosition,
-            function ($bufferLength) use (& $peakBufferLength) {
+            function ($bufferLength) use (&$peakBufferLength) {
                 if ($bufferLength > $peakBufferLength) {
                     $peakBufferLength = $bufferLength;
                 }
@@ -695,7 +693,7 @@ class EmitterMiddlewareTest extends TestCase
 
         $stream->rewind()->shouldNotBeCalled();
         if ($seekable) {
-            $seekPredictionClosure = function () use (& $seekCalled) {
+            $seekPredictionClosure = function () use (&$seekCalled) {
                 $seekCalled = true;
             };
             $stream->seek($first)->should($seekPredictionClosure);
@@ -748,14 +746,15 @@ class EmitterMiddlewareTest extends TestCase
             [false,  true,  1000,   20, [250, 750], 8192],
         ];
     }
+
     /**
-     * @param boolean    $seekable              Indicates if stream is seekable
-     * @param boolean    $readable              Indicates if stream is readable
-     * @param integer    $sizeBlocks            Number the blocks of stream data.
-     *                                          Block size is equal to $maxBufferLength.
-     * @param integer    $maxAllowedBlocks      Maximum allowed memory usage in block units.
-     * @param array|null $rangeBlocks           Emitted range of data in block units [$firstBlock, $lastBlock].
-     * @param integer    $maxBufferLength       Maximum buffer length used in the emitter call.
+     * @param bool       $seekable         Indicates if stream is seekable
+     * @param bool       $readable         Indicates if stream is readable
+     * @param int        $sizeBlocks       Number the blocks of stream data.
+     *                                     Block size is equal to $maxBufferLength.
+     * @param int        $maxAllowedBlocks Maximum allowed memory usage in block units.
+     * @param array|null $rangeBlocks      Emitted range of data in block units [$firstBlock, $lastBlock].
+     * @param int        $maxBufferLength  Maximum buffer length used in the emitter call.
      *
      * @dataProvider emitMemoryUsageProvider
      */
@@ -777,25 +776,26 @@ class EmitterMiddlewareTest extends TestCase
         $last = null;
 
         if ($rangeBlocks) {
-            $first    = $maxBufferLength * $rangeBlocks[0];
-            $last     = ($maxBufferLength * $rangeBlocks[1]) + $maxBufferLength - 1;
+            $first = $maxBufferLength * $rangeBlocks[0];
+            $last = ($maxBufferLength * $rangeBlocks[1]) + $maxBufferLength - 1;
             if ($readable && ! $seekable) {
                 $position = $first;
             }
         }
-        $closureTrackMemoryUsage = function () use (& $peakMemoryUsage) {
+        $closureTrackMemoryUsage = function () use (&$peakMemoryUsage) {
             $peakMemoryUsage = max($peakMemoryUsage, memory_get_usage());
         };
         $stream = $this->setUpStreamProphecy(
-            function ($position, $length = null) use (& $sizeBytes) {
+            function ($position, $length = null) use (&$sizeBytes) {
                 if (! $length) {
                     $length = $sizeBytes - $position;
                 }
+
                 return str_repeat('0', $length);
             },
             $sizeBytes,
             $position,
-            function ($bufferLength) use (& $peakBufferLength) {
+            function ($bufferLength) use (&$peakBufferLength) {
                 if ($bufferLength > $peakBufferLength) {
                     $peakBufferLength = $bufferLength;
                 }
@@ -803,7 +803,6 @@ class EmitterMiddlewareTest extends TestCase
         );
         $stream->isSeekable()->willReturn($seekable);
         $stream->isReadable()->willReturn($readable);
-
 
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
@@ -823,8 +822,9 @@ class EmitterMiddlewareTest extends TestCase
         };
 
         ob_start(
-            function () use (& $closureTrackMemoryUsage) {
+            function () use (&$closureTrackMemoryUsage) {
                 $closureTrackMemoryUsage();
+
                 return '';
             },
             $maxBufferLength

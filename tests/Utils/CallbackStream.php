@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Chiron\Tests\Utils;
 
 use InvalidArgumentException;
-use RuntimeException;
 use Psr\Http\Message\StreamInterface;
+use RuntimeException;
+
 /**
- * Implementation of PSR HTTP streams
+ * Implementation of PSR HTTP streams.
  */
 class CallbackStream implements StreamInterface
 {
@@ -16,14 +17,17 @@ class CallbackStream implements StreamInterface
      * @var callable|null
      */
     protected $callback;
+
     /**
      * @param callable $callback
+     *
      * @throws InvalidArgumentException
      */
     public function __construct(callable $callback)
     {
         $this->callback = $callback;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -31,6 +35,7 @@ class CallbackStream implements StreamInterface
     {
         return $this->getContents();
     }
+
     /**
      * {@inheritdoc}
      */
@@ -38,6 +43,7 @@ class CallbackStream implements StreamInterface
     {
         $this->callback = null;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -45,14 +51,17 @@ class CallbackStream implements StreamInterface
     {
         $callback = $this->callback;
         $this->callback = null;
+
         return $callback;
     }
+
     /**
      * {@inheritdoc}
      */
     public function getSize()
     {
     }
+
     /**
      * {@inheritdoc}
      */
@@ -60,6 +69,7 @@ class CallbackStream implements StreamInterface
     {
         throw new RuntimeException('Callback streams cannot tell position');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -67,6 +77,7 @@ class CallbackStream implements StreamInterface
     {
         return empty($this->callback);
     }
+
     /**
      * {@inheritdoc}
      */
@@ -74,6 +85,7 @@ class CallbackStream implements StreamInterface
     {
         return false;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -81,6 +93,7 @@ class CallbackStream implements StreamInterface
     {
         throw new RuntimeException('Callback streams cannot seek position');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -88,6 +101,7 @@ class CallbackStream implements StreamInterface
     {
         throw new RuntimeException('Callback streams cannot rewind position');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -95,6 +109,7 @@ class CallbackStream implements StreamInterface
     {
         return false;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -102,6 +117,7 @@ class CallbackStream implements StreamInterface
     {
         throw new RuntimeException('Callback streams cannot write');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -109,6 +125,7 @@ class CallbackStream implements StreamInterface
     {
         return false;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -116,30 +133,34 @@ class CallbackStream implements StreamInterface
     {
         throw new RuntimeException('Callback streams cannot read');
     }
+
     /**
      * {@inheritdoc}
      */
     public function getContents()
     {
         $callback = $this->detach();
+
         return $callback ? $callback() : '';
     }
+
     /**
      * {@inheritdoc}
      */
     public function getMetadata($key = null)
     {
         $metadata = [
-            'eof' => $this->eof(),
+            'eof'         => $this->eof(),
             'stream_type' => 'callback',
-            'seekable' => false
+            'seekable'    => false,
         ];
         if (null === $key) {
             return $metadata;
         }
         if (! array_key_exists($key, $metadata)) {
-            return null;
+            return;
         }
+
         return $metadata[$key];
     }
 }
