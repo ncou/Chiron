@@ -4,23 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Http;
 
-// TODO : faire un implement de cette classe avec la classe "https://github.com/php-fig/http-message-util" RequestMethodInterface
-
-/*
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/MessageFactory.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/ServerRequestFactory.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/StreamFactory.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/UploadedFileFactory.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Factory/UriFactory.php';
-
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/MessageTrait.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Response.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Request.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/ServerRequest.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Stream.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/UploadedFile.php';
-require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Uri.php';
-*/
+// TODO : utiliser les constantes de la classe RequestMethodInterface pour le nom des méthodes !!!
 
 // TODO : example : https://github.com/narrowspark/framework/blob/master/src/Viserio/Component/Http/ServerRequest.php
 //https://github.com/koolkode/http/blob/master/src/HttpRequest.php
@@ -44,6 +28,7 @@ require_once __DIR__ . '/../../../vendor/nyholm/psr7/src/Uri.php';
 
 use Nyholm\Psr7\ServerRequest as ServerRequestPsr7;
 use Psr\Http\Message\UriInterface;
+use Fig\Http\Message\RequestMethodInterface;
 
 // TODO : gérer le cas du 405 MéthodenotAllowed : https://github.com/cakephp/cakephp/blob/master/src/Http/ServerRequest.php#L1840
 // TODO : ajouter des helpers pour manipuler la classe request comme un tableau ArrayAccess : https://github.com/cakephp/cakephp/blob/master/src/Http/ServerRequest.php#L2197
@@ -51,7 +36,7 @@ use Psr\Http\Message\UriInterface;
 /**
  * Request.
  */
-class ServerRequest extends ServerRequestPsr7
+class ServerRequest extends ServerRequestPsr7 implements RequestMethodInterface
 {
     private $contentTypes;
 

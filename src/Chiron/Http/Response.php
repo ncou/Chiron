@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Http;
 
-// TODO : faire un implement de cette classe avec la classe "https://github.com/php-fig/http-message-util" StatusCodeInterface
+// TODO : utiliser les constantes de la classe StatusCodeInterface pour les code des status !!!
 
 // cookies :     https://github.com/michaelbromley/drawACatApp/tree/master/api/Slim/Http
 
@@ -32,8 +32,9 @@ namespace Chiron\Http;
 use Nyholm\Psr7\Response as ResponsePsr7;
 
 use Chiron\Http\Factory\StreamFactory;
+use Fig\Http\Message\StatusCodeInterface;
 
-class Response extends ResponsePsr7
+class Response extends ResponsePsr7 implements StatusCodeInterface
 {
     public const FORMAT_URLENCODED = 'URLENCODED';
 
