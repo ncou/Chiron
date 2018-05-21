@@ -1,20 +1,13 @@
 <?php
 
-namespace Chiron\Http\Exception;
+declare(strict_types=1);
 
-/**
- * @author Ben Ramsey <ben@benramsey.com>
- */
+namespace Chiron\Http\Exception;
+use Throwable;
+
 class ServiceUnavailableHttpException extends HttpException
 {
-    /**
-     * @param int|string $retryAfter The number of seconds or HTTP-date after which the request may be retried
-     * @param string     $message    The internal exception message
-     * @param \Exception $previous   The previous exception
-     * @param int        $code       The internal exception code
-     * @param array      $headers
-     */
-    public function __construct($retryAfter = null, string $message = null, \Throwable $previous = null, array $headers = [])
+    public function __construct($retryAfter = null, string $message = 'Service Unavailable', Throwable $previous = null, array $headers = [])
     {
         if ($retryAfter) {
             $headers['Retry-After'] = $retryAfter;

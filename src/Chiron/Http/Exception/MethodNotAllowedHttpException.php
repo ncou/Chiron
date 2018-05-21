@@ -1,19 +1,13 @@
 <?php
 
-//namespace Slim\Exception;
+declare(strict_types=1);
 
 namespace Chiron\Http\Exception;
+use Throwable;
 
 class MethodNotAllowedHttpException extends HttpException
 {
-    /**
-     * @param array      $allow    An array of allowed methods
-     * @param string     $message  The internal exception message
-     * @param \Exception $previous The previous exception
-     * @param int        $code     The internal exception code
-     * @param array      $headers
-     */
-    public function __construct(array $allow = [], string $message = 'Method Not Allowed', \Throwable $previous = null, array $headers = [])
+    public function __construct(array $allow = [], string $message = 'Method Not Allowed', Throwable $previous = null, array $headers = [])
     {
         if (! empty($allow)) {
             $headers['Allow'] = strtoupper(implode(', ', $allow));
