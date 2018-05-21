@@ -31,6 +31,8 @@ namespace Chiron\Http;
 
 use Nyholm\Psr7\Response as ResponsePsr7;
 
+use Chiron\Http\Factory\StreamFactory;
+
 class Response extends ResponsePsr7
 {
     public const FORMAT_URLENCODED = 'URLENCODED';
@@ -730,7 +732,7 @@ class Response extends ResponsePsr7
         //$response = $this->withBody(new Body('php://temp', 'r+'));
         //$response->stream->write($json = json_encode($data, $encodingOptions));
 
-        $body = Body::createFromStringOrResource('php://temp', 'r+');
+        $body = StreamFactory::createFromStringOrResource('php://temp', 'r+');
         $body->write($json = json_encode($data, $encodingOptions));
 
         $response = $this->withBody($body);
@@ -1972,7 +1974,7 @@ class Response extends ResponsePsr7
 
     public function withoutBody()
     {
-        return $this->withBody(Body::createFromStringOrResource('php://temp', 'rw+'));
+        return $this->withBody(StreamFactory::createFromStringOrResource('php://temp', 'rw+'));
     }
 
     //*******************************************************************

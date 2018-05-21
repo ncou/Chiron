@@ -241,4 +241,15 @@ class Container implements \ArrayAccess, ContainerInterface
     {
         $this->set($name, $service);
     }
+
+    // TODO ; ajouter les méthodes isset et unset :
+/*
+    public function __isset($key) {
+        return $this->has($key);
+    }
+
+    public function __unset($key) {
+        return $this->remove($key);
+    }
+*/
 }

@@ -22,10 +22,10 @@ require_once __DIR__ . '/../../../../vendor/nyholm/psr7/src/Uri.php';
 
 //namespace Viserio\Component\HttpFactory;
 
-use Chiron\Http\Body;
-//use Nyholm\Psr7\Uri;
+use Chiron\Http\Factory\StreamFactory;
+use Nyholm\Psr7\Uri;
 use Chiron\Http\ServerRequest;
-use Chiron\Http\Uri;
+//use Chiron\Http\Uri;
 use Interop\Http\Factory\ServerRequestFactoryInterface;
 use InvalidArgumentException;
 
@@ -143,7 +143,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         */
 
         //$body = 'php://input'; //new LazyOpenStream('php://input', 'r+');
-        $body = Body::createFromStringOrResource('php://input', 'r+');
+        $body = StreamFactory::createFromStringOrResource('php://input', 'r+');
 
         $serverRequest = new ServerRequest($method, $uri, $headers, $body, $protocol, $server);
 

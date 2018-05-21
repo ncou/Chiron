@@ -9,6 +9,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+use Chiron\Http\Factory\StreamFactory;
+
 // Range : https://tools.ietf.org/html/rfc7233#section-4.3
 
 //https://framework.zend.com/blog/2017-09-14-diactoros-emitters.html
@@ -64,6 +66,13 @@ class EmitterMiddleware implements MiddlewareInterface
     {
         $response = $handler->handle($request);
 
+        // As per RFC, HEAD request can't have a body.
+        // Response to a HEAD request "MUST NOT" include a message-body
+        /*
+        if ($request->getMethod() === 'HEAD') {
+            $response = $response->withBody(new NullStream());
+        }*/
+
         // adjust the response headers to be RFC compliant
         // TODO : à virer et à remplacer par un middleware contentlenghtMiddleware + ne pas envoyer le body
         //$response = $this->finalizeResponse($response, $request);
@@ -71,15 +80,12 @@ class EmitterMiddleware implements MiddlewareInterface
         // Emit response (Headers + Status + Body)
         $this->emitHeaders($response);
 
-        // Response to a HEAD request "MUST NOT" include a message-body
-//        if (! $request->isMethod('HEAD')) {
         $range = $this->parseContentRange($response->getHeaderLine('Content-Range'));
         if (is_array($range) && $range[0] === 'bytes') {
             $this->emitBodyRange($range, $response, $this->maxBufferLength);
         } else {
             $this->emitBody($response, $this->maxBufferLength);
         }
-//        }
 
         $this->closeConnexion();
 
@@ -92,32 +98,6 @@ class EmitterMiddleware implements MiddlewareInterface
 
         return $this;
     }
-
-    /**
-     * Sets the default template charset.
-     *
-     * @param string $charset The default charset
-     */
-    /*
-    public function setCharset($charset)
-    {
-        if ('UTF8' === $charset = strtoupper($charset)) {
-            // iconv on Windows requires "UTF-8" instead of "UTF8"
-            $charset = 'UTF-8';
-        }
-        $this->charset = $charset;
-    }*/
-    /**
-     * Gets the default template charset.
-     *
-     * @return string The default charset
-     */
-    /*
-    public function getCharset()
-    {
-        return $this->charset;
-    }
-*/
 
     /**
      * Emit the status line.
@@ -396,7 +376,7 @@ class EmitterMiddleware implements MiddlewareInterface
         if (($response->getStatusCode() >= 100 && $response->getStatusCode() < 200)
         || in_array($response->getStatusCode(), [204, 304])) {
             // TODO : faire un helper pour vider le body d'une response.
-            $response = $response->withoutHeader('Content-Type')->withoutHeader('Content-Length')->withBody(\Chiron\Http\Body::createFromStringOrResource(fopen('php://temp', 'r+')));
+            $response = $response->withoutHeader('Content-Type')->withoutHeader('Content-Length')->withBody(StreamFactory::createFromStringOrResource(fopen('php://temp', 'r+')));
             //return;
         }
 

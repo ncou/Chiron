@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
-use Chiron\Http\Body;
+use Chiron\Http\Factory\StreamFactory;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Response;
 use Chiron\Middleware\ParsedBodyMiddleware;
@@ -29,7 +29,7 @@ class ParsedBodyMiddlewareTest extends TestCase
     public function testGetParsedBodyForm()
     {
         $request = $this->request->withHeader('Content-Type', 'application/x-www-form-urlencoded ;charset=utf8');
-        $body = Body::createFromStringOrResource('php://temp', 'rw+');
+        $body = StreamFactory::createFromStringOrResource('php://temp', 'rw+');
         $body->write('foo=bar');
         $request = $request->withBody($body);
 
@@ -46,7 +46,7 @@ class ParsedBodyMiddlewareTest extends TestCase
     public function testGetParsedBodyJson()
     {
         $request = $this->request->withHeader('Content-Type', 'application/json ;charset=utf8');
-        $body = Body::createFromStringOrResource('php://temp', 'rw+');
+        $body = StreamFactory::createFromStringOrResource('php://temp', 'rw+');
         $body->write('{"foo":"bar"}');
         $request = $request->withBody($body);
 
@@ -63,7 +63,7 @@ class ParsedBodyMiddlewareTest extends TestCase
     public function testGetParsedBodyInvalidJson()
     {
         $request = $this->request->withHeader('Content-Type', 'application/json ;charset=utf8');
-        $body = Body::createFromStringOrResource('php://temp', 'rw+');
+        $body = StreamFactory::createFromStringOrResource('php://temp', 'rw+');
         $body->write('{foo}bar');
         $request = $request->withBody($body);
 
@@ -80,7 +80,7 @@ class ParsedBodyMiddlewareTest extends TestCase
     public function testGetParsedBodySemiValidJson()
     {
         $request = $this->request->withHeader('Content-Type', 'application/json ;charset=utf8');
-        $body = Body::createFromStringOrResource('php://temp', 'rw+');
+        $body = StreamFactory::createFromStringOrResource('php://temp', 'rw+');
         $body->write('"foo bar"');
         $request = $request->withBody($body);
 
@@ -97,7 +97,7 @@ class ParsedBodyMiddlewareTest extends TestCase
     public function testGetParsedBodyWithJsonStructuredSuffix()
     {
         $request = $this->request->withHeader('Content-Type', 'application/vnd.api+json;charset=utf8');
-        $body = Body::createFromStringOrResource('php://temp', 'rw+');
+        $body = StreamFactory::createFromStringOrResource('php://temp', 'rw+');
         $body->write('{"foo":"bar"}');
         $request = $request->withBody($body);
 
@@ -114,7 +114,7 @@ class ParsedBodyMiddlewareTest extends TestCase
     public function testGetParsedBodyXml()
     {
         $request = $this->request->withHeader('Content-Type', 'application/xml ;charset=utf8');
-        $body = Body::createFromStringOrResource('php://temp', 'rw+');
+        $body = StreamFactory::createFromStringOrResource('php://temp', 'rw+');
         $body->write('<person><name>Josh</name></person>');
         $request = $request->withBody($body);
 
@@ -131,7 +131,7 @@ class ParsedBodyMiddlewareTest extends TestCase
     public function testGetParsedBodyWithXmlStructuredSuffix()
     {
         $request = $this->request->withHeader('Content-Type', 'application/hal+xml;charset=utf8');
-        $body = Body::createFromStringOrResource('php://temp', 'rw+');
+        $body = StreamFactory::createFromStringOrResource('php://temp', 'rw+');
         $body->write('<person><name>Josh</name></person>');
         $request = $request->withBody($body);
 
@@ -148,7 +148,7 @@ class ParsedBodyMiddlewareTest extends TestCase
     public function testGetParsedBodyXmlWithTextXMLMediaType()
     {
         $request = $this->request->withHeader('Content-Type', 'text/xml');
-        $body = Body::createFromStringOrResource('php://temp', 'rw+');
+        $body = StreamFactory::createFromStringOrResource('php://temp', 'rw+');
         $body->write('<person><name>Josh</name></person>');
         $request = $request->withBody($body);
 
@@ -168,7 +168,7 @@ class ParsedBodyMiddlewareTest extends TestCase
     public function testInvalidXmlIsQuietForTextXml()
     {
         $request = $this->request->withHeader('Content-Type', 'text/xml');
-        $body = Body::createFromStringOrResource('php://temp', 'rw+');
+        $body = StreamFactory::createFromStringOrResource('php://temp', 'rw+');
         $body->write('<person><name>Josh</name></invalid]>');
         $request = $request->withBody($body);
 
@@ -188,7 +188,7 @@ class ParsedBodyMiddlewareTest extends TestCase
     public function testInvalidXmlIsQuietForApplicationXml()
     {
         $request = $this->request->withHeader('Content-Type', 'application/xml');
-        $body = Body::createFromStringOrResource('php://temp', 'rw+');
+        $body = StreamFactory::createFromStringOrResource('php://temp', 'rw+');
         $body->write('<person><name>Josh</name></invalid]>');
         $request = $request->withBody($body);
 

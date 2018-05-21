@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Http;
+namespace Chiron\Http\Factory;
 
 // TODO : regarder aussi ici comment c'est fait : https://github.com/akrabat/rka-content-type-renderer/blob/master/src/SimplePsrStream.php
 // https://github.com/akrabat/Slim-Http/blob/master/src/Stream.php
@@ -21,7 +21,7 @@ use Nyholm\Psr7\Stream;
 /**
  * Implementation of PSR HTTP streams.
  */
-class Body extends Stream
+class StreamFactory
 {
     /**
      * @param string|resource $stream
@@ -52,6 +52,6 @@ class Body extends Stream
             );
         }
 
-        return self::createFromResource($resource);
+        return Stream::createFromResource($resource);
     }
 }

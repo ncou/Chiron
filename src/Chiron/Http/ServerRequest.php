@@ -219,6 +219,18 @@ class ServerRequest extends ServerRequestPsr7
     }
 
     /**
+     * Is this a PURGE request? ('PURGE' is not an official method described in RFC)
+     *
+     * Note: This method is not part of the PSR-7 standard.
+     *
+     * @return bool
+     */
+    public function isPurge()
+    {
+        return $this->isMethod('PURGE');
+    }
+
+    /**
      * Returns whether this is an AJAX (XMLHttpRequest) request.
      *
      * Note that jQuery doesn't set the header in case of cross domain
