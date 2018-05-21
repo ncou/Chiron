@@ -29,9 +29,8 @@ namespace Chiron\Http;
 //https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php
 //https://github.com/symfony/http-foundation/blob/master/Response.php
 
-use Nyholm\Psr7\Response as ResponsePsr7;
-
 use Chiron\Http\Factory\StreamFactory;
+use Nyholm\Psr7\Response as ResponsePsr7;
 use Fig\Http\Message\StatusCodeInterface;
 
 class Response extends ResponsePsr7 implements StatusCodeInterface

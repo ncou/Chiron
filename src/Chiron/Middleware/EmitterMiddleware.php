@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Chiron\Middleware;
 
+use Chiron\Http\Factory\StreamFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-
-use Chiron\Http\Factory\StreamFactory;
 
 // Range : https://tools.ietf.org/html/rfc7233#section-4.3
 

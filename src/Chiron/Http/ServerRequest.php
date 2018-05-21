@@ -204,7 +204,7 @@ class ServerRequest extends ServerRequestPsr7 implements RequestMethodInterface
     }
 
     /**
-     * Is this a PURGE request? ('PURGE' is not an official method described in RFC)
+     * Is this a PURGE request? ('PURGE' is not an official method described in RFC).
      *
      * Note: This method is not part of the PSR-7 standard.
      *
