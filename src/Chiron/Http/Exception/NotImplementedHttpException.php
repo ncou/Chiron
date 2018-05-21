@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Chiron\Http\Exception;
+
 use Throwable;
 
 class NotImplementedHttpException extends HttpException
