@@ -30,8 +30,8 @@ namespace Chiron\Http;
 //https://github.com/symfony/http-foundation/blob/master/Response.php
 
 use Chiron\Http\Factory\StreamFactory;
-use Nyholm\Psr7\Response as ResponsePsr7;
 use Fig\Http\Message\StatusCodeInterface;
+use Nyholm\Psr7\Response as ResponsePsr7;
 
 class Response extends ResponsePsr7 implements StatusCodeInterface
 {
