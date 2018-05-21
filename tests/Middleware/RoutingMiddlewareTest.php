@@ -10,21 +10,19 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
-use Chiron\Middleware\RoutingMiddleware;
-use Chiron\Middleware\DispatcherMiddleware;
-use Chiron\Routing\Route;
-use Chiron\Routing\Router;
-use Chiron\Routing\RouteResult;
+use Chiron\Handler\Stack\RequestHandlerStack;
+use Chiron\Http\Factory\ServerRequestFactory;
+use Chiron\Http\Response;
 //use Psr\Http\Server\MiddlewareInterface;
-use PHPUnit\Framework\TestCase;
+use Chiron\Middleware\DispatcherMiddleware;
 //use Prophecy\Prophecy\ObjectProphecy;
+use Chiron\Middleware\RoutingMiddleware;
+use Chiron\Routing\Router;
 use Chiron\Tests\Utils\HandlerProxy2;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Response;
-use Chiron\Handler\Stack\RequestHandlerStack;
 
 class RoutingMiddlewareTest extends TestCase
 {
@@ -61,6 +59,7 @@ class RoutingMiddlewareTest extends TestCase
         $handler = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom', 'foobar');
             $response->getBody()->write('Found!');
+
             return $response;
         };
 
@@ -70,10 +69,8 @@ class RoutingMiddlewareTest extends TestCase
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
 
-
         $requestHandler->prepend($middlewareRouting);
         $requestHandler->prepend($middlewareDispatcher);
-
 
         //$response = $middleware->process($request, new HandlerProxy2($this->empty));
         $response = $requestHandler->handle($request);
@@ -94,7 +91,8 @@ class RoutingMiddlewareTest extends TestCase
         $handler = function ($request) {
             $id = $request->getAttribute('id');
             $response = new Response(200);
-            $response->getBody()->write('Found! id='.$id);
+            $response->getBody()->write('Found! id=' . $id);
+
             return $response;
         };
 
@@ -104,10 +102,8 @@ class RoutingMiddlewareTest extends TestCase
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
 
-
         $requestHandler->prepend($middlewareRouting);
         $requestHandler->prepend($middlewareDispatcher);
-
 
         //$response = $middleware->process($request, new HandlerProxy2($this->empty));
         $response = $requestHandler->handle($request);
@@ -127,6 +123,7 @@ class RoutingMiddlewareTest extends TestCase
         $handler = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom', 'foobar');
             $response->getBody()->write('Found!');
+
             return $response;
         };
 
@@ -136,10 +133,8 @@ class RoutingMiddlewareTest extends TestCase
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
 
-
         $requestHandler->prepend($middlewareRouting);
         $requestHandler->prepend($middlewareDispatcher);
-
 
         //$response = $middleware->process($request, new HandlerProxy2($this->empty));
         $response = $requestHandler->handle($request);
@@ -160,11 +155,13 @@ class RoutingMiddlewareTest extends TestCase
         $handler = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom', 'foobar');
             $response->getBody()->write('Found!');
+
             return $response;
         };
         $handlerCustom = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom-HEAD', 'bar');
             $response->getBody()->write('Custom Handler for HEAD!');
+
             return $response;
         };
 
@@ -175,10 +172,8 @@ class RoutingMiddlewareTest extends TestCase
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
 
-
         $requestHandler->prepend($middlewareRouting);
         $requestHandler->prepend($middlewareDispatcher);
-
 
         //$response = $middleware->process($request, new HandlerProxy2($this->empty));
         $response = $requestHandler->handle($request);
@@ -199,6 +194,7 @@ class RoutingMiddlewareTest extends TestCase
         $handler = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom', 'foobar');
             $response->getBody()->write('Found!');
+
             return $response;
         };
 
@@ -208,10 +204,8 @@ class RoutingMiddlewareTest extends TestCase
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
 
-
         $requestHandler->prepend($middlewareRouting);
         $requestHandler->prepend($middlewareDispatcher);
-
 
         //$response = $middleware->process($request, new HandlerProxy2($this->empty));
         $response = $requestHandler->handle($request);
@@ -234,12 +228,14 @@ class RoutingMiddlewareTest extends TestCase
         $handler = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom', 'foobar');
             $response->getBody()->write('Found!');
+
             return $response;
         };
 
         $handlerCustom = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom', 'foobar');
             $response->getBody()->write('Custom Handler for OPTIONS!');
+
             return $response;
         };
 
@@ -250,10 +246,8 @@ class RoutingMiddlewareTest extends TestCase
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
 
-
         $requestHandler->prepend($middlewareRouting);
         $requestHandler->prepend($middlewareDispatcher);
-
 
         //$response = $middleware->process($request, new HandlerProxy2($this->empty));
         $response = $requestHandler->handle($request);
@@ -277,6 +271,7 @@ class RoutingMiddlewareTest extends TestCase
         $handler = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom', 'foobar');
             $response->getBody()->write('Found!');
+
             return $response;
         };
 
@@ -285,7 +280,6 @@ class RoutingMiddlewareTest extends TestCase
 
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
-
 
         $requestHandler->prepend($middlewareRouting);
         $requestHandler->prepend($middlewareDispatcher);
@@ -307,6 +301,7 @@ class RoutingMiddlewareTest extends TestCase
         $handler = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom', 'foobar');
             $response->getBody()->write('Found!');
+
             return $response;
         };
 
@@ -316,11 +311,9 @@ class RoutingMiddlewareTest extends TestCase
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
 
-
         $requestHandler->prepend($middlewareRouting);
         $requestHandler->prepend($middlewareDispatcher);
 
         $response = $requestHandler->handle($request);
     }
-
 }
