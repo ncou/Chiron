@@ -48,6 +48,7 @@ class RoutingMiddleware implements MiddlewareInterface
                 //array_unshift($allowedMethods, 'OPTIONS');
                 return (new Response())->withHeader('Allow', implode(', ', array_merge(['OPTIONS'], $allowedMethods)));
             }
+
             throw new MethodNotAllowedHttpException($allowedMethods);
         } elseif ($matched->isFailure()) {
             throw new NotFoundHttpException();

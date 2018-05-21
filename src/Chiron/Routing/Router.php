@@ -194,6 +194,7 @@ class Router
                 if ($requiredMethods = $route->getAllowedMethods()) {
                     if (! in_array($requestMethod, $requiredMethods)) {
                         $allowedMethods = array_merge($allowedMethods, $requiredMethods);
+
                         continue;
                     }
                 }
@@ -212,6 +213,7 @@ class Router
             // TODO : vérifier si le array_unique est nécessaire !!!!!!
             return RouteResult::fromRouteFailure(array_unique($allowedMethods));
         }
+
         return RouteResult::fromRouteFailure(RouteResult::HTTP_METHOD_ANY);
     }
 
