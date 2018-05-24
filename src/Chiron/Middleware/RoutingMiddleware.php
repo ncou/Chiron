@@ -11,8 +11,8 @@ namespace Chiron\Middleware;
 
 use Chiron\Http\Exception\MethodNotAllowedHttpException;
 use Chiron\Http\Exception\NotFoundHttpException;
-use Chiron\Http\Stream\NullStream;
 use Chiron\Http\Response;
+use Chiron\Http\Stream\NullStream;
 use Chiron\Routing\Router;
 use Chiron\Routing\RouteResult;
 use Psr\Http\Message\ResponseInterface;
