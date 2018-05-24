@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Middleware;
 
+// TODO : regarder ici pour logguer la request et la response !!!!   :    https://github.com/Lansoweb/LosLog/blob/master/src/HttpLog.php
+
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

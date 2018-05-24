@@ -62,6 +62,94 @@ class BodyLimitMiddleware implements MiddlewareInterface
         }
     }
 
+    /**
+      * Converts a shorthand byte value to an integer byte value.
+      *
+      * @since 2.3.0
+      * @since 4.6.0 Moved from media.php to load.php.
+      *
+      * @link https://secure.php.net/manual/en/function.ini-get.php
+      * @link https://secure.php.net/manual/en/faq.using.php#faq.using.shorthandbytes
+      *
+      * @param string $value A (PHP ini) byte value, either shorthand or ordinary.
+      * @return int An integer byte value.
+      */
+/*
+    function wp_convert_hr_to_bytes( $value ) {
+        $value = strtolower( trim( $value ) );
+        $bytes = (int) $value;
+
+        if ( false !== strpos( $value, 'g' ) ) {
+            $bytes *= GB_IN_BYTES;
+        } elseif ( false !== strpos( $value, 'm' ) ) {
+            $bytes *= MB_IN_BYTES;
+        } elseif ( false !== strpos( $value, 'k' ) ) {
+            $bytes *= KB_IN_BYTES;
+        }
+
+        // Deal with large (float) values which run into the maximum integer size.
+        return min( $bytes, PHP_INT_MAX );
+    }*/
+
+    /**
+     * Normalized a given value of memory limit into the number of bytes
+     *
+     * @param string|int $value
+     * @throws Exception\InvalidArgumentException
+     * @return int
+     */
+    /*
+    protected function normalizeMemoryLimit($value)
+    {
+        if (is_numeric($value)) {
+            return (int) $value;
+        }
+        if (!preg_match('/(\-?\d+)\s*(\w*)/', ini_get('memory_limit'), $matches)) {
+            throw new Exception\InvalidArgumentException("Invalid  memory limit '{$value}'");
+        }
+        $value = (int) $matches[1];
+        if ($value <= 0) {
+            return 0;
+        }
+        switch (strtoupper($matches[2])) {
+            case 'G':
+                $value*= 1024;
+                // no break
+            case 'M':
+                $value*= 1024;
+                // no break
+            case 'K':
+                $value*= 1024;
+                // no break
+        }
+        return $value;
+    }*/
+
+    /**
+     * Return the maximum upload file size in bytes
+     * @return string
+     */
+    /*
+    protected function getMaximumUploadSize()
+    {
+        // Get the upload_max_filesize from the php.ini
+        $upload_max_filesize = ini_get('upload_max_filesize');
+        // Convert the value to bytes
+        if (stripos($upload_max_filesize, 'K') !== false)
+        {
+            $upload_max_filesize = round($upload_max_filesize * 1024);
+        }
+        elseif (stripos($upload_max_filesize, 'M') !== false)
+        {
+            $upload_max_filesize = round($upload_max_filesize * 1024 * 1024);
+        }
+        elseif (stripos($upload_max_filesize, 'G') !== false)
+        {
+            $upload_max_filesize = round($upload_max_filesize * 1024 * 1024 * 1024);
+        }
+        return min($upload_max_filesize, $GLOBALS['TL_CONFIG']['maxFileSize']);
+    }*/
+
     /*
      * Gets maximum post request size of attachment from php ini settings.
      * post_max_size specifies maximum size of a post request,

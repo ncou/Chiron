@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Http;
+namespace Chiron\Http\Stream;
 
 use Psr\Http\Message\StreamInterface;
 
