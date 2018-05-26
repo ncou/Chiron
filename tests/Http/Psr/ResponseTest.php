@@ -5,10 +5,11 @@ namespace Tests\Http\Psr;
 use Chiron\Http\Psr\Response;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
+use Chiron\Http\Factory\StreamFactory;
 
 /**
- * @covers \Nyholm\Psr7\MessageTrait
- * @covers \Nyholm\Psr7\Response
+ * @covers \Chiron\Http\Psr\MessageTrait
+ * @covers \Chiron\Http\Psr\Response
  */
 class ResponseTest extends TestCase
 {
@@ -37,7 +38,7 @@ class ResponseTest extends TestCase
             $body = $this->getMockBuilder(StreamInterface::class)->getMock();
             $body->expects($this->never())
                 ->method('__toString');
-    
+
             $r = new Response(200, [], $body);
             $this->assertSame($body, $r->getBody());
         }
@@ -138,7 +139,7 @@ class ResponseTest extends TestCase
 
     public function testWithBody()
     {
-        $b = (new \Nyholm\Psr7\Factory\StreamFactory())->createStream('0');
+        $b = (new StreamFactory())->createStream('0');
         $r = (new Response())->withBody($b);
         $this->assertInstanceOf(StreamInterface::class, $r->getBody());
         $this->assertSame('0', (string) $r->getBody());

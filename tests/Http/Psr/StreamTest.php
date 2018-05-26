@@ -6,7 +6,7 @@ use Chiron\Http\Psr\Stream;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Nyholm\Psr7\Stream
+ * @covers \Chiron\Http\Psr\Stream
  */
 class StreamTest extends TestCase
 {

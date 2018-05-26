@@ -5,9 +5,10 @@ namespace Tests\Http\Psr;
 use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\UploadedFile;
 use PHPUnit\Framework\TestCase;
+use Chiron\Http\Factory\StreamFactory;
 
 /**
- * @covers \Nyholm\Psr7\UploadedFile
+ * @covers \Chiron\Http\Psr\UploadedFile
  */
 class UploadedFileTest extends TestCase
 {
@@ -183,7 +184,7 @@ class UploadedFileTest extends TestCase
      */
     public function testMoveRaisesExceptionForInvalidPath($path)
     {
-        $stream = (new \Nyholm\Psr7\Factory\StreamFactory())->createStream('Foo bar!');
+        $stream = (new StreamFactory())->createStream('Foo bar!');
         $upload = new UploadedFile($stream, 0, UPLOAD_ERR_OK);
 
         $this->cleanup[] = $path;
@@ -195,7 +196,7 @@ class UploadedFileTest extends TestCase
 
     public function testMoveCannotBeCalledMoreThanOnce()
     {
-        $stream = (new \Nyholm\Psr7\Factory\StreamFactory())->createStream('Foo bar!');
+        $stream = (new StreamFactory())->createStream('Foo bar!');
         $upload = new UploadedFile($stream, 0, UPLOAD_ERR_OK);
 
         $this->cleanup[] = $to = tempnam(sys_get_temp_dir(), 'diac');
@@ -209,7 +210,7 @@ class UploadedFileTest extends TestCase
 
     public function testCannotRetrieveStreamAfterMove()
     {
-        $stream = (new \Nyholm\Psr7\Factory\StreamFactory())->createStream('Foo bar!');
+        $stream = (new StreamFactory())->createStream('Foo bar!');
         $upload = new UploadedFile($stream, 0, UPLOAD_ERR_OK);
 
         $this->cleanup[] = $to = tempnam(sys_get_temp_dir(), 'diac');

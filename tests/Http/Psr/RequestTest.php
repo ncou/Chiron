@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\StreamInterface;
 
 /**
- * @covers \Nyholm\Psr7\Request
+ * @covers \Chiron\Http\Psr\Request
  */
 class RequestTest extends TestCase
 {

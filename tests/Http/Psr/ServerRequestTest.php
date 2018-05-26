@@ -10,7 +10,7 @@ use Chiron\Http\Psr\Uri;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Nyholm\Psr7\ServerRequest
+ * @covers \Chiron\Http\Psr\ServerRequest
  */
 class ServerRequestTest extends TestCase
 {

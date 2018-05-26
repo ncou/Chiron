@@ -6,7 +6,7 @@ use Chiron\Http\Psr\Uri;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Nyholm\Psr7\Uri
+ * @covers \Chiron\Http\Psr\Uri
  */
 class UriTest extends TestCase
 {
@@ -484,6 +484,6 @@ class UriTest extends TestCase
     }
 }
 
-class ExtendingClassTest extends \Nyholm\Psr7\Uri
+class ExtendingClassTest extends \Chiron\Http\Psr\Uri
 {
 }

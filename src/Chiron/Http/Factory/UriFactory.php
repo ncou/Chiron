@@ -6,6 +6,7 @@ namespace Chiron\Http\Factory;
 
 use Chiron\Http\Psr\Uri;
 use Interop\Http\Factory\UriFactoryInterface;
+use Psr\Http\Message\UriInterface;
 
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
