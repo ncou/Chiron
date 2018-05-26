@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
-use PHPUnit\Framework\TestCase;
 use Chiron\Container\Container;
+use PHPUnit\Framework\TestCase;
 
-class ContainerTest extends TestCase
+class Containerest extends TestCase
 {
     public function testWithString()
     {
@@ -15,6 +15,7 @@ class ContainerTest extends TestCase
         $container['param'] = 'value';
         $this->assertEquals('value', $container['param']);
     }
+
     /*
     public function testWithClosure()
     {
@@ -66,10 +67,11 @@ class ContainerTest extends TestCase
     }*/
     public function testConstructorInjection()
     {
-        $params = array('param' => 'value');
-        $container = new Container(array(), $params);
+        $params = ['param' => 'value'];
+        $container = new Container([], $params);
         $this->assertSame($params['param'], $container['param']);
     }
+
     /**
      * @expectedException \Chiron\Container\Exception\EntryNotFoundException
      * @expectedExceptionMessage Identifier "foo" is not defined in the container.
@@ -79,12 +81,14 @@ class ContainerTest extends TestCase
         $container = new Container();
         echo $container['foo'];
     }
+
     public function testOffsetGetHonorsNullValues()
     {
         $container = new Container();
         $container['foo'] = null;
         $this->assertNull($container['foo']);
     }
+
     /*
     public function testUnset()
     {
@@ -111,6 +115,7 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf('Simplex\Tests\Fixtures\Service', $serviceTwo);
         $this->assertSame($serviceOne, $serviceTwo);
     }*/
+
     /**
      * @dataProvider serviceDefinitionProvider
      */
@@ -120,31 +125,40 @@ class ContainerTest extends TestCase
         $container['protected'] = $container->protect($service);
         $this->assertSame($service, $container['protected']);
     }
+
     public function testGlobalFunctionNameAsParameterValue()
     {
         $container = new Container();
         $container['global_function'] = 'strlen';
         $this->assertSame('strlen', $container['global_function']);
     }
+
     public function testRaw()
     {
         $container = new Container();
-        $container['service'] = $definition = $container->factory(function () { return 'foo'; });
+        $container['service'] = $definition = $container->factory(function () {
+            return 'foo';
+        });
         $this->assertSame($definition, $container->raw('service'));
     }
+
     public function testRawHonorsNullValues()
     {
         $container = new Container();
         $container['foo'] = null;
         $this->assertNull($container->raw('foo'));
     }
+
     public function testRawReturnsFactoryForAlreadyCreatedObject()
     {
         $container = new Container();
-        $container['service'] = $definition = function () { return 'foo'; };
+        $container['service'] = $definition = function () {
+            return 'foo';
+        };
         $this->assertEquals('foo', $container->get('service'));
         $this->assertSame($definition, $container->raw('service'));
     }
+
     /**
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Identifier "foo" is not defined.
@@ -154,6 +168,7 @@ class ContainerTest extends TestCase
         $container = new Container();
         $container->raw('foo');
     }
+
     /**
      * @dataProvider serviceDefinitionProvider
      */
@@ -188,8 +203,10 @@ class ContainerTest extends TestCase
             $this->markTestSkipped('Simplex extension does not support this test');
         }
         $container = new Container();
-        $container['foo'] = $container->factory(function () { return; });
-        $container['foo'] = $container->extend('foo', function ($foo, $container) { return; });
+        $container['foo'] = $container->factory(function () {
+        });
+        $container['foo'] = $container->extend('foo', function ($foo, $container) {
+        });
         unset($container['foo']);
         $p = new \ReflectionProperty($container, 'values');
         $p->setAccessible(true);
@@ -198,6 +215,7 @@ class ContainerTest extends TestCase
         $p->setAccessible(true);
         $this->assertCount(0, $p->getValue($container));
     }
+
     /**
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Identifier "foo" is not defined.
@@ -205,8 +223,10 @@ class ContainerTest extends TestCase
     public function testExtendValidatesKeyIsPresent()
     {
         $container = new Container();
-        $container->extend('foo', function () {});
+        $container->extend('foo', function () {
+        });
     }
+
     public function testExtendAllowsExtendingScalar()
     {
         $container = new Container();
@@ -216,13 +236,15 @@ class ContainerTest extends TestCase
         });
         $this->assertEquals('barbar', $container['foo']);
     }
+
     public function testKeys()
     {
         $container = new Container();
         $container['foo'] = 123;
         $container['bar'] = 123;
-        $this->assertEquals(array('foo', 'bar'), $container->keys());
+        $this->assertEquals(['foo', 'bar'], $container->keys());
     }
+
     /** @test */
     /*
     public function settingAnInvokableObjectShouldTreatItAsFactory()
@@ -239,6 +261,7 @@ class ContainerTest extends TestCase
         $container['non_invokable'] = new Fixtures\NonInvokable();
         $this->assertInstanceOf('Simplex\Tests\Fixtures\NonInvokable', $container['non_invokable']);
     }*/
+
     /**
      * @dataProvider badServiceDefinitionProvider
      * @expectedException \InvalidArgumentException
@@ -249,6 +272,7 @@ class ContainerTest extends TestCase
         $container = new Container();
         $container->factory($service);
     }
+
     /**
      * @dataProvider badServiceDefinitionProvider
      * @expectedException \InvalidArgumentException
@@ -259,6 +283,7 @@ class ContainerTest extends TestCase
         $container = new Container();
         $container->protect($service);
     }
+
     /**
      * @dataProvider badServiceDefinitionProvider
      */
@@ -271,6 +296,7 @@ class ContainerTest extends TestCase
         });
         $this->assertSame($service, $container['foo']);
     }
+
     /**
      * @dataProvider badServiceDefinitionProvider
      * @expectedException \InvalidArgumentException
@@ -279,19 +305,22 @@ class ContainerTest extends TestCase
     public function testExtendFailsForInvalidServiceDefinitions($service)
     {
         $container = new Container();
-        $container['foo'] = function () {};
+        $container['foo'] = function () {
+        };
         $container->extend('foo', $service);
     }
+
     /**
      * Provider for invalid service definitions.
      */
     public function badServiceDefinitionProvider()
     {
-        return array(
-          array(123),
-          array(new Fixtures\NonInvokable()),
-        );
+        return [
+            [123],
+            [new Fixtures\NonInvokable()],
+        ];
     }
+
     /**
      * Provider for service definitions.
      */
@@ -319,6 +348,7 @@ class ContainerTest extends TestCase
         };
         $this->assertSame('bar', $container['bar']);
     }
+
     /**
      * @expectedException \RuntimeException
      * @expectedExceptionMessage Cannot override frozen service "foo".
@@ -334,6 +364,7 @@ class ContainerTest extends TestCase
             return 'bar';
         };
     }
+
     public function testRemovingServiceAfterFreeze()
     {
         $container = new Container();
@@ -347,6 +378,7 @@ class ContainerTest extends TestCase
         };
         $this->assertSame('bar', $container['foo']);
     }
+
     public function testExtendingService()
     {
         $container = new Container();
@@ -361,6 +393,7 @@ class ContainerTest extends TestCase
         });
         $this->assertSame('foo.bar.baz', $container['foo']);
     }
+
     public function testExtendingServiceAfterOtherServiceFreeze()
     {
         $container = new Container();
@@ -376,12 +409,14 @@ class ContainerTest extends TestCase
         });
         $this->assertSame('bar.baz', $container['bar']);
     }
+
     public function testGet()
     {
         $container = new Container();
         $container['param'] = 'value';
         $this->assertEquals('value', $container->get('param'));
     }
+
     public function testHas()
     {
         $container = new Container();
@@ -389,15 +424,17 @@ class ContainerTest extends TestCase
         $this->assertTrue($container->has('param'));
         $this->assertFalse($container->has('foo'));
     }
+
     public function testDelegateLookupFeature()
     {
         $root = new Container();
-        $container = new Container(array(), array(), $root);
+        $container = new Container([], [], $root);
         $container['self'] = function ($c) {
             return $c;
         };
         $this->assertSame($root, $container['self']);
     }
+
     public function testSet()
     {
         $container = new Container();
