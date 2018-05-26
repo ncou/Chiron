@@ -6,6 +6,7 @@ declare(strict_types=1);
 //https://github.com/symfony/http-foundation/blob/master/Cookie.php
 
 //namespace Wandu\Http\Cookie;
+
 namespace Chiron\Http\Cookie;
 
 use DateTime;
