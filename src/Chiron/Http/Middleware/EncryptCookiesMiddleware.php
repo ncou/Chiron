@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\CookiesManager;
+use Chiron\Http\Cookie\CookiesManager;
 use Chiron\EncryptionManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

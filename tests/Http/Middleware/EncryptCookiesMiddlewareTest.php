@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Middleware;
 
-use Chiron\CookiesManager;
+use Chiron\Http\Cookie\CookiesManager;
 use Chiron\EncryptionManager;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\EncryptCookiesMiddleware;
