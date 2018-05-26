@@ -594,7 +594,7 @@ class SessionManager
         }*/
     }
 
-    public function clear(): void
+    public function clear2(): void
     {
         $_SESSION = [];
     }
