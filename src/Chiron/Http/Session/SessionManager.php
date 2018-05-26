@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 //https://github.com/relayphp/Relay.Middleware/blob/1.x/src/SessionHeadersHandler.php
 
@@ -63,7 +64,7 @@ $app->add(function (Request $request, Response $response, $next) {
  * @license http://opensource.org/licenses/bsd-license.php BSD
  */
 
-namespace Chiron\Session;
+namespace Chiron\Http\Session;
 
 use InvalidArgumentException;
 use LogicException;

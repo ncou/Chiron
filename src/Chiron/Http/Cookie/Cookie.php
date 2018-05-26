@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 //https://github.com/Wandu/Http/blob/master/Cookie/Cookie.php
 //https://github.com/symfony/http-foundation/blob/master/Cookie.php
 
-namespace Wandu\Http\Cookie;
+//namespace Wandu\Http\Cookie;
+namespace Chiron\Http\Cookie;
 
 use DateTime;
 use DateTimeZone;
