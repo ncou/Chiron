@@ -6,7 +6,7 @@
 
 namespace Chiron\Http;
 
-use Chiron\Http\Stream\ResourceStream;
+use Chiron\Http\Psr\Stream\ResourceStream;
 use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 

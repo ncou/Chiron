@@ -58,7 +58,7 @@ abstract class Serializer
     {
         $httpMethod = $request->getMethod();
         if (empty($httpMethod)) {
-            throw new UnexpectedValueException('Object can not be serialized because HTTP method is empty');
+            throw new \UnexpectedValueException('Object can not be serialized because HTTP method is empty');
         }
         $headers = self::serializeHeaders($request->getHeaders());
         $body = (string) $request->getBody();

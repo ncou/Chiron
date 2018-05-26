@@ -174,7 +174,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      *
      * @param array $server
      *
-     * @return UriInterface
+     * @return \Psr\Http\Message\UriInterface
      */
     public function marshalUriFromServer(array $server)
     {
