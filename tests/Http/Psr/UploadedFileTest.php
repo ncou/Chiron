@@ -2,10 +2,10 @@
 
 namespace Tests\Http\Psr;
 
+use Chiron\Http\Factory\StreamFactory;
 use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\UploadedFile;
 use PHPUnit\Framework\TestCase;
-use Chiron\Http\Factory\StreamFactory;
 
 /**
  * @covers \Chiron\Http\Psr\UploadedFile

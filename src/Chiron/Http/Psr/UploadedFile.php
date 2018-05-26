@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Psr;
 
-use InvalidArgumentException;
 use Chiron\Http\Factory\StreamFactory;
+use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
