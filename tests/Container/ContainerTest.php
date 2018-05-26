@@ -126,40 +126,40 @@ class ContainerTest extends TestCase
         $this->assertSame($service, $container['protected']);
     }
 
-/*
-    public function testGlobalFunctionNameAsParameterValue()
-    {
-        $container = new Container();
-        $container['global_function'] = 'strlen';
-        $this->assertSame('strlen', $container['global_function']);
-    }
-
-    public function testRaw()
-    {
-        $container = new Container();
-        $container['service'] = $definition = $container->factory(function () {
-            return 'foo';
-        });
-        $this->assertSame($definition, $container->raw('service'));
-    }
-
-    public function testRawHonorsNullValues()
-    {
-        $container = new Container();
-        $container['foo'] = null;
-        $this->assertNull($container->raw('foo'));
-    }
-
-    public function testRawReturnsFactoryForAlreadyCreatedObject()
-    {
-        $container = new Container();
-        $container['service'] = $definition = function () {
-            return 'foo';
-        };
-        $this->assertEquals('foo', $container->get('service'));
-        $this->assertSame($definition, $container->raw('service'));
-    }
-*/
+    /*
+        public function testGlobalFunctionNameAsParameterValue()
+        {
+            $container = new Container();
+            $container['global_function'] = 'strlen';
+            $this->assertSame('strlen', $container['global_function']);
+        }
+    
+        public function testRaw()
+        {
+            $container = new Container();
+            $container['service'] = $definition = $container->factory(function () {
+                return 'foo';
+            });
+            $this->assertSame($definition, $container->raw('service'));
+        }
+    
+        public function testRawHonorsNullValues()
+        {
+            $container = new Container();
+            $container['foo'] = null;
+            $this->assertNull($container->raw('foo'));
+        }
+    
+        public function testRawReturnsFactoryForAlreadyCreatedObject()
+        {
+            $container = new Container();
+            $container['service'] = $definition = function () {
+                return 'foo';
+            };
+            $this->assertEquals('foo', $container->get('service'));
+            $this->assertSame($definition, $container->raw('service'));
+        }
+    */
     /**
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Identifier "foo" is not defined.
@@ -230,18 +230,18 @@ class ContainerTest extends TestCase
         $container->extend('foo', function () {
         });
     }*/
-/*
-    public function testExtendAllowsExtendingScalar()
-    {
-        $container = new Container();
-        $container['foo'] = 'bar';
-        $container->extend('foo', function ($previous) {
-            return $previous . 'bar';
-        });
-        $this->assertEquals('barbar', $container['foo']);
-    }
-*/
-// TEST
+    /*
+        public function testExtendAllowsExtendingScalar()
+        {
+            $container = new Container();
+            $container['foo'] = 'bar';
+            $container->extend('foo', function ($previous) {
+                return $previous . 'bar';
+            });
+            $this->assertEquals('barbar', $container['foo']);
+        }
+    */
+    // TEST
     public function testKeys()
     {
         $container = new Container();
@@ -372,21 +372,21 @@ class ContainerTest extends TestCase
         };
     }*/
 
-/*
-    public function testRemovingServiceAfterFreeze()
-    {
-        $container = new Container();
-        $container['foo'] = function () {
-            return 'foo';
-        };
-        $foo = $container['foo'];
-        unset($container['foo']);
-        $container['foo'] = function () {
-            return 'bar';
-        };
-        $this->assertSame('bar', $container['foo']);
-    }
-*/
+    /*
+        public function testRemovingServiceAfterFreeze()
+        {
+            $container = new Container();
+            $container['foo'] = function () {
+                return 'foo';
+            };
+            $foo = $container['foo'];
+            unset($container['foo']);
+            $container['foo'] = function () {
+                return 'bar';
+            };
+            $this->assertSame('bar', $container['foo']);
+        }
+    */
     /*
     public function testExtendingService()
     {
@@ -433,17 +433,18 @@ class ContainerTest extends TestCase
         $this->assertTrue($container->has('param'));
         $this->assertFalse($container->has('foo'));
     }
-/*
-    public function testDelegateLookupFeature()
-    {
-        $root = new Container();
-        $container = new Container([], [], $root);
-        $container['self'] = function ($c) {
-            return $c;
-        };
-        $this->assertSame($root, $container['self']);
-    }
-*/
+
+    /*
+        public function testDelegateLookupFeature()
+        {
+            $root = new Container();
+            $container = new Container([], [], $root);
+            $container['self'] = function ($c) {
+                return $c;
+            };
+            $this->assertSame($root, $container['self']);
+        }
+    */
     public function testSet()
     {
         $container = new Container();
