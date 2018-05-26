@@ -6,12 +6,11 @@ namespace Chiron\Http\Factory;
 
 use Chiron\Http\Psr\Uri;
 use Interop\Http\Factory\UriFactoryInterface;
-use Psr\Http\Message\UriInterface;
 
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
-class UriFactory implements \Http\Message\UriFactory, UriFactoryInterface
+class UriFactory implements UriFactoryInterface
 {
     public function createUri($uri = ''): UriInterface
     {
