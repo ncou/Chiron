@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Factory;
 
-use Interop\Http\Factory\UriFactoryInterface;
 use Chiron\Http\Psr\Uri;
+use Interop\Http\Factory\UriFactoryInterface;
 use Psr\Http\Message\UriInterface;
 
 /**

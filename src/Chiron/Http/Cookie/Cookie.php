@@ -8,6 +8,7 @@ namespace Wandu\Http\Cookie;
 use DateTime;
 use DateTimeZone;
 use InvalidArgumentException;
+
 /**
  * @ref Symfony HttpFoundation Cookie
  */
@@ -15,26 +16,33 @@ class Cookie
 {
     /** @var string */
     protected $name;
+
     /** @var string */
     protected $value;
+
     /** @var \DateTime */
     protected $expire;
+
     /** @var string */
     protected $path;
+
     /** @var string */
     protected $domain;
+
     /** @var bool */
     protected $secure;
+
     /** @var bool */
     protected $httpOnly;
+
     /**
-     * @param string $name
-     * @param string $value
+     * @param string    $name
+     * @param string    $value
      * @param \DateTime $expire
-     * @param string $path
-     * @param string $domain
-     * @param bool $secure
-     * @param bool $httpOnly
+     * @param string    $path
+     * @param string    $domain
+     * @param bool      $secure
+     * @param bool      $httpOnly
      */
     public function __construct(
         $name,
@@ -45,7 +53,7 @@ class Cookie
         $secure = false,
         $httpOnly = true
     ) {
-        if (!$name) {
+        if (! $name) {
             throw new InvalidArgumentException('The cookie name cannot be empty.');
         }
         if (preg_match("/[=,; \t\r\n\013\014]/", $name)) {
@@ -59,6 +67,7 @@ class Cookie
         $this->secure = $secure;
         $this->httpOnly = $httpOnly;
     }
+
     /**
      * @return string
      */
@@ -66,6 +75,7 @@ class Cookie
     {
         return $this->name;
     }
+
     /**
      * @return string
      */
@@ -73,6 +83,7 @@ class Cookie
     {
         return $this->value;
     }
+
     /**
      * @return \DateTime
      */
@@ -80,6 +91,7 @@ class Cookie
     {
         return $this->expire;
     }
+
     /**
      * @return int
      */
@@ -87,6 +99,7 @@ class Cookie
     {
         return max(-1, $this->expire->getTimestamp() - time());
     }
+
     /**
      * @return string
      */
@@ -94,6 +107,7 @@ class Cookie
     {
         return $this->path;
     }
+
     /**
      * @return string
      */
@@ -101,30 +115,33 @@ class Cookie
     {
         return $this->domain;
     }
+
     /**
-     * @return boolean
+     * @return bool
      */
     public function isSecure()
     {
         return $this->secure;
     }
+
     /**
-     * @return boolean
+     * @return bool
      */
     public function isHttpOnly()
     {
         return $this->httpOnly;
     }
+
     /**
      * @return string
      */
     public function __toString()
     {
-        $stringToReturn = urlencode($this->name).'=';
+        $stringToReturn = urlencode($this->name) . '=';
         if ($this->value) {
             $stringToReturn .= urlencode($this->value);
             if (isset($this->expire)) {
-                $expire = $this->expire->setTimezone(new DateTimeZone('GMT'))->format("l, d-M-Y H:i:s T");
+                $expire = $this->expire->setTimezone(new DateTimeZone('GMT'))->format('l, d-M-Y H:i:s T');
                 $maxAge = $this->getMaxAge();
                 $stringToReturn .= "; Expires={$expire}; Max-Age={$maxAge}";
             }
@@ -143,6 +160,7 @@ class Cookie
         if ($this->isHttpOnly()) {
             $stringToReturn .= '; HttpOnly';
         }
+
         return $stringToReturn;
     }
 }

@@ -6,6 +6,7 @@ declare(strict_types=1);
 //https://github.com/zendframework/zend-diactoros/blob/master/src/PhpInputStream.php
 
 //namespace Wandu\Http\Psr\Stream;
+
 namespace Chiron\Http\Psr\Stream;
 
 use Psr\Http\Message\StreamInterface;

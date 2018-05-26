@@ -2,8 +2,8 @@
 
 namespace Tests\Http\Psr\Integration;
 
-use Psr\Http\Message\UriInterface;
 use Chiron\Http\Factory\UriFactory;
+use Psr\Http\Message\UriInterface;
 
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>

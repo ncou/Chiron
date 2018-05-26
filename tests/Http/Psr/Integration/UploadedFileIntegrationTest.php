@@ -2,8 +2,8 @@
 
 namespace Tests\Http\Psr\Integration;
 
-use Psr\Http\Message\UploadedFileInterface;
 use Chiron\Http\Factory\UploadedFileFactory;
+use Psr\Http\Message\UploadedFileInterface;
 
 /**
  * TODO Write me.

@@ -220,6 +220,7 @@ class UploadedFile implements UploadedFileInterface
 
     /**
      * @see http://php.net/manual/en/features.file-upload.errors.php
+     *
      * @return int One of PHP's UPLOAD_ERR_XXX constants.
      */
     public function getError(): int
@@ -237,7 +238,7 @@ class UploadedFile implements UploadedFileInterface
         return $this->clientMediaType;
     }
 
-    /**
+    /*
      * Write internal stream to given path
      *
      * @param string $path

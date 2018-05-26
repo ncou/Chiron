@@ -15,9 +15,9 @@ namespace Chiron\Http\Factory;
 
 //namespace Zend\Diactoros;
 
-use InvalidArgumentException;
 use Chiron\Http\Psr\Stream;
 use Interop\Http\Factory\StreamFactoryInterface;
+use InvalidArgumentException;
 
 /**
  * Implementation of PSR HTTP streams.
@@ -109,8 +109,8 @@ class StreamFactory implements StreamFactoryInterface
     public function copyToStream(StreamInterface $source, StreamInterface $dest, $maxLen = -1)
     {
         if ($maxLen === -1) {
-            while (!$source->eof()) {
-                if (!$dest->write($source->read(1048576))) {
+            while (! $source->eof()) {
+                if (! $dest->write($source->read(1048576))) {
                     break;
                 }
             }
@@ -119,9 +119,9 @@ class StreamFactory implements StreamFactoryInterface
         }
 
         $bytes = 0;
-        while (!$source->eof()) {
+        while (! $source->eof()) {
             $buf = $source->read($maxLen - $bytes);
-            if (!($len = strlen($buf))) {
+            if (! ($len = strlen($buf))) {
                 break;
             }
             $bytes += $len;

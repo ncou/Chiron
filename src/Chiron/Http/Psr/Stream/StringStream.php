@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 //namespace Wandu\Http\Psr\Stream;
+
 namespace Chiron\Http\Psr\Stream;
 
 use Psr\Http\Message\StreamInterface;
@@ -12,8 +13,10 @@ class StringStream implements StreamInterface
 {
     /** @var string */
     protected $context;
+
     /** @var int */
     protected $cursor = 0;
+
     /**
      * @param string $context
      */
@@ -22,14 +25,17 @@ class StringStream implements StreamInterface
         $this->context = $context;
         $this->seek(strlen($context));
     }
+
     /**
      * {@inheritdoc}
      */
     public function __toString()
     {
         $this->rewind();
+
         return $this->getContents();
     }
+
     /**
      * {@inheritdoc}
      */
@@ -37,6 +43,7 @@ class StringStream implements StreamInterface
     {
         throw new RuntimeException('can not use the close method.');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -44,6 +51,7 @@ class StringStream implements StreamInterface
     {
         throw new RuntimeException('can not use the detach method.');
     }
+
     /**
      * {@inheritdoc}
      */
@@ -51,6 +59,7 @@ class StringStream implements StreamInterface
     {
         return strlen($this->context);
     }
+
     /**
      * {@inheritdoc}
      */
@@ -58,6 +67,7 @@ class StringStream implements StreamInterface
     {
         return $this->cursor;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -65,6 +75,7 @@ class StringStream implements StreamInterface
     {
         return $this->cursor === strlen($this->context);
     }
+
     /**
      * {@inheritdoc}
      */
@@ -72,6 +83,7 @@ class StringStream implements StreamInterface
     {
         return true;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -79,6 +91,7 @@ class StringStream implements StreamInterface
     {
         $this->cursor = $offset;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -86,6 +99,7 @@ class StringStream implements StreamInterface
     {
         $this->seek(0);
     }
+
     /**
      * {@inheritdoc}
      */
@@ -93,6 +107,7 @@ class StringStream implements StreamInterface
     {
         return true;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -101,8 +116,10 @@ class StringStream implements StreamInterface
         $length = strlen($string);
         $this->context = substr_replace($this->context, $string, $this->cursor, $length);
         $this->cursor += $length;
+
         return $length;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -110,6 +127,7 @@ class StringStream implements StreamInterface
     {
         return true;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -117,8 +135,10 @@ class StringStream implements StreamInterface
     {
         $result = substr($this->context, $this->cursor, $length);
         $this->cursor += $length;
+
         return $result;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -129,8 +149,10 @@ class StringStream implements StreamInterface
         }
         $result = substr($this->context, $this->cursor);
         $this->cursor = strlen($this->context);
+
         return $result;
     }
+
     /**
      * {@inheritdoc}
      */

@@ -58,7 +58,7 @@ trait MessageTrait
     {
         $header = strtolower($header);
 
-        if (!isset($this->headerNames[$header])) {
+        if (! isset($this->headerNames[$header])) {
             return [];
         }
 
@@ -74,18 +74,18 @@ trait MessageTrait
 
     public function withHeader($header, $value): self
     {
-        if (!is_array($value)) {
+        if (! is_array($value)) {
             $value = [$value];
         } elseif (empty($value)) {
             throw new \InvalidArgumentException('Header values must be strings');
         }
 
-        if (!is_string($header) || empty($header)) {
+        if (! is_string($header) || empty($header)) {
             throw new \InvalidArgumentException('Header name must be strings');
         }
 
         foreach ($value as $v) {
-            if (!is_string($v)) {
+            if (! is_string($v)) {
                 throw new \InvalidArgumentException('Header values must be strings');
             }
         }
@@ -105,20 +105,20 @@ trait MessageTrait
 
     public function withAddedHeader($header, $value): self
     {
-        if (!is_array($value)) {
+        if (! is_array($value)) {
             $value = [$value];
-        } elseif (!empty($value)) {
+        } elseif (! empty($value)) {
             $value = array_values($value);
         } else {
             throw new \InvalidArgumentException('Header values must be strings');
         }
 
-        if (!is_string($header) || empty($header)) {
+        if (! is_string($header) || empty($header)) {
             throw new \InvalidArgumentException('Header name must be strings');
         }
 
         foreach ($value as $v) {
-            if (!is_string($v)) {
+            if (! is_string($v)) {
                 throw new \InvalidArgumentException('Header values must be strings');
             }
         }
@@ -142,7 +142,7 @@ trait MessageTrait
     {
         $normalized = strtolower($header);
 
-        if (!isset($this->headerNames[$normalized])) {
+        if (! isset($this->headerNames[$normalized])) {
             return $this;
         }
 
@@ -157,7 +157,7 @@ trait MessageTrait
     public function getBody(): StreamInterface
     {
         // TODO : vérifier si on a vraiment besoin d'initialiser un stream si il est null !!!!
-        if (!$this->stream) {
+        if (! $this->stream) {
             $this->stream = (new StreamFactory())->createStream('');
         }
 
@@ -180,7 +180,7 @@ trait MessageTrait
     {
         $this->headerNames = $this->headers = [];
         foreach ($headers as $header => $value) {
-            if (!is_array($value)) {
+            if (! is_array($value)) {
                 $value = [$value];
             }
 

@@ -29,18 +29,19 @@ class ResponseTest extends TestCase
         $this->assertSame(404, $r->getStatusCode());
         $this->assertSame('Not Found', $r->getReasonPhrase());
     }
-/*
-// TODO : essayer de comprendre pourquoi cela plante !!!!!!!!!!!
-    public function testConstructorDoesNotReadStreamBody()
-    {
-        $body = $this->getMockBuilder(StreamInterface::class)->getMock();
-        $body->expects($this->never())
-            ->method('__toString');
 
-        $r = new Response(200, [], $body);
-        $this->assertSame($body, $r->getBody());
-    }
-*/
+    /*
+    // TODO : essayer de comprendre pourquoi cela plante !!!!!!!!!!!
+        public function testConstructorDoesNotReadStreamBody()
+        {
+            $body = $this->getMockBuilder(StreamInterface::class)->getMock();
+            $body->expects($this->never())
+                ->method('__toString');
+    
+            $r = new Response(200, [], $body);
+            $this->assertSame($body, $r->getBody());
+        }
+    */
     public function testStatusCanBeNumericString()
     {
         $r = new Response('404');

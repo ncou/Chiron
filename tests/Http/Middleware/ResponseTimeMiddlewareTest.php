@@ -3,10 +3,9 @@
 namespace Chiron\Tests\Http\Middleware;
 
 use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Psr\Response;
 use Chiron\Http\Middleware\ResponseTimeMiddleware;
+use Chiron\Http\Psr\Response;
 use Chiron\Tests\Utils\HandlerProxy2;
-use Chiron\Http\Psr\Uri;
 use PHPUnit\Framework\TestCase;
 
 class ResponseTimeMiddlewareTest extends TestCase

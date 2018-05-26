@@ -1,15 +1,17 @@
 <?php
 /**
  * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+ * Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org).
  *
  * Licensed under The MIT License
  * For full copyright and license information, please see the LICENSE.txt
  * Redistributions of files must retain the above copyright notice.
  *
  * @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
+ *
+ * @see          http://cakephp.org CakePHP(tm) Project
  * @since         3.5.0
+ *
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
 
@@ -37,48 +39,50 @@ namespace Chiron\Http\Middleware;
 //https://docs.spring.io/spring-security/site/docs/current/reference/html/headers.html
 //https://github.com/owncloud/core/issues/17613
 
-
 //namespace Cake\Http\Middleware;
 
+use InvalidArgumentException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-
-use InvalidArgumentException;
-
 /**
- * Handles common security headers in a convenient way
+ * Handles common security headers in a convenient way.
  */
 class SecurityHeadersMiddleware2 implements MiddlewareInterface
 {
     /**
-     * Security related headers to set
+     * Security related headers to set.
      *
      * @var array
      */
     private $headers = [];
+
     /**
-     * X-Content-Type-Options
+     * X-Content-Type-Options.
      *
      * Sets the header value for it to 'nosniff'
      *
-     * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+     *
      * @return $this
      */
     public function noSniff()
     {
         $this->headers['x-content-type-options'] = 'nosniff';
+
         return $this;
     }
 
     /**
-     * X-Frame-Options
+     * X-Frame-Options.
      *
-     * @link https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+     * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+     *
      * @param string $option Option value. Available Values: 'deny', 'sameorigin', 'allow-from <uri>'
-     * @param string $url URL if mode is `allow-from`
+     * @param string $url    URL if mode is `allow-from`
+     *
      * @return $this
      */
     public function setXFrameOptions($option = 'sameorigin', $url = null)
@@ -91,33 +95,38 @@ class SecurityHeadersMiddleware2 implements MiddlewareInterface
             $option .= ' ' . $url;
         }
         $this->headers['x-frame-options'] = $option;
+
         return $this;
     }
 
     /**
-     * X-XSS-Protection
+     * X-XSS-Protection.
      *
-     * @link https://blogs.msdn.microsoft.com/ieinternals/2011/01/31/controlling-the-xss-filter
+     * @see https://blogs.msdn.microsoft.com/ieinternals/2011/01/31/controlling-the-xss-filter
+     *
      * @param string $mode Mode value. Available Values: '1', '0', 'block'
+     *
      * @return $this
      */
     public function setXssProtection($mode = 'block')
     {
-        $mode = (string)$mode;
+        $mode = (string) $mode;
         if ($mode === 'block') {
             $mode = '1; mode=block';
         }
         $this->checkValues($mode, ['1', '0', '1; mode=block']);
         $this->headers['x-xss-protection'] = $mode;
+
         return $this;
     }
 
     /**
-     * X-Download-Options
+     * X-Download-Options.
      *
      * Sets the header value for it to 'noopen'
      *
-     * @link https://msdn.microsoft.com/en-us/library/jj542450(v=vs.85).aspx
+     * @see https://msdn.microsoft.com/en-us/library/jj542450(v=vs.85).aspx
+     *
      * @return $this
      */
     /*
@@ -127,11 +136,13 @@ class SecurityHeadersMiddleware2 implements MiddlewareInterface
         return $this;
     }*/
     /**
-     * Referrer-Policy
+     * Referrer-Policy.
      *
-     * @link https://w3c.github.io/webappsec-referrer-policy
+     * @see https://w3c.github.io/webappsec-referrer-policy
+     *
      * @param string $policy Policy value. Available Value: 'no-referrer', 'no-referrer-when-downgrade', 'origin', 'origin-when-cross-origin',
-     *        'same-origin', 'strict-origin', 'strict-origin-when-cross-origin', 'unsafe-url'
+     *                       'same-origin', 'strict-origin', 'strict-origin-when-cross-origin', 'unsafe-url'
+     *
      * @return $this
      */
     /*
@@ -148,12 +159,13 @@ class SecurityHeadersMiddleware2 implements MiddlewareInterface
         return $this;
     }*/
 
-
     /**
-     * X-Permitted-Cross-Domain-Policies
+     * X-Permitted-Cross-Domain-Policies.
      *
-     * @link https://www.adobe.com/devnet/adobe-media-server/articles/cross-domain-xml-for-streaming.html
+     * @see https://www.adobe.com/devnet/adobe-media-server/articles/cross-domain-xml-for-streaming.html
+     *
      * @param string $policy Policy value. Available Values: 'all', 'none', 'master-only', 'by-content-type', 'by-ftp-filename'
+     *
      * @return $this
      */
     /*
@@ -164,17 +176,17 @@ class SecurityHeadersMiddleware2 implements MiddlewareInterface
         return $this;
     }*/
     /**
-     * Convenience method to check if a value is in the list of allowed args
+     * Convenience method to check if a value is in the list of allowed args.
+     *
+     * @param string $value   Value to check
+     * @param array  $allowed List of allowed values
      *
      * @throws \InvalidArgumentException Thrown when a value is invalid.
-     * @param string $value Value to check
-     * @param array $allowed List of allowed values
-     * @return void
      */
     // @TODO : rename as assetValues
     private function checkValues($value, array $allowed)
     {
-        if (!in_array($value, $allowed)) {
+        if (! in_array($value, $allowed)) {
             throw new InvalidArgumentException(sprintf(
                 'Invalid arg `%s`, use one of these: %s',
                 $value,
@@ -182,12 +194,14 @@ class SecurityHeadersMiddleware2 implements MiddlewareInterface
             ));
         }
     }
+
     /**
      * Serve assets if the path matches one.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request The request.
-     * @param \Psr\Http\Message\ResponseInterface $response The response.
-     * @param callable $next Callback to invoke the next middleware.
+     * @param \Psr\Http\Message\ServerRequestInterface $request  The request.
+     * @param \Psr\Http\Message\ResponseInterface      $response The response.
+     * @param callable                                 $next     Callback to invoke the next middleware.
+     *
      * @return \Psr\Http\Message\ResponseInterface A response
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -196,6 +210,7 @@ class SecurityHeadersMiddleware2 implements MiddlewareInterface
         foreach ($this->headers as $header => $value) {
             $response = $response->withHeader($header, $value);
         }
+
         return $response;
     }
 }

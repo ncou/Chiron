@@ -41,7 +41,7 @@ class Request implements RequestInterface
         $body = null,
         $version = '1.1'
     ) {
-        if (!($uri instanceof UriInterface)) {
+        if (! ($uri instanceof UriInterface)) {
             $uri = new Uri($uri);
         }
 
@@ -50,7 +50,7 @@ class Request implements RequestInterface
         $this->setHeaders($headers);
         $this->protocol = $version;
 
-        if (!$this->hasHeader('Host')) {
+        if (! $this->hasHeader('Host')) {
             $this->updateHostFromUri();
         }
 
@@ -70,7 +70,7 @@ class Request implements RequestInterface
             $target = '/';
         }
         if ('' != $this->uri->getQuery()) {
-            $target .= '?'.$this->uri->getQuery();
+            $target .= '?' . $this->uri->getQuery();
         }
 
         return $target;
@@ -95,7 +95,7 @@ class Request implements RequestInterface
 
     public function withMethod($method): self
     {
-        if (!is_string($method)) {
+        if (! is_string($method)) {
             throw new \InvalidArgumentException('Method must be a string');
         }
 
@@ -119,7 +119,7 @@ class Request implements RequestInterface
         $new = clone $this;
         $new->uri = $uri;
 
-        if (!$preserveHost || !$this->hasHeader('Host')) {
+        if (! $preserveHost || ! $this->hasHeader('Host')) {
             $new->updateHostFromUri();
         }
 
@@ -135,7 +135,7 @@ class Request implements RequestInterface
         }
 
         if (null !== ($port = $this->uri->getPort())) {
-            $host .= ':'.$port;
+            $host .= ':' . $port;
         }
 
         if (isset($this->headerNames['host'])) {

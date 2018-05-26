@@ -23,10 +23,10 @@ require_once __DIR__ . '/../../../../vendor/nyholm/psr7/src/Uri.php';
 //namespace Viserio\Component\HttpFactory;
 
 use Chiron\Http\Psr\ServerRequest;
-use Interop\Http\Factory\ServerRequestFactoryInterface;
 use Chiron\Http\Psr\UploadedFile;
-use InvalidArgumentException;
 use Chiron\Http\Psr\Uri;
+use Interop\Http\Factory\ServerRequestFactoryInterface;
+use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UploadedFileInterface;
 
@@ -445,24 +445,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
         return $normalizedFiles;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        /**
+    /**
      * Create a new server request from a set of arrays.
      *
      * @param array $server  Typically $_SERVER or similar structure.
@@ -498,7 +481,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
             ->withUploadedFiles(self::normalizeFiles($files));
     }
 
-     private function getMethodFromEnvironment(array $environment): string
+    private function getMethodFromEnvironment(array $environment): string
     {
         if (false === isset($environment['REQUEST_METHOD'])) {
             throw new InvalidArgumentException('Cannot determine HTTP method');
@@ -516,11 +499,4 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
 
         return $uri;
     }
-
-
-
-
-
-
-
 }

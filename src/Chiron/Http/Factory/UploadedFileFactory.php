@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Factory;
 
-use Interop\Http\Factory\UploadedFileFactoryInterface;
 use Chiron\Http\Psr\UploadedFile;
+use Interop\Http\Factory\UploadedFileFactoryInterface;
 
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
@@ -25,7 +25,7 @@ class UploadedFileFactory implements UploadedFileFactoryInterface
         if (is_string($file)) {
             // This is string content
             $content = $file;
-            $file = fopen(sys_get_temp_dir().'/'.uniqid('uploaded_file', true), 'w+');
+            $file = fopen(sys_get_temp_dir() . '/' . uniqid('uploaded_file', true), 'w+');
             fwrite($file, $content);
         }
 

@@ -4,10 +4,9 @@ namespace Tests\Http\Psr\Integration;
 
 require 'MessageTrait.php';
 
+use Chiron\Http\Psr\Request;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
-
-use Chiron\Http\Psr\Request;
 
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>

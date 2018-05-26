@@ -12,11 +12,11 @@ namespace Chiron\Tests\Http\Middleware;
 
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Psr\Response;
-//use Psr\Http\Server\MiddlewareInterface;
 use Chiron\Http\Middleware\DispatcherMiddleware;
-//use Prophecy\Prophecy\ObjectProphecy;
+//use Psr\Http\Server\MiddlewareInterface;
 use Chiron\Http\Middleware\RoutingMiddleware;
+//use Prophecy\Prophecy\ObjectProphecy;
+use Chiron\Http\Psr\Response;
 use Chiron\Routing\Router;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;

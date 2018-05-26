@@ -13,12 +13,12 @@ class UploadedFileTest extends TestCase
 {
     protected $cleanup;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->cleanup = [];
     }
 
-    public function tearDown()
+    protected function tearDown()
     {
         foreach ($this->cleanup as $file) {
             if (is_scalar($file) && file_exists($file)) {
@@ -30,12 +30,12 @@ class UploadedFileTest extends TestCase
     public function invalidStreams()
     {
         return [
-            'null' => [null],
-            'true' => [true],
-            'false' => [false],
-            'int' => [1],
-            'float' => [1.1],
-            'array' => [['filename']],
+            'null'   => [null],
+            'true'   => [true],
+            'false'  => [false],
+            'int'    => [1],
+            'float'  => [1.1],
+            'array'  => [['filename']],
             'object' => [(object) ['filename']],
         ];
     }
@@ -54,9 +54,9 @@ class UploadedFileTest extends TestCase
     public function invalidSizes()
     {
         return [
-            'null' => [null],
-            'float' => [1.1],
-            'array' => [[1]],
+            'null'   => [null],
+            'float'  => [1.1],
+            'array'  => [[1]],
             'object' => [(object) [1]],
         ];
     }
@@ -75,15 +75,15 @@ class UploadedFileTest extends TestCase
     public function invalidErrorStatuses()
     {
         return [
-            'null' => [null],
-            'true' => [true],
-            'false' => [false],
-            'float' => [1.1],
-            'string' => ['1'],
-            'array' => [[1]],
-            'object' => [(object) [1]],
+            'null'     => [null],
+            'true'     => [true],
+            'false'    => [false],
+            'float'    => [1.1],
+            'string'   => ['1'],
+            'array'    => [[1]],
+            'object'   => [(object) [1]],
             'negative' => [-1],
-            'too-big' => [9],
+            'too-big'  => [9],
         ];
     }
 
@@ -101,11 +101,11 @@ class UploadedFileTest extends TestCase
     public function invalidFilenamesAndMediaTypes()
     {
         return [
-            'true' => [true],
-            'false' => [false],
-            'int' => [1],
-            'float' => [1.1],
-            'array' => [['string']],
+            'true'   => [true],
+            'false'  => [false],
+            'int'    => [1],
+            'float'  => [1.1],
+            'array'  => [['string']],
             'object' => [(object) ['string']],
         ];
     }
@@ -167,13 +167,13 @@ class UploadedFileTest extends TestCase
     public function invalidMovePaths()
     {
         return [
-            'null' => [null],
-            'true' => [true],
-            'false' => [false],
-            'int' => [1],
-            'float' => [1.1],
-            'empty' => [''],
-            'array' => [['filename']],
+            'null'   => [null],
+            'true'   => [true],
+            'false'  => [false],
+            'int'    => [1],
+            'float'  => [1.1],
+            'empty'  => [''],
+            'array'  => [['filename']],
             'object' => [(object) ['filename']],
         ];
     }
@@ -224,13 +224,13 @@ class UploadedFileTest extends TestCase
     public function nonOkErrorStatus()
     {
         return [
-            'UPLOAD_ERR_INI_SIZE' => [UPLOAD_ERR_INI_SIZE],
-            'UPLOAD_ERR_FORM_SIZE' => [UPLOAD_ERR_FORM_SIZE],
-            'UPLOAD_ERR_PARTIAL' => [UPLOAD_ERR_PARTIAL],
-            'UPLOAD_ERR_NO_FILE' => [UPLOAD_ERR_NO_FILE],
+            'UPLOAD_ERR_INI_SIZE'   => [UPLOAD_ERR_INI_SIZE],
+            'UPLOAD_ERR_FORM_SIZE'  => [UPLOAD_ERR_FORM_SIZE],
+            'UPLOAD_ERR_PARTIAL'    => [UPLOAD_ERR_PARTIAL],
+            'UPLOAD_ERR_NO_FILE'    => [UPLOAD_ERR_NO_FILE],
             'UPLOAD_ERR_NO_TMP_DIR' => [UPLOAD_ERR_NO_TMP_DIR],
             'UPLOAD_ERR_CANT_WRITE' => [UPLOAD_ERR_CANT_WRITE],
-            'UPLOAD_ERR_EXTENSION' => [UPLOAD_ERR_EXTENSION],
+            'UPLOAD_ERR_EXTENSION'  => [UPLOAD_ERR_EXTENSION],
         ];
     }
 
@@ -251,7 +251,7 @@ class UploadedFileTest extends TestCase
         $uploadedFile = new UploadedFile('not ok', 0, $status);
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('upload error');
-        $uploadedFile->moveTo(__DIR__.'/'.uniqid());
+        $uploadedFile->moveTo(__DIR__ . '/' . uniqid());
     }
 
     /**

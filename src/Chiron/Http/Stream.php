@@ -3,11 +3,12 @@
 // https://github.com/Wandu/Framework/blob/master/src/Wandu/Http/Psr/Stream.php
 
 //namespace Wandu\Http\Psr;
+
 namespace Chiron\Http;
 
+use Chiron\Http\Stream\ResourceStream;
 use InvalidArgumentException;
 use Psr\Http\Message\StreamInterface;
-use Chiron\Http\Stream\ResourceStream;
 
 class Stream extends ResourceStream implements StreamInterface
 {
