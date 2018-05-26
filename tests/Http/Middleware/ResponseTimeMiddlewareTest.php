@@ -1,5 +1,4 @@
 <?php
-declare(strict_types = 1);
 
 namespace Chiron\Tests\Http\Middleware;
 
@@ -10,7 +9,7 @@ use Chiron\Tests\Utils\HandlerProxy2;
 use Chiron\Http\Psr\Uri;
 use PHPUnit\Framework\TestCase;
 
-class ResponseTimeTest extends TestCase
+class ResponseTimeMiddlewareTest extends TestCase
 {
     public function testResponseTime()
     {
@@ -32,7 +31,7 @@ class ResponseTimeTest extends TestCase
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
             'REQUEST_METHOD'         => 'GET',
-            'REQUEST_TIME_FLOAT' => microtime(true),
+            'REQUEST_TIME_FLOAT'     => microtime(true),
         ]);
         $handler = function ($request) {
             return new Response();

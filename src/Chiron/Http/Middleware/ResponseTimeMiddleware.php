@@ -1,5 +1,6 @@
 <?php
-declare(strict_types = 1);
+
+declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
@@ -10,7 +11,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class ResponseTimeMiddleware implements MiddlewareInterface
 {
-    const HEADER = 'X-Response-Time';
+    public const HEADER = 'X-Response-Time';
+
     /**
      * Process a server request and return a response.
      */

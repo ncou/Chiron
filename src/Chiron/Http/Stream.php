@@ -14,6 +14,7 @@ class Stream extends ResourceStream implements StreamInterface
     /**
      * @param string $stream
      * @param string $mode
+     *
      * @throws \InvalidArgumentException
      */
     //public function __construct(string $stream = 'php://memory', string $mode = 'r')
@@ -42,5 +43,4 @@ class Stream extends ResourceStream implements StreamInterface
         }
         parent::__construct($resource);*/
     }
-
 }

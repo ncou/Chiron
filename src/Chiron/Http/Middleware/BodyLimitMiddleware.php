@@ -62,7 +62,7 @@ class BodyLimitMiddleware implements MiddlewareInterface
         }
     }
 
-    /**
+    /*
       * Converts a shorthand byte value to an integer byte value.
       *
       * @since 2.3.0
@@ -91,7 +91,7 @@ class BodyLimitMiddleware implements MiddlewareInterface
         return min( $bytes, PHP_INT_MAX );
     }*/
 
-    /**
+    /*
      * Normalized a given value of memory limit into the number of bytes
      *
      * @param string|int $value
@@ -125,7 +125,7 @@ class BodyLimitMiddleware implements MiddlewareInterface
         return $value;
     }*/
 
-    /**
+    /*
      * Return the maximum upload file size in bytes
      * @return string
      */
