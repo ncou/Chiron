@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Tests\Middleware;
+namespace Chiron\Tests\Container;
 
 use Chiron\Container\Container;
 use PHPUnit\Framework\TestCase;
@@ -133,7 +133,7 @@ class ContainerTest extends TestCase
             $container['global_function'] = 'strlen';
             $this->assertSame('strlen', $container['global_function']);
         }
-    
+
         public function testRaw()
         {
             $container = new Container();
@@ -142,14 +142,14 @@ class ContainerTest extends TestCase
             });
             $this->assertSame($definition, $container->raw('service'));
         }
-    
+
         public function testRawHonorsNullValues()
         {
             $container = new Container();
             $container['foo'] = null;
             $this->assertNull($container->raw('foo'));
         }
-    
+
         public function testRawReturnsFactoryForAlreadyCreatedObject()
         {
             $container = new Container();
@@ -269,9 +269,9 @@ class ContainerTest extends TestCase
 
     /**
      * @dataProvider badServiceDefinitionProvider
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Service definition is not a Closure or invokable object.
+     * @expectedException \TypeError
      */
+    // TODO : test à virer cela ne sert pas à grand chose !!!!
     public function testFactoryFailsForInvalidServiceDefinitions($service)
     {
         $container = new Container();
@@ -283,15 +283,17 @@ class ContainerTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Callable is not a Closure or invokable object.
      */
+    /*
     public function testProtectFailsForInvalidServiceDefinitions($service)
     {
         $container = new Container();
         $container->protect($service);
-    }
+    }*/
 
     /**
      * @dataProvider badServiceDefinitionProvider
      */
+    /*
     public function testExtendNonInvokableDefinition($service)
     {
         $container = new Container();
@@ -300,20 +302,21 @@ class ContainerTest extends TestCase
             return $previous;
         });
         $this->assertSame($service, $container['foo']);
-    }
+    }*/
 
     /**
      * @dataProvider badServiceDefinitionProvider
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Extension service definition is not a Closure or invokable object.
      */
+    /*
     public function testExtendFailsForInvalidServiceDefinitions($service)
     {
         $container = new Container();
         $container['foo'] = function () {
         };
         $container->extend('foo', $service);
-    }
+    }*/
 
     /**
      * Provider for invalid service definitions.
