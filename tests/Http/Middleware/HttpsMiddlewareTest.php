@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Chiron\Tests\Http\Middleware;
 
 use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Psr\Response;
-//use Chiron\Http\Uri;
 use Chiron\Http\Middleware\HttpsMiddleware;
-use Chiron\Tests\Utils\HandlerProxy2;
+//use Chiron\Http\Uri;
+use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Uri;
+use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
 class HttpsMiddlewareTest extends TestCase

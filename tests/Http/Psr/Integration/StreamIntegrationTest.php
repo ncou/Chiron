@@ -2,8 +2,8 @@
 
 namespace Tests\Http\Psr\Integration;
 
-use Psr\Http\Message\StreamInterface;
 use Chiron\Http\Factory\StreamFactory;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>

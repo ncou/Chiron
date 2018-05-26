@@ -6,8 +6,8 @@ namespace Chiron\Tests\Http\Middleware;
 
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Factory\StreamFactory;
-use Chiron\Http\Psr\Response;
 use Chiron\Http\Middleware\ParsedBodyMiddleware;
+use Chiron\Http\Psr\Response;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 

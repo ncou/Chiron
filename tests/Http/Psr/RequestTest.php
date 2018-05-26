@@ -126,7 +126,7 @@ class RequestTest extends TestCase
         $r = new Request('GET', 'http://foo.com/baz?bar=bam', ['Foo' => 'Bar']);
         $this->assertEquals([
             'Host' => ['foo.com'],
-            'Foo' => ['Bar'],
+            'Foo'  => ['Bar'],
         ], $r->getHeaders());
     }
 

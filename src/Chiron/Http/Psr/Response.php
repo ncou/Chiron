@@ -126,7 +126,7 @@ class Response implements ResponseInterface
 
     public function withStatus($code, $reasonPhrase = ''): self
     {
-        if (!is_int($code) && !is_string($code)) {
+        if (! is_int($code) && ! is_string($code)) {
             throw new \InvalidArgumentException('Status code has to be an integer');
         }
 
@@ -144,23 +144,6 @@ class Response implements ResponseInterface
 
         return $new;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public const FORMAT_URLENCODED = 'URLENCODED';
 

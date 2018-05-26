@@ -7,9 +7,8 @@ namespace Tests\Http;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Stream;
-use PHPUnit\Framework\TestCase;
 use Chiron\Http\Serializer;
-use Psr\Http\Message\StreamInterface;
+use PHPUnit\Framework\TestCase;
 
 class SerializerTest extends TestCase
 {
@@ -35,6 +34,7 @@ class SerializerTest extends TestCase
             $message
         );
     }
+
     public function testSerializesResponseWithoutBodyCorrectly()
     {
         $response = (new Response())
@@ -46,6 +46,7 @@ class SerializerTest extends TestCase
             $message
         );
     }
+
     public function testSerializesResponseWithMultipleHeadersCorrectly()
     {
         $response = (new Response())
@@ -53,9 +54,10 @@ class SerializerTest extends TestCase
             ->withAddedHeader('X-Foo-Bar', 'Baz')
             ->withAddedHeader('X-Foo-Bar', 'Bat');
         $message = Serializer::responseToString($response);
-        $this->assertContains("X-Foo-Bar: Baz", $message);
-        $this->assertContains("X-Foo-Bar: Bat", $message);
+        $this->assertContains('X-Foo-Bar: Baz', $message);
+        $this->assertContains('X-Foo-Bar: Bat', $message);
     }
+
     public function testOmitsReasonPhraseFromStatusLineIfEmpty()
     {
         $response = (new Response())
@@ -77,9 +79,10 @@ class SerializerTest extends TestCase
             $message
         );
     }
+
     public function testSerializesRequestWithBody()
     {
-        $body   = json_encode(['test' => 'value']);
+        $body = json_encode(['test' => 'value']);
         $stream = Stream::createFromResource(fopen('php://memory', 'wb+'));
         $stream->write($body);
         $request = (new ServerRequest('POST', 'http://example.com/foo/bar'))
@@ -90,14 +93,14 @@ class SerializerTest extends TestCase
         $this->assertContains("POST /foo/bar HTTP/1.1\r\n", $message);
         $this->assertContains("\r\n\r\n" . $body, $message);
     }
+
     public function testSerializesRequestWithMultipleHeadersCorrectly()
     {
         $request = (new ServerRequest('GET', 'http://example.com/foo/bar?baz=bat'))
             ->withAddedHeader('X-Foo-Bar', 'Baz')
             ->withAddedHeader('X-Foo-Bar', 'Bat');
         $message = Serializer::requestToString($request);
-        $this->assertContains("X-Foo-Bar: Baz", $message);
-        $this->assertContains("X-Foo-Bar: Bat", $message);
+        $this->assertContains('X-Foo-Bar: Baz', $message);
+        $this->assertContains('X-Foo-Bar: Bat', $message);
     }
-
 }

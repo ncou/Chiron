@@ -7,7 +7,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
  */
-class ServerRequestIntegrationTest extends BaseTest
+class ServerRequestIntegrationest extends BaseTest
 {
     /**
      * @var array with functionName => reason

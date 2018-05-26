@@ -2,8 +2,8 @@
 
 namespace Tests\Http\Psr\Integration;
 
-use Psr\Http\Message\ResponseInterface;
 use Chiron\Http\Psr\Response;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * @author Tobias Nyholm <tobias.nyholm@gmail.com>
