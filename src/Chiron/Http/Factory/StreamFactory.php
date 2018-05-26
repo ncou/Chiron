@@ -18,6 +18,7 @@ namespace Chiron\Http\Factory;
 use Chiron\Http\Psr\Stream;
 use Interop\Http\Factory\StreamFactoryInterface;
 use InvalidArgumentException;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Implementation of PSR HTTP streams.

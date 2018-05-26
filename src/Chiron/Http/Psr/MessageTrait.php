@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Psr;
 
-use Nyholm\Psr7\Factory\StreamFactory;
+use Chiron\Http\Factory\StreamFactory;
 use Psr\Http\Message\StreamInterface;
 
 /**
