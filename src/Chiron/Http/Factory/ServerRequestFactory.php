@@ -22,13 +22,13 @@ require_once __DIR__ . '/../../../../vendor/nyholm/psr7/src/Uri.php';
 
 //namespace Viserio\Component\HttpFactory;
 
-use Chiron\Http\ServerRequest;
+use Chiron\Http\Psr\ServerRequest;
 use Interop\Http\Factory\ServerRequestFactoryInterface;
-//use Chiron\Http\Uri;
+use Chiron\Http\Psr\UploadedFile;
 use InvalidArgumentException;
-use Nyholm\Psr7\Uri;
-
-//use Psr\Http\Message\UploadedFileInterface;
+use Chiron\Http\Psr\Uri;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\UploadedFileInterface;
 
 //use Nyholm\Psr7\Factory\ServerRequestFactory as ServerRequestFactoryPsr17;
 
@@ -46,7 +46,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createServerRequest($method, $uri)
+    public function createServerRequest($method, $uri): ServerRequestInterface
     {
         //return $this->buildServerRequest($method, $uri);
         return new ServerRequest($method, $uri);
@@ -55,7 +55,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function createServerRequestFromArray(array $server)
+    public function createServerRequestFromArray(array $server): ServerRequestInterface
     {
         // Check if request is valid, need URI and method set at least.
         if (! isset($server['REQUEST_URI'])) {
@@ -373,7 +373,7 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
      *
      * @return array
      */
-    public function normalizeFiles(array $files)
+    public function normalizeFiles(array $files): array
     {
         $normalized = [];
         foreach ($files as $key => $value) {
@@ -444,4 +444,83 @@ class ServerRequestFactory implements ServerRequestFactoryInterface
 
         return $normalizedFiles;
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /**
+     * Create a new server request from a set of arrays.
+     *
+     * @param array $server  Typically $_SERVER or similar structure.
+     * @param array $headers Typically the output of getallheaders() or similar structure.
+     * @param array $cookie  Typically $_COOKIE or similar structure.
+     * @param array $get     Typically $_GET or similar structure.
+     * @param array $post    Typically $_POST or similar structure.
+     * @param array $files   Typically $_FILES or similar structure.
+     *
+     * @throws InvalidArgumentException If no valid method or URI can be determined.
+     *
+     * @return ServerRequestInterface
+     */
+    public function createServerRequestFromArrays(
+        array $server,
+        array $headers,
+        array $cookie,
+        array $get,
+        array $post,
+        array $files
+    ): ServerRequestInterface {
+        $method = $this->getMethodFromEnvironment($server);
+        $uri = $this->getUriFromEnvironmentWithHTTP($server);
+
+        $protocol = isset($server['SERVER_PROTOCOL']) ? str_replace('HTTP/', '', $server['SERVER_PROTOCOL']) : '1.1';
+
+        $serverRequest = new ServerRequest($method, $uri, $headers, null, $protocol, $server);
+
+        return $serverRequest
+            ->withCookieParams($cookie)
+            ->withQueryParams($get)
+            ->withParsedBody($post)
+            ->withUploadedFiles(self::normalizeFiles($files));
+    }
+
+     private function getMethodFromEnvironment(array $environment): string
+    {
+        if (false === isset($environment['REQUEST_METHOD'])) {
+            throw new InvalidArgumentException('Cannot determine HTTP method');
+        }
+
+        return $environment['REQUEST_METHOD'];
+    }
+
+    private function getUriFromEnvironmentWithHTTP(array $environment): \Psr\Http\Message\UriInterface
+    {
+        $uri = (new UriFactory())->createUriFromArray($environment);
+        if ('' === $uri->getScheme()) {
+            $uri = $uri->withScheme('http');
+        }
+
+        return $uri;
+    }
+
+
+
+
+
+
+
 }

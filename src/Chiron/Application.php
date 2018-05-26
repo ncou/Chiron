@@ -52,7 +52,7 @@ use Chiron\Handler\FixedResponseHandler;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Handler\Stack\Utils\CallableMiddlewareDecorator;
 use Chiron\Handler\Stack\Utils\LazyLoadingMiddleware;
-use Chiron\Http\Response;
+use Chiron\Http\Psr\Response;
 use Chiron\Routing\Route;
 use Closure;
 use InvalidArgumentException;

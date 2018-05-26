@@ -13,7 +13,7 @@
 
 namespace Chiron;
 
-use Chiron\Http\Response;
+use Chiron\Http\Psr\Response;
 use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;

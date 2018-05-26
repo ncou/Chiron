@@ -13,8 +13,19 @@ use Chiron\Http\Exception\ProxyAuthenticationRequiredHttpException;
 
 class ProxyAuthenticationRequiredHttpExceptionTest extends HttpExceptionTest
 {
-    protected function createException()
+    public function testHeadersDefault()
     {
-        return new ProxyAuthenticationRequiredHttpException();
+        $exception = new ProxyAuthenticationRequiredHttpException('Challenge');
+        $this->assertSame(['Proxy-Authenticate' => 'Challenge'], $exception->getHeaders());
+    }
+
+    /**
+     * @dataProvider headerDataProvider
+     */
+    public function testHeadersSetter($headers)
+    {
+        $exception = new ProxyAuthenticationRequiredHttpException('Challenge');
+        $exception->setHeaders($headers);
+        $this->assertSame($headers, $exception->getHeaders());
     }
 }

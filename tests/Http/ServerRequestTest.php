@@ -7,7 +7,7 @@
  */
 declare(strict_types=1);
 
-namespace Tests\Http\Response;
+namespace Tests\Http;
 
 use Chiron\Http\Factory\ServerRequestFactory;
 use PHPUnit\Framework\TestCase;

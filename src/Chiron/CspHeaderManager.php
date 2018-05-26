@@ -52,9 +52,9 @@ class CspHeaderManager
      * etc.) This method returns an instance of whatever you passed, so long
      * as it implements MessageInterface.
      *
-     * @param \Psr\Http\ResponseInterface $response
+     * @param ResponseInterface $response
      *
-     * @return \Psr\Http\ResponseInterface
+     * @return ResponseInterface
      */
     public function injectCSPHeader(ResponseInterface $response): ResponseInterface
     {

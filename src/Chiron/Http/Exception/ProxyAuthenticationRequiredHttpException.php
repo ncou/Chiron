@@ -6,10 +6,13 @@ namespace Chiron\Http\Exception;
 
 use Throwable;
 
+//https://tools.ietf.org/html/rfc7235#section-3.2
 class ProxyAuthenticationRequiredHttpException extends HttpException
 {
-    public function __construct(string $message = 'Proxy Authentication Required', Throwable $previous = null, array $headers = [])
+    public function __construct(string $challenge, string $message = 'Proxy Authentication Required', Throwable $previous = null, array $headers = [])
     {
+        $headers['Proxy-Authenticate'] = $challenge;
+
         parent::__construct(407, $message, $previous, $headers);
     }
 }
