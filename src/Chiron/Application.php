@@ -413,7 +413,6 @@ class Application
         $this->getRouter()->setBasePath($curBasePath);
     }
 
-
     // $params => string|array
     public function group($params, Closure $closure): void//: RouteGroup
     {
@@ -423,13 +422,6 @@ class Application
         // TODO : un return de type $group est à utiliser si on veux ajouter un middleware avec la notation : $app->group(xxxx, xxxxx)->middleware(xxx);
         //return $group;
     }
-
-
-
-
-
-
-
 
     // TODO : ajouter des méthodes proxy pour : getRoutes / getNamedRoute / hasRoute ?????? voir même pour generateUri et getBasePath/setBasePath ??????
 
@@ -578,7 +570,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $services = new DefaultServicesProvider();
         $services->register($this->container);
 
-        $this->container->set(Application::class, $this);
+        $this->container->set(self::class, $this);
 
 //        $this->container['debug'] = false;
 //        $this->container['charset'] = 'UTF-8';
