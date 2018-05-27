@@ -50,8 +50,8 @@ use Chiron\Container\Container;
 use Chiron\Handler\DeferredRequestHandler;
 use Chiron\Handler\FixedResponseHandler;
 use Chiron\Handler\Stack\RequestHandlerStack;
-use Chiron\Handler\Stack\Utils\CallableMiddlewareDecorator;
-use Chiron\Handler\Stack\Utils\LazyLoadingMiddleware;
+use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
+use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Routing\Route;
 use Closure;
@@ -403,6 +403,7 @@ class Application
         //https://github.com/Rareloop/router/blob/master/src/RouteGroup.php     +   https://github.com/Rareloop/router/blob/master/src/Router.php#L176
         // Call the callable
         $closure($this);
+        //call_user_func($callback, $group);  // <= corresponse à : call_user_func($closure, $this);
         // TODO : regarder ici pour des arguments à passer au mount : https://github.com/nezamy/route/blob/master/system/Route.php#L185
         //call_user_func_array($closure, $this->bindArgs($this->pramsGroup, $this->matchedArgs));
         // Restore original base route
