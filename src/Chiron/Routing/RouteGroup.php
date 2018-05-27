@@ -3,10 +3,12 @@
 namespace Chiron\Routing;
 
 use Chiron\Routing\RoutableInterface;
+use Chiron\Routing\Router;
 use Chiron\Routing\VerbShortcutsTrait;
 use Psr\Http\Server\RequestHandlerInterface;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Handler\DeferredRequestHandler;
+use Psr\Container\ContainerInterface;
 use Closure;
 
 class RouteGroup implements RoutableInterface
@@ -18,7 +20,7 @@ class RouteGroup implements RoutableInterface
     protected $prefix;
     protected $middlewares = [];
 
-    public function __construct($params, $router, $container)
+    public function __construct($params, Router $router, ContainerInterface $container = null)
     {
         $prefix = null;
         $middlewares = [];
@@ -44,11 +46,19 @@ class RouteGroup implements RoutableInterface
         $this->container = $container;
     }
 
-    public function map(string $pattern, $handler) : Route
+    public function map(string $pattern, $handler, $middlewares = null) : Route
     {
         //return $this->router->map($this->appendPrefixToUri($pattern), $handler, $this->middlewares);
 
-        $handlerStack = $this->populateHandlerWithMiddlewares($handler, $this->middlewares);
+        if (! isset($middlewares)) {
+            $middlewares = [];
+        } elseif (! is_array($middlewares)) {
+            $middlewares = [$middlewares];
+        }
+
+        $middlewares = array_merge($middlewares, $this->middlewares);
+
+        $handlerStack = $this->populateHandlerWithMiddlewares($handler, $middlewares);
 
         return $this->router->map($this->appendPrefixToUri($pattern), $handlerStack);
     }

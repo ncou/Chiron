@@ -194,7 +194,7 @@ class Application
      */
     public function get(string $pattern, $handler, $middlewares = null)
     {
-        return $this->route($pattern, $handler, $middlewares)->method('GET');
+        return $this->map($pattern, $handler, $middlewares)->method('GET');
     }
 
     /**
@@ -214,7 +214,7 @@ class Application
     // TODO : vérifier l'utilité de cette méthode. Et il manque encore la partie CONNECT et TRACE !!!! dans ces helpers
     public function head(string $pattern, $handler, $middlewares = null)
     {
-        return $this->route($pattern, $handler, $middlewares)->method('HEAD');
+        return $this->map($pattern, $handler, $middlewares)->method('HEAD');
     }
 
     /**
@@ -231,7 +231,7 @@ class Application
      */
     public function post(string $pattern, $handler, $middlewares = null)
     {
-        return $this->route($pattern, $handler, $middlewares)->method('POST');
+        return $this->map($pattern, $handler, $middlewares)->method('POST');
     }
 
     /**
@@ -248,7 +248,7 @@ class Application
      */
     public function put(string $pattern, $handler, $middlewares = null)
     {
-        return $this->route($pattern, $handler, $middlewares)->method('PUT');
+        return $this->map($pattern, $handler, $middlewares)->method('PUT');
     }
 
     /**
@@ -266,7 +266,7 @@ class Application
      */
     public function patch(string $pattern, $handler, $middlewares = null)
     {
-        return $this->route($pattern, $handler, $middlewares)->method('PATCH');
+        return $this->map($pattern, $handler, $middlewares)->method('PATCH');
     }
 
     /**
@@ -282,7 +282,7 @@ class Application
      */
     public function purge(string $pattern, $handler, $middlewares = null)
     {
-        return $this->route($pattern, $handler, $middlewares)->method('PURGE');
+        return $this->map($pattern, $handler, $middlewares)->method('PURGE');
     }
 
     /**
@@ -299,7 +299,7 @@ class Application
      */
     public function delete(string $pattern, $handler, $middlewares = null)
     {
-        return $this->route($pattern, $handler, $middlewares)->method('DELETE');
+        return $this->map($pattern, $handler, $middlewares)->method('DELETE');
     }
 
     /**
@@ -316,7 +316,7 @@ class Application
     // TODO : vérifier l'utilité de cette méthode !!!!
     public function options(string $pattern, $handler, $middlewares = null)
     {
-        return $this->route($pattern, $handler, $middlewares)->method('OPTIONS');
+        return $this->map($pattern, $handler, $middlewares)->method('OPTIONS');
     }
 
     // TODO : ajouter le support pour les méthodes TRACE et CONNECT ????
@@ -334,7 +334,7 @@ class Application
     public function any(string $pattern, $handler, $middlewares = null)
     {
         // TODO : il faudrait plutot laissé vide le setMethods([]) comme ca toutes les méthodes sont acceptées !!!!
-        return $this->route($pattern, $handler, $middlewares)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'PURGE', 'DELETE', 'OPTIONS']);
+        return $this->map($pattern, $handler, $middlewares)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'PURGE', 'DELETE', 'OPTIONS']);
     }
 
     /**
@@ -348,7 +348,7 @@ class Application
      */
     // TODO : créer une classe RouteInterface qui servira comme type de retour (il faudra aussi l'ajouter dans le use en début de classe) !!!!!
     // TODO : lever une exception si le type du handler n'est pas correct, par exemple si on lui passe un integer ou un objet non callable !!!!!
-    public function route(string $pattern, $handler, $middlewares = null): Route
+    public function map(string $pattern, $handler, $middlewares = null): Route
     {
         if (! isset($middlewares)) {
             $middlewares = [];
@@ -415,11 +415,11 @@ class Application
 
 
     // $params => string|array
-    public function group($params, Closure $callback)//: RouteGroup
+    public function group($params, Closure $closure): void//: RouteGroup
     {
         $group = new RouteGroup($params, $this->getRouter(), $this->getContainer());
-        //$callback = $callback->bindTo($group);
-        call_user_func($callback, $group);
+        //$closure = $closure->bindTo($group);
+        call_user_func($closure, $group);
         // TODO : un return de type $group est à utiliser si on veux ajouter un middleware avec la notation : $app->group(xxxx, xxxxx)->middleware(xxx);
         //return $group;
     }
