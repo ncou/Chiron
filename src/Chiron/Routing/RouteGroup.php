@@ -2,22 +2,21 @@
 
 namespace Chiron\Routing;
 
-use Chiron\Routing\RoutableInterface;
-use Chiron\Routing\Router;
-use Chiron\Routing\VerbShortcutsTrait;
-use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Handler\DeferredRequestHandler;
-use Psr\Container\ContainerInterface;
+use Chiron\Handler\Stack\RequestHandlerStack;
 use Closure;
+use Psr\Container\ContainerInterface;
 
 class RouteGroup implements RoutableInterface
 {
     use VerbShortcutsTrait;
 
     protected $router;
+
     protected $container;
+
     protected $prefix;
+
     protected $middlewares = [];
 
     public function __construct($params, Router $router, ContainerInterface $container = null)
@@ -33,7 +32,7 @@ class RouteGroup implements RoutableInterface
             $prefix = $params['prefix'] ?? null;
             $middlewares = $params['middleware'] ?? [];
 
-            if (!is_array($middlewares)) {
+            if (! is_array($middlewares)) {
                 $middlewares = [$middlewares];
             }
 
@@ -46,7 +45,7 @@ class RouteGroup implements RoutableInterface
         $this->container = $container;
     }
 
-    public function map(string $pattern, $handler, $middlewares = null) : Route
+    public function map(string $pattern, $handler, $middlewares = null): Route
     {
         //return $this->router->map($this->appendPrefixToUri($pattern), $handler, $this->middlewares);
 
@@ -72,7 +71,7 @@ class RouteGroup implements RoutableInterface
         }
         // TODO : il manque la gestion des middleware dans le cas de groupes imbriqués dans des groupes !!!!!!
 
-        $group = new RouteGroup($params, $this->router);
+        $group = new self($params, $this->router);
         //$closure = $closure->bindTo($group);
         call_user_func($closure, $group);
 

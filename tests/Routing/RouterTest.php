@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Routing;
 
-use Chiron\Routing\Router;
 use Chiron\Routing\Route;
-use PHPUnit\Framework\TestCase;
+use Chiron\Routing\Router;
 use Chiron\Tests\Utils\HandlerProxy2;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Zend\Expressive\Router\RouteResult
@@ -16,25 +16,29 @@ class RouterTest extends TestCase
 {
     protected function setUp()
     {
-        $this->noop = new HandlerProxy2(function () {});
+        $this->noop = new HandlerProxy2(function () {
+        });
     }
+
     /** @test */
     public function map_returns_a_route_object()
     {
-        $router = new Router;
+        $router = new Router();
         $route = $router->map('/test/123', $this->noop)->method('GET');
         $this->assertInstanceOf(Route::class, $route);
         $this->assertSame(['GET'], $route->getAllowedMethods());
         $this->assertSame('/test/123', $route->getUrl());
     }
+
     /** @test */
     public function map_accepts_lowercase_verbs()
     {
-        $router = new Router;
+        $router = new Router();
         $route = $router->map('/test/123', $this->noop)->setAllowedMethods(['get', 'post', 'put', 'patch', 'delete', 'options']);
         $this->assertSame(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], $route->getAllowedMethods());
     }
-    /** @test */
+
+    /* @test */
     /*
     public function map_removes_trailing_slash_from_uri()
     {
@@ -44,7 +48,7 @@ class RouterTest extends TestCase
         $this->assertSame(['GET'], $route->getAllowedMethods());
         $this->assertSame('/test/123', $route->getUrl());
     }*/
-    /** @test */
+    /* @test */
     /*
     public function can_add_routes_in_a_group()
     {
@@ -63,7 +67,7 @@ class RouterTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('abc123', $response->getBody()->getContents());
     }*/
-    /** @test */
+    /* @test */
     /*
     public function can_add_routes_in_a_group_using_array_as_first_param()
     {
@@ -82,7 +86,7 @@ class RouterTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('abc123', $response->getBody()->getContents());
     }*/
-    /** @test */
+    /* @test */
     /*
     public function can_add_routes_in_a_group_using_array_as_first_param_with_no_prefix()
     {
@@ -101,7 +105,7 @@ class RouterTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('abc123', $response->getBody()->getContents());
     }*/
-    /** @test */
+    /* @test */
     /*
     public function group_prefixes_work_with_leading_slash()
     {
@@ -120,7 +124,7 @@ class RouterTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('abc123', $response->getBody()->getContents());
     }*/
-    /** @test */
+    /* @test */
     /*
     public function group_prefixes_work_with_trailing_slash()
     {
@@ -139,7 +143,7 @@ class RouterTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('abc123', $response->getBody()->getContents());
     }*/
-    /** @test */
+    /* @test */
     /*
     public function can_add_routes_in_nested_groups()
     {
@@ -162,7 +166,7 @@ class RouterTest extends TestCase
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('abc123', $response->getBody()->getContents());
     }*/
-    /** @test */
+    /* @test */
     /*
     public function can_add_routes_in_nested_groups_with_array_syntax()
     {
