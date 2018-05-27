@@ -54,6 +54,7 @@ use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Http\Psr\Response;
 use Chiron\Routing\Route;
+use Chiron\Routing\RouteGroup;
 use Closure;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
@@ -333,7 +334,7 @@ class Application
     public function any(string $pattern, $handler, $middlewares = null)
     {
         // TODO : il faudrait plutot laissé vide le setMethods([]) comme ca toutes les méthodes sont acceptées !!!!
-        return $this->route($pattern, $handler, $middlewares)->setAllowedMethods(['GET', 'POST', 'PUT', 'PATCH', 'PURGE', 'DELETE', 'OPTIONS']);
+        return $this->route($pattern, $handler, $middlewares)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'PURGE', 'DELETE', 'OPTIONS']);
     }
 
     /**
@@ -376,12 +377,14 @@ class Application
             $handler = new DeferredRequestHandler($handler, $this->container);
         }
 
-        $handlerStack = new RequestHandlerStack($handler);
-        foreach ($middlewares as $middleware) {
-            $handlerStack->prepend($this->prepareMiddleware($middleware));
+        if (! empty($middlewares)) {
+            $handler = new RequestHandlerStack($handler);
+            foreach ($middlewares as $middleware) {
+                $handler->prepend($this->prepareMiddleware($middleware));
+            }
         }
 
-        return $this->getRouter()->map($pattern, $handlerStack);
+        return $this->getRouter()->map($pattern, $handler);
     }
 
     /**
@@ -409,6 +412,24 @@ class Application
         // Restore original base route
         $this->getRouter()->setBasePath($curBasePath);
     }
+
+
+    // $params => string|array
+    public function group($params, Closure $callback)//: RouteGroup
+    {
+        $group = new RouteGroup($params, $this->getRouter(), $this->getContainer());
+        //$callback = $callback->bindTo($group);
+        call_user_func($callback, $group);
+        // TODO : un return de type $group est à utiliser si on veux ajouter un middleware avec la notation : $app->group(xxxx, xxxxx)->middleware(xxx);
+        //return $group;
+    }
+
+
+
+
+
+
+
 
     // TODO : ajouter des méthodes proxy pour : getRoutes / getNamedRoute / hasRoute ?????? voir même pour generateUri et getBasePath/setBasePath ??????
 
@@ -556,6 +577,8 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
         $services = new DefaultServicesProvider();
         $services->register($this->container);
+
+        $this->container->set(Application::class, $this);
 
 //        $this->container['debug'] = false;
 //        $this->container['charset'] = 'UTF-8';

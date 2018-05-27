@@ -63,6 +63,7 @@ class Container implements \ArrayAccess, ContainerInterface
      * @param string $entry
      */
     // TODO : on devrait pas faire une vérification si le service existe déjà (cad que l'alias est déjà utilisé) on léve une exception pour éviter d'acraser le service ???? ou alors il faudrait un paramétre pour forcer l'overwrite du service si il existe dejà
+    // TODO : renommer la méthode en bind() ????
     public function set(string $alias, $entry)
     {
         // bind the "container" to the var "$this" inside the Closure function

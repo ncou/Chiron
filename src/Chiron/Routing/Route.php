@@ -88,12 +88,12 @@ class Route //implements RequestHandlerInterface
     }
 
     // TODO ; vérifier l'utilité de cette méthode
-    public function getUrl()
+    public function getUrl(): string
     {
         return $this->url;
     }
 
-    public function getHandler()
+    public function getHandler(): RequestHandlerInterface
     {
         return $this->handler;
     }
