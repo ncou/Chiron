@@ -6,10 +6,12 @@ use Chiron\Handler\DeferredRequestHandler;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Closure;
 use Psr\Container\ContainerInterface;
+use Chiron\Routing\Route;
+use Chiron\Routing\Router;
 
 class RouteGroup implements RoutableInterface
 {
-    use VerbShortcutsTrait;
+    use RoutableTrait;
 
     protected $router;
 
@@ -45,7 +47,7 @@ class RouteGroup implements RoutableInterface
         $this->container = $container;
     }
 
-    public function map(string $pattern, $handler, $middlewares = null): Route
+    public function route(string $pattern, $handler, $middlewares = null): Route
     {
         //return $this->router->map($this->appendPrefixToUri($pattern), $handler, $this->middlewares);
 
@@ -55,14 +57,14 @@ class RouteGroup implements RoutableInterface
             $middlewares = [$middlewares];
         }
 
-        $middlewares = array_merge($middlewares, $this->middlewares);
+        $middlewares = array_merge($this->middlewares, $middlewares);
 
         $handlerStack = $this->populateHandlerWithMiddlewares($handler, $middlewares);
 
         return $this->router->map($this->appendPrefixToUri($pattern), $handlerStack);
     }
 
-    public function group($params, Closure $closure)//: RouteGroup
+    public function group($params, Closure $closure): void//: RouteGroup
     {
         if (is_string($params)) {
             $params = $this->appendPrefixToUri($params);

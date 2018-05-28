@@ -54,6 +54,7 @@ use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Http\Psr\Response;
 use Chiron\Routing\Route;
+use Chiron\Routing\Router;
 use Chiron\Routing\RouteGroup;
 use Closure;
 use InvalidArgumentException;
@@ -62,9 +63,14 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;
+use Chiron\Routing\RoutableInterface;
+use Chiron\Routing\RoutableTrait;
 
-class Application
+class Application implements RoutableInterface
 {
+
+    use RoutableTrait;
+
     public const VERSION = '1.0.0';
 
     /**
@@ -177,165 +183,8 @@ class Application
     }
 
     /********************************************************************************
-     * Router helper methods
+     * Router
      *******************************************************************************/
-
-    /**
-     * Add GET route.
-     *
-     * @see https://tools.ietf.org/html/rfc7231#section-4.3.1
-     * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3
-     *
-     * @param string                                    $pattern    The route URI pattern
-     * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
-     *
-     * @return \Chiron\Routing\Route
-     */
-    public function get(string $pattern, $handler, $middlewares = null)
-    {
-        return $this->map($pattern, $handler, $middlewares)->method('GET');
-    }
-
-    /**
-     * Add HEAD route.
-     *
-     * HEAD was added to HTTP/1.1 in RFC2616
-     *
-     * @see https://tools.ietf.org/html/rfc7231#section-4.3.2
-     * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
-     *
-     * @param string                                    $pattern    The route URI pattern
-     * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
-     *
-     * @return \Chiron\Routing\Route
-     */
-    // TODO : vérifier l'utilité de cette méthode. Et il manque encore la partie CONNECT et TRACE !!!! dans ces helpers
-    public function head(string $pattern, $handler, $middlewares = null)
-    {
-        return $this->map($pattern, $handler, $middlewares)->method('HEAD');
-    }
-
-    /**
-     * Add POST route.
-     *
-     * @see https://tools.ietf.org/html/rfc7231#section-4.3.3
-     * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5
-     *
-     * @param string                                    $pattern    The route URI pattern
-     * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
-     *
-     * @return \Chiron\Routing\Route
-     */
-    public function post(string $pattern, $handler, $middlewares = null)
-    {
-        return $this->map($pattern, $handler, $middlewares)->method('POST');
-    }
-
-    /**
-     * Add PUT route.
-     *
-     * @see https://tools.ietf.org/html/rfc7231#section-4.3.4
-     * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6
-     *
-     * @param string                                    $pattern    The route URI pattern
-     * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
-     *
-     * @return \Chiron\Routing\Route
-     */
-    public function put(string $pattern, $handler, $middlewares = null)
-    {
-        return $this->map($pattern, $handler, $middlewares)->method('PUT');
-    }
-
-    /**
-     * Add PATCH route.
-     *
-     * PATCH was added to HTTP/1.1 in RFC5789
-     *
-     * @see http://tools.ietf.org/html/rfc5789
-     *
-     * @param string                                    $pattern    The route URI pattern
-     * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
-     *
-     * @return \Chiron\Routing\Route
-     */
-    public function patch(string $pattern, $handler, $middlewares = null)
-    {
-        return $this->map($pattern, $handler, $middlewares)->method('PATCH');
-    }
-
-    /**
-     * Add PURGE route.
-     *
-     * PURGE is not an official method, and there is no RFC for the moment.
-     *
-     * @param string                                    $pattern    The route URI pattern
-     * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
-     *
-     * @return \Chiron\Routing\Route
-     */
-    public function purge(string $pattern, $handler, $middlewares = null)
-    {
-        return $this->map($pattern, $handler, $middlewares)->method('PURGE');
-    }
-
-    /**
-     * Add DELETE route.
-     *
-     * @see https://tools.ietf.org/html/rfc7231#section-4.3.5
-     * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7
-     *
-     * @param string                                    $pattern    The route URI pattern
-     * @param callable|string                           $callable   The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
-     *
-     * @return \Chiron\Routing\Route
-     */
-    public function delete(string $pattern, $handler, $middlewares = null)
-    {
-        return $this->map($pattern, $handler, $middlewares)->method('DELETE');
-    }
-
-    /**
-     * Add OPTIONS route.
-     *
-     * @see https://tools.ietf.org/html/rfc7231#section-4.3.7
-     *
-     * @param string                                    $pattern    The route URI pattern
-     * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
-     *
-     * @return \Chiron\Routing\Route
-     */
-    // TODO : vérifier l'utilité de cette méthode !!!!
-    public function options(string $pattern, $handler, $middlewares = null)
-    {
-        return $this->map($pattern, $handler, $middlewares)->method('OPTIONS');
-    }
-
-    // TODO : ajouter le support pour les méthodes TRACE et CONNECT ????
-
-    /**
-     * Add route for any HTTP method.
-     *
-     * @param string                                    $pattern    The route URI pattern
-     * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
-     *
-     * @return \Chiron\Routing\Route
-     */
-    // TODO : voir si on conserve cette méthode (qui finalement est un alias de "->map()")
-    public function any(string $pattern, $handler, $middlewares = null)
-    {
-        // TODO : il faudrait plutot laissé vide le setMethods([]) comme ca toutes les méthodes sont acceptées !!!!
-        return $this->map($pattern, $handler, $middlewares)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'PURGE', 'DELETE', 'OPTIONS']);
-    }
 
     /**
      * Add route with multiple methods.
@@ -348,7 +197,7 @@ class Application
      */
     // TODO : créer une classe RouteInterface qui servira comme type de retour (il faudra aussi l'ajouter dans le use en début de classe) !!!!!
     // TODO : lever une exception si le type du handler n'est pas correct, par exemple si on lui passe un integer ou un objet non callable !!!!!
-    public function map(string $pattern, $handler, $middlewares = null): Route
+    public function route(string $pattern, $handler, $middlewares = null): Route
     {
         if (! isset($middlewares)) {
             $middlewares = [];
@@ -387,34 +236,8 @@ class Application
         return $this->getRouter()->map($pattern, $handler);
     }
 
-    /**
-     * Mounts a collection of callbacks onto a base route.
-     *
-     * @param string   $baseRoute The route sub pattern to mount the callbacks on
-     * @param callable $fn        The callback method
-     */
-    public function mount(string $prefix, Closure $closure): void
-    {
-        // Track current base route
-        $curBasePath = $this->getRouter()->getBasePath();
-        // Build new base route string
-        $this->getRouter()->setBasePath($curBasePath . $prefix);
-        // Bind the $this var, to app instance.
-        $closure = $closure->bindTo($this);
-        //$callback = Closure::bind($closure, $this, get_class());
-        // TODO : créer un objet RouteGroup avec uniquement les méthode get/post/put...etc pour éviter de passer à la closure tout l'objet 'Application' :(
-        //https://github.com/Rareloop/router/blob/master/src/RouteGroup.php     +   https://github.com/Rareloop/router/blob/master/src/Router.php#L176
-        // Call the callable
-        $closure($this);
-        //call_user_func($callback, $group);  // <= corresponse à : call_user_func($closure, $this);
-        // TODO : regarder ici pour des arguments à passer au mount : https://github.com/nezamy/route/blob/master/system/Route.php#L185
-        //call_user_func_array($closure, $this->bindArgs($this->pramsGroup, $this->matchedArgs));
-        // Restore original base route
-        $this->getRouter()->setBasePath($curBasePath);
-    }
-
     // $params => string|array
-    public function group($params, Closure $closure): void//: RouteGroup
+    public function group($params, Closure $closure): void
     {
         $group = new RouteGroup($params, $this->getRouter(), $this->getContainer());
         //$closure = $closure->bindTo($group);
@@ -426,7 +249,7 @@ class Application
     // TODO : ajouter des méthodes proxy pour : getRoutes / getNamedRoute / hasRoute ?????? voir même pour generateUri et getBasePath/setBasePath ??????
 
     // TODO : ajouter une interface pour le router, et faire en sorte que cette méthode ait un type de retour du genre "RouterInterface", et on pourra aussi créer une méthode "setRouter(RouterInterface $router)"
-    public function getRouter()
+    public function getRouter(): Router
     {
         //return $this->router;
         return $this->container->get('router');

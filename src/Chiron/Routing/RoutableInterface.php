@@ -2,11 +2,12 @@
 
 namespace Chiron\Routing;
 
+use Chiron\Routing\Route;
 use Closure;
 
 interface RoutableInterface
 {
-    public function map(string $pattern, $handler, $middlewares = null): Route;
+    public function route(string $pattern, $handler, $middlewares = null): Route;
 
     public function get(string $pattern, $handler, $middlewares = null): Route;
 
