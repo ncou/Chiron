@@ -64,6 +64,7 @@ class RouteGroup implements RoutableInterface
         return $this->router->map($this->appendPrefixToUri($pattern), $handlerStack);
     }
 
+// TODO : vérifier l'utilité de faire des group de group...
     public function group($params, Closure $closure): void//: RouteGroup
     {
         if (is_string($params)) {
@@ -71,7 +72,6 @@ class RouteGroup implements RoutableInterface
         } elseif (is_array($params)) {
             $params['prefix'] = $params['prefix'] ? $this->appendPrefixToUri($params['prefix']) : null;
         }
-        // TODO : il manque la gestion des middleware dans le cas de groupes imbriqués dans des groupes !!!!!!
 
         $group = new self($params, $this->router);
         //$closure = $closure->bindTo($group);

@@ -33,9 +33,9 @@ abstract class Serializer
         $body = (string) $response->getBody();
         $format = 'HTTP/%s %d%s%s%s';
         if (! empty($headers)) {
-            $headers = "\r\n" . $headers;
+            $headers = self::EOL . $headers;
         }
-        $headers .= "\r\n\r\n";
+        $headers .= self::EOL . self::EOL;
 
         return sprintf(
             $format,
@@ -64,10 +64,10 @@ abstract class Serializer
         $body = (string) $request->getBody();
         $format = '%s %s HTTP/%s%s%s';
         if (! empty($headers)) {
-            $headers = "\r\n" . $headers;
+            $headers = self::EOL . $headers;
         }
         if (! empty($body)) {
-            $headers .= "\r\n\r\n";
+            $headers .= self::EOL . self::EOL;
         }
 
         return sprintf(
@@ -97,7 +97,7 @@ abstract class Serializer
             }
         }
 
-        return implode("\r\n", $lines);
+        return implode(self::EOL, $lines);
     }
 
     /**
