@@ -6,9 +6,6 @@ use Chiron\Handler\DeferredRequestHandler;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Closure;
 use Psr\Container\ContainerInterface;
-use Chiron\Routing\Route;
-use Chiron\Routing\RouteGroup;
-use Chiron\Routing\Router;
 
 class RouteGroup implements RoutableInterface
 {
@@ -70,8 +67,8 @@ class RouteGroup implements RoutableInterface
         return $route;
     }
 
-// TODO : vérifier l'utilité de faire des group de group...
-    public function group($params, Closure $closure): RouteGroup
+    // TODO : vérifier l'utilité de faire des group de group...
+    public function group($params, Closure $closure): self
     {
         if (is_string($params)) {
             $params = $this->appendPrefixToUri($params);
@@ -110,7 +107,7 @@ class RouteGroup implements RoutableInterface
     }
 
     /**
-     * Get the middlewares registered for the group
+     * Get the middlewares registered for the group.
      *
      * @return mixed[]
      */
@@ -120,7 +117,7 @@ class RouteGroup implements RoutableInterface
     }
 
     /**
-     * Prepend middleware to the middleware collection
+     * Prepend middleware to the middleware collection.
      *
      * @param mixed $middleware The callback routine
      *
@@ -129,6 +126,7 @@ class RouteGroup implements RoutableInterface
     public function middleware($middleware): self
     {
         $this->middlewares[] = $middleware;
+
         return $this;
     }
 }

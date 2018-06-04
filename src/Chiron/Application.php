@@ -53,9 +53,11 @@ use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
 use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Http\Psr\Response;
+use Chiron\Routing\RoutableInterface;
+use Chiron\Routing\RoutableTrait;
 use Chiron\Routing\Route;
-use Chiron\Routing\Router;
 use Chiron\Routing\RouteGroup;
+use Chiron\Routing\Router;
 use Closure;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
@@ -63,12 +65,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;
-use Chiron\Routing\RoutableInterface;
-use Chiron\Routing\RoutableTrait;
 
 class Application implements RoutableInterface
 {
-
     use RoutableTrait;
 
     public const VERSION = '1.0.0';

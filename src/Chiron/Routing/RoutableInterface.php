@@ -2,8 +2,6 @@
 
 namespace Chiron\Routing;
 
-use Chiron\Routing\Route;
-use Chiron\Routing\RouteGroup;
 use Closure;
 
 interface RoutableInterface
