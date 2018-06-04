@@ -3,11 +3,12 @@
 namespace Chiron\Routing;
 
 use Chiron\Routing\Route;
+use Chiron\Routing\RouteGroup;
 use Closure;
 
 interface RoutableInterface
 {
-    public function route(string $pattern, $handler, $middlewares = null): Route;
+    public function map(string $pattern, $handler, $middlewares = null): Route;
 
     public function get(string $pattern, $handler, $middlewares = null): Route;
 
@@ -21,5 +22,5 @@ interface RoutableInterface
 
     public function options(string $pattern, $handler, $middlewares = null): Route;
 
-    public function group($params, Closure $closure): void;
+    public function group($params, Closure $closure): RouteGroup;
 }

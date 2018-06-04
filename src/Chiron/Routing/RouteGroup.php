@@ -7,6 +7,7 @@ use Chiron\Handler\Stack\RequestHandlerStack;
 use Closure;
 use Psr\Container\ContainerInterface;
 use Chiron\Routing\Route;
+use Chiron\Routing\RouteGroup;
 use Chiron\Routing\Router;
 
 class RouteGroup implements RoutableInterface
@@ -47,7 +48,7 @@ class RouteGroup implements RoutableInterface
         $this->container = $container;
     }
 
-    public function route(string $pattern, $handler, $middlewares = null): Route
+    public function map(string $pattern, $handler, $middlewares = null): Route
     {
         //return $this->router->map($this->appendPrefixToUri($pattern), $handler, $this->middlewares);
 
@@ -61,11 +62,16 @@ class RouteGroup implements RoutableInterface
 
         $handlerStack = $this->populateHandlerWithMiddlewares($handler, $middlewares);
 
-        return $this->router->map($this->appendPrefixToUri($pattern), $handlerStack);
+        $route = $this->router->map($this->appendPrefixToUri($pattern), $handlerStack);
+
+        // store the group un the extra section on the route. Used later to get the middleware attached to the group and apply them on the route.
+        $route->addExtra('group', $this);
+
+        return $route;
     }
 
 // TODO : vérifier l'utilité de faire des group de group...
-    public function group($params, Closure $closure): void//: RouteGroup
+    public function group($params, Closure $closure): RouteGroup
     {
         if (is_string($params)) {
             $params = $this->appendPrefixToUri($params);
@@ -77,7 +83,7 @@ class RouteGroup implements RoutableInterface
         //$closure = $closure->bindTo($group);
         call_user_func($closure, $group);
 
-        //return $this;
+        return $this;
     }
 
     private function appendPrefixToUri(string $uri)
@@ -101,5 +107,28 @@ class RouteGroup implements RoutableInterface
         }
 
         return $handlerStack;
+    }
+
+    /**
+     * Get the middlewares registered for the group
+     *
+     * @return mixed[]
+     */
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
+    }
+
+    /**
+     * Prepend middleware to the middleware collection
+     *
+     * @param mixed $middleware The callback routine
+     *
+     * @return static
+     */
+    public function middleware($middleware): self
+    {
+        $this->middlewares[] = $middleware;
+        return $this;
     }
 }

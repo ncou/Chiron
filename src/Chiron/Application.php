@@ -197,7 +197,7 @@ class Application implements RoutableInterface
      */
     // TODO : créer une classe RouteInterface qui servira comme type de retour (il faudra aussi l'ajouter dans le use en début de classe) !!!!!
     // TODO : lever une exception si le type du handler n'est pas correct, par exemple si on lui passe un integer ou un objet non callable !!!!!
-    public function route(string $pattern, $handler, $middlewares = null): Route
+    public function map(string $pattern, $handler, $middlewares = null): Route
     {
         if (! isset($middlewares)) {
             $middlewares = [];
@@ -237,13 +237,14 @@ class Application implements RoutableInterface
     }
 
     // $params => string|array
-    public function group($params, Closure $closure): void
+    public function group($params, Closure $closure): RouteGroup
     {
         $group = new RouteGroup($params, $this->getRouter(), $this->getContainer());
+        // TODO : on fait un bind du this avec le group ????
         //$closure = $closure->bindTo($group);
         call_user_func($closure, $group);
         // TODO : un return de type $group est à utiliser si on veux ajouter un middleware avec la notation : $app->group(xxxx, xxxxx)->middleware(xxx);
-        //return $group;
+        return $group;
     }
 
     // TODO : ajouter des méthodes proxy pour : getRoutes / getNamedRoute / hasRoute ?????? voir même pour generateUri et getBasePath/setBasePath ??????

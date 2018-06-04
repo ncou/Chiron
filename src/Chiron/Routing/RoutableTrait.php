@@ -20,7 +20,7 @@ trait RoutableTrait
      */
     public function get(string $pattern, $handler, $middlewares = null): Route
     {
-        return $this->route($pattern, $handler, $middlewares)->method('GET');
+        return $this->map($pattern, $handler, $middlewares)->method('GET');
     }
 
     /**
@@ -40,7 +40,7 @@ trait RoutableTrait
     // TODO : vérifier l'utilité de cette méthode. Et il manque encore la partie CONNECT et TRACE !!!! dans ces helpers
     public function head(string $pattern, $handler, $middlewares = null): Route
     {
-        return $this->route($pattern, $handler, $middlewares)->method('HEAD');
+        return $this->map($pattern, $handler, $middlewares)->method('HEAD');
     }
 
     /**
@@ -57,7 +57,7 @@ trait RoutableTrait
      */
     public function post(string $pattern, $handler, $middlewares = null): Route
     {
-        return $this->route($pattern, $handler, $middlewares)->method('POST');
+        return $this->map($pattern, $handler, $middlewares)->method('POST');
     }
 
     /**
@@ -74,7 +74,7 @@ trait RoutableTrait
      */
     public function put(string $pattern, $handler, $middlewares = null): Route
     {
-        return $this->route($pattern, $handler, $middlewares)->method('PUT');
+        return $this->map($pattern, $handler, $middlewares)->method('PUT');
     }
 
     /**
@@ -92,7 +92,7 @@ trait RoutableTrait
      */
     public function patch(string $pattern, $handler, $middlewares = null): Route
     {
-        return $this->route($pattern, $handler, $middlewares)->method('PATCH');
+        return $this->map($pattern, $handler, $middlewares)->method('PATCH');
     }
 
     /**
@@ -108,7 +108,7 @@ trait RoutableTrait
      */
     public function purge(string $pattern, $handler, $middlewares = null): Route
     {
-        return $this->route($pattern, $handler, $middlewares)->method('PURGE');
+        return $this->map($pattern, $handler, $middlewares)->method('PURGE');
     }
 
     /**
@@ -125,7 +125,7 @@ trait RoutableTrait
      */
     public function delete(string $pattern, $handler, $middlewares = null): Route
     {
-        return $this->route($pattern, $handler, $middlewares)->method('DELETE');
+        return $this->map($pattern, $handler, $middlewares)->method('DELETE');
     }
 
     /**
@@ -142,7 +142,7 @@ trait RoutableTrait
     // TODO : vérifier l'utilité de cette méthode !!!!
     public function options(string $pattern, $handler, $middlewares = null): Route
     {
-        return $this->route($pattern, $handler, $middlewares)->method('OPTIONS');
+        return $this->map($pattern, $handler, $middlewares)->method('OPTIONS');
     }
 
     // TODO : ajouter le support pour les méthodes TRACE et CONNECT ????
@@ -160,6 +160,6 @@ trait RoutableTrait
     public function any(string $pattern, $handler, $middlewares = null): Route
     {
         // TODO : il faudrait plutot laissé vide le setMethods([]) comme ca toutes les méthodes sont acceptées !!!!
-        return $this->route($pattern, $handler, $middlewares)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'PURGE', 'DELETE', 'OPTIONS']);
+        return $this->map($pattern, $handler, $middlewares)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'PURGE', 'DELETE', 'OPTIONS']);
     }
 }
