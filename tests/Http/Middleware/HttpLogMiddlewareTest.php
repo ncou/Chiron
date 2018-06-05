@@ -7,9 +7,9 @@ namespace Chiron\Tests\Http\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\HttpLogMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Logger;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
-use Chiron\Logger;
 use Psr\Log\LogLevel;
 
 class HttpLogMiddlewareTest extends TestCase
@@ -18,6 +18,7 @@ class HttpLogMiddlewareTest extends TestCase
      * @var HttpLogMiddleware
      */
     protected $middleware;
+
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
@@ -25,11 +26,12 @@ class HttpLogMiddlewareTest extends TestCase
     protected function setUp()
     {
         $logger = new Logger('http_log.log', LogLevel::INFO);
-        $this->middleware = new HttpLogMiddleware($logger,[
-            'log_request' => true,
+        $this->middleware = new HttpLogMiddleware($logger, [
+            'log_request'  => true,
             'log_response' => true,
         ]);
     }
+
     /**
      * Tears down the fixture, for example, closes a network connection.
      * This method is called after a test is executed.
@@ -53,5 +55,4 @@ class HttpLogMiddlewareTest extends TestCase
         $this->assertNotFalse(strpos($log, 'Request: GET /'));
         $this->assertNotFalse(strpos($log, 'Response: 200 OK'));
     }
-
 }
