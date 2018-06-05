@@ -120,7 +120,7 @@ class ApplicationTest extends TestCase
             // Do something
         };
         $app = new Application();
-        $route = $app->route($path, $callable)->method('GET', 'POST');
+        $route = $app->map($path, $callable)->method('GET', 'POST');
         $this->assertInstanceOf('\Chiron\Routing\Route', $route);
         $this->assertAttributeContains('GET', 'methods', $route);
         $this->assertAttributeContains('POST', 'methods', $route);
