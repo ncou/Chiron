@@ -15,7 +15,9 @@ use Psr\Log\LogLevel;
 class HttpLogMiddlewareTest extends TestCase
 {
     protected $logger1;
+
     protected $logger2;
+
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
@@ -44,10 +46,10 @@ class HttpLogMiddlewareTest extends TestCase
             return new Response();
         };
 
-        $middleware = new HttpLogMiddleware($this->logger1,[
-            'log_request' => true,
+        $middleware = new HttpLogMiddleware($this->logger1, [
+            'log_request'  => true,
             'log_response' => true,
-            'details' => false
+            'details'      => false,
         ]);
         $middleware->process($request, new HandlerProxy2($handler));
         //$log = $this->root->getChild('http_log.log')->getContent();
@@ -55,6 +57,7 @@ class HttpLogMiddlewareTest extends TestCase
         $this->assertNotFalse(strpos($log, 'Request: GET /'));
         $this->assertNotFalse(strpos($log, 'Response: 200 OK'));
     }
+
     public function testLogRequestAndResponseWithtDetails()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
@@ -65,10 +68,10 @@ class HttpLogMiddlewareTest extends TestCase
             return new Response();
         };
 
-        $middleware = new HttpLogMiddleware($this->logger2,[
-            'log_request' => true,
+        $middleware = new HttpLogMiddleware($this->logger2, [
+            'log_request'  => true,
             'log_response' => true,
-            'details' => true
+            'details'      => true,
         ]);
         $middleware->process($request, new HandlerProxy2($handler));
         //$log = $this->root->getChild('http_log.log')->getContent();
@@ -76,6 +79,4 @@ class HttpLogMiddlewareTest extends TestCase
         $this->assertNotFalse(strpos($log, 'Request: GET / HTTP/1.1'));
         $this->assertNotFalse(strpos($log, 'Response: HTTP/1.1 200 OK'));
     }
-
 }
-
