@@ -7,9 +7,9 @@ namespace Chiron\Tests\Http\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\HttpLogMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Logger;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
-use Chiron\Logger;
 use Psr\Log\LogLevel;
 
 class HttpLogMiddlewareTest extends TestCase
@@ -25,6 +25,7 @@ class HttpLogMiddlewareTest extends TestCase
         $this->logger1 = new Logger('http_log1.log', LogLevel::INFO);
         $this->logger2 = new Logger('http_log2.log', LogLevel::INFO);
     }
+
     /**
      * Tears down the fixture, for example, closes a network connection.
      * This method is called after a test is executed.
@@ -54,7 +55,6 @@ class HttpLogMiddlewareTest extends TestCase
         $this->assertNotFalse(strpos($log, 'Request: GET /'));
         $this->assertNotFalse(strpos($log, 'Response: 200 OK'));
     }
-
     public function testLogRequestAndResponseWithtDetails()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
