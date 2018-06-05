@@ -28,7 +28,7 @@ class HttpLogMiddleware implements MiddlewareInterface
             'level' => LogLevel::INFO,
             'log_request' => true,
             'log_response' => true,
-            'full' => false,
+            'details' => false,
         ], $options);
     }
 
@@ -59,7 +59,7 @@ class HttpLogMiddleware implements MiddlewareInterface
      */
     private function generateRequestLog(ServerRequestInterface $request, ResponseInterface $response)
     {
-        if ($this->options['full']) {
+        if ($this->options['details']) {
             return Serializer::requestToString($request);
         }
         $msg = sprintf(
@@ -81,7 +81,7 @@ class HttpLogMiddleware implements MiddlewareInterface
      */
     private function generateResponseLog(ServerRequestInterface $request, ResponseInterface $response)
     {
-        if ($this->options['full']) {
+        if ($this->options['details']) {
             return Serializer::responseToString($response);
         }
         $reasonPhrase = $response->getReasonPhrase();

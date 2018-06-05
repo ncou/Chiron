@@ -14,21 +14,16 @@ use Psr\Log\LogLevel;
 
 class HttpLogMiddlewareTest extends TestCase
 {
-    /**
-     * @var HttpLogMiddleware
-     */
-    protected $middleware;
+    protected $logger1;
+    protected $logger2;
     /**
      * Sets up the fixture, for example, opens a network connection.
      * This method is called before a test is executed.
      */
     protected function setUp()
     {
-        $logger = new Logger('http_log.log', LogLevel::INFO);
-        $this->middleware = new HttpLogMiddleware($logger,[
-            'log_request' => true,
-            'log_response' => true,
-        ]);
+        $this->logger1 = new Logger('http_log1.log', LogLevel::INFO);
+        $this->logger2 = new Logger('http_log2.log', LogLevel::INFO);
     }
     /**
      * Tears down the fixture, for example, closes a network connection.
@@ -38,7 +33,7 @@ class HttpLogMiddlewareTest extends TestCase
     {
     }
 
-    public function testProcess()
+    public function testLogRequestAndResponseWithoutDetails()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
@@ -47,11 +42,40 @@ class HttpLogMiddlewareTest extends TestCase
         $handler = function ($request) {
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+
+        $middleware = new HttpLogMiddleware($this->logger1,[
+            'log_request' => true,
+            'log_response' => true,
+            'details' => false
+        ]);
+        $middleware->process($request, new HandlerProxy2($handler));
         //$log = $this->root->getChild('http_log.log')->getContent();
-        $log = file_get_contents('http_log.log');
+        $log = file_get_contents('http_log1.log');
         $this->assertNotFalse(strpos($log, 'Request: GET /'));
         $this->assertNotFalse(strpos($log, 'Response: 200 OK'));
     }
 
+    public function testLogRequestAndResponseWithtDetails()
+    {
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+        $handler = function ($request) {
+            return new Response();
+        };
+
+        $middleware = new HttpLogMiddleware($this->logger2,[
+            'log_request' => true,
+            'log_response' => true,
+            'details' => true
+        ]);
+        $middleware->process($request, new HandlerProxy2($handler));
+        //$log = $this->root->getChild('http_log.log')->getContent();
+        $log = file_get_contents('http_log2.log');
+        $this->assertNotFalse(strpos($log, 'Request: GET / HTTP/1.1'));
+        $this->assertNotFalse(strpos($log, 'Response: HTTP/1.1 200 OK'));
+    }
+
 }
+
