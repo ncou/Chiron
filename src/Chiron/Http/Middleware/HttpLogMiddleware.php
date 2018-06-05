@@ -31,7 +31,7 @@ class HttpLogMiddleware implements MiddlewareInterface
             'level'        => LogLevel::INFO,
             'log_request'  => true,
             'log_response' => true,
-            'details' => false,
+            'details'      => false,
         ], $options);
     }
 
