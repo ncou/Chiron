@@ -3,13 +3,12 @@
 namespace Chiron\Container\Exception;
 
 use Psr\Container\NotFoundExceptionInterface;
+use InvalidArgumentException;
 
 /**
- * No entry was found in the container.
- *
- * @author Matthieu Napoli <matthieu@mnapoli.fr>
+ * No entry was found in the container for the given identifier.
  */
-class EntryNotFoundException extends \RuntimeException implements NotFoundExceptionInterface
+class EntryNotFoundException extends InvalidArgumentException implements NotFoundExceptionInterface
 {
     public function __construct($id)
     {
