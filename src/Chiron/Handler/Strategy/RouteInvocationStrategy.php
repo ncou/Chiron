@@ -107,6 +107,7 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
      * @return int|string|bool|float
      */
     // TODO : regarder ici comment c'est fait !!!! : https://github.com/juliangut/slim-routing/blob/master/src/Transformer/AbstractTransformer.php#L49
+    // TODO : renommer plutot en transformToScalar ou convertToScalar
     private function castType(string $type, $value)
     {
         switch ($type) {

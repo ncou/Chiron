@@ -2,7 +2,9 @@
 
 namespace Chiron\Routing;
 
-//use Chiron\Routing\Route;
+use Chiron\Routing\Route;
+
+// TODO : ajouter le support pour les méthodes TRACE et CONNECT ????
 
 trait RoutableTrait
 {
@@ -37,7 +39,6 @@ trait RoutableTrait
      *
      * @return \Chiron\Routing\Route
      */
-    // TODO : vérifier l'utilité de cette méthode. Et il manque encore la partie CONNECT et TRACE !!!! dans ces helpers
     public function head(string $pattern, $handler, $middlewares = null): Route
     {
         return $this->map($pattern, $handler, $middlewares)->method('HEAD');
@@ -78,6 +79,40 @@ trait RoutableTrait
     }
 
     /**
+     * Add DELETE route.
+     *
+     * @see https://tools.ietf.org/html/rfc7231#section-4.3.5
+     * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7
+     *
+     * @param string                                    $pattern    The route URI pattern
+     * @param callable|string                           $callable   The route callback routine
+     * @param string|array|callable|MiddlewareInterface $middleware
+     *
+     * @return \Chiron\Routing\Route
+     */
+    public function delete(string $pattern, $handler, $middlewares = null): Route
+    {
+        return $this->map($pattern, $handler, $middlewares)->method('DELETE');
+    }
+
+    /**
+     * Add OPTIONS route.
+     *
+     * @see https://tools.ietf.org/html/rfc7231#section-4.3.7
+     * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2
+     *
+     * @param string                                    $pattern    The route URI pattern
+     * @param callable|string                           $handler    The route callback routine
+     * @param string|array|callable|MiddlewareInterface $middleware
+     *
+     * @return \Chiron\Routing\Route
+     */
+    public function options(string $pattern, $handler, $middlewares = null): Route
+    {
+        return $this->map($pattern, $handler, $middlewares)->method('OPTIONS');
+    }
+
+    /**
      * Add PATCH route.
      *
      * PATCH was added to HTTP/1.1 in RFC5789
@@ -112,26 +147,8 @@ trait RoutableTrait
     }
 
     /**
-     * Add DELETE route.
-     *
-     * @see https://tools.ietf.org/html/rfc7231#section-4.3.5
-     * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7
-     *
-     * @param string                                    $pattern    The route URI pattern
-     * @param callable|string                           $callable   The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
-     *
-     * @return \Chiron\Routing\Route
-     */
-    public function delete(string $pattern, $handler, $middlewares = null): Route
-    {
-        return $this->map($pattern, $handler, $middlewares)->method('DELETE');
-    }
-
-    /**
-     * Add OPTIONS route.
-     *
-     * @see https://tools.ietf.org/html/rfc7231#section-4.3.7
+     * Add route for any (official or unofficial) HTTP method.
+     * use ->seAllowaedMethods([]) with an empty array to support ALL the values (for custom method)
      *
      * @param string                                    $pattern    The route URI pattern
      * @param callable|string                           $handler    The route callback routine
@@ -139,27 +156,8 @@ trait RoutableTrait
      *
      * @return \Chiron\Routing\Route
      */
-    // TODO : vérifier l'utilité de cette méthode !!!!
-    public function options(string $pattern, $handler, $middlewares = null): Route
-    {
-        return $this->map($pattern, $handler, $middlewares)->method('OPTIONS');
-    }
-
-    // TODO : ajouter le support pour les méthodes TRACE et CONNECT ????
-
-    /**
-     * Add route for any HTTP method.
-     *
-     * @param string                                    $pattern    The route URI pattern
-     * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
-     *
-     * @return \Chiron\Routing\Route
-     */
-    // TODO : voir si on conserve cette méthode (qui finalement est un alias de "->map()")
     public function any(string $pattern, $handler, $middlewares = null): Route
     {
-        // TODO : il faudrait plutot laissé vide le setMethods([]) comme ca toutes les méthodes sont acceptées !!!!
         return $this->map($pattern, $handler, $middlewares)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'PURGE', 'DELETE', 'OPTIONS']);
     }
 }
