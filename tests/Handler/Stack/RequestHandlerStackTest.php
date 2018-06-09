@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Handler\Stack;
 
-use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Psr\Response;
-use Chiron\Http\Psr\ServerRequest;
-use Chiron\Http\Psr\Stream;
-use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
 use Chiron\Handler\Stack\Decorator\CallableRequestHandlerDecorator;
-use Psr\Http\Message\ResponseInterface;
+use Chiron\Handler\Stack\RequestHandlerStack;
+use Chiron\Http\Factory\ServerRequestFactory;
+use Chiron\Http\Psr\Response;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ResponseInterface;
 
 class RequestHandlerStackTest extends TestCase
 {
@@ -35,19 +33,22 @@ class RequestHandlerStackTest extends TestCase
         $default = new CallableRequestHandlerDecorator(function ($request) {
             $response = new Response();
             $response->getBody()->write('1');
+
             return $response;
         });
         $middlewares = [
             new CallableMiddlewareDecorator(function ($request, $handler) {
                 $response = $handler->handle($request);
                 $response->getBody()->write('3');
+
                 return $response;
             }),
             new CallableMiddlewareDecorator(function ($request, $handler) {
                 $response = $handler->handle($request);
                 $response->getBody()->write('2');
+
                 return $response;
-            })
+            }),
         ];
 
         $stack = new RequestHandlerStack($default, $middlewares);
@@ -63,22 +64,25 @@ class RequestHandlerStackTest extends TestCase
         $default = new CallableRequestHandlerDecorator(function ($request) {
             $response = new Response();
             $response->getBody()->write('1');
+
             return $response;
         });
 
         $stack = new RequestHandlerStack($default, []);
 
         $stack->append(new CallableMiddlewareDecorator(function ($request, $handler) {
-                $response = $handler->handle($request);
-                $response->getBody()->write('2');
-                return $response;
-            }));
+            $response = $handler->handle($request);
+            $response->getBody()->write('2');
+
+            return $response;
+        }));
 
         $stack->append(new CallableMiddlewareDecorator(function ($request, $handler) {
-                $response = $handler->handle($request);
-                $response->getBody()->write('3');
-                return $response;
-            }));
+            $response = $handler->handle($request);
+            $response->getBody()->write('3');
+
+            return $response;
+        }));
 
         $response = $stack->handle($this->request);
 
@@ -91,22 +95,25 @@ class RequestHandlerStackTest extends TestCase
         $default = new CallableRequestHandlerDecorator(function ($request) {
             $response = new Response();
             $response->getBody()->write('1');
+
             return $response;
         });
 
         $stack = new RequestHandlerStack($default, []);
 
         $stack->prepend(new CallableMiddlewareDecorator(function ($request, $handler) {
-                $response = $handler->handle($request);
-                $response->getBody()->write('3');
-                return $response;
-            }));
+            $response = $handler->handle($request);
+            $response->getBody()->write('3');
+
+            return $response;
+        }));
 
         $stack->prepend(new CallableMiddlewareDecorator(function ($request, $handler) {
-                $response = $handler->handle($request);
-                $response->getBody()->write('2');
-                return $response;
-            }));
+            $response = $handler->handle($request);
+            $response->getBody()->write('2');
+
+            return $response;
+        }));
 
         $response = $stack->handle($this->request);
 
@@ -119,6 +126,7 @@ class RequestHandlerStackTest extends TestCase
         $default = new CallableRequestHandlerDecorator(function ($request) {
             $response = new Response();
             $response->getBody()->write('EMPTY');
+
             return $response;
         });
 
@@ -134,6 +142,7 @@ class RequestHandlerStackTest extends TestCase
 
         $default = new CallableRequestHandlerDecorator(function ($request) {
             $response = new Response();
+
             return $response;
         });
 

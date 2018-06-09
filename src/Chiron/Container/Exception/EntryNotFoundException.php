@@ -2,8 +2,8 @@
 
 namespace Chiron\Container\Exception;
 
-use Psr\Container\NotFoundExceptionInterface;
 use InvalidArgumentException;
+use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * No entry was found in the container for the given identifier.
