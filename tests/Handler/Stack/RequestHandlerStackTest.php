@@ -10,7 +10,7 @@ use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Stream;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
-use Chiron\Handler\CallableRequestHandlerDecorator;
+use Chiron\Handler\Stack\Decorator\CallableRequestHandlerDecorator;
 use Psr\Http\Message\ResponseInterface;
 use PHPUnit\Framework\TestCase;
 

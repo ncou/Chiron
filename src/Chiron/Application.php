@@ -48,7 +48,7 @@ use Chiron\Container\Container;
 // TODO : virer la classe CallableRequestHandlerDecorator !!!!!!!!!!!!!
 //use Chiron\Handler\CallableRequestHandlerDecorator;
 use Chiron\Handler\DeferredRequestHandler;
-use Chiron\Handler\FixedResponseHandler;
+use Chiron\Handler\Stack\Decorator\FixedResponseHandler;
 use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
 use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
 use Chiron\Handler\Stack\RequestHandlerStack;

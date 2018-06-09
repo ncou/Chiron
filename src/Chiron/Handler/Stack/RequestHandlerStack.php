@@ -62,8 +62,8 @@ class RequestHandlerStack implements RequestHandlerInterface
     private $index = 0;
 
     /**
-     * @param array    $middlewares
-     * @param callable $fallbackHandler
+     * @param MiddlewareInterface[]    $middlewares
+     * @param RequestHandlerInterface $fallbackHandler
      */
     public function __construct(RequestHandlerInterface $fallbackHandler, array $middlewares = [])
     {
