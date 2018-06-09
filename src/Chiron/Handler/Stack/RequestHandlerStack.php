@@ -96,14 +96,17 @@ class RequestHandlerStack implements RequestHandlerInterface
                 $result = $middleware->process($request, $this->nextHandler());
 
                 break;
+            // TODO : ajouter le support des middlewares sous forme de Closure ou de callable ????
             default:
                 throw new InvalidArgumentException(sprintf('No valid middleware provided (%s)', is_object($middleware) ? get_class($middleware) : gettype($middleware)));
         }
 
         // middleware MUST return a ResponseInterface object
+        // TODO : cela ne doit pas servir car on a que des objet Middleware ou RequestHandler qui doivent avoir un type de retour = ResponseInterface sinon le typehint aurait déjà levé une erreur. ce bout de code servira si on a des Closure !!!!
+        /*
         if (! $result instanceof ResponseInterface) {
             throw new UnexpectedValueException('Middleware must return instance of (\Psr\Http\Message\ResponseInterface)');
-        }
+        }*/
 
         return $result;
     }
@@ -216,4 +219,6 @@ class RequestHandlerStack implements RequestHandlerInterface
     {
         array_push($this->middlewares, $middleware);
     }
+
+    // TODO : ajouter une méthode seed(RequestHandler) qui permettrait d'initialiser le fallbackHandler
 }

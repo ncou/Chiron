@@ -6,6 +6,8 @@ declare(strict_types=1);
 
 // TODO : regarder ici https://github.com/zrecore/Spark/blob/master/src/Handler/RouteHandler.php    et https://github.com/equip/framework/blob/master/src/Handler/DispatchHandler.php
 
+// TODO : regarder ici pour l'injection de middlewares : https://github.com/swoft-cloud/swoft-framework/blob/v0.2.6/src/Middleware/Http/UserMiddleware.php#L58
+
 namespace Chiron\Http\Middleware;
 
 use Chiron\Routing\RouteResult;

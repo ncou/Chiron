@@ -1,14 +1,8 @@
 <?php
 
 declare(strict_types=1);
-/**
- * Slim Framework (https://slimframework.com).
- *
- * @see      https://github.com/slimphp/Slim
- *
- * @copyright Copyright (c) 2011-2017 Josh Lockhart
- * @license   https://github.com/slimphp/Slim/blob/4.x/LICENSE.md (MIT License)
- */
+
+// https://github.com/symfony/http-kernel/blob/3.3/Tests/Controller/ControllerResolverTest.php
 
 namespace Chiron\Handler\Strategy;
 
