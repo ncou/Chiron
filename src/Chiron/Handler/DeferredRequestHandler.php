@@ -17,7 +17,7 @@ namespace Chiron\Handler;
 
 // TODO : regarder aussi ici : https://github.com/silexphp/Silex/blob/master/src/Silex/CallbackResolver.php
 
-use Chiron\Handler\Strategy\RouteInvocationStrategy;
+use Chiron\Routing\Strategy\RouteInvocationStrategy;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

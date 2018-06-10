@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 // https://github.com/symfony/http-kernel/blob/3.3/Tests/Controller/ControllerResolverTest.php
 
-namespace Chiron\Handler\Strategy;
+namespace Chiron\Routing\Strategy;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
