@@ -78,8 +78,8 @@ class SecurityHeadersMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $cspHeaderManager = new \Chiron\CspHeaderManager($this->security['csp']);
-        $request = $request->withAttribute('csp', $cspHeaderManager);
+        //$cspHeaderManager = new \Chiron\CspHeaderManager($this->security['csp']);
+        //$request = $request->withAttribute('csp', $cspHeaderManager);
 
         $response = $handler->handle($request);
 
