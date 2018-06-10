@@ -148,7 +148,7 @@ trait RoutableTrait
 
     /**
      * Add route for any (official or unofficial) HTTP method.
-     * use ->seAllowaedMethods([]) with an empty array to support ALL the values (for custom method)
+     * use ->seAllowedMethods([]) with an empty array to support ALL the values (for custom method)
      *
      * @param string                                    $pattern    The route URI pattern
      * @param callable|string                           $handler    The route callback routine
