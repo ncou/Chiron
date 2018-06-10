@@ -53,6 +53,7 @@ use Chiron\Handler\Stack\Decorator\FixedResponseHandler;
 use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Response\EmptyResponse;
 use Chiron\Routing\RoutableInterface;
 use Chiron\Routing\RoutableTrait;
 use Chiron\Routing\Route;
@@ -384,7 +385,8 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
                     return $response;
                 });
         */
-        $emptyResponse = new FixedResponseHandler(new Response(204));
+        //$emptyResponse = new FixedResponseHandler(new Response(204));
+        $emptyResponse = new FixedResponseHandler(new EmptyResponse());
 
         $this->requestHandler = new RequestHandlerStack($emptyResponse);
 

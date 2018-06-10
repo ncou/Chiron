@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 //namespace Wandu\Http\Psr\Stream;
 
-namespace Chiron\Http\Psr\Stream;
+namespace Chiron\Http\Stream;
 
 use Psr\Http\Message\StreamInterface;
 use Wandu\Http\Psr\Stream;

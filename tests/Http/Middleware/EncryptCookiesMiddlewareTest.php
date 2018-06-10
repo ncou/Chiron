@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Middleware;
 
-use Chiron\EncryptionManager;
+use Chiron\CryptEngine;
 use Chiron\Http\Cookie\CookiesManager;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\EncryptCookiesMiddleware;
@@ -16,8 +16,6 @@ class EncryptCookiesMiddlewareTest extends TestCase
 {
     private $middleware;
 
-    private $crypter;
-
     private function getCookieEncryptionKey()
     {
         return 'super secret key that no one can guess';
@@ -28,7 +26,6 @@ class EncryptCookiesMiddlewareTest extends TestCase
      */
     protected function setUp()
     {
-        $this->crypter = new EncryptionManager();
         $this->middleware = new EncryptCookiesMiddleware(
             $this->getCookieEncryptionKey(),
             ['plain']
@@ -46,7 +43,7 @@ class EncryptCookiesMiddlewareTest extends TestCase
         ]);
         $request = $request->withCookieParams([
             'plain'  => 'always plain',
-            'secret' => $this->crypter->encrypt('decoded', $this->getCookieEncryptionKey()),
+            'secret' => CryptEngine::encrypt('decoded', $this->getCookieEncryptionKey()),
         ]);
         $handler = function ($request) {
             $response = new Response();
@@ -84,7 +81,7 @@ class EncryptCookiesMiddlewareTest extends TestCase
         $this->assertTrue(isset($cookies['ninja']));
         $this->assertEquals(
             'shuriken',
-            $this->crypter->decrypt($cookies['ninja']['value'], $this->getCookieEncryptionKey())
+            CryptEngine::decrypt($cookies['ninja']['value'], $this->getCookieEncryptionKey())
         );
     }
 
@@ -133,7 +130,7 @@ class EncryptCookiesMiddlewareTest extends TestCase
         $this->assertNotSame('shuriken', $response->getCookieParam('ninja'));
         $this->assertEquals(
             'shuriken',
-            $this->crypter->decrypt($response->getCookieParam('ninja')['value'], $this->getCookieEncryptionKey())
+            CryptEngine::decrypt($response->getCookieParam('ninja')['value'], $this->getCookieEncryptionKey())
         );
     }*/
 }

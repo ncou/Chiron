@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\EncryptionManager;
+use Chiron\CryptEngine;
 use Chiron\Http\Cookie\CookiesManager;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -116,7 +116,7 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
      */
     private function encrypt(string $value): string
     {
-        return EncryptionManager::encrypt($value, $this->password);
+        return CryptEngine::encrypt($value, $this->password);
     }
 
     /**
@@ -130,7 +130,7 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
     private function decrypt(string $value): string
     {
         try {
-            return EncryptionManager::decrypt($value, $this->password);
+            return CryptEngine::decrypt($value, $this->password);
         } catch (\Throwable $t) {
             // @TODO : Add a silent log message if there is an error in the cookie decrypt function.
             return '';
