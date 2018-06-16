@@ -33,7 +33,7 @@ class EmptyResponse extends Response
      * @return EmptyResponse
      */
     // TODO : vérifier l'utilité de cette méthode !!!!
-    public static function withHeaders(array $headers)
+    public static function withHeaders(array $headers): self
     {
         return new static(204, $headers);
     }

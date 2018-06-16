@@ -82,7 +82,7 @@ class DeferredRequestHandler implements RequestHandlerInterface
     /**
      * Resolve toResolve into a closure that that the router can dispatch.
      *
-     * If toResolve is of the format 'class:method', then try to extract 'class'
+     * If toResolve is of the format 'class@method', then try to extract 'class'
      * from the container otherwise instantiate it and then dispatch 'method'.
      *
      * @param mixed $toResolve
@@ -101,7 +101,8 @@ class DeferredRequestHandler implements RequestHandlerInterface
             $method = '__invoke';
             // check for slim callable as "class:method"
             //$callablePattern = '!^([^\:]+)\:([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)$!'; // TODO : il est possible de simplifier cela avec l'expression : '^([^:]+):([^:]+)$'
-            $callablePattern = '!^([^#]+)#([^#]+)$!';
+            //$callablePattern = '!^([^#]+)#([^#]+)$!';
+            $callablePattern = '^([^@]+)@([^@]+)$';
             if (preg_match($callablePattern, $toResolve, $matches)) {
                 $class = $matches[1];
                 $method = $matches[2];

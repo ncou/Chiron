@@ -12,6 +12,8 @@ use Psr\Http\Message\ResponseInterface;
 //https://github.com/zendframework/zend-diactoros/blob/master/src/Request/Serializer.php
 //https://github.com/zendframework/zend-diactoros/blob/master/src/AbstractSerializer.php
 
+//https://github.com/guzzle/psr7/blob/master/src/functions.php#L18
+
 abstract class Serializer
 {
     //private const CR  = "\r";
@@ -114,4 +116,60 @@ abstract class Serializer
 
         return str_replace(' ', '-', $filtered);
     }
+
+    /**
+     * Returns the string representation of an HTTP message.
+     *
+     * @param MessageInterface $message Message to convert to a string.
+     *
+     * @return string
+     */
+    /*
+    function str(MessageInterface $message)
+    {
+        if ($message instanceof RequestInterface) {
+            $msg = trim($message->getMethod() . ' '
+                    . $message->getRequestTarget())
+                . ' HTTP/' . $message->getProtocolVersion();
+            if (!$message->hasHeader('host')) {
+                $msg .= "\r\nHost: " . $message->getUri()->getHost();
+            }
+        } elseif ($message instanceof ResponseInterface) {
+            $msg = 'HTTP/' . $message->getProtocolVersion() . ' '
+                . $message->getStatusCode() . ' '
+                . $message->getReasonPhrase();
+        } else {
+            throw new \InvalidArgumentException('Unknown message type');
+        }
+        foreach ($message->getHeaders() as $name => $values) {
+            $msg .= "\r\n{$name}: " . implode(', ', $values);
+        }
+        return "{$msg}\r\n\r\n" . $message->getBody();
+    }*/
+
+/*
+    public function testConvertsRequestsToStrings()
+    {
+        $request = new Psr7\Request('PUT', 'http://foo.com/hi?123', [
+            'Baz' => 'bar',
+            'Qux' => 'ipsum'
+        ], 'hello', '1.0');
+        $this->assertEquals(
+            "PUT /hi?123 HTTP/1.0\r\nHost: foo.com\r\nBaz: bar\r\nQux: ipsum\r\n\r\nhello",
+            Psr7\str($request)
+        );
+    }*/
+
+    /*
+    public function testConvertsResponsesToStrings()
+    {
+        $response = new Psr7\Response(200, [
+            'Baz' => 'bar',
+            'Qux' => 'ipsum'
+        ], 'hello', '1.0', 'FOO');
+        $this->assertEquals(
+            "HTTP/1.0 200 FOO\r\nBaz: bar\r\nQux: ipsum\r\n\r\nhello",
+            Psr7\str($response)
+        );
+    }*/
 }

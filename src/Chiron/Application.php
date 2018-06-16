@@ -151,7 +151,7 @@ class Application implements RoutableInterface
         } elseif (is_callable($middleware)) {
             return new CallableMiddlewareDecorator($middleware);
         } elseif (is_string($middleware) && $middleware !== '') {
-            return new LazyLoadingMiddleware($this->container, $middleware);
+            return new LazyLoadingMiddleware($middleware, $this->container);
         } else {
             throw new InvalidArgumentException(sprintf(
                 'Middleware "%s" is neither a string service name, a PHP callable, or a %s instance',

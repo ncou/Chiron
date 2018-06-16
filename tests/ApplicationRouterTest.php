@@ -7,7 +7,7 @@ namespace Chiron\Tests\Middleware;
 use Chiron\Application;
 use PHPUnit\Framework\TestCase;
 
-class ApplicationTest extends TestCase
+class ApplicationRouterTest extends TestCase
 {
     /********************************************************************************
      * Router proxy methods

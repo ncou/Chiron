@@ -6,10 +6,7 @@ namespace Chiron\Container;
 
 // TODO : mettre en cache le container avec un serialize/unserialize : https://github.com/radarphp/Radar.Adr/blob/1.x/src/Boot.php#L79
 
-//use Moon\Container\Exception\NotFoundException;
-
-// TODO : il faut gérer les exceptions qui sont définies dans les interfaces PSR11 de ContainerInterface, notamment l'exception notfound => example : https://github.com/mnapoli/simplex/blob/master/src/Simplex/Exception/EntryNotFound.php
-// https://github.com/moon-php/container/blob/master/src/Exception/NotFoundException.php
+// https://github.com/thecodingmachine/picotainer/blob/1.1/src/Picotainer.php
 
 //*************
 // TODO : ajouter la gestion des ServicesProviders => https://github.com/mnapoli/simplex/blob/master/src/Simplex/Container.php#L332

@@ -66,7 +66,7 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
             $paramType = $param->hasType() ? $param->getType()->__toString() : '';
 
             if (array_key_exists($param->getName(), $attributes)) {
-                $arguments[] = $this->castType($paramType, $attributes[$param->getName()]);
+                $arguments[] = $this->transformToScalar($attributes[$param->getName()], $paramType);
             } elseif ($param->getClass() && $param->getClass()->isInstance($request)) {
                 //} elseif (ServerRequestInterface::class == $param->getType() || is_subclass_of($param->getType(), ServerRequestInterface::class)) {
                 //} elseif (ServerRequestInterface::class == $paramType || is_subclass_of($paramType, ServerRequestInterface::class)) {
@@ -89,44 +89,31 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
     }
 
     /**
-     * Transform parameter to primitive.
+     * Transform parameter to scalar.
      *
-     * @param string $parameter
-     * @param string $type
-     *
-     * @return bool|float|int|string
-     */
-    //protected function transformToPrimitive(string $parameter, string $type)
-
-    /**
-     * cast the type of binding param.
-     *
-     * @param string $type  the type of param
-     * @param mixed  $value the value of param
+     * @param mixed  $parameter the value of param
+     * @param string $type  the tpe of param
      *
      * @return int|string|bool|float
      */
     // TODO : regarder ici comment c'est fait !!!! : https://github.com/juliangut/slim-routing/blob/master/src/Transformer/AbstractTransformer.php#L49
-    // TODO : renommer plutot en transformToScalar ou convertToScalar
-    private function castType(string $type, $value)
+    private function transformToScalar(string $parameter, string $type)
     {
         switch ($type) {
             case 'int':
-                $value = (int) $value;
-
+                $parameter = (int) $parameter;
                 break;
             case 'string':
-                $value = (string) $value; // TODO : à virer ca cela est inutile !!!! on a toujours une string !!!!
+                $parameter = (string) $parameter; // the "cast" is useless because the parameter is always a string
                 break;
             case 'bool':
-                $value = (bool) $value; //TODO : utiliser plutot ce bout de code (il faudra surement faire un lowercase en plus !!!) :     \in_array(\trim($value), ['1', 'true'], true);
+                $parameter = (bool) $parameter; //TODO : utiliser plutot ce bout de code (il faudra surement faire un lowercase en plus !!!) :     \in_array(\trim($value), ['1', 'true'], true);
                 break;
             case 'float':
-                $value = (float) $value;
-
+                $parameter = (float) $parameter;
                 break;
         }
 
-        return $value;
+        return $parameter;
     }
 }

@@ -15,6 +15,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
 
 class LazyLoadingMiddleware implements MiddlewareInterface
 {
@@ -29,8 +30,8 @@ class LazyLoadingMiddleware implements MiddlewareInterface
     private $middlewareName;
 
     public function __construct(
-        ContainerInterface $container,
-        string $middlewareName
+        string $middlewareName,
+        ContainerInterface $container
     ) {
         $this->container = $container;
         $this->middlewareName = $middlewareName;
@@ -42,7 +43,15 @@ class LazyLoadingMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        // retrieve the middleware in the container. It could be a : MiddlewareInterface object, or a callable
         $middleware = $this->container->get($this->middlewareName);
+
+        // TODO : lever une exception \InvalidArgumentException si le type de l'objet récupéré dans le container n'est pas un callable ou un MiddlewareInterface !!!!!
+
+        if (is_callable($middleware)) {
+            // TODO : faire plutot un fonction execute avec en paramétre la request et le handler, car sinon il faut faire une liaison avec la classe CallableMiddlewareDecorator !!!!!
+            $middleware = new CallableMiddlewareDecorator($middleware);
+        }
 
         // Try to inject the dependency injection container in the middleware
         /*
