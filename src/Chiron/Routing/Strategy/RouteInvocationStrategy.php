@@ -92,7 +92,7 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
      * Transform parameter to scalar.
      *
      * @param mixed  $parameter the value of param
-     * @param string $type  the tpe of param
+     * @param string $type      the tpe of param
      *
      * @return int|string|bool|float
      */
@@ -102,6 +102,7 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
         switch ($type) {
             case 'int':
                 $parameter = (int) $parameter;
+
                 break;
             case 'string':
                 $parameter = (string) $parameter; // the "cast" is useless because the parameter is always a string
@@ -111,6 +112,7 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
                 break;
             case 'float':
                 $parameter = (float) $parameter;
+
                 break;
         }
 

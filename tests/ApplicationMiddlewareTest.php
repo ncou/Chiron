@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Chiron\Tests\Middleware;
 
 use Chiron\Application;
-use PHPUnit\Framework\TestCase;
 use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Psr\Response;
+use PHPUnit\Framework\TestCase;
 
 class ApplicationMiddlewareTest extends TestCase
 {
@@ -99,6 +99,7 @@ class ApplicationMiddlewareTest extends TestCase
             $callable = function ($request, $handler) {
                 return (new Response())->write('MIDDLEWARE');
             };
+
             return new CallableMiddlewareDecorator($callable);
         };
 
@@ -124,6 +125,7 @@ class ApplicationMiddlewareTest extends TestCase
             $callable = function ($request, $handler) {
                 return (new Response())->write('MIDDLEWARE');
             };
+
             return $callable;
         };
 
@@ -156,7 +158,6 @@ class ApplicationMiddlewareTest extends TestCase
         $response = $app->process($request);
     }
 
-
     public function testMiddlewareWithArrayOfMiddlewareInterface()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
@@ -166,12 +167,14 @@ class ApplicationMiddlewareTest extends TestCase
 
         $callable1 = function ($request, $handler) {
             $response = $handler->handle($request);
+
             return $response->write('MIDDLEWARE_1');
         };
         $middleware1 = new CallableMiddlewareDecorator($callable1);
         //---
         $callable2 = function ($request, $handler) {
             $response = new Response();
+
             return $response->write('MIDDLEWARE_2_');
         };
         $middleware2 = new CallableMiddlewareDecorator($callable2);
@@ -185,7 +188,6 @@ class ApplicationMiddlewareTest extends TestCase
         $this->assertEquals('MIDDLEWARE_2_MIDDLEWARE_1', (string) $response->getBody());
     }
 
-
     public function testMiddlewareWithArrayOfCallable()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
@@ -195,11 +197,13 @@ class ApplicationMiddlewareTest extends TestCase
 
         $callable1 = function ($request, $handler) {
             $response = $handler->handle($request);
+
             return $response->write('MIDDLEWARE_1');
         };
         //---
         $callable2 = function ($request, $handler) {
             $response = new Response();
+
             return $response->write('MIDDLEWARE_2_');
         };
 
@@ -223,8 +227,10 @@ class ApplicationMiddlewareTest extends TestCase
             $callable1 = function ($request, $handler) {
                 $response = $handler->handle($request);
                 $response->write('MIDDLEWARE_1');
+
                 return $response;
             };
+
             return new CallableMiddlewareDecorator($callable1);
         };
         //---
@@ -232,8 +238,10 @@ class ApplicationMiddlewareTest extends TestCase
             $callable2 = function ($request, $handler) {
                 $response = new Response();
                 $response->write('MIDDLEWARE_2_');
+
                 return $response;
             };
+
             return new CallableMiddlewareDecorator($callable2);
         };
 
@@ -260,8 +268,10 @@ class ApplicationMiddlewareTest extends TestCase
             $callable1 = function ($request, $handler) {
                 $response = $handler->handle($request);
                 $response->write('MIDDLEWARE_1');
+
                 return $response;
             };
+
             return $callable1;
         };
         //---
@@ -269,8 +279,10 @@ class ApplicationMiddlewareTest extends TestCase
             $callable2 = function ($request, $handler) {
                 $response = new Response();
                 $response->write('MIDDLEWARE_2_');
+
                 return $response;
             };
+
             return $callable2;
         };
 
@@ -293,5 +305,4 @@ class ApplicationMiddlewareTest extends TestCase
     /********************************************************************************
      * Middleware - RouteGroup
      *******************************************************************************/
-
 }

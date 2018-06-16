@@ -117,7 +117,7 @@ abstract class Serializer
         return str_replace(' ', '-', $filtered);
     }
 
-    /**
+    /*
      * Returns the string representation of an HTTP message.
      *
      * @param MessageInterface $message Message to convert to a string.
