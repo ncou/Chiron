@@ -45,11 +45,8 @@ class LazyLoadingMiddleware implements MiddlewareInterface
         // retrieve the middleware in the container. It could be a : MiddlewareInterface object, or a callable
         $middleware = $this->container->get($this->middlewareName);
 
-        // TODO : lever une exception \InvalidArgumentException si le type de l'objet récupéré dans le container n'est pas un callable ou un MiddlewareInterface !!!!!
-
-        if (is_callable($middleware)) {
-            // TODO : faire plutot un fonction execute avec en paramétre la request et le handler, car sinon il faut faire une liaison avec la classe CallableMiddlewareDecorator !!!!!
-            $middleware = new CallableMiddlewareDecorator($middleware);
+        if (! $middleware instanceof MiddlewareInterface) {
+            throw new \InvalidArgumentException('The middleware present in the container should be a Psr\Http\Server\MiddlewareInterface instance');
         }
 
         // Try to inject the dependency injection container in the middleware

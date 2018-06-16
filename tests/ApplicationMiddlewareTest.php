@@ -88,7 +88,7 @@ class ApplicationMiddlewareTest extends TestCase
         $response = $app->process($request);
     }
 
-    public function testMiddlewareWithStringInContainer_MiddlewareInterface()
+    public function testMiddlewareWithStringInContainer()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/foo',
@@ -101,32 +101,6 @@ class ApplicationMiddlewareTest extends TestCase
             };
 
             return new CallableMiddlewareDecorator($callable);
-        };
-
-        $app = new Application();
-        $app->getContainer()->set('MiddlewareCallableInContainer', $entry);
-
-        $app->middleware('MiddlewareCallableInContainer');
-
-        $response = $app->process($request);
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('MIDDLEWARE', (string) $response->getBody());
-    }
-
-    public function testMiddlewareWithStringInContainer_Callable()
-    {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
-
-        $entry = function ($c) {
-            $callable = function ($request, $handler) {
-                return (new Response())->write('MIDDLEWARE');
-            };
-
-            return $callable;
         };
 
         $app = new Application();
@@ -154,6 +128,29 @@ class ApplicationMiddlewareTest extends TestCase
         $app = new Application();
 
         $app->middleware(123456);
+
+        $response = $app->process($request);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage The middleware present in the container should be a Psr\Http\Server\MiddlewareInterface instance
+     */
+    public function testMiddlewareWithInvalidMiddlewareInContainer()
+    {
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foo',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+
+        $badEntry = function ($c) {
+            return 123456;
+        };
+
+        $app = new Application();
+        $app->getContainer()->set('BadMiddlewareType', $badEntry);
+
+        $app->middleware('BadMiddlewareType');
 
         $response = $app->process($request);
     }
@@ -216,7 +213,7 @@ class ApplicationMiddlewareTest extends TestCase
         $this->assertEquals('MIDDLEWARE_2_MIDDLEWARE_1', (string) $response->getBody());
     }
 
-    public function testMiddlewareWithArrayOfString_MiddlewareInterface()
+    public function testMiddlewareWithArrayOfString()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/foo',
@@ -243,47 +240,6 @@ class ApplicationMiddlewareTest extends TestCase
             };
 
             return new CallableMiddlewareDecorator($callable2);
-        };
-
-        $app = new Application();
-        $app->getContainer()->set('ENTRY_1', $entry1);
-        $app->getContainer()->set('ENTRY_2', $entry2);
-
-        $app->middleware(['ENTRY_1', 'ENTRY_2']);
-
-        $response = $app->process($request);
-
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('MIDDLEWARE_2_MIDDLEWARE_1', (string) $response->getBody());
-    }
-
-    public function testMiddlewareWithArrayOfString_Callable()
-    {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
-
-        $entry1 = function ($c) {
-            $callable1 = function ($request, $handler) {
-                $response = $handler->handle($request);
-                $response->write('MIDDLEWARE_1');
-
-                return $response;
-            };
-
-            return $callable1;
-        };
-        //---
-        $entry2 = function ($c) {
-            $callable2 = function ($request, $handler) {
-                $response = new Response();
-                $response->write('MIDDLEWARE_2_');
-
-                return $response;
-            };
-
-            return $callable2;
         };
 
         $app = new Application();
