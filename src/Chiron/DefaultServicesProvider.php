@@ -17,6 +17,8 @@ use Chiron\Http\Psr\Response;
 use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
+use Chiron\Http\Middleware\RoutingMiddleware;
+use Chiron\Http\Middleware\DispatcherMiddleware;
 
 /**
  * Chiron system services provider.
@@ -26,7 +28,7 @@ use Psr\Log\NullLogger;
 class DefaultServicesProvider
 {
     /**
-     * Register UserFrosting's system services.
+     * Register Chiron system services.
      *
      * @param ContainerInterface $container A DI container implementing ArrayAccess and container-interop.
      */
@@ -40,6 +42,14 @@ class DefaultServicesProvider
 
         $container['logger'] = function ($c) {
             return new NullLogger();
+        };
+
+        $container[RoutingMiddleware::class] = function ($c) {
+            return new RoutingMiddleware($c['router']);
+        };
+
+        $container[DispatcherMiddleware::class] = function ($c) {
+            return new DispatcherMiddleware($c);
         };
 
         /*

@@ -62,7 +62,7 @@ class RouteGroup implements RoutableInterface
         $route = $this->router->map($this->appendPrefixToUri($pattern), $handlerStack);
 
         // store the group un the extra section on the route. Used later to get the middleware attached to the group and apply them on the route.
-        $route->addExtra('group', $this);
+        $route->addExtra(RouteGroup::class, $this);
 
         return $route;
     }

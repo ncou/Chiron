@@ -69,6 +69,14 @@ class DispatcherMiddlewareTest extends TestCase
             ->getHandler()
             ->willReturn($routeHandler);
 
+        $route
+            ->getMiddlewares()
+            ->willReturn([]);
+
+        $route
+            ->getExtra("Chiron\Routing\RouteGroup")
+            ->willReturn(null);
+
         $routeResult
             ->getMatchedRoute()
             ->willReturn($route);

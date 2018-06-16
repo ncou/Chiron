@@ -9,6 +9,9 @@ use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Psr\Response;
 use PHPUnit\Framework\TestCase;
+use Chiron\Http\Middleware\RoutingMiddleware;
+use Chiron\Http\Middleware\DispatcherMiddleware;
+use Psr\Http\Message\ServerRequestInterface;
 
 class ApplicationMiddlewareTest extends TestCase
 {
@@ -325,7 +328,150 @@ class ApplicationMiddlewareTest extends TestCase
      * Middleware - Route
      *******************************************************************************/
 
+    public function testRouteWithoutMiddleware()
+    {
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foo',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+
+        $routeCallback = function (ServerRequestInterface $request) {
+            $response = new Response();
+            return $response->write('SUCCESS');
+        };
+
+        $app = new Application();
+        $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
+        $route = $app->get('/foo', $routeCallback);
+
+        $response = $app->process($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('SUCCESS', (string) $response->getBody());
+    }
+
+    public function testRouteWithMiddlewareInterface()
+    {
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foo',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+
+        $routeCallback = function ($request) {
+            $response = new Response();
+            return $response->write('SUCCESS');
+        };
+
+        $app = new Application();
+        $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
+        $route = $app->get('/foo', $routeCallback);
+
+        $callable = function ($request, $handler) {
+            $response = $handler->handle($request);
+            return $response->write('_MIDDLEWARE');
+        };
+        $middleware = new CallableMiddlewareDecorator($callable);
+        $route->middleware($middleware);
+
+        $response = $app->process($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('SUCCESS_MIDDLEWARE', (string) $response->getBody());
+    }
+
     /********************************************************************************
      * Middleware - RouteGroup
      *******************************************************************************/
+
+    public function testRouteGroupWithoutMiddleware()
+    {
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foo/bar',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+
+        $routeCallback = function (ServerRequestInterface $request) {
+            $response = new Response();
+            return $response->write('SUCCESS');
+        };
+
+        $app = new Application();
+        $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
+        $group = $app->group('/foo', function($group) use ($routeCallback) {
+            $group->get('/bar', $routeCallback);
+        });
+
+        $response = $app->process($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('SUCCESS', (string) $response->getBody());
+    }
+
+    public function testRouteGroupWithMiddlewareInterface()
+    {
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foo/bar',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+
+        $routeCallback = function ($request) {
+            $response = new Response();
+            return $response->write('SUCCESS');
+        };
+
+        $app = new Application();
+        $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
+        $group = $app->group('/foo', function($group) use ($routeCallback) {
+            $group->get('/bar', $routeCallback);
+        });
+
+        $callable = function ($request, $handler) {
+            $response = $handler->handle($request);
+            return $response->write('_MIDDLEWARE-GROUP');
+        };
+        $middleware = new CallableMiddlewareDecorator($callable);
+        $group->middleware($middleware);
+
+        $response = $app->process($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('SUCCESS_MIDDLEWARE-GROUP', (string) $response->getBody());
+    }
+
+    public function testRouteGroupAndRouteWithMiddlewareInterface()
+    {
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foo/bar',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+
+        $routeCallback = function ($request) {
+            $response = new Response();
+            return $response->write('SUCCESS');
+        };
+
+        $app = new Application();
+        $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
+        $group = $app->group('/foo', function($group) use ($routeCallback) {
+            $callable1 = function ($request, $handler) {
+                $response = $handler->handle($request);
+                return $response->write('_MIDDLEWARE-ROUTE');
+            };
+            $middleware1 = new CallableMiddlewareDecorator($callable1);
+
+            $group->get('/bar', $routeCallback)->middleware($middleware1);
+        });
+
+        $callable2 = function ($request, $handler) {
+            $response = $handler->handle($request);
+            return $response->write('_MIDDLEWARE-GROUP');
+        };
+        $middleware2 = new CallableMiddlewareDecorator($callable2);
+        $group->middleware($middleware2);
+
+        $response = $app->process($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('SUCCESS_MIDDLEWARE-GROUP_MIDDLEWARE-ROUTE', (string) $response->getBody());
+    }
 }

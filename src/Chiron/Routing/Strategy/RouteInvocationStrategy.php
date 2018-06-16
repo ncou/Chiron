@@ -75,6 +75,10 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
                 $arguments[] = $param->getDefaultValue();
             //} elseif ($param->hasType() && $param->allowsNull()) {
             //    $arguments[] = null;
+            } elseif (empty($paramType) && count($parameters) === 1) {
+                // handle special case when there is only 1 parameter and no typehintting.
+                // We suppose the user want the request => probably a closure without the typehint "ServerRequestInterface" :(
+                $arguments[] = $request;
             } else {
                 // can't find the value, or the default value for the parameter => throw an error
                 throw new \InvalidArgumentException(sprintf(

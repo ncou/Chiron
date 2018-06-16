@@ -222,6 +222,10 @@ class Application implements RoutableInterface
         }
         */
 
+
+
+
+/*
         if (is_string($handler) || is_callable($handler)) {
             $handler = new DeferredRequestHandler($handler, $this->container);
         }
@@ -232,6 +236,10 @@ class Application implements RoutableInterface
                 $handler->prepend($this->prepareMiddleware($middleware));
             }
         }
+*/
+
+
+
 
         return $this->getRouter()->map($pattern, $handler);
     }
