@@ -199,6 +199,7 @@ class Application implements RoutableInterface
     // TODO : lever une exception si le type du handler n'est pas correct, par exemple si on lui passe un integer ou un objet non callable !!!!!
     public function map(string $pattern, $handler, $middlewares = null): Route
     {
+        // TODO : virer la partie Middleware !!!!!!
         if (! isset($middlewares)) {
             $middlewares = [];
         } elseif (! is_array($middlewares)) {

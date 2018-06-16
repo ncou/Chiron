@@ -52,10 +52,8 @@ class DispatcherMiddleware implements MiddlewareInterface
             $routeHandler = $this->createRouteHandler($route);
 
             return $routeHandler->handle($request);
-            //return $route->getHandler()->handle($request);
         }
 
-        // TODO : ajouter le template 404 not found comme requestHandler par défault, car pour le moment on retourne uniquement une Response vide.
         return $handler->handle($request);
     }
 

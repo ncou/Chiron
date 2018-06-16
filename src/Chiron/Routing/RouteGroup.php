@@ -123,6 +123,7 @@ class RouteGroup implements RoutableInterface
      *
      * @return static
      */
+    // TODO : gérer la possibilité de passer un tableau de middleware, attention aux tableaux de tableaux de tableaux....
     public function middleware($middleware): self
     {
         $this->middlewares[] = $middleware;
