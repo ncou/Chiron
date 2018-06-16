@@ -37,16 +37,20 @@ class LazyLoadingMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @throws InvalidMiddlewareException for invalid middleware types pulled
-     *                                    from the container
+     * Support a instance of MiddlewareInterface or a callable.
+     * @throws InvalidArgumentException for invalid middleware types pulled from the container
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         // retrieve the middleware in the container. It could be a : MiddlewareInterface object, or a callable
-        $middleware = $this->container->get($this->middlewareName);
+        $entry = $this->container->get($this->middlewareName);
 
-        if (! $middleware instanceof MiddlewareInterface) {
-            throw new \InvalidArgumentException('The middleware present in the container should be a Psr\Http\Server\MiddlewareInterface instance');
+        if (is_callable($entry)) {
+            return call_user_func_array($entry, [$request, $handler]);
+        }
+
+        if ($entry instanceof MiddlewareInterface) {
+            return $entry->process($request, $handler);
         }
 
         // Try to inject the dependency injection container in the middleware
@@ -55,6 +59,7 @@ class LazyLoadingMiddleware implements MiddlewareInterface
             $middleware->setContainer($this->container);
         }*/
 
-        return $middleware->process($request, $handler);
+
+        throw new \InvalidArgumentException('The middleware present in the container should be a PHP callable or a Psr\Http\Server\MiddlewareInterface instance');
     }
 }
