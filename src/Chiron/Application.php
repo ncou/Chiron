@@ -189,8 +189,8 @@ class Application implements RoutableInterface
     /**
      * Add route with multiple methods.
      *
-     * @param string                                    $pattern    The route URI pattern
-     * @param RequestHandlerInterface|callable|string   $handler    The route callback routine
+     * @param string                                  $pattern The route URI pattern
+     * @param RequestHandlerInterface|callable|string $handler The route callback routine
      *
      * @return \Chiron\Routing\Route
      */
@@ -198,8 +198,6 @@ class Application implements RoutableInterface
     // TODO : lever une exception si le type du handler n'est pas correct, par exemple si on lui passe un integer ou un objet non callable !!!!!
     public function map(string $pattern, $handler): Route
     {
-
-
         /*
         if (is_callable([$handler, 'setContainer']) && $this->container instanceof ContainerInterface) {
             $handler->setContainer($this->container);
