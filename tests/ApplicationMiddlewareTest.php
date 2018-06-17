@@ -7,10 +7,10 @@ namespace Chiron\Tests\Middleware;
 use Chiron\Application;
 use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
 use Chiron\Http\Factory\ServerRequestFactory;
+use Chiron\Http\Middleware\DispatcherMiddleware;
+use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Http\Psr\Response;
 use PHPUnit\Framework\TestCase;
-use Chiron\Http\Middleware\RoutingMiddleware;
-use Chiron\Http\Middleware\DispatcherMiddleware;
 use Psr\Http\Message\ServerRequestInterface;
 
 class ApplicationMiddlewareTest extends TestCase
@@ -337,6 +337,7 @@ class ApplicationMiddlewareTest extends TestCase
 
         $routeCallback = function (ServerRequestInterface $request) {
             $response = new Response();
+
             return $response->write('SUCCESS');
         };
 
@@ -359,6 +360,7 @@ class ApplicationMiddlewareTest extends TestCase
 
         $routeCallback = function ($request) {
             $response = new Response();
+
             return $response->write('SUCCESS');
         };
 
@@ -368,6 +370,7 @@ class ApplicationMiddlewareTest extends TestCase
 
         $callable = function ($request, $handler) {
             $response = $handler->handle($request);
+
             return $response->write('_MIDDLEWARE');
         };
         $middleware = new CallableMiddlewareDecorator($callable);
@@ -392,12 +395,13 @@ class ApplicationMiddlewareTest extends TestCase
 
         $routeCallback = function (ServerRequestInterface $request) {
             $response = new Response();
+
             return $response->write('SUCCESS');
         };
 
         $app = new Application();
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $group = $app->group('/foo', function($group) use ($routeCallback) {
+        $group = $app->group('/foo', function ($group) use ($routeCallback) {
             $group->get('/bar', $routeCallback);
         });
 
@@ -416,17 +420,19 @@ class ApplicationMiddlewareTest extends TestCase
 
         $routeCallback = function ($request) {
             $response = new Response();
+
             return $response->write('SUCCESS');
         };
 
         $app = new Application();
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $group = $app->group('/foo', function($group) use ($routeCallback) {
+        $group = $app->group('/foo', function ($group) use ($routeCallback) {
             $group->get('/bar', $routeCallback);
         });
 
         $callable = function ($request, $handler) {
             $response = $handler->handle($request);
+
             return $response->write('_MIDDLEWARE-GROUP');
         };
         $middleware = new CallableMiddlewareDecorator($callable);
@@ -447,14 +453,16 @@ class ApplicationMiddlewareTest extends TestCase
 
         $routeCallback = function ($request) {
             $response = new Response();
+
             return $response->write('SUCCESS');
         };
 
         $app = new Application();
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $group = $app->group('/foo', function($group) use ($routeCallback) {
+        $group = $app->group('/foo', function ($group) use ($routeCallback) {
             $callable1 = function ($request, $handler) {
                 $response = $handler->handle($request);
+
                 return $response->write('_MIDDLEWARE-ROUTE');
             };
             $middleware1 = new CallableMiddlewareDecorator($callable1);
@@ -464,6 +472,7 @@ class ApplicationMiddlewareTest extends TestCase
 
         $callable2 = function ($request, $handler) {
             $response = $handler->handle($request);
+
             return $response->write('_MIDDLEWARE-GROUP');
         };
         $middleware2 = new CallableMiddlewareDecorator($callable2);

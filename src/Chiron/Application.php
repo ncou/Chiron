@@ -223,24 +223,18 @@ class Application implements RoutableInterface
         }
         */
 
-
-
-
-/*
-        if (is_string($handler) || is_callable($handler)) {
-            $handler = new DeferredRequestHandler($handler, $this->container);
-        }
-
-        if (! empty($middlewares)) {
-            $handler = new RequestHandlerStack($handler);
-            foreach ($middlewares as $middleware) {
-                $handler->prepend($this->prepareMiddleware($middleware));
-            }
-        }
-*/
-
-
-
+        /*
+                if (is_string($handler) || is_callable($handler)) {
+                    $handler = new DeferredRequestHandler($handler, $this->container);
+                }
+        
+                if (! empty($middlewares)) {
+                    $handler = new RequestHandlerStack($handler);
+                    foreach ($middlewares as $middleware) {
+                        $handler->prepend($this->prepareMiddleware($middleware));
+                    }
+                }
+        */
 
         return $this->getRouter()->map($pattern, $handler);
     }

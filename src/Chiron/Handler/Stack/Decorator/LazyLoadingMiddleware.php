@@ -38,6 +38,7 @@ class LazyLoadingMiddleware implements MiddlewareInterface
 
     /**
      * Support a instance of MiddlewareInterface or a callable.
+     *
      * @throws InvalidArgumentException for invalid middleware types pulled from the container
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -58,7 +59,6 @@ class LazyLoadingMiddleware implements MiddlewareInterface
         if (is_callable([$middleware, 'setContainer']) && $this->container instanceof ContainerInterface) {
             $middleware->setContainer($this->container);
         }*/
-
 
         throw new \InvalidArgumentException('The middleware present in the container should be a PHP callable or a Psr\Http\Server\MiddlewareInterface instance');
     }

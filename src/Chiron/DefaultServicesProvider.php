@@ -13,12 +13,12 @@
 
 namespace Chiron;
 
+use Chiron\Http\Middleware\DispatcherMiddleware;
+use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
-use Chiron\Http\Middleware\RoutingMiddleware;
-use Chiron\Http\Middleware\DispatcherMiddleware;
 
 /**
  * Chiron system services provider.

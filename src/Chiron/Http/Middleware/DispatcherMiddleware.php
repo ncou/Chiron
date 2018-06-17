@@ -10,20 +10,19 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\Routing\RouteResult;
-use Chiron\Routing\RouteGroup;
+use Chiron\Handler\DeferredRequestHandler;
+use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
+use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
+use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Routing\Route;
+use Chiron\Routing\RouteGroup;
+use Chiron\Routing\RouteResult;
+use InvalidArgumentException;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Handler\DeferredRequestHandler;
-use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
-use Chiron\Handler\Stack\Decorator\FixedResponseHandler;
-use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
-use Chiron\Handler\Stack\RequestHandlerStack;
-use Psr\Container\ContainerInterface;
-use InvalidArgumentException;
 
 class DispatcherMiddleware implements MiddlewareInterface
 {
