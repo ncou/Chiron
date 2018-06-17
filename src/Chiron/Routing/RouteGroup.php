@@ -2,8 +2,6 @@
 
 namespace Chiron\Routing;
 
-use Chiron\Handler\DeferredRequestHandler;
-use Chiron\Handler\Stack\RequestHandlerStack;
 use Closure;
 use Psr\Container\ContainerInterface;
 
