@@ -139,10 +139,11 @@ trait RoutableTrait
      *
      * @return \Chiron\Routing\Route
      */
+    /*
     public function purge(string $pattern, $handler, $middlewares = null): Route
     {
         return $this->map($pattern, $handler, $middlewares)->method('PURGE');
-    }
+    }*/
 
     /**
      * Add route for any (official or unofficial) HTTP method.
@@ -156,6 +157,7 @@ trait RoutableTrait
      */
     public function any(string $pattern, $handler, $middlewares = null): Route
     {
-        return $this->map($pattern, $handler, $middlewares)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'PURGE', 'DELETE', 'OPTIONS']);
+        //return $this->map($pattern, $handler, $middlewares)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'PURGE', 'DELETE', 'OPTIONS']);
+        return $this->map($pattern, $handler, $middlewares)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
     }
 }
