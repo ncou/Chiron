@@ -14,13 +14,12 @@ trait RoutableTrait
      *
      * @param string                                    $pattern    The route URI pattern
      * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Chiron\Routing\Route
      */
-    public function get(string $pattern, $handler, $middlewares = null): Route
+    public function get(string $pattern, $handler): Route
     {
-        return $this->map($pattern, $handler, $middlewares)->method('GET');
+        return $this->map($pattern, $handler)->method('GET');
     }
 
     /**
@@ -33,13 +32,12 @@ trait RoutableTrait
      *
      * @param string                                    $pattern    The route URI pattern
      * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Chiron\Routing\Route
      */
-    public function head(string $pattern, $handler, $middlewares = null): Route
+    public function head(string $pattern, $handler): Route
     {
-        return $this->map($pattern, $handler, $middlewares)->method('HEAD');
+        return $this->map($pattern, $handler)->method('HEAD');
     }
 
     /**
@@ -50,13 +48,12 @@ trait RoutableTrait
      *
      * @param string                                    $pattern    The route URI pattern
      * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Chiron\Routing\Route
      */
-    public function post(string $pattern, $handler, $middlewares = null): Route
+    public function post(string $pattern, $handler): Route
     {
-        return $this->map($pattern, $handler, $middlewares)->method('POST');
+        return $this->map($pattern, $handler)->method('POST');
     }
 
     /**
@@ -67,13 +64,12 @@ trait RoutableTrait
      *
      * @param string                                    $pattern    The route URI pattern
      * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Chiron\Routing\Route
      */
-    public function put(string $pattern, $handler, $middlewares = null): Route
+    public function put(string $pattern, $handler): Route
     {
-        return $this->map($pattern, $handler, $middlewares)->method('PUT');
+        return $this->map($pattern, $handler)->method('PUT');
     }
 
     /**
@@ -84,13 +80,12 @@ trait RoutableTrait
      *
      * @param string                                    $pattern    The route URI pattern
      * @param callable|string                           $callable   The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Chiron\Routing\Route
      */
-    public function delete(string $pattern, $handler, $middlewares = null): Route
+    public function delete(string $pattern, $handler): Route
     {
-        return $this->map($pattern, $handler, $middlewares)->method('DELETE');
+        return $this->map($pattern, $handler)->method('DELETE');
     }
 
     /**
@@ -101,13 +96,12 @@ trait RoutableTrait
      *
      * @param string                                    $pattern    The route URI pattern
      * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Chiron\Routing\Route
      */
-    public function options(string $pattern, $handler, $middlewares = null): Route
+    public function options(string $pattern, $handler): Route
     {
-        return $this->map($pattern, $handler, $middlewares)->method('OPTIONS');
+        return $this->map($pattern, $handler)->method('OPTIONS');
     }
 
     /**
@@ -119,13 +113,12 @@ trait RoutableTrait
      *
      * @param string                                    $pattern    The route URI pattern
      * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Chiron\Routing\Route
      */
-    public function patch(string $pattern, $handler, $middlewares = null): Route
+    public function patch(string $pattern, $handler): Route
     {
-        return $this->map($pattern, $handler, $middlewares)->method('PATCH');
+        return $this->map($pattern, $handler)->method('PATCH');
     }
 
     /**
@@ -135,14 +128,13 @@ trait RoutableTrait
      *
      * @param string                                    $pattern    The route URI pattern
      * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Chiron\Routing\Route
      */
     /*
-    public function purge(string $pattern, $handler, $middlewares = null): Route
+    public function purge(string $pattern, $handler): Route
     {
-        return $this->map($pattern, $handler, $middlewares)->method('PURGE');
+        return $this->map($pattern, $handler)->method('PURGE');
     }*/
 
     /**
@@ -151,13 +143,12 @@ trait RoutableTrait
      *
      * @param string                                    $pattern    The route URI pattern
      * @param callable|string                           $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Chiron\Routing\Route
      */
-    public function any(string $pattern, $handler, $middlewares = null): Route
+    public function any(string $pattern, $handler): Route
     {
-        //return $this->map($pattern, $handler, $middlewares)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'PURGE', 'DELETE', 'OPTIONS']);
-        return $this->map($pattern, $handler, $middlewares)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
+        //return $this->map($pattern, $handler)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'PURGE', 'DELETE', 'OPTIONS']);
+        return $this->map($pattern, $handler)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
     }
 }

@@ -191,27 +191,14 @@ class Application implements RoutableInterface
      *
      * @param string                                    $pattern    The route URI pattern
      * @param RequestHandlerInterface|callable|string   $handler    The route callback routine
-     * @param string|array|callable|MiddlewareInterface $middleware
      *
      * @return \Chiron\Routing\Route
      */
     // TODO : créer une classe RouteInterface qui servira comme type de retour (il faudra aussi l'ajouter dans le use en début de classe) !!!!!
     // TODO : lever une exception si le type du handler n'est pas correct, par exemple si on lui passe un integer ou un objet non callable !!!!!
-    public function map(string $pattern, $handler, $middlewares = null): Route
+    public function map(string $pattern, $handler): Route
     {
-        // TODO : virer la partie Middleware !!!!!!
-        if (! isset($middlewares)) {
-            $middlewares = [];
-        } elseif (! is_array($middlewares)) {
-            $middlewares = [$middlewares];
-        }
 
-        // bind the application in the function, so we could use "this" in the callable to access the application.
-        // TODO : ce bind est aussi fait au niveau de la classe DeferredRequestHandler !!!! c'est pas bon car c'est fait en double
-        // TODO : vérifier l'utilité de ce bind !!!!!!
-        if ($handler instanceof Closure) {
-            $handler = $handler->bindTo($this);
-        }
 
         /*
         if (is_callable([$handler, 'setContainer']) && $this->container instanceof ContainerInterface) {
@@ -227,7 +214,7 @@ class Application implements RoutableInterface
                 if (is_string($handler) || is_callable($handler)) {
                     $handler = new DeferredRequestHandler($handler, $this->container);
                 }
-        
+
                 if (! empty($middlewares)) {
                     $handler = new RequestHandlerStack($handler);
                     foreach ($middlewares as $middleware) {
@@ -240,9 +227,9 @@ class Application implements RoutableInterface
     }
 
     // $params => string|array
-    public function group($params, Closure $closure): RouteGroup
+    public function group(string $prefix, Closure $closure): RouteGroup
     {
-        $group = new RouteGroup($params, $this->getRouter(), $this->getContainer());
+        $group = new RouteGroup($prefix, $this->getRouter(), $this->getContainer());
         // TODO : on fait un bind du this avec le group ????
         //$closure = $closure->bindTo($group);
         call_user_func($closure, $group);
