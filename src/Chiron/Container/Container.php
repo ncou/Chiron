@@ -4,8 +4,17 @@ declare(strict_types=1);
 
 namespace Chiron\Container;
 
+//https://github.com/inxilpro/Zit/blob/master/lib/Zit/Container.php
+
+// ALIAS :
+//https://github.com/njasm/container
+
+// PROTECT CLOSURE :
+//https://github.com/frostealth/php-container/blob/master/src/container/Container.php#L105
+
 // TODO : mettre en cache le container avec un serialize/unserialize : https://github.com/radarphp/Radar.Adr/blob/1.x/src/Boot.php#L79
 
+// Delegate container :
 // https://github.com/thecodingmachine/picotainer/blob/1.1/src/Picotainer.php
 
 //*************
@@ -24,8 +33,11 @@ namespace Chiron\Container;
 
 use Chiron\Container\Exception\EntryNotFoundException;
 use Psr\Container\ContainerInterface;
+use ArrayAccess;
+use SplObjectStorage;
+use Closure;
 
-class Container implements \ArrayAccess, ContainerInterface
+class Container implements ArrayAccess, ContainerInterface
 {
     /**
      * Contains all entries.
@@ -45,7 +57,7 @@ class Container implements \ArrayAccess, ContainerInterface
      */
     public function __construct(array $entries = [])
     {
-        $this->factories = new \SplObjectStorage();
+        $this->factories = new SplObjectStorage();
 
         //$this->container = $entries;
         foreach ($entries as $alias => $entry) {
@@ -64,7 +76,7 @@ class Container implements \ArrayAccess, ContainerInterface
     public function set(string $alias, $entry)
     {
         // bind the "container" to the var "$this" inside the Closure function
-        if ($entry instanceof \Closure) {
+        if ($entry instanceof Closure) {
             $entry = $entry->bindTo($this);
         }
         $this->container[$alias] = $entry;
