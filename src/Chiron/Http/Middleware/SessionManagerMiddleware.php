@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
@@ -16,6 +16,7 @@ class SessionManagerMiddleware implements MiddlewareInterface
      * @var string|null The session name
      */
     private $name;
+
     /**
      * @var string The attribute name
      */
@@ -27,16 +28,20 @@ class SessionManagerMiddleware implements MiddlewareInterface
     public function name(string $name): self
     {
         $this->name = $name;
+
         return $this;
     }
+
     /**
      * Set the attribute name to store the sesion instance.
      */
     public function attribute(string $attribute): self
     {
         $this->attribute = $attribute;
+
         return $this;
     }
+
     /**
      * Process a server request and return a response.
      */
