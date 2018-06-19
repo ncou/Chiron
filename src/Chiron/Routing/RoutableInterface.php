@@ -19,6 +19,4 @@ interface RoutableInterface
     public function delete(string $pattern, $handler): Route;
 
     public function options(string $pattern, $handler): Route;
-
-    public function group(string $prefix, Closure $closure): RouteGroup;
 }

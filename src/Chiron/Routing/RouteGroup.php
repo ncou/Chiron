@@ -12,13 +12,14 @@ class RouteGroup implements RoutableInterface
 {
     use RoutableTrait;
 
-    protected $router;
+    private $router;
 
-    protected $container;
+    private $container;
 
-    protected $prefix;
+    private $prefix;
 
-    protected $middlewares = [];
+    private $middlewares = [];
+
 
     public function __construct(string $prefix, Router $router, ContainerInterface $container = null)
     {
@@ -44,22 +45,11 @@ class RouteGroup implements RoutableInterface
         if (! $handler instanceof RequestHandlerInterface) {
             throw new InvalidArgumentException('Handler should be a Psr\Http\Server\RequestHandlerInterface instance');
         }
-        //return $this->router->map($this->appendPrefixToUri($pattern), $handler, $this->middlewares);
+
         $route = $this->router->map($this->appendPrefixToUri($pattern), $handler);
 
         // store the group in the "extra" section on the route object. Used later to get the middleware attached to the group and apply them on the route.
         return $route->addExtra(RouteGroup::class, $this);
-    }
-
-    // TODO : vérifier l'utilité de faire des group de group...
-    public function group(string $prefix, Closure $closure): self
-    {
-        $group = new self($prefix, $this->router);
-        //$closure = $closure->bindTo($group);
-        call_user_func($closure, $group);
-
-        //return $this;
-        return $group;
     }
 
     private function appendPrefixToUri(string $uri)

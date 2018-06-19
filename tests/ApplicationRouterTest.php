@@ -113,7 +113,7 @@ class ApplicationRouterTest extends TestCase
         $this->assertAttributeContains('OPTIONS', 'methods', $route);
     }
 
-    public function testRouteRoute()
+    public function testRouteMapping()
     {
         $path = '/foo';
         $callable = function ($req, $res) {
