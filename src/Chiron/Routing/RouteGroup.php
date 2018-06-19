@@ -3,7 +3,6 @@
 namespace Chiron\Routing;
 
 use Chiron\Handler\DeferredRequestHandler;
-use Closure;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -19,7 +18,6 @@ class RouteGroup implements RoutableInterface
     private $prefix;
 
     private $middlewares = [];
-
 
     public function __construct(string $prefix, Router $router, ContainerInterface $container = null)
     {
