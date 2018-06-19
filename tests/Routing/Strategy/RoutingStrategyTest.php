@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Chiron\Tests\Routing\Strategy;
 
 use Chiron\Application;
-use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
 use Chiron\Http\Factory\ServerRequestFactory;
+use Chiron\Http\Middleware\DispatcherMiddleware;
+use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Http\Psr\Response;
 use PHPUnit\Framework\TestCase;
-use Chiron\Http\Middleware\RoutingMiddleware;
-use Chiron\Http\Middleware\DispatcherMiddleware;
 use Psr\Http\Message\ServerRequestInterface;
 
 // TODO : classe à finir de compléter !!!!!!!!!!
@@ -26,6 +25,7 @@ class RoutingStrategyTest extends TestCase
 
         $routeCallback = function ($request) {
             $response = new Response();
+
             return $response->write('SUCCESS');
         };
 
@@ -48,6 +48,7 @@ class RoutingStrategyTest extends TestCase
 
         $routeCallback = function (ServerRequestInterface $request) {
             $response = new Response();
+
             return $response->write('SUCCESS');
         };
 
@@ -74,6 +75,7 @@ class RoutingStrategyTest extends TestCase
 
         $routeCallback = function (int $request) {
             $response = new Response();
+
             return $response->write('SUCCESS');
         };
 
