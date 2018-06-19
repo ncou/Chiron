@@ -85,4 +85,27 @@ class RoutingStrategyTest extends TestCase
 
         $response = $app->process($request);
     }
+
+    public function testRouteStrategyWithScalarTypeHintting()
+    {
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foo/123/bar/true/2.3',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+
+        $routeCallback = function (ServerRequestInterface $request, int $id, string $name, bool $isRegistered, float $floatNumber) {
+            $response = new Response();
+
+            return $response->write('SUCCESS');
+        };
+
+        $app = new Application();
+        $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
+        $route = $app->get('/foo/[:id]/[:name]/[:isRegistered]/[:floatNumber]', $routeCallback);
+
+        $response = $app->process($request);
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('SUCCESS', (string) $response->getBody());
+    }
 }

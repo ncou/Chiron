@@ -15,6 +15,10 @@ namespace Chiron;
 
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
+use Chiron\Http\Middleware\ParsedBodyMiddleware;
+use Chiron\Http\Middleware\EmitterMiddleware;
+use Chiron\Http\Middleware\CheckMaintenanceMiddleware;
+use Chiron\Http\Middleware\MethodOverrideMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
@@ -50,6 +54,22 @@ class DefaultServicesProvider
 
         $container[DispatcherMiddleware::class] = function ($c) {
             return new DispatcherMiddleware($c);
+        };
+
+        $container[ParsedBodyMiddleware::class] = function ($c) {
+            return new ParsedBodyMiddleware();
+        };
+
+        $container[EmitterMiddleware::class] = function ($c) {
+            return new EmitterMiddleware();
+        };
+
+        $container[CheckMaintenanceMiddleware::class] = function ($c) {
+            return new CheckMaintenanceMiddleware();
+        };
+
+        $container[MethodOverrideMiddleware::class] = function ($c) {
+            return new MethodOverrideMiddleware();
         };
 
         /*

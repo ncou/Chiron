@@ -106,7 +106,6 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
         switch ($type) {
             case 'int':
                 $parameter = (int) $parameter;
-
                 break;
             case 'string':
                 $parameter = (string) $parameter; // the "cast" is useless because the parameter is always a string
