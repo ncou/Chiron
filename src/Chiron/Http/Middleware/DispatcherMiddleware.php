@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\Handler\DeferredRequestHandler;
 use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
 use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
 use Chiron\Handler\Stack\RequestHandlerStack;

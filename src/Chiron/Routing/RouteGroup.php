@@ -2,12 +2,11 @@
 
 namespace Chiron\Routing;
 
-use Closure;
-use Psr\Container\ContainerInterface;
 use Chiron\Handler\DeferredRequestHandler;
-use Psr\Http\Server\RequestHandlerInterface;
+use Closure;
 use InvalidArgumentException;
-use Chiron\Routing\Route;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class RouteGroup implements RoutableInterface
 {
@@ -31,7 +30,7 @@ class RouteGroup implements RoutableInterface
     /**
      * map the route.
      *
-     * @param string          $pattern The route URI pattern
+     * @param string                                  $pattern The route URI pattern
      * @param RequestHandlerInterface|callable|string $handler The route callback routine
      *
      * @return \Chiron\Routing\Route
