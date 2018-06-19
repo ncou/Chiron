@@ -4,6 +4,10 @@ namespace Chiron\Routing;
 
 use Closure;
 use Psr\Container\ContainerInterface;
+use Chiron\Handler\DeferredRequestHandler;
+use Psr\Http\Server\RequestHandlerInterface;
+use InvalidArgumentException;
+use Chiron\Routing\Route;
 
 class RouteGroup implements RoutableInterface
 {
@@ -19,18 +23,32 @@ class RouteGroup implements RoutableInterface
 
     public function __construct(string $prefix, Router $router, ContainerInterface $container = null)
     {
-        //$this->prefix = trim($prefix, ' /');
         $this->prefix = $prefix;
         $this->router = $router;
         $this->container = $container;
     }
 
+    /**
+     * map the route.
+     *
+     * @param string          $pattern The route URI pattern
+     * @param RequestHandlerInterface|callable|string $handler The route callback routine
+     *
+     * @return \Chiron\Routing\Route
+     */
     public function map(string $pattern, $handler): Route
     {
+        if (is_string($handler) || is_callable($handler)) {
+            $handler = new DeferredRequestHandler($handler, $this->container);
+        }
+
+        if (! $handler instanceof RequestHandlerInterface) {
+            throw new InvalidArgumentException('Handler should be a Psr\Http\Server\RequestHandlerInterface instance');
+        }
         //return $this->router->map($this->appendPrefixToUri($pattern), $handler, $this->middlewares);
         $route = $this->router->map($this->appendPrefixToUri($pattern), $handler);
 
-        // store the group un the extra section on the route. Used later to get the middleware attached to the group and apply them on the route.
+        // store the group in the "extra" section on the route object. Used later to get the middleware attached to the group and apply them on the route.
         return $route->addExtra(RouteGroup::class, $this);
     }
 

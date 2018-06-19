@@ -1,10 +1,5 @@
 <?php
-/**
- * @see       https://github.com/zendframework/zend-expressive-router for the canonical source repository
- *
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (https://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-router/blob/master/LICENSE.md New BSD License
- */
+
 declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Middleware;
@@ -43,7 +38,7 @@ class DispatcherMiddlewareTest extends TestCase
 
     public function testInvokesHandlerIfRequestDoesNotContainRouteResult()
     {
-        $this->request->getAttribute(RouteResult::class, false)->willReturn(false);
+        $this->request->getAttribute(RouteResult::class)->willReturn(null);
         $this->handler->handle($this->request->reveal())->willReturn($this->response);
         $response = $this->middleware->process($this->request->reveal(), $this->handler->reveal());
         $this->assertSame($this->response, $response);
@@ -81,7 +76,7 @@ class DispatcherMiddlewareTest extends TestCase
             ->getMatchedRoute()
             ->willReturn($route);
 
-        $this->request->getAttribute(RouteResult::class, false)->will([$routeResult, 'reveal']);
+        $this->request->getAttribute(RouteResult::class)->will([$routeResult, 'reveal']);
         $response = $this->middleware->process($this->request->reveal(), $this->handler->reveal());
         $this->assertSame($this->response, $response);
     }

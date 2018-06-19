@@ -36,7 +36,7 @@ class DeferredRequestHandler implements RequestHandlerInterface
      * DeferredMiddleware constructor.
      *
      * @param callable|string    $callable
-     * @param ContainerInterface $container
+     * @param ContainerInterface $container used only if the $callable is a string
      */
     public function __construct($callable, ContainerInterface $container = null)
     {
@@ -85,7 +85,7 @@ class DeferredRequestHandler implements RequestHandlerInterface
      * If toResolve is of the format 'class@method', then try to extract 'class'
      * from the container otherwise instantiate it and then dispatch 'method'.
      *
-     * @param mixed $toResolve
+     * @param callable|string $toResolve
      *
      * @throws RuntimeException if the callable does not exist
      * @throws RuntimeException if the callable is not resolvable
@@ -93,13 +93,14 @@ class DeferredRequestHandler implements RequestHandlerInterface
      * @return callable
      */
     //https://github.com/slimphp/Slim/blob/4.x/Slim/CallableResolver.php#L47
+    // TODO : lui passer uniquement une string en paramétre et ne pas appeller cette fonction en amont si le type est callable !!!!
     private function resolveCallable($toResolve)
     {
         $resolved = $toResolve;
         if (! is_callable($toResolve) && is_string($toResolve)) {
             $class = $toResolve;
             $method = '__invoke';
-            // check for slim callable as "class:method"
+            // check for chiron callable as "class@method"
             //$callablePattern = '!^([^\:]+)\:([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)$!'; // TODO : il est possible de simplifier cela avec l'expression : '^([^:]+):([^:]+)$'
             //$callablePattern = '!^([^#]+)#([^#]+)$!';
             $callablePattern = '^([^@]+)@([^@]+)$';

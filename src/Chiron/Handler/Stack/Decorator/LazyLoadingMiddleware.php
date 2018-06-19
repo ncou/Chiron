@@ -1,10 +1,4 @@
 <?php
-/**
- * @see       https://github.com/zendframework/zend-expressive for the canonical source repository
- *
- * @copyright Copyright (c) 2017 Zend Technologies USA Inc. (https://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive/blob/master/LICENSE.md New BSD License
- */
 
 declare(strict_types=1);
 
@@ -44,6 +38,7 @@ class LazyLoadingMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         // retrieve the middleware in the container. It could be a : MiddlewareInterface object, or a callable
+        // TODO : lever une exception si le type de l'objet n'est pas un middlewareinterface ou un callable !!!!!
         $entry = $this->container->get($this->middlewareName);
 
         if (is_callable($entry)) {

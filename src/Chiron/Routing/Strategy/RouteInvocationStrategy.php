@@ -56,7 +56,7 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
     }
 
     //TODO : regarder ici : https://github.com/swoft-cloud/swoft-framework/blob/v0.2.6/src/Router/Http/HandlerAdapter.php#162
-    private function bindAttributesWithParameters(array $parameters, ServerRequestInterface $request)
+    private function bindAttributesWithParameters(array $parameters, ServerRequestInterface $request): array
     {
         $attributes = $request->getAttributes();
         $arguments = [];

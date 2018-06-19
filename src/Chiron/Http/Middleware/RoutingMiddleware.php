@@ -46,6 +46,7 @@ class RoutingMiddleware implements MiddlewareInterface
             // TODO : vérifier le comportement avec CORS.
             if ($request->getMethod() === 'OPTIONS') {
                 //array_unshift($allowedMethods, 'OPTIONS');
+                // TODO : passer un responseFactory en paramétre de ce middleware !!!!!
                 return (new Response())->withHeader('Allow', implode(', ', array_merge(['OPTIONS'], $allowedMethods)));
             }
 

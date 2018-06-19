@@ -66,6 +66,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 class Application implements RoutableInterface
 {
@@ -144,13 +145,14 @@ class Application implements RoutableInterface
      *
      * @return MiddlewareInterface
      */
+    // TODO : code à factoriser avec celui présent dans le DispatcherMiddleware
     private function prepareMiddleware($middleware): MiddlewareInterface
     {
         if ($middleware instanceof MiddlewareInterface) {
             return $middleware;
         } elseif (is_callable($middleware)) {
             return new CallableMiddlewareDecorator($middleware);
-        } elseif (is_string($middleware) && $middleware !== '') {
+        } elseif (is_string($middleware) && $middleware !== '') { // TODO : vérifier l'utilité du chaine vide !!!!
             return new LazyLoadingMiddleware($middleware, $this->container);
         } else {
             throw new InvalidArgumentException(sprintf(
@@ -220,6 +222,14 @@ class Application implements RoutableInterface
                     }
                 }
         */
+
+        if (is_string($handler) || is_callable($handler)) {
+            $handler = new DeferredRequestHandler($handler, $this->container);
+        }
+
+        if (! $handler instanceof RequestHandlerInterface) {
+            throw new InvalidArgumentException('Handler should be a Psr\Http\Server\RequestHandlerInterface instance');
+        }
 
         return $this->getRouter()->map($pattern, $handler);
     }
