@@ -1,18 +1,19 @@
 <?php
 /**
- * Slim Framework (https://slimframework.com).
+ * Chiron Framework.
  *
- * @see      https://github.com/slimphp/Slim
+ * @see      https://github.com/ncou/Chiron
  *
- * @copyright Copyright (c) 2011-2017 Josh Lockhart
- * @license   https://github.com/slimphp/Slim/blob/3.x/LICENSE.md (MIT License)
+ * @copyright Copyright (c) 2017-2018 ncou
+ * @license   https://github.com/ncou/Chiron/blob/master/LICENSE.md (MIT License)
  */
-
-//https://github.com/cakephp/cakephp/blob/master/src/Http/Cookie/CookieCollection.php#L338
+declare(strict_types=1);
 
 namespace Chiron\Http\Cookie;
 
 use DateTimeImmutable;
+
+//https://github.com/cakephp/cakephp/blob/master/src/Http/Cookie/CookieCollection.php#L338
 
 /**
  * Cookie helper.

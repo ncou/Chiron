@@ -1,15 +1,13 @@
 <?php
-
-declare(strict_types=1);
-
 /**
- * Chiron Framework (https://chiron.com).
+ * Chiron Framework.
  *
- * @see      https://github.com/slimphp/Slim
+ * @see      https://github.com/ncou/Chiron
  *
- * @copyright Copyright (c) 2011-2017 Josh Lockhart
- * @license   https://github.com/slimphp/Slim/blob/3.x/LICENSE.md (MIT License)
+ * @copyright Copyright (c) 2017-2018 ncou
+ * @license   https://github.com/ncou/Chiron/blob/master/LICENSE.md (MIT License)
  */
+declare(strict_types=1);
 
 namespace Chiron\Handler;
 

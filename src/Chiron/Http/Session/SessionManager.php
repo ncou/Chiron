@@ -156,7 +156,7 @@ class SessionManager
      *
      * @return bool
      */
-    public function isResumable()
+    public function isResumable(): bool
     {
         $name = $this->getName();
 
@@ -168,7 +168,7 @@ class SessionManager
      *
      * @return bool
      */
-    public function isStarted()
+    public function isStarted(): bool
     {
         return session_status() === \PHP_SESSION_ACTIVE;
     }
@@ -179,7 +179,7 @@ class SessionManager
      * @return bool
      */
     // TODO : regarder ici : https://github.com/symfony/symfony/blob/3.4/src/Symfony/Component/HttpFoundation/Session/Storage/NativeSessionStorage.php#L130
-    public function start()
+    public function start(): bool
     {
         return session_start();
     }
@@ -190,7 +190,7 @@ class SessionManager
      *
      * @return bool
      */
-    public function resume()
+    public function resume(): bool
     {
         if ($this->isStarted()) {
             return true;
@@ -204,17 +204,21 @@ class SessionManager
 
     /**
      * Clears all session variables.
+     *
+     * @return bool
      */
-    public function clear()
+    public function clear(): bool
     {
         return session_unset();
     }
 
     /**
      * Writes session data and ends the session.
+     *
+     * @return bool
      */
     // TODO : renommer cette méthode en .save() ????
-    public function commit()
+    public function commit(): bool
     {
         return session_write_close();
     }
@@ -226,7 +230,7 @@ class SessionManager
      *
      * @see http://php.net/manual/en/function.session-destroy.php
      */
-    public function destroy()
+    public function destroy(): bool
     {
         if (! $this->isStarted()) {
             $this->start();
@@ -256,7 +260,7 @@ class SessionManager
      *
      * @see session_cache_expire()
      */
-    public function setCacheExpire($expire)
+    public function setCacheExpire($expire): int
     {
         return session_cache_expire($expire);
     }
@@ -268,7 +272,7 @@ class SessionManager
      *
      * @see session_cache_expire()
      */
-    public function getCacheExpire()
+    public function getCacheExpire(): int
     {
         return session_cache_expire();
     }
@@ -294,7 +298,7 @@ class SessionManager
      *
      * @see session_cache_limiter()
      */
-    public function getCacheLimiter()
+    public function getCacheLimiter(): string
     {
         return session_cache_limiter();
     }
@@ -318,12 +322,14 @@ class SessionManager
      *
      * @param array $params The array of session cookie param keys and values.
      *
+     * @return bool
+     *
      * @see session_set_cookie_params()
      */
-    public function setCookieParams(array $params)
+    public function setCookieParams(array $params): bool
     {
         $this->cookie_params = array_merge($this->cookie_params, $params);
-        session_set_cookie_params(
+        return session_set_cookie_params(
             $this->cookie_params['lifetime'],
             $this->cookie_params['path'],
             $this->cookie_params['domain'],
@@ -342,7 +348,7 @@ class SessionManager
      *
      * @return array
      */
-    public function getCookieParams()
+    public function getCookieParams(): array
     {
         return $this->cookie_params;
         //return session_get_cookie_params();
@@ -353,7 +359,7 @@ class SessionManager
      *
      * @return string
      */
-    public function getId()
+    public function getId(): string
     {
         return session_id();
     }
@@ -365,7 +371,7 @@ class SessionManager
      *
      * @throws \LogicException
      */
-    public function setId($id)
+    public function setId(string $id): void
     {
         if ($this->isStarted()) {
             throw new LogicException('Cannot change the ID of an active session, to change the session ID call regenerateId()');
@@ -387,9 +393,9 @@ class SessionManager
      *
      * @param bool $deleteOldSession
      *
-     * @return SessionManager
+     * @return bool
      */
-    public function regenerateId(bool $deleteOldSession = true)
+    public function regenerateId(bool $deleteOldSession = true): bool
     {
         /*
         if ($this->sessionExists()) {
@@ -400,6 +406,8 @@ class SessionManager
         if ($this->isStarted()) {
             return session_regenerate_id($deleteOldSession);
         }
+
+        return false;
     }
 
     /**
@@ -411,14 +419,18 @@ class SessionManager
      *
      * @see session_name()
      */
-    public function setName(string $name)
+    public function setName(string $name): string
     {
         if ($this->isStarted()) {
             throw new LogicException('Cannot change the name of an active session');
         }
 
         if (! preg_match('/^[a-zA-Z0-9]+$/', $name)) {
-            throw new InvalidArgumentException('Session name provided contains invalid characters; must be alphanumeric only');
+            throw new InvalidArgumentException('Session name provided contains invalid characters; must be alphanumeric only and cannot be empty');
+        }
+
+        if (! preg_match('/.*[a-zA-Z]+.*/', $name)) {
+            throw new InvalidArgumentException('Session name cannot be a numeric');
         }
 
         return session_name($name);
@@ -429,7 +441,7 @@ class SessionManager
      *
      * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return session_name();
     }
@@ -443,7 +455,7 @@ class SessionManager
      *
      * @see session_save_path()
      */
-    public function setSavePath($path)
+    public function setSavePath($path): string
     {
         return session_save_path($path);
     }
@@ -455,7 +467,7 @@ class SessionManager
      *
      * @see session_save_path()
      */
-    public function getSavePath()
+    public function getSavePath(): string
     {
         return session_save_path();
     }
@@ -503,7 +515,7 @@ class SessionManager
         return $config;
     }
 
-    public function regenerate($destroy = false, $lifetime = null)
+    public function regenerate($destroy = false, $lifetime = null): bool
     {
         // Cannot regenerate the session ID for non-active sessions.
         if (\PHP_SESSION_ACTIVE !== session_status()) {
