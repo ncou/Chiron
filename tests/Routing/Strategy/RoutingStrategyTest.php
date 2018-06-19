@@ -96,7 +96,7 @@ class RoutingStrategyTest extends TestCase
         $routeCallback = function (ServerRequestInterface $request, int $id, string $name, bool $isRegistered, float $floatNumber) {
             $response = new Response();
 
-            return $response->write('SUCCESS');
+            return $response->write($id . $name . ($isRegistered ? 'true' : 'false') . $floatNumber);
         };
 
         $app = new Application();
@@ -105,7 +105,28 @@ class RoutingStrategyTest extends TestCase
 
         $response = $app->process($request);
 
-        $this->assertEquals(200, $response->getStatusCode());
-        $this->assertEquals('SUCCESS', (string) $response->getBody());
+        $this->assertEquals('123bartrue2.3', (string) $response->getBody());
+    }
+
+    public function testRouteStrategyWithScalarTypeHinttingAndDefaultValue()
+    {
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/foo/',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+
+        $routeCallback = function (ServerRequestInterface $request, int $id = 123, string $name = 'bar', bool $isRegistered = true, float $floatNumber = 2.3) {
+            $response = new Response();
+
+            return $response->write($id . $name . ($isRegistered ? 'true' : 'false') . $floatNumber);
+        };
+
+        $app = new Application();
+        $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
+        $route = $app->get('/foo/[:id]?/[:name]?/[:isRegistered]?/[:floatNumber]?', $routeCallback);
+
+        $response = $app->process($request);
+
+        $this->assertEquals('123bartrue2.3', (string) $response->getBody());
     }
 }
