@@ -13,12 +13,12 @@
 
 namespace Chiron;
 
-use Chiron\Http\Middleware\DispatcherMiddleware;
-use Chiron\Http\Middleware\RoutingMiddleware;
-use Chiron\Http\Middleware\ParsedBodyMiddleware;
-use Chiron\Http\Middleware\EmitterMiddleware;
 use Chiron\Http\Middleware\CheckMaintenanceMiddleware;
+use Chiron\Http\Middleware\DispatcherMiddleware;
+use Chiron\Http\Middleware\EmitterMiddleware;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
+use Chiron\Http\Middleware\ParsedBodyMiddleware;
+use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
