@@ -2,6 +2,10 @@
 
 declare(strict_types=1);
 
+//https://solutionfactor.net/blog/2014/02/08/implementing-session-timeout-with-php/
+
+//https://github.com/akrabat/rka-slim-session-middleware/blob/master/RKA/Session.php
+
 //https://github.com/relayphp/Relay.Middleware/blob/1.x/src/SessionHeadersHandler.php
 
 // TODO : rememberMe : https://github.com/zendframework/zend-session/blob/master/src/SessionManager.php#L347
@@ -58,6 +62,8 @@ $app->add(function (Request $request, Response $response, $next) {
 // https://github.com/guzzle/guzzle/blob/master/src/Cookie/SetCookie.php
 //
 
+// TODO : regarder ici : https://github.com/symfony/symfony/blob/3.4/src/Symfony/Component/HttpFoundation/Session/Storage/NativeSessionStorage.php#L130
+
 /**
  * This file is part of Aura for PHP.
  *
@@ -68,6 +74,7 @@ namespace Chiron\Http\Session;
 
 use InvalidArgumentException;
 use LogicException;
+use Chiron\Http\Session\Session;
 
 /**
  * A central control point for new session segments, PHP session management
@@ -104,6 +111,9 @@ class SessionManager
      */
     protected $delete_cookie;
 
+    // @var Chiron\Http\Session\Session
+    protected $session;
+
     /**
      * Constructor.
      *
@@ -120,6 +130,12 @@ class SessionManager
         $this->cookies = $cookies;
         $this->setDeleteCookie($delete_cookie);
         $this->cookie_params = session_get_cookie_params();
+        $this->session = new Session($this);
+    }
+
+    public function getSession(): Session
+    {
+        return $this->session;
     }
 
     /**
@@ -178,7 +194,6 @@ class SessionManager
      *
      * @return bool
      */
-    // TODO : regarder ici : https://github.com/symfony/symfony/blob/3.4/src/Symfony/Component/HttpFoundation/Session/Storage/NativeSessionStorage.php#L130
     public function start(): bool
     {
         return session_start();
@@ -205,9 +220,9 @@ class SessionManager
     /**
      * Clears all session variables.
      *
-     * @return bool
+     * @return null|bool
      */
-    public function clear(): bool
+    public function clear(): ?bool
     {
         return session_unset();
     }
@@ -215,10 +230,9 @@ class SessionManager
     /**
      * Writes session data and ends the session.
      *
-     * @return bool
+     * @return null|bool
      */
-    // TODO : renommer cette méthode en .save() ????
-    public function commit(): bool
+    public function save(): ?bool
     {
         return session_write_close();
     }
@@ -322,11 +336,11 @@ class SessionManager
      *
      * @param array $params The array of session cookie param keys and values.
      *
-     * @return bool
+     * @return null|bool
      *
      * @see session_set_cookie_params()
      */
-    public function setCookieParams(array $params): bool
+    public function setCookieParams(array $params): ?bool
     {
         $this->cookie_params = array_merge($this->cookie_params, $params);
         return session_set_cookie_params(
@@ -616,11 +630,6 @@ class SessionManager
         return count($_SESSION);
     }
 
-    public function save(): void
-    {
-        session_write_close();
-    }
-
     public function destroy3(): bool
     {
         $this->clear();
@@ -664,4 +673,8 @@ class SessionManager
             session_destroy();
         }
     }
+
+
+
+
 }
