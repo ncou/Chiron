@@ -343,6 +343,7 @@ class SessionManager
     public function setCookieParams(array $params): ?bool
     {
         $this->cookie_params = array_merge($this->cookie_params, $params);
+
         return session_set_cookie_params(
             $this->cookie_params['lifetime'],
             $this->cookie_params['path'],
