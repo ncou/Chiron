@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Middleware;
 
-use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Middleware\BodyLimitMiddleware;
-use Chiron\Http\Psr\Response;
-use Chiron\Tests\Utils\HandlerProxy2;
-use PHPUnit\Framework\TestCase;
 use Chiron\Http\Session\Session;
 use Chiron\Http\Session\SessionManager;
+use PHPUnit\Framework\TestCase;
 
 class SessionManagerTest extends TestCase
 {
@@ -22,17 +18,20 @@ class SessionManagerTest extends TestCase
         session_save_path('');
         $this->manager = $this->newSessionManager();
     }
-    protected function newSessionManager(array $cookies = array())
+
+    protected function newSessionManager(array $cookies = [])
     {
         return new SessionManager($cookies);
     }
-    public function teardown()
+
+    protected function teardown()
     {
         session_unset();
         if (session_id() !== '') {
             session_destroy();
         }
     }
+
     /**
      * @runInSeparateProcess
      */
@@ -41,6 +40,7 @@ class SessionManagerTest extends TestCase
         $this->manager->start();
         $this->assertTrue($this->manager->isStarted());
     }
+
     /**
      * @runInSeparateProcess
      */
@@ -50,15 +50,16 @@ class SessionManagerTest extends TestCase
         $session = $this->manager->getSession();
         $session->set('foo', 'bar');
         $session->set('baz', 'dib');
-        $expect = array(
-                'foo' => 'bar',
-                'baz' => 'dib',
-        );
+        $expect = [
+            'foo' => 'bar',
+            'baz' => 'dib',
+        ];
         $this->assertSame($expect, $_SESSION);
         // now clear it
         $this->manager->clear();
-        $this->assertSame(array(), $_SESSION);
+        $this->assertSame([], $_SESSION);
     }
+
     /**
      * @runInSeparateProcess
      */
@@ -69,20 +70,22 @@ class SessionManagerTest extends TestCase
         $session->set('foo', 'bar');
         $session->set('baz', 'dib');
         $this->assertTrue($this->manager->isStarted());
-        $expect = array(
-                'foo' => 'bar',
-                'baz' => 'dib',
-        );
+        $expect = [
+            'foo' => 'bar',
+            'baz' => 'dib',
+        ];
         $this->assertSame($expect, $_SESSION);
         // now destroy it
         $this->manager->destroy();
         $this->assertFalse($this->manager->isStarted());
     }
+
     public function testSave()
     {
         $this->manager->save();
         $this->assertFalse($this->manager->isStarted());
     }
+
     /**
      * @runInSeparateProcess
      */
@@ -93,33 +96,36 @@ class SessionManagerTest extends TestCase
         $session->set('foo', 'bar');
         $session->set('baz', 'dib');
         $this->assertTrue($this->manager->isStarted());
-        $expect = array(
-                'foo' => 'bar',
-                'baz' => 'dib',
-        );
+        $expect = [
+            'foo' => 'bar',
+            'baz' => 'dib',
+        ];
         $this->assertSame($expect, $_SESSION);
         $this->manager->save();
         $this->manager->destroy();
         $session = $this->manager->getSession();
-        $this->assertSame(array(), $_SESSION);
+        $this->assertSame([], $_SESSION);
     }
+
     public function testGetSession()
     {
         $session = $this->manager->getSession();
         $this->assertInstanceof('\Chiron\Http\Session\Session', $session);
     }
+
     public function testisResumable()
     {
         // should not look active
         $this->assertFalse($this->manager->isResumable());
         // fake a cookie
-        $cookies = array(
+        $cookies = [
             $this->manager->getName() => 'fake-cookie-value',
-        );
+        ];
         $this->manager = $this->newSessionManager($cookies);
         // now it should look active
         $this->assertTrue($this->manager->isResumable());
     }
+
     /**
      * @runInSeparateProcess
      */
@@ -131,6 +137,7 @@ class SessionManagerTest extends TestCase
         $new_id = $this->manager->getId();
         $this->assertTrue($old_id != $new_id);
     }
+
     public function testSetAndGetName()
     {
         $expect = 'newName';
@@ -138,6 +145,7 @@ class SessionManagerTest extends TestCase
         $actual = $this->manager->getName();
         $this->assertSame($expect, $actual);
     }
+
     public function testSetAndGetSavePath()
     {
         $expect = '/new/save/path';
@@ -145,6 +153,7 @@ class SessionManagerTest extends TestCase
         $actual = $this->manager->getSavePath();
         $this->assertSame($expect, $actual);
     }
+
     public function testSetAndGetCookieParams()
     {
         $expect = $this->manager->getCookieParams();
@@ -153,6 +162,7 @@ class SessionManagerTest extends TestCase
         $actual = $this->manager->getCookieParams();
         $this->assertSame($expect, $actual);
     }
+
     public function testSetAndGetCacheExpire()
     {
         $expect = 123;
@@ -160,6 +170,7 @@ class SessionManagerTest extends TestCase
         $actual = $this->manager->getCacheExpire();
         $this->assertSame($expect, $actual);
     }
+
     public function testSetAndGetCacheLimiter()
     {
         $expect = 'private_no_cache';
@@ -167,6 +178,7 @@ class SessionManagerTest extends TestCase
         $actual = $this->manager->getCacheLimiter();
         $this->assertSame($expect, $actual);
     }
+
     /**
      * @runInSeparateProcess
      */
@@ -176,9 +188,9 @@ class SessionManagerTest extends TestCase
         $this->assertFalse($this->manager->isResumable());
         $this->assertFalse($this->manager->resume());
         // fake a cookie so a session looks available
-        $cookies = array(
+        $cookies = [
             $this->manager->getName() => 'fake-cookie-value',
-        );
+        ];
         $this->manager = $this->newSessionManager($cookies);
         $this->assertTrue($this->manager->resume());
         // now it should already active
