@@ -74,7 +74,6 @@ namespace Chiron\Http\Session;
 
 use InvalidArgumentException;
 use LogicException;
-use Chiron\Http\Session\Session;
 
 /**
  * A central control point for new session segments, PHP session management
@@ -674,8 +673,4 @@ class SessionManager
             session_destroy();
         }
     }
-
-
-
-
 }
