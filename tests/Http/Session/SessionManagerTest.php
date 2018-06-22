@@ -184,4 +184,22 @@ class SessionManagerTest extends TestCase
         // now it should already active
         $this->assertTrue($this->manager->resume());
     }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage  Session name provided contains invalid characters; must be alphanumeric only and cannot be empty
+     */
+    public function testSessionNameEmpty()
+    {
+        $this->manager->setName('');
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage  Session name cannot be a numeric
+     */
+    public function testSessionNameOnlyNumeric()
+    {
+        $this->manager->setName('123456');
+    }
 }
