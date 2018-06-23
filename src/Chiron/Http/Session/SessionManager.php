@@ -472,9 +472,10 @@ class SessionManager
      */
     public function setSavePath(string $path): string
     {
-        if (!is_writable($path)) {
+        if (! is_writable($path)) {
             throw new RuntimeException("Session save path : '{$path}' is not writable.");
         }
+
         return session_save_path($path);
     }
 
@@ -679,11 +680,12 @@ class SessionManager
     }
 
     /**
-     * Register Save Handler with ext/session
+     * Register Save Handler with ext/session.
      *
      * Register the save handler for session.
      *
      * @param \SaveHandlerInterface $saveHandler
+     *
      * @return bool
      */
     protected function registerSaveHandler(\SaveHandlerInterface $saveHandler): bool

@@ -7,9 +7,9 @@ namespace Chiron\Tests\Http\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\SessionManagerMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Session\SessionManager;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
-use Chiron\Http\Session\SessionManager;
 
 class SessionManagerMiddlewareTest extends TestCase
 {
@@ -43,9 +43,9 @@ class SessionManagerMiddlewareTest extends TestCase
 
         $expected = [
             'lifetime' => 1800,
-            'path' => '/',
-            'domain' => '',
-            'secure' => false,
+            'path'     => '/',
+            'domain'   => '',
+            'secure'   => false,
             'httponly' => true,
         ];
         $this->assertEquals($expected, session_get_cookie_params());
@@ -54,5 +54,4 @@ class SessionManagerMiddlewareTest extends TestCase
         $this->assertNotNull($attribute);
         $this->assertInstanceof(SessionManager::class, $attribute);
     }
-
 }
