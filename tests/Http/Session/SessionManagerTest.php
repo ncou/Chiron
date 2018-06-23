@@ -148,7 +148,7 @@ class SessionManagerTest extends TestCase
 
     public function testSetAndGetSavePath()
     {
-        $expect = '/';
+        $expect = realpath(dirname($_SERVER['DOCUMENT_ROOT']));
         $this->manager->setSavePath($expect);
         $actual = $this->manager->getSavePath();
         $this->assertSame($expect, $actual);
