@@ -28,8 +28,9 @@ class SessionManagerMiddleware implements MiddlewareInterface
         // TODO : on devait aussi le passer à null pour s'assurer que PHP utilise la valeur définie par défaut dans le fichier ini
         'cache_limiter'  => 'nocache',
     ];
+
     /**
-     * Constructor
+     * Constructor.
      *
      * @param array $settings Session settings
      */
@@ -43,7 +44,6 @@ class SessionManagerMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-
         // TODO : lever une exception si la session est déjà démarrée, cela évitera de faire un "if isStarted" dans la méthode $this->startSession()
         $sessionManager = new SessionManager($request->getCookieParams());
 
@@ -84,11 +84,11 @@ class SessionManagerMiddleware implements MiddlewareInterface
         $sessionManager->setName($settings['name']);
         // Set session cookie parameters
         $current = session_get_cookie_params();
-        $lifetime = (int)($settings['lifetime'] ?: $current['lifetime']);
-        $path     = $settings['path'] ?: $current['path'];
-        $domain   = $settings['domain'] ?: $current['domain'];
-        $secure   = (bool)$settings['secure'];
-        $httponly = (bool)$settings['httponly'];
+        $lifetime = (int) ($settings['lifetime'] ?: $current['lifetime']);
+        $path = $settings['path'] ?: $current['path'];
+        $domain = $settings['domain'] ?: $current['domain'];
+        $secure = (bool) $settings['secure'];
+        $httponly = (bool) $settings['httponly'];
         session_set_cookie_params($lifetime, $path, $domain, $secure, $httponly);
 
         $sessionManager->start();
