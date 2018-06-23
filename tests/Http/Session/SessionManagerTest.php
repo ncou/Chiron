@@ -110,7 +110,7 @@ class SessionManagerTest extends TestCase
     public function testGetSession()
     {
         $session = $this->manager->getSession();
-        $this->assertInstanceof('\Chiron\Http\Session\Session', $session);
+        $this->assertInstanceof(Session::class, $session);
     }
 
     public function testisResumable()
@@ -148,10 +148,21 @@ class SessionManagerTest extends TestCase
 
     public function testSetAndGetSavePath()
     {
-        $expect = '/new/save/path';
+        $expect = '/';
         $this->manager->setSavePath($expect);
         $actual = $this->manager->getSavePath();
         $this->assertSame($expect, $actual);
+    }
+
+    /**
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage  Session save path : '/new/save/path' is not writable.
+     */
+    public function testSetAndGetSavePathNotWritable()
+    {
+        $expect = '/new/save/path';
+        $this->manager->setSavePath($expect);
+        $this->manager->getSavePath();
     }
 
     public function testSetAndGetCookieParams()

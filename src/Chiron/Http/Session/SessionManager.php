@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 //https://solutionfactor.net/blog/2014/02/08/implementing-session-timeout-with-php/
 
+//https://github.com/zendframework/zend-session/blob/master/src/SessionManager.php#L205
+
 //https://github.com/akrabat/rka-slim-session-middleware/blob/master/RKA/Session.php
 
 //https://github.com/relayphp/Relay.Middleware/blob/1.x/src/SessionHeadersHandler.php
@@ -64,16 +66,11 @@ $app->add(function (Request $request, Response $response, $next) {
 
 // TODO : regarder ici : https://github.com/symfony/symfony/blob/3.4/src/Symfony/Component/HttpFoundation/Session/Storage/NativeSessionStorage.php#L130
 
-/**
- * This file is part of Aura for PHP.
- *
- * @license http://opensource.org/licenses/bsd-license.php BSD
- */
-
 namespace Chiron\Http\Session;
 
 use InvalidArgumentException;
 use LogicException;
+use RuntimeException;
 
 /**
  * A central control point for new session segments, PHP session management
@@ -273,8 +270,9 @@ class SessionManager
      *
      * @see session_cache_expire()
      */
-    public function setCacheExpire($expire): int
+    public function setCacheExpire(int $expire): int
     {
+        // TODO : lever une exception si on appael cette fonction alors que la session est déjà démarrée !!! http://php.net/manual/fr/function.session-cache-expire.php
         return session_cache_expire($expire);
     }
 
@@ -299,8 +297,10 @@ class SessionManager
      *
      * @see session_cache_limiter()
      */
-    public function setCacheLimiter($limiter)
+    public function setCacheLimiter(string $limiter): string
     {
+        // TODO : lever une exception si la valeur de cache_limiter n'est pas dans cette liste : nocache, private, private_no_expire, public
+        // TODO : lever une exception si on appael cette fonction alors que la session est déjà démarrée !!!
         return session_cache_limiter($limiter);
     }
 
@@ -341,6 +341,7 @@ class SessionManager
      */
     public function setCookieParams(array $params): ?bool
     {
+        // TODO : lever une exception si la session des déjà démarrée lorsqu'on appelle cette fonction !!!!!!!!!!
         $this->cookie_params = array_merge($this->cookie_params, $params);
 
         return session_set_cookie_params(
@@ -469,8 +470,11 @@ class SessionManager
      *
      * @see session_save_path()
      */
-    public function setSavePath($path): string
+    public function setSavePath(string $path): string
     {
+        if (!is_writable($path)) {
+            throw new RuntimeException("Session save path : '{$path}' is not writable.");
+        }
         return session_save_path($path);
     }
 
@@ -509,12 +513,12 @@ class SessionManager
             'serialize_handler', 'use_strict_mode', 'use_cookies',
             'use_only_cookies', 'use_trans_sid', 'upload_progress.enabled',
             'upload_progress.cleanup', 'upload_progress.prefix', 'upload_progress.name',
-            'upload_progress.freq', 'upload_progress.min_freq', 'url_rewriter.tags',
+            'upload_progress.freq', 'upload_progress.min_freq',
             'sid_length', 'sid_bits_per_character', 'trans_sid_hosts', 'trans_sid_tags',
         ]);
         foreach ($options as $key => $value) {
             if (isset($validOptions[$key])) {
-                ini_set('url_rewriter.tags' !== $key ? 'session.' . $key : $key, $value);
+                ini_set('session.' . $key, (string) $value);
             }
         }
     }
@@ -529,7 +533,7 @@ class SessionManager
         return $config;
     }
 
-    public function regenerate($destroy = false, $lifetime = null): bool
+    public function regenerateId2($destroy = false, $lifetime = null): bool
     {
         // Cannot regenerate the session ID for non-active sessions.
         if (\PHP_SESSION_ACTIVE !== session_status()) {
@@ -672,5 +676,18 @@ class SessionManager
         if (session_status() == PHP_SESSION_ACTIVE) {
             session_destroy();
         }
+    }
+
+    /**
+     * Register Save Handler with ext/session
+     *
+     * Register the save handler for session.
+     *
+     * @param \SaveHandlerInterface $saveHandler
+     * @return bool
+     */
+    protected function registerSaveHandler(\SaveHandlerInterface $saveHandler): bool
+    {
+        return session_set_save_handler($saveHandler);
     }
 }
