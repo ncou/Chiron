@@ -865,6 +865,7 @@ class EmitterMiddlewareTest extends TestCase
         ];
         self::assertSame($expectedStack, HeaderStack::stack());
     }
+
     public function testResponseDoesNotReplacePreviouslySetSetCookieHeaders()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
