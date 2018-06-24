@@ -37,6 +37,8 @@ class Session
         $_SESSION[$key] = $value;
     }
 
+
+    // TODO : renommer en remove() ou en unset() ?
     public function delete($key)
     {
         /*
@@ -100,5 +102,45 @@ class Session
         }
 
         return false;
+    }
+
+
+
+
+
+
+    /**
+     * Returns true if the attribute exists.
+     *
+     * @param string $name
+     * @return bool true if the attribute is defined, false otherwise
+     */
+    public function has(string $name): bool
+    {
+        if (empty($_SESSION)) {
+            return false;
+        }
+        return array_key_exists($name, $_SESSION);
+    }
+
+    /**
+     * Sets multiple attributes at once: takes a keyed array and sets each key => value pair.
+     *
+     * @param array $values
+     * @return void
+     */
+    public function replace(array $values): void
+    {
+        $_SESSION = array_replace_recursive($_SESSION, $values);
+    }
+
+    /**
+     * Returns the number of attributes.
+     *
+     * @return int
+     */
+    public function count(): int
+    {
+        return count($_SESSION);
     }
 }

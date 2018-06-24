@@ -138,14 +138,14 @@ class EmitterMiddleware implements MiddlewareInterface
 
         $statusCode = $response->getStatusCode();
 
-        $replaceSameHeaders = false;
-
         // TODO : regarder ici pour voir comment on emet les cookies !!!!! https://github.com/zendframework/zend-diactoros/blob/master/src/Response/SapiEmitterTrait.php#L78
         // TODO : regarder ici, car un header peut avoir un tableau de valeurs, dans le cas ou on a mergé 2 headers identiques !!!!   https://github.com/slimphp/Slim/blob/3.x/Slim/App.php#L393
         // headers
-        foreach ($response->getHeaders() as $header => $values) {
+        foreach ($response->getHeaders() as $name => $values) {
+            $first = stripos($name, 'Set-Cookie') === 0 ? false : true;
             foreach ($values as $value) {
-                header(sprintf('%s: %s', $header, $value), $replaceSameHeaders, $statusCode);
+                header(sprintf('%s: %s', $name, $value), $first, $statusCode);
+                $first = false;
             }
         }
 
@@ -167,9 +167,8 @@ class EmitterMiddleware implements MiddlewareInterface
             ));
         }*/
 
-        $replaceSameHeaders = true;
         // It is important to mention that this method should be called after the headers are sent, in order to prevent PHP from changing the status code of the emitted response.
-        header(sprintf('HTTP/%s %d %s', $response->getProtocolVersion(), $statusCode, $response->getReasonPhrase()), $replaceSameHeaders, $statusCode);
+        header(sprintf('HTTP/%s %d %s', $response->getProtocolVersion(), $statusCode, $response->getReasonPhrase()), true, $statusCode);
 
         // cookies
 //TODO : utiliser les cookies comme des "headers" classiques ('Set-Cookies:xxxxxxx')

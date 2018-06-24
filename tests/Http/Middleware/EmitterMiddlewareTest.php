@@ -150,8 +150,8 @@ class EmitterMiddlewareTest extends TestCase
         $this->middleware->process($request, new HandlerProxy2($handler));
 
         $expectedStack = [
-            ['header' => 'Location: http://api.my-service.com/12345678', 'replace' => false, 'status_code' => 202],
-            ['header' => 'Content-Type: text/plain', 'replace' => false, 'status_code' => 202],
+            ['header' => 'Location: http://api.my-service.com/12345678', 'replace' => true, 'status_code' => 202],
+            ['header' => 'Content-Type: text/plain', 'replace' => true, 'status_code' => 202],
             ['header' => 'HTTP/1.1 202 Accepted', 'replace' => true, 'status_code' => 202],
         ];
         self::assertSame($expectedStack, HeaderStack::stack());
@@ -175,7 +175,7 @@ class EmitterMiddlewareTest extends TestCase
         $this->middleware->process($request, new HandlerProxy2($handler));
 
         $expectedStack = [
-            ['header' => 'Location: http://api.my-service.com/12345678', 'replace' => false, 'status_code' => 200],
+            ['header' => 'Location: http://api.my-service.com/12345678', 'replace' => true, 'status_code' => 200],
             ['header' => 'HTTP/1.1 200 OK', 'replace' => true, 'status_code' => 200],
         ];
         self::assertSame($expectedStack, HeaderStack::stack());
@@ -208,7 +208,7 @@ class EmitterMiddlewareTest extends TestCase
         $this->assertEmpty($response->getHeaderLine('Content-Type'));
 
         $expectedStack = [
-            ['header' => 'X-testing: value', 'replace' => false, 'status_code' => 204],
+            ['header' => 'X-testing: value', 'replace' => true, 'status_code' => 204],
             ['header' => 'HTTP/1.1 204 No Content', 'replace' => true, 'status_code' => 204],
         ];
         self::assertSame($expectedStack, HeaderStack::stack());
@@ -242,8 +242,8 @@ class EmitterMiddlewareTest extends TestCase
         $this->middleware->process($request, new HandlerProxy2($handler));
 
         $expectedStack = [
-            ['header' => 'Content-Type: text/plain', 'replace' => false, 'status_code' => 200],
-            ['header' => 'Content-Range: bytes 1-4/9', 'replace' => false, 'status_code' => 200],
+            ['header' => 'Content-Type: text/plain', 'replace' => true, 'status_code' => 200],
+            ['header' => 'Content-Range: bytes 1-4/9', 'replace' => true, 'status_code' => 200],
             ['header' => 'HTTP/1.1 200 OK', 'replace' => true, 'status_code' => 200],
         ];
         self::assertSame($expectedStack, HeaderStack::stack());
@@ -839,5 +839,54 @@ class EmitterMiddlewareTest extends TestCase
         $localMemoryUsage = memory_get_usage();
         $this->assertLessThanOrEqual($maxBufferLength, $peakBufferLength);
         $this->assertLessThanOrEqual($maxAllowedMemoryUsage, $peakMemoryUsage - $localMemoryUsage);
+    }
+
+    public function testResponseReplacesPreviouslySetHeaders()
+    {
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+
+        $handler = function ($request) {
+            $response = (new Response())
+            ->withHeader('X-Foo', 'baz1')
+            ->withAddedHeader('X-Foo', 'baz2');
+
+            return $response;
+        };
+
+        $this->middleware->process($request, new HandlerProxy2($handler));
+
+        $expectedStack = [
+            ['header' => 'X-Foo: baz1', 'replace' => true, 'status_code' => 200],
+            ['header' => 'X-Foo: baz2', 'replace' => false, 'status_code' => 200],
+            ['header' => 'HTTP/1.1 200 OK', 'replace' => true, 'status_code' => 200],
+        ];
+        self::assertSame($expectedStack, HeaderStack::stack());
+    }
+    public function testResponseDoesNotReplacePreviouslySetSetCookieHeaders()
+    {
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/',
+            'REQUEST_METHOD'         => 'GET',
+        ]);
+
+        $handler = function ($request) {
+            $response = (new Response())
+            ->withHeader('Set-Cookie', 'foo=bar')
+            ->withAddedHeader('Set-Cookie', 'bar=baz');
+
+            return $response;
+        };
+
+        $this->middleware->process($request, new HandlerProxy2($handler));
+
+        $expectedStack = [
+            ['header' => 'Set-Cookie: foo=bar', 'replace' => false, 'status_code' => 200],
+            ['header' => 'Set-Cookie: bar=baz', 'replace' => false, 'status_code' => 200],
+            ['header' => 'HTTP/1.1 200 OK', 'replace' => true, 'status_code' => 200],
+        ];
+        self::assertSame($expectedStack, HeaderStack::stack());
     }
 }
