@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Chiron\Tests\Http\Middleware;
 
 use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Psr\Stream;
 use Chiron\Http\Middleware\ParsedBodyMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\Stream;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 

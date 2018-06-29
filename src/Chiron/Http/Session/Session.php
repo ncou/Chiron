@@ -51,14 +51,14 @@ class Session
         }
     }
 
-/*
-    public function clear()
-    {
-        if ($this->resumeSession()) {
-            $_SESSION = [];
+    /*
+        public function clear()
+        {
+            if ($this->resumeSession()) {
+                $_SESSION = [];
+            }
         }
-    }
-*/
+    */
     public function __set($key, $value)
     {
         $this->set($key, $value);
@@ -102,8 +102,9 @@ class Session
 
         return false;
     }
-//********************************** TODO : code ci dessous à nettoyer !!!!!!!!!!
-    /**
+
+    //********************************** TODO : code ci dessous à nettoyer !!!!!!!!!!
+    /*
      * Returns true if the attribute exists.
      *
      * @param string $name
@@ -120,7 +121,7 @@ class Session
         return array_key_exists($name, $_SESSION);
     }*/
 
-    /**
+    /*
      * Sets multiple attributes at once: takes a keyed array and sets each key => value pair.
      *
      * @param array $values
@@ -131,7 +132,7 @@ class Session
         $_SESSION = array_replace_recursive($_SESSION, $values);
     }*/
 
-    /**
+    /*
      * Returns the number of attributes.
      *
      * @return int

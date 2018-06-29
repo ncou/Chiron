@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Response;
 
-use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Middleware\BodyLimitMiddleware;
-use Chiron\Http\Psr\Response;
-use Chiron\Tests\Utils\HandlerProxy2;
-use PHPUnit\Framework\TestCase;
 use Chiron\Http\Response\HtmlResponse;
-use Psr\Http\Message\StreamInterface;
-
 use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\StreamInterface;
 
 class HtmlResponseTest extends TestCase
 {
@@ -23,6 +18,7 @@ class HtmlResponseTest extends TestCase
         $this->assertSame($body, (string) $response->getBody());
         $this->assertSame(200, $response->getStatusCode());
     }
+
     public function testConstructorAllowsPassingStatus()
     {
         $body = '<html>Uh oh not found</html>';
@@ -31,12 +27,13 @@ class HtmlResponseTest extends TestCase
         $this->assertSame(404, $response->getStatusCode());
         $this->assertSame($body, (string) $response->getBody());
     }
+
     public function testConstructorAllowsPassingHeaders()
     {
         $body = '<html>Uh oh not found</html>';
         $status = 404;
         $headers = [
-            'x-custom' => [ 'foo-bar' ],
+            'x-custom' => ['foo-bar'],
         ];
         $response = new HtmlResponse($body, $status, $headers);
         $this->assertSame(['foo-bar'], $response->getHeader('x-custom'));
@@ -44,13 +41,15 @@ class HtmlResponseTest extends TestCase
         $this->assertSame(404, $response->getStatusCode());
         $this->assertSame($body, (string) $response->getBody());
     }
+
     public function testAllowsStreamsForResponseBody()
     {
         $stream = $this->prophesize(StreamInterface::class);
-        $body   = $stream->reveal();
+        $body = $stream->reveal();
         $response = new HtmlResponse($body);
         $this->assertSame($body, $response->getBody());
     }
+
     public function invalidHtmlContent()
     {
         return [
@@ -65,6 +64,7 @@ class HtmlResponseTest extends TestCase
             'object'     => [(object) ['php://temp']],
         ];
     }
+
     /**
      * @dataProvider invalidHtmlContent
      */
@@ -73,6 +73,7 @@ class HtmlResponseTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         new HtmlResponse($body);
     }
+
     public function testConstructorRewindsBodyStream()
     {
         $html = '<p>test data</p>';

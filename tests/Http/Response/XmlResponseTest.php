@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Response;
 
-use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Middleware\BodyLimitMiddleware;
-use Chiron\Http\Psr\Response;
-use Chiron\Tests\Utils\HandlerProxy2;
-use PHPUnit\Framework\TestCase;
 use Chiron\Http\Response\XmlResponse;
-use Psr\Http\Message\StreamInterface;
 use InvalidArgumentException;
-
+use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\StreamInterface;
 use const PHP_EOL;
 
 class XmlResponseTest extends TestCase
@@ -24,6 +19,7 @@ class XmlResponseTest extends TestCase
         $this->assertSame($body, (string) $response->getBody());
         $this->assertSame(200, $response->getStatusCode());
     }
+
     public function testConstructorAllowsPassingStatus()
     {
         $body = 'More valid XML';
@@ -32,12 +28,13 @@ class XmlResponseTest extends TestCase
         $this->assertSame(404, $response->getStatusCode());
         $this->assertSame($body, (string) $response->getBody());
     }
+
     public function testConstructorAllowsPassingHeaders()
     {
         $body = '<nearly>Valid XML</nearly>';
         $status = 404;
         $headers = [
-            'x-custom' => [ 'foo-bar' ],
+            'x-custom' => ['foo-bar'],
         ];
         $response = new XmlResponse($body, $status, $headers);
         $this->assertSame(['foo-bar'], $response->getHeader('x-custom'));
@@ -45,13 +42,15 @@ class XmlResponseTest extends TestCase
         $this->assertSame(404, $response->getStatusCode());
         $this->assertSame($body, (string) $response->getBody());
     }
+
     public function testAllowsStreamsForResponseBody()
     {
         $stream = $this->prophesize(StreamInterface::class);
-        $body   = $stream->reveal();
+        $body = $stream->reveal();
         $response = new XmlResponse($body);
         $this->assertSame($body, $response->getBody());
     }
+
     public function invalidContent()
     {
         return [
@@ -66,6 +65,7 @@ class XmlResponseTest extends TestCase
             'object'     => [(object) ['php://temp']],
         ];
     }
+
     /**
      * @dataProvider invalidContent
      */
