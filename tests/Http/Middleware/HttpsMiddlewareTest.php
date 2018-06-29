@@ -34,11 +34,11 @@ class HttpsMiddlewareTest extends TestCase
             new Uri('https://domain.com')
         );
         $handler = function ($request) {
-            return (new Response())->withJson('SUCCESS');
+            return (new Response())->write('SUCCESS');
         };
         $middleware = $this->middleware;
         $result = $middleware->process($request, new HandlerProxy2($handler));
-        $this->assertEquals(json_encode('SUCCESS'), (string) $result->getBody());
+        $this->assertEquals('SUCCESS', (string) $result->getBody());
     }
 
     public function testIsHttpsCaseSensitive()
@@ -47,11 +47,11 @@ class HttpsMiddlewareTest extends TestCase
             new Uri('hTTpS://domain.com')
         );
         $handler = function ($request) {
-            return (new Response())->withJson('SUCCESS');
+            return (new Response())->write('SUCCESS');
         };
         $middleware = $this->middleware;
         $result = $middleware->process($request, new HandlerProxy2($handler));
-        $this->assertEquals(json_encode('SUCCESS'), (string) $result->getBody());
+        $this->assertEquals('SUCCESS', (string) $result->getBody());
     }
 
     public function testNotHttps()
@@ -88,11 +88,11 @@ class HttpsMiddlewareTest extends TestCase
             new Uri('http://domain.com')
         );
         $handler = function ($request) {
-            return (new Response())->withJson('SUCCESS');
+            return (new Response())->write('SUCCESS');
         };
         $middleware = new HttpsMiddleware(301, ['http://domain.com']);
         $result = $middleware->process($request, new HandlerProxy2($handler));
-        $this->assertEquals(json_encode('SUCCESS'), (string) $result->getBody());
+        $this->assertEquals('SUCCESS', (string) $result->getBody());
     }
 
     public function testNotHttpsAndExceptURIForPattern()
@@ -101,10 +101,10 @@ class HttpsMiddlewareTest extends TestCase
             new Uri('http://domain.com/foo/bar')
         );
         $handler = function ($request) {
-            return (new Response())->withJson('SUCCESS');
+            return (new Response())->write('SUCCESS');
         };
         $middleware = new HttpsMiddleware(301, ['http://domain.com/*']);
         $result = $middleware->process($request, new HandlerProxy2($handler));
-        $this->assertEquals(json_encode('SUCCESS'), (string) $result->getBody());
+        $this->assertEquals('SUCCESS', (string) $result->getBody());
     }
 }

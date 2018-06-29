@@ -37,8 +37,8 @@ class Session
         $_SESSION[$key] = $value;
     }
 
-    // TODO : renommer en remove() ou en unset() ?
-    public function delete($key)
+    // TODO : renommer cette méthode delete() en remove() ou en unset() ?
+    public function remove($key)
     {
         /*
         if (array_key_exists($key, $_SESSION)) {
@@ -51,13 +51,14 @@ class Session
         }
     }
 
+/*
     public function clear()
     {
         if ($this->resumeSession()) {
             $_SESSION = [];
         }
     }
-
+*/
     public function __set($key, $value)
     {
         $this->set($key, $value);
@@ -75,11 +76,11 @@ class Session
 
     public function __unset($key)
     {
-        $this->delete($key);
+        $this->remove($key);
     }
 
     /**
-     * Resumes a previous session, or starts a new one, and loads the segment.
+     * Resumes a previous session, or starts a new one.
      */
     protected function resumeOrStartSession(): void
     {
@@ -89,8 +90,7 @@ class Session
     }
 
     /**
-     * Loads the segment only if the session has already been started, or if
-     * a session is available (in which case it resumes the session first).
+     * If the session has already been started, or if a session is available, we try to resumes it.
      *
      * @return bool
      */
@@ -102,7 +102,7 @@ class Session
 
         return false;
     }
-
+//********************************** TODO : code ci dessous à nettoyer !!!!!!!!!!
     /**
      * Returns true if the attribute exists.
      *
@@ -110,6 +110,7 @@ class Session
      *
      * @return bool true if the attribute is defined, false otherwise
      */
+    /*
     public function has(string $name): bool
     {
         if (empty($_SESSION)) {
@@ -117,25 +118,27 @@ class Session
         }
 
         return array_key_exists($name, $_SESSION);
-    }
+    }*/
 
     /**
      * Sets multiple attributes at once: takes a keyed array and sets each key => value pair.
      *
      * @param array $values
      */
+    /*
     public function replace(array $values): void
     {
         $_SESSION = array_replace_recursive($_SESSION, $values);
-    }
+    }*/
 
     /**
      * Returns the number of attributes.
      *
      * @return int
      */
+    /*
     public function count(): int
     {
         return count($_SESSION);
-    }
+    }*/
 }

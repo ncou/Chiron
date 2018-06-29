@@ -80,16 +80,16 @@ class SessionManagerTest extends TestCase
         $this->assertFalse($this->manager->isStarted());
     }
 
-    public function testSave()
+    public function testCommit()
     {
-        $this->manager->save();
+        $this->manager->commit();
         $this->assertFalse($this->manager->isStarted());
     }
 
     /**
      * @runInSeparateProcess
      */
-    public function testSaveAndDestroy()
+    public function testCommitAndDestroy()
     {
         // get a test session and set some data
         $session = $this->manager->getSession();
@@ -101,7 +101,7 @@ class SessionManagerTest extends TestCase
             'baz' => 'dib',
         ];
         $this->assertSame($expect, $_SESSION);
-        $this->manager->save();
+        $this->manager->commit();
         $this->manager->destroy();
         $session = $this->manager->getSession();
         $this->assertSame([], $_SESSION);

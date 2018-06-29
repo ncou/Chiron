@@ -9,6 +9,7 @@ use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Stream;
 use Chiron\Http\Serializer;
 use PHPUnit\Framework\TestCase;
+use Chiron\Http\Psr\Uri;
 
 class SerializerTest extends TestCase
 {
@@ -71,7 +72,7 @@ class SerializerTest extends TestCase
     // ********** REQUEST *********
     public function testSerializesBasicRequest()
     {
-        $request = (new ServerRequest('GET', 'http://example.com/foo/bar?baz=bat'))
+        $request = (new ServerRequest('GET', new Uri('http://example.com/foo/bar?baz=bat')))
             ->withAddedHeader('Accept', 'text/html');
         $message = Serializer::requestToString($request);
         $this->assertSame(
@@ -83,9 +84,9 @@ class SerializerTest extends TestCase
     public function testSerializesRequestWithBody()
     {
         $body = json_encode(['test' => 'value']);
-        $stream = Stream::createFromResource(fopen('php://memory', 'wb+'));
+        $stream = new Stream(fopen('php://memory', 'wb+'));
         $stream->write($body);
-        $request = (new ServerRequest('POST', 'http://example.com/foo/bar'))
+        $request = (new ServerRequest('POST', new Uri('http://example.com/foo/bar')))
             ->withAddedHeader('Accept', 'application/json')
             ->withAddedHeader('Content-Type', 'application/json')
             ->withBody($stream);
@@ -96,7 +97,7 @@ class SerializerTest extends TestCase
 
     public function testSerializesRequestWithMultipleHeadersCorrectly()
     {
-        $request = (new ServerRequest('GET', 'http://example.com/foo/bar?baz=bat'))
+        $request = (new ServerRequest('GET', new Uri('http://example.com/foo/bar?baz=bat')))
             ->withAddedHeader('X-Foo-Bar', 'Baz')
             ->withAddedHeader('X-Foo-Bar', 'Bat');
         $message = Serializer::requestToString($request);

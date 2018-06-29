@@ -218,8 +218,10 @@ class SessionManager
      *
      * @return null|bool
      */
+    // TODO : passer à PHP 7.2 pour être sur que la valeur de retour est un booléen !!!
     public function clear(): ?bool
     {
+        // TODO : lever une exception si on essaye de faire un clear et que la session n'est pas démarrée !!!!
         return session_unset();
     }
 
@@ -228,7 +230,8 @@ class SessionManager
      *
      * @return null|bool
      */
-    public function save(): ?bool
+    // TODO : passer à PHP 7.2 pour être sur que la valeur de retour est un booléen !!!
+    public function commit(): ?bool
     {
         return session_write_close();
     }
@@ -425,15 +428,10 @@ class SessionManager
      */
     public function regenerateId(bool $deleteOldSession = true): bool
     {
-        /*
-        if ($this->sessionExists()) {
-            session_regenerate_id((bool) $deleteOldSession);
-        }
-        return $this;
-        */
         if ($this->isStarted()) {
             return session_regenerate_id($deleteOldSession);
         }
+        // TODO : ajouter un else et lever une exception si on essaye de faire un regenerate ID alors que la session n'est pas démarrée !!!!
 
         return false;
     }
@@ -485,6 +483,7 @@ class SessionManager
      */
     public function setSavePath(string $path): string
     {
+        // TODO : lever une exception si on utilise cette fonction alors que la session est déjà démarrée !!!!!
         if (! is_writable($path)) {
             throw new RuntimeException("Session save path : '{$path}' is not writable.");
         }

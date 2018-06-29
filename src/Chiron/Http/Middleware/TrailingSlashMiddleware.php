@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-//https://github.com/middlewares/trailing-slash/blob/master/src/TrailingSlash.php
-
 use Chiron\Http\Psr\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+/**
+ * This middleware is the work of oscarotero
+ * @see https://github.com/middlewares/trailing-slash/blob/master/src/TrailingSlash.php
+ */
 class TrailingSlashMiddleware implements MiddlewareInterface
 {
     /**
