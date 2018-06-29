@@ -18,7 +18,6 @@ use function json_decode;
 use function json_encode;
 use function sprintf;
 
-
 class JsonResponseTest extends TestCase
 {
     public function testConstructorAcceptsDataAndCreatesJsonEncodedMessageBody()

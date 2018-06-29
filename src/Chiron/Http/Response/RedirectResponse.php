@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Response;
 
-use InvalidArgumentException;
-use Psr\Http\Message\UriInterface;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Stream;
+use InvalidArgumentException;
+use Psr\Http\Message\UriInterface;
 use function get_class;
 use function gettype;
 use function is_object;
 use function is_string;
 use function sprintf;
+
 /**
  * Produce a redirect response.
  */
@@ -26,9 +27,9 @@ class RedirectResponse extends Response
      *
      * Note: this method overwrites the `location` $headers value.
      *
-     * @param string|UriInterface $uri URI for the Location header.
-     * @param int $status Integer status code for the redirect; 302 by default.
-     * @param array $headers Array of headers to use at initialization.
+     * @param string|UriInterface $uri     URI for the Location header.
+     * @param int                 $status  Integer status code for the redirect; 302 by default.
+     * @param array               $headers Array of headers to use at initialization.
      */
     public function __construct($uri, int $status = 302, array $headers = [])
     {
@@ -49,6 +50,7 @@ class RedirectResponse extends Response
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     protected $targetUrl;
+
     /**
      * Creates a redirect response so that it conforms to the rules defined for a redirect status code.
      *
@@ -73,6 +75,7 @@ class RedirectResponse extends Response
             $this->headers->remove('cache-control');
         }
     }*/
+
     /**
      * Factory method for chainability.
      *
@@ -82,10 +85,11 @@ class RedirectResponse extends Response
      *
      * @return static
      */
-    public static function create($url = '', $status = 302, $headers = array())
+    public static function create($url = '', $status = 302, $headers = [])
     {
         return new static($url, $status, $headers);
     }
+
     /**
      * Returns the target URL.
      *
@@ -95,14 +99,15 @@ class RedirectResponse extends Response
     {
         return $this->targetUrl;
     }
+
     /**
      * Sets the redirect target of this response.
      *
      * @param string $url The URL to redirect to
      *
-     * @return $this
-     *
      * @throws \InvalidArgumentException
+     *
+     * @return $this
      */
     public function setTargetUrl($url)
     {
@@ -123,12 +128,11 @@ class RedirectResponse extends Response
     </body>
 </html>', htmlspecialchars($url, ENT_QUOTES, 'UTF-8')));
         $this->headers->set('Location', $url);
+
         return $this;
     }
 
-
-
-    /**
+    /*
      * Redirect.
      *
      * Note: This method is not part of the PSR-7 standard.
@@ -161,5 +165,4 @@ class RedirectResponse extends Response
 
         return $responseWithRedirect;
     }*/
-
 }

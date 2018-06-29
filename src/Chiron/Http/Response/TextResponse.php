@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Response;
 
-use InvalidArgumentException;
-use Psr\Http\Message\StreamInterface;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Stream;
+use InvalidArgumentException;
+use Psr\Http\Message\StreamInterface;
 use function get_class;
 use function gettype;
 use function is_object;
 use function is_string;
 use function sprintf;
+
 /**
  * Plain text response.
  *
@@ -28,9 +29,10 @@ class TextResponse extends Response
      * Produces a text response with a Content-Type of text/plain and a default
      * status of 200.
      *
-     * @param string|StreamInterface $text String or stream for the message body.
-     * @param int $status Integer status code for the response; 200 by default.
-     * @param array $headers Array of headers to use at initialization.
+     * @param string|StreamInterface $text    String or stream for the message body.
+     * @param int                    $status  Integer status code for the response; 200 by default.
+     * @param array                  $headers Array of headers to use at initialization.
+     *
      * @throws InvalidArgumentException if $text is neither a string or stream.
      */
     public function __construct($text, int $status = 200, array $headers = [])
@@ -41,12 +43,15 @@ class TextResponse extends Response
             $this->createBody($text)
         );
     }
+
     /**
      * Create the message body.
      *
      * @param string|StreamInterface $text
-     * @return StreamInterface
+     *
      * @throws InvalidArgumentException if $html is neither a string or stream.
+     *
+     * @return StreamInterface
      */
     private function createBody($text)
     {
@@ -63,6 +68,7 @@ class TextResponse extends Response
         $body = new Stream(fopen('php://temp', 'wb+'));
         $body->write($text);
         $body->rewind();
+
         return $body;
     }
 
@@ -70,7 +76,8 @@ class TextResponse extends Response
      * Inject the provided Content-Type, if none is already present.
      *
      * @param string $contentType
-     * @param array $headers
+     * @param array  $headers
+     *
      * @return array Headers with injected Content-Type
      */
     // TODO : à virer !!!!
@@ -82,6 +89,7 @@ class TextResponse extends Response
         if (! $hasContentType) {
             $headers['content-type'] = [$contentType];
         }
+
         return $headers;
     }
 }
