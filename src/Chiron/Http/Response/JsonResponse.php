@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Response;
 
-use InvalidArgumentException;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Stream;
+use InvalidArgumentException;
+use const JSON_ERROR_NONE;
 use function is_object;
 use function is_resource;
 use function json_encode;
 use function json_last_error;
 use function json_last_error_msg;
 use function sprintf;
-use const JSON_ERROR_NONE;
+
 /**
  * JSON response.
  *
@@ -24,7 +25,7 @@ use const JSON_ERROR_NONE;
 class JsonResponse extends Response
 {
     /**
-     * Default flags for json_encode; value of:
+     * Default flags for json_encode; value of:.
      *
      * <code>
      * JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES
@@ -32,15 +33,18 @@ class JsonResponse extends Response
      *
      * @const int
      */
-    const DEFAULT_JSON_FLAGS = 79;
+    public const DEFAULT_JSON_FLAGS = 79;
+
     /**
      * @var mixed
      */
     private $payload;
+
     /**
      * @var int
      */
     private $encodingOptions;
+
     /**
      * Create a JSON response with the given data.
      *
@@ -53,10 +57,11 @@ class JsonResponse extends Response
      * - JSON_HEX_QUOT
      * - JSON_UNESCAPED_SLASHES
      *
-     * @param mixed $data Data to convert to JSON.
-     * @param int $status Integer status code for the response; 200 by default.
-     * @param array $headers Array of headers to use at initialization.
-     * @param int $encodingOptions JSON encoding options to use.
+     * @param mixed $data            Data to convert to JSON.
+     * @param int   $status          Integer status code for the response; 200 by default.
+     * @param array $headers         Array of headers to use at initialization.
+     * @param int   $encodingOptions JSON encoding options to use.
+     *
      * @throws InvalidArgumentException if unable to encode the $data to JSON.
      */
     public function __construct(
@@ -72,6 +77,7 @@ class JsonResponse extends Response
         $headers = $this->injectContentType('application/json', $headers);
         parent::__construct($status, $headers, $body);
     }
+
     /**
      * @return mixed
      */
@@ -79,6 +85,7 @@ class JsonResponse extends Response
     {
         return $this->payload;
     }
+
     /**
      * @param $data
      *
@@ -88,8 +95,10 @@ class JsonResponse extends Response
     {
         $new = clone $this;
         $new->setPayload($data);
+
         return $this->updateBodyFor($new);
     }
+
     /**
      * @return int
      */
@@ -97,6 +106,7 @@ class JsonResponse extends Response
     {
         return $this->encodingOptions;
     }
+
     /**
      * @param int $encodingOptions
      *
@@ -106,8 +116,10 @@ class JsonResponse extends Response
     {
         $new = clone $this;
         $new->encodingOptions = $encodingOptions;
+
         return $this->updateBodyFor($new);
     }
+
     /**
      * @param string $json
      *
@@ -118,15 +130,19 @@ class JsonResponse extends Response
         $body = new Stream(fopen('php://temp', 'wb+'));
         $body->write($json);
         $body->rewind();
+
         return $body;
     }
+
     /**
      * Encode the provided data to JSON.
      *
      * @param mixed $data
-     * @param int $encodingOptions
-     * @return string
+     * @param int   $encodingOptions
+     *
      * @throws InvalidArgumentException if unable to encode the $data to JSON.
+     *
+     * @return string
      */
     private function jsonEncode($data, $encodingOptions)
     {
@@ -143,8 +159,10 @@ class JsonResponse extends Response
                 json_last_error_msg()
             ));
         }
+
         return $json;
     }
+
     /**
      * @param $data
      */
@@ -155,16 +173,19 @@ class JsonResponse extends Response
         }
         $this->payload = $data;
     }
+
     /**
      * Update the response body for the given instance.
      *
      * @param self $toUpdate Instance to update.
+     *
      * @return JsonResponse Returns a new instance with an updated body.
      */
     private function updateBodyFor(self $toUpdate)
     {
         $json = $this->jsonEncode($toUpdate->payload, $toUpdate->encodingOptions);
         $body = $this->createBodyFromJson($json);
+
         return $toUpdate->withBody($body);
     }
 
@@ -172,7 +193,8 @@ class JsonResponse extends Response
      * Inject the provided Content-Type, if none is already present.
      *
      * @param string $contentType
-     * @param array $headers
+     * @param array  $headers
+     *
      * @return array Headers with injected Content-Type
      */
     // TODO : à virer !!!!
@@ -184,20 +206,22 @@ class JsonResponse extends Response
         if (! $hasContentType) {
             $headers['content-type'] = [$contentType];
         }
+
         return $headers;
     }
-
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // SYMFONY RESPONSE :
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
     protected $data;
+
     protected $callback;
+
     // Encode <, >, ', &, and " characters in the JSON, making it also safe to be embedded into HTML.
     // 15 === JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
-    const DEFAULT_ENCODING_OPTIONS = 15;
+    public const DEFAULT_ENCODING_OPTIONS = 15;
+
 //    protected $encodingOptions = self::DEFAULT_ENCODING_OPTIONS;
     /**
      * @param mixed $data    The response data
@@ -214,6 +238,7 @@ class JsonResponse extends Response
         }
         $json ? $this->setJson($data) : $this->setData($data);
     }*/
+
     /**
      * Factory method for chainability.
      *
@@ -228,25 +253,27 @@ class JsonResponse extends Response
      *
      * @return static
      */
-    public static function create($data = null, $status = 200, $headers = array())
+    public static function create($data = null, $status = 200, $headers = [])
     {
         return new static($data, $status, $headers);
     }
+
     /**
      * Make easier the creation of JsonResponse from raw json.
      */
-    public static function fromJsonString($data = null, $status = 200, $headers = array())
+    public static function fromJsonString($data = null, $status = 200, $headers = [])
     {
         return new static($data, $status, $headers, true);
     }
+
     /**
      * Sets the JSONP callback.
      *
      * @param string|null $callback The JSONP callback or null to use none
      *
-     * @return $this
-     *
      * @throws \InvalidArgumentException When the callback name is not valid
+     *
+     * @return $this
      */
     public function setCallback($callback = null)
     {
@@ -256,49 +283,51 @@ class JsonResponse extends Response
             //      JsonpCallbackValidator is released under the MIT License. See https://github.com/willdurand/JsonpCallbackValidator/blob/v1.1.0/LICENSE for details.
             //      (c) William Durand <william.durand1@gmail.com>
 
-
 //            $pattern = '/^[$_\p{L}][$_\p{L}\p{Mn}\p{Mc}\p{Nd}\p{Pc}\x{200C}\x{200D}]*(?:\[(?:"(?:\\\.|[^"\\\])*"|\'(?:\\\.|[^\'\\\])*\'|\d+)\])*?$/u';
 
-
-            $reserved = array(
+            $reserved = [
                 'break', 'do', 'instanceof', 'typeof', 'case', 'else', 'new', 'var', 'catch', 'finally', 'return', 'void', 'continue', 'for', 'switch', 'while',
                 'debugger', 'function', 'this', 'with', 'default', 'if', 'throw', 'delete', 'in', 'try', 'class', 'enum', 'extends', 'super',  'const', 'export',
                 'import', 'implements', 'let', 'private', 'public', 'yield', 'interface', 'package', 'protected', 'static', 'null', 'true', 'false',
-            );
+            ];
             $parts = explode('.', $callback);
             foreach ($parts as $part) {
-                if (!preg_match($pattern, $part) || in_array($part, $reserved, true)) {
+                if (! preg_match($pattern, $part) || in_array($part, $reserved, true)) {
                     throw new \InvalidArgumentException('The callback name is not valid.');
                 }
             }
         }
         $this->callback = $callback;
+
         return $this->update();
     }
+
     /**
      * Sets a raw string containing a JSON document to be sent.
      *
      * @param string $json
      *
-     * @return $this
-     *
      * @throws \InvalidArgumentException
+     *
+     * @return $this
      */
     public function setJson($json)
     {
         $this->data = $json;
+
         return $this->update();
     }
+
     /**
      * Sets the data to be sent as JSON.
      *
      * @param mixed $data
      *
-     * @return $this
-     *
      * @throws \InvalidArgumentException
+     *
+     * @return $this
      */
-    public function setData($data = array())
+    public function setData($data = [])
     {
         try {
             $data = json_encode($data, $this->encodingOptions);
@@ -306,13 +335,16 @@ class JsonResponse extends Response
             if ('Exception' === get_class($e) && 0 === strpos($e->getMessage(), 'Failed calling ')) {
                 throw $e->getPrevious() ?: $e;
             }
+
             throw $e;
         }
         if (JSON_ERROR_NONE !== json_last_error()) {
             throw new \InvalidArgumentException(json_last_error_msg());
         }
+
         return $this->setJson($data);
     }
+
     /**
      * Returns options used while encoding data to JSON.
      *
@@ -322,6 +354,7 @@ class JsonResponse extends Response
     {
         return $this->encodingOptions;
     }
+
     /**
      * Sets options used while encoding data to JSON.
      *
@@ -332,8 +365,10 @@ class JsonResponse extends Response
     public function setEncodingOptions2($encodingOptions)
     {
         $this->encodingOptions = (int) $encodingOptions;
+
         return $this->setData(json_decode($this->data));
     }
+
     /**
      * Updates the content and headers according to the JSON data and callback.
      *
@@ -344,20 +379,19 @@ class JsonResponse extends Response
         if (null !== $this->callback) {
             // Not using application/javascript for compatibility reasons with older browsers.
             $this->headers->set('Content-Type', 'text/javascript');
+
             return $this->setContent(sprintf('/**/%s(%s);', $this->callback, $this->data));
         }
         // Only set the header when there is none or when it equals 'text/javascript' (from a previous update with callback)
         // in order to not overwrite a custom definition.
-        if (!$this->headers->has('Content-Type') || 'text/javascript' === $this->headers->get('Content-Type')) {
+        if (! $this->headers->has('Content-Type') || 'text/javascript' === $this->headers->get('Content-Type')) {
             $this->headers->set('Content-Type', 'application/json');
         }
+
         return $this->setContent($this->data);
     }
 
-
-
-
-    /**
+    /*
      * Json.
      *
      * Note: This method is not part of the PSR-7 standard.
