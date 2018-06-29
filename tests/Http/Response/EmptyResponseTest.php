@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Response;
 
-use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Middleware\BodyLimitMiddleware;
 use Chiron\Http\Psr\Response;
-use Chiron\Tests\Utils\HandlerProxy2;
-use PHPUnit\Framework\TestCase;
 use Chiron\Http\Response\EmptyResponse;
+use PHPUnit\Framework\TestCase;
 
 class EmptyResponseTest extends TestCase
 {
@@ -30,5 +27,4 @@ class EmptyResponseTest extends TestCase
         $this->assertSame(204, $response->getStatusCode());
         $this->assertSame('true', $response->getHeaderLine('x-empty'));
     }
-
 }

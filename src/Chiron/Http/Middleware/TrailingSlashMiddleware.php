@@ -11,7 +11,8 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 /**
- * This middleware is the work of oscarotero
+ * This middleware is the work of oscarotero.
+ *
  * @see https://github.com/middlewares/trailing-slash/blob/master/src/TrailingSlash.php
  */
 class TrailingSlashMiddleware implements MiddlewareInterface

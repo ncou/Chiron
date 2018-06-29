@@ -131,14 +131,14 @@ class SessionTest extends TestCase
         $this->assertSame($foo, $_SESSION['foo']);
     }
 
-/*
-    public function testClearDoesNotStartSession()
-    {
-        $this->assertFalse($this->manager->isStarted());
-        $this->session->clear();
-        $this->assertFalse($this->manager->isStarted());
-    }
-*/
+    /*
+        public function testClearDoesNotStartSession()
+        {
+            $this->assertFalse($this->manager->isStarted());
+            $this->session->clear();
+            $this->assertFalse($this->manager->isStarted());
+        }
+    */
 
     /**
      * @runInSeparateProcess

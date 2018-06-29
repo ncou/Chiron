@@ -7,9 +7,9 @@ namespace Tests\Http;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Stream;
+use Chiron\Http\Psr\Uri;
 use Chiron\Http\Serializer;
 use PHPUnit\Framework\TestCase;
-use Chiron\Http\Psr\Uri;
 
 class SerializerTest extends TestCase
 {
