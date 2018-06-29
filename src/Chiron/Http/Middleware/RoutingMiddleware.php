@@ -12,7 +12,7 @@ namespace Chiron\Http\Middleware;
 use Chiron\Http\Exception\MethodNotAllowedHttpException;
 use Chiron\Http\Exception\NotFoundHttpException;
 use Chiron\Http\Psr\Response;
-use Chiron\Http\Psr\Stream\NullStream;
+use Chiron\Http\Psr\Stream;
 use Chiron\Routing\Router;
 use Chiron\Routing\RouteResult;
 use Psr\Http\Message\ResponseInterface;
@@ -70,7 +70,7 @@ class RoutingMiddleware implements MiddlewareInterface
         // As per RFC, HEAD request can't have a body.
         // TODO : déplacer ce bout de code dans le EmitterMiddleware ???? ATTENTION : bien vérifier ou se trouve le contentLengthMiddleware car il va devoir recalculer le header "Content-Length" à 0, suite au Body qui vient d'être supprimé !!!!
         if ($request->getMethod() === 'HEAD') {
-            $response = $response->withBody(new NullStream());
+            $response = $response->withBody(new Stream(fopen('php://temp', 'wb+')));
         }
 
         return $response;
