@@ -15,7 +15,7 @@
         "psr/http-server-middleware": "^1.0",
         "psr/log": "^1.0",
         "chiron/chiron-router": "^0.5",
-        "chiron/http": "^0.1",
+        "chiron/http": "^0.2",
          "chiron/crypt-engine": "^0.1"
     },
     "require-dev": {
