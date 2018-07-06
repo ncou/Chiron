@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
+//https://github.com/phapi/middleware-postbox
+
 // TODO : regarder ici : https://github.com/juliangut/body-parser/blob/master/src/Parser.php   +  https://github.com/juliangut/body-parser/tree/master/src/Decoder
 
 //https://github.com/cakephp/cakephp/blob/master/src/Http/Middleware/BodyParserMiddleware.php
@@ -32,7 +34,7 @@ class ParsedBodyMiddleware implements MiddlewareInterface
     {
         // TODO : ajouter un test quand la méthode n'est pas la bonne
         // TODO : vérifier quelles méthodes ont un body !!!!!
-        if (empty($request->getParsedBody()) && ! in_array($request->getMethod(), ['GET', 'HEAD', 'OPTIONS'])) {
+        if (empty($request->getParsedBody()) && ! in_array($request->getMethod(), ['GET', 'HEAD', 'OPTIONS']) && $request->hasHeader('Content-Type')) {
             $body = (string) $request->getBody();
             $parsedBody = null;
 
@@ -102,12 +104,19 @@ class ParsedBodyMiddleware implements MiddlewareInterface
      *
      * @return string|null The request media type, minus content-type params
      */
-    // TODO : déplacer cettte méthode dans la classe ServerRequest ????
+    // TODO : déplacer cettte méthode dans la classe MessageTrait car cela servira pour le serverrequest et pour la response ????
     private function getMediaType(ServerRequestInterface $request)
     {
-        $parts = explode(';', $request->getHeaderLine('Content-Type'));
+        $contentType = $request->hasHeader('Content-Type') ? $request->getHeaderLine('Content-Type') : null;
 
-        return strtolower(trim(array_shift($parts)));
+        if ($contentType)
+        {
+            $parts = explode(';', $request->getHeaderLine('Content-Type'));
+
+            return strtolower(trim(array_shift($parts)));
+        }
+
+        return null;
     }
 
     //************************************************

@@ -79,8 +79,7 @@ use RuntimeException;
 class SessionManager
 {
     /**
-     * Incoming cookies from the client, typically a copy of the $_COOKIE
-     * superglobal.
+     * Incoming cookies from the client, typically a copy of the $_COOKIE superglobal.
      *
      * @var array
      */
@@ -94,8 +93,7 @@ class SessionManager
     protected $cookie_params = [];
 
     /**
-     * A callable to invoke when deleting the session cookie. The callable
-     * should have the signature ...
+     * A callable to invoke when deleting the session cookie. The callable should have the signature ...
      *
      *      function ($cookie_name, $cookie_params)
      *
@@ -144,6 +142,7 @@ class SessionManager
      *                                     session cookie.
      */
     // TODO : https://github.com/zendframework/zend-session/blob/master/src/SessionManager.php#L437
+    // TODO : à virer !!!!!
     public function setDeleteCookie($delete_cookie)
     {
         $this->delete_cookie = $delete_cookie;

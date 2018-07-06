@@ -40,10 +40,6 @@ class Session
     // TODO : renommer cette méthode delete() en remove() ou en unset() ?
     public function remove($key)
     {
-        /*
-        if (array_key_exists($key, $_SESSION)) {
-            unset($_SESSION[$key]);
-        }*/
         if ($this->resumeSession()) {
             if (isset($_SESSION) && array_key_exists($key, $_SESSION)) {
                 unset($_SESSION[$key]);
@@ -82,7 +78,7 @@ class Session
     /**
      * Resumes a previous session, or starts a new one.
      */
-    protected function resumeOrStartSession(): void
+    private function resumeOrStartSession(): void
     {
         if (! $this->resumeSession()) {
             $this->manager->start();
@@ -94,7 +90,7 @@ class Session
      *
      * @return bool
      */
-    protected function resumeSession(): bool
+    private function resumeSession(): bool
     {
         if ($this->manager->isStarted() || $this->manager->resume()) {
             return true;

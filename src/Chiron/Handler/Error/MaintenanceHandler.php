@@ -16,7 +16,7 @@ class MaintenanceHandler extends AbstractHandler
 
         if ($request->isAjax()) {
             $response = $response->write(json_encode([
-                'status_code'   => 404,
+                'status_code'   => 503,
                 'reason_phrase' => 'Maintenance!',
             ]));
         } else {

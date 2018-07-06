@@ -40,6 +40,7 @@ class HttpExceptionHandler extends AbstractHandler
 
         $response = $this->createResponseFromException($exception);
 
+        // TODO : attention il manque le charset dans ce Content-Type !!!!!
         return $response->withHeader('Content-type', $contentType)->write($body);
     }
 
