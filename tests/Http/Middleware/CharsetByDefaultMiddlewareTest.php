@@ -4,17 +4,11 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Middleware;
 
-use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
-use ErrorException;
-use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Chiron\Http\Psr\Response;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use Chiron\Http\Factory\ServerRequestFactory;
+use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
+use Chiron\Http\Psr\Response;
 use Chiron\Tests\Utils\HandlerProxy2;
-use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
 
 class CharsetByDefaultMiddlewareTest extends TestCase
 {
@@ -60,6 +54,7 @@ class CharsetByDefaultMiddlewareTest extends TestCase
         $handler = function ($request) {
             $response = new Response();
             $response = $response->withHeader('Content-Type', 'text/plain; boundary=something');
+
             return $response;
         };
         $middleware = new CharsetByDefaultMiddleware('iso-8859-1');
@@ -78,6 +73,7 @@ class CharsetByDefaultMiddlewareTest extends TestCase
         $handler = function ($request) {
             $response = new Response();
             $response = $response->withHeader('Content-Type', 'application/pdf');
+
             return $response;
         };
         $middleware = new CharsetByDefaultMiddleware('iso-8859-1');
@@ -96,6 +92,7 @@ class CharsetByDefaultMiddlewareTest extends TestCase
         $handler = function ($request) {
             $response = new Response();
             $response = $response->withHeader('Content-Type', 'application/json');
+
             return $response;
         };
         $middleware = new CharsetByDefaultMiddleware('iso-8859-1');
@@ -114,6 +111,7 @@ class CharsetByDefaultMiddlewareTest extends TestCase
         $handler = function ($request) {
             $response = new Response();
             $response = $response->withHeader('Content-Type', 'application/json; boundary=something');
+
             return $response;
         };
         $middleware = new CharsetByDefaultMiddleware('iso-8859-1');

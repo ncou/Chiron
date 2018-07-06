@@ -109,14 +109,11 @@ class ParsedBodyMiddleware implements MiddlewareInterface
     {
         $contentType = $request->hasHeader('Content-Type') ? $request->getHeaderLine('Content-Type') : null;
 
-        if ($contentType)
-        {
+        if ($contentType) {
             $parts = explode(';', $request->getHeaderLine('Content-Type'));
 
             return strtolower(trim(array_shift($parts)));
         }
-
-        return null;
     }
 
     //************************************************
