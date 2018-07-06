@@ -28,4 +28,3 @@ enabled:
 disabled:
     - concat_without_spaces
     - self_accessor
-    - simplified_null_return
