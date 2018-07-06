@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Chiron\Http\Middleware;
 
 use Chiron\Http\Psr\Response;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use InvalidArgumentException;
 
 class CharsetByDefaultMiddleware implements MiddlewareInterface
 {
@@ -27,7 +27,7 @@ class CharsetByDefaultMiddleware implements MiddlewareInterface
     {
         // charset should have at least a length of 5 char, start with a letter and be alphanumeric and "_" or "-" as special char
         if (! preg_match('/^[a-z][a-z0-9_-]{4,}$/i', $charset)) {
-            throw new InvalidArgumentException("Invalid charset value");
+            throw new InvalidArgumentException('Invalid charset value');
         }
         $this->charset = strtolower($charset);
     }
@@ -77,13 +77,10 @@ class CharsetByDefaultMiddleware implements MiddlewareInterface
     {
         $contentType = $response->hasHeader('Content-Type') ? $response->getHeaderLine('Content-Type') : null;
 
-        if ($contentType)
-        {
+        if ($contentType) {
             $parts = explode(';', $contentType);
 
             return strtolower(trim(array_shift($parts)));
         }
-
-        return null;
     }
 }
