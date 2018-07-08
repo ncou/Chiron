@@ -37,9 +37,18 @@ class HtmlResponseTest extends TestCase
         ];
         $response = new HtmlResponse($body, $status, $headers);
         $this->assertSame(['foo-bar'], $response->getHeader('x-custom'));
-        $this->assertSame('text/html; charset=utf-8', $response->getHeaderLine('content-type'));
+        $this->assertSame('text/html', $response->getHeaderLine('content-type'));
         $this->assertSame(404, $response->getStatusCode());
         $this->assertSame($body, (string) $response->getBody());
+    }
+
+    public function testConstructorWithContentTypeHeader()
+    {
+        $headers = [
+            'Content-Type' => ['foo-bar'],
+        ];
+        $response = new HtmlResponse('', 200, $headers);
+        $this->assertSame(['foo-bar'], $response->getHeader('Content-Type'));
     }
 
     public function testAllowsStreamsForResponseBody()

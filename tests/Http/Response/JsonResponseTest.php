@@ -63,6 +63,15 @@ class JsonResponseTest extends TestCase
         $this->assertSame(json_encode($value, 15), (string) $response->getBody());
     }
 
+    public function testConstructorWithContentTypeHeader()
+    {
+        $headers = [
+            'Content-Type' => ['foo-bar'],
+        ];
+        $response = new JsonResponse('', 200, $headers);
+        $this->assertSame(['foo-bar'], $response->getHeader('Content-Type'));
+    }
+
     public function testCanProvideStatusCodeToConstructor()
     {
         $response = new JsonResponse(null, 404);

@@ -39,7 +39,7 @@ class TextResponse extends Response
     {
         parent::__construct(
             $status,
-            $this->injectContentType('text/plain; charset=utf-8', $headers),
+            $this->injectContentType('text/plain', $headers),
             $this->createBody($text)
         );
     }
@@ -80,13 +80,9 @@ class TextResponse extends Response
      *
      * @return array Headers with injected Content-Type
      */
-    // TODO : à virer !!!!
     private function injectContentType($contentType, array $headers)
     {
-        $hasContentType = array_reduce(array_keys($headers), function ($carry, $item) {
-            return $carry ?: (strtolower($item) === 'content-type');
-        }, false);
-        if (! $hasContentType) {
+        if (! array_key_exists('content-type', array_change_key_case($headers))) {
             $headers['content-type'] = [$contentType];
         }
 

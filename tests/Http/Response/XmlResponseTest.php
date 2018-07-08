@@ -38,9 +38,18 @@ class XmlResponseTest extends TestCase
         ];
         $response = new XmlResponse($body, $status, $headers);
         $this->assertSame(['foo-bar'], $response->getHeader('x-custom'));
-        $this->assertSame('application/xml; charset=utf-8', $response->getHeaderLine('content-type'));
+        $this->assertSame('application/xml', $response->getHeaderLine('content-type'));
         $this->assertSame(404, $response->getStatusCode());
         $this->assertSame($body, (string) $response->getBody());
+    }
+
+    public function testConstructorWithContentTypeHeader()
+    {
+        $headers = [
+            'Content-Type' => ['foo-bar'],
+        ];
+        $response = new XmlResponse('', 200, $headers);
+        $this->assertSame(['foo-bar'], $response->getHeader('Content-Type'));
     }
 
     public function testAllowsStreamsForResponseBody()
