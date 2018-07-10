@@ -55,7 +55,7 @@ class XmlResponse extends Response
      *
      * @return StreamInterface
      */
-    private function createBody($xml)
+    private function createBody($xml): StreamInterface
     {
         if ($xml instanceof StreamInterface) {
             return $xml;
@@ -82,7 +82,7 @@ class XmlResponse extends Response
      *
      * @return array Headers with injected Content-Type
      */
-    private function injectContentType($contentType, array $headers)
+    private function injectContentType(string $contentType, array $headers): array
     {
         if (! array_key_exists('content-type', array_change_key_case($headers))) {
             $headers['content-type'] = [$contentType];

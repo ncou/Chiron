@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Http\Response;
 
 use Chiron\Http\Psr\Response;
-use Chiron\Http\Stream\NullStream;
+use Chiron\Http\Psr\Stream;
 
 /**
  * A class representing empty HTTP responses.
@@ -19,8 +19,8 @@ class EmptyResponse extends Response
      */
     public function __construct(array $headers = [])
     {
-        //$body = new Stream('php://temp', 'r');
-        $body = new NullStream();
+        $body = new Stream(fopen('php://temp', 'r'));
+        //$body = new NullStream();
         parent::__construct(204, $headers, $body);
     }
 }

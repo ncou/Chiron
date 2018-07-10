@@ -53,7 +53,7 @@ class HtmlResponse extends Response
      *
      * @return StreamInterface
      */
-    private function createBody($html)
+    private function createBody($html): StreamInterface
     {
         if ($html instanceof StreamInterface) {
             return $html;
@@ -80,7 +80,7 @@ class HtmlResponse extends Response
      *
      * @return array Headers with injected Content-Type
      */
-    private function injectContentType($contentType, array $headers)
+    private function injectContentType(string $contentType, array $headers): array
     {
         if (! array_key_exists('content-type', array_change_key_case($headers))) {
             $headers['content-type'] = [$contentType];

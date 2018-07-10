@@ -6,6 +6,7 @@ namespace Chiron\Http\Response;
 
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Stream;
+use Psr\Http\Message\StreamInterface;
 use InvalidArgumentException;
 use const JSON_ERROR_NONE;
 use function is_object;
@@ -87,11 +88,11 @@ class JsonResponse extends Response
     }
 
     /**
-     * @param $data
+     * @param mixed $data
      *
      * @return JsonResponse
      */
-    public function withPayload($data)
+    public function withPayload($data): self
     {
         $new = clone $this;
         $new->setPayload($data);
@@ -102,7 +103,7 @@ class JsonResponse extends Response
     /**
      * @return int
      */
-    public function getEncodingOptions()
+    public function getEncodingOptions(): int
     {
         return $this->encodingOptions;
     }
@@ -112,7 +113,7 @@ class JsonResponse extends Response
      *
      * @return JsonResponse
      */
-    public function withEncodingOptions($encodingOptions)
+    public function withEncodingOptions(int $encodingOptions)
     {
         $new = clone $this;
         $new->encodingOptions = $encodingOptions;
@@ -123,9 +124,9 @@ class JsonResponse extends Response
     /**
      * @param string $json
      *
-     * @return Stream
+     * @return StreamInterface
      */
-    private function createBodyFromJson($json)
+    private function createBodyFromJson(string $json): StreamInterface
     {
         $body = new Stream(fopen('php://temp', 'wb+'));
         $body->write($json);
@@ -144,7 +145,7 @@ class JsonResponse extends Response
      *
      * @return string
      */
-    private function jsonEncode($data, $encodingOptions)
+    private function jsonEncode($data, int $encodingOptions)
     {
         if (is_resource($data)) {
             throw new InvalidArgumentException('Cannot JSON encode resources');
@@ -164,7 +165,7 @@ class JsonResponse extends Response
     }
 
     /**
-     * @param $data
+     * @param mixed $data
      */
     private function setPayload($data)
     {
@@ -181,7 +182,7 @@ class JsonResponse extends Response
      *
      * @return JsonResponse Returns a new instance with an updated body.
      */
-    private function updateBodyFor(self $toUpdate)
+    private function updateBodyFor(self $toUpdate): self
     {
         $json = $this->jsonEncode($toUpdate->payload, $toUpdate->encodingOptions);
         $body = $this->createBodyFromJson($json);
@@ -197,7 +198,7 @@ class JsonResponse extends Response
      *
      * @return array Headers with injected Content-Type
      */
-    private function injectContentType($contentType, array $headers)
+    private function injectContentType(string $contentType, array $headers): array
     {
         if (! array_key_exists('content-type', array_change_key_case($headers))) {
             $headers['content-type'] = [$contentType];
