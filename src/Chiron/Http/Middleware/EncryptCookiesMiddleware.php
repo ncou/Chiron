@@ -42,7 +42,7 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
     /**
      * Start the session, delegate the request processing and add the session cookie to the response.
      *
-     * @param ServerRequestInterface $request
+     * @param ServerRequestInterface  $request
      * @param RequestHandlerInterface $handler
      *
      * @return ResponseInterface

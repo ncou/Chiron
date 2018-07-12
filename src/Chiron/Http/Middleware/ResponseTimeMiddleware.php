@@ -15,7 +15,7 @@ class ResponseTimeMiddleware implements MiddlewareInterface
 
     /**
      * Process a server request and return a response.
-     * Calculate the execution time based on the request param REQUEST_TIME_FLOAT (present since PHP 5.4.0)
+     * Calculate the execution time based on the request param REQUEST_TIME_FLOAT (present since PHP 5.4.0).
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
