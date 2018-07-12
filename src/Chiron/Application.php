@@ -537,7 +537,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
     public function run(): ResponseInterface
     {
-        //$request = Request::createFromGlobals($_SERVER);
         $request = (new \Chiron\Http\Factory\ServerRequestFactory())->createServerRequestFromArray($_SERVER);
 
         return $this->process($request);

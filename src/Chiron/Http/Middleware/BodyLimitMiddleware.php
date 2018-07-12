@@ -19,18 +19,18 @@ class BodyLimitMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        /*
-            if (! ($request->isMethod('POST') || $resquest->isMethod('PUT'))) {
-                return $handler->handle($request);
+        //$contentTypeHeaders = $this->getHeader('Content-Type');
+        //if (! empty($contentTypeHeaders)) {
+        //    $contentType = end($contentTypeHeaders);
+        //    ........
+
+        // The presence of a message-body is signaled by the inclusion of a 'Content-Length' or 'Transfer-Encoding' header (cf rfc2616 / section 4.3)
+        if ($request->hasHeader('Content-Length')) {
+            $contentLength = (int) $request->getHeaderLine('Content-Length');
+
+            if ($contentLength > $this->getPostMaxSize()) {
+                throw new RequestEntityTooLargeHttpException();
             }
-        */
-
-        $maxSize = $this->getPostMaxSize();
-        $contentLength = (int) $request->getHeaderLine('Content-Length');
-
-        //if ($maxSize > 0 && $contentLength > $maxSize) {
-        if ($contentLength > $maxSize) {
-            throw new RequestEntityTooLargeHttpException();
         }
 
         return $handler->handle($request);
@@ -39,9 +39,8 @@ class BodyLimitMiddleware implements MiddlewareInterface
     /**
      * Determine the server 'post_max_size' as bytes.
      *
-     * @return int
+     * @return int size in byte
      */
-    // TODO : ajouter aussi la gestion de P et T pour petaoctet et teraoctets
     protected function getPostMaxSize(): int
     {
         $postMaxSize = strtoupper(trim(ini_get('post_max_size')));

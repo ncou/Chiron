@@ -14,7 +14,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 class EncryptCookiesMiddleware implements MiddlewareInterface
 {
     /**
-     * The defuse encryption keu.
+     * The encryption key.
      *
      * @var string
      */
@@ -28,8 +28,7 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
     private $bypassed;
 
     /**
-     * Set up a encrypt cookie middleware with the given defuse key and an array
-     * of bypassed cookie names.
+     * Set up a encrypt cookie middleware with the given password key and an array of bypassed cookie names.
      *
      * @param string $password
      * @param array  $bypassed
@@ -41,13 +40,12 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Start the session, delegate the request processing and add the session
-     * cookie to the response.
+     * Start the session, delegate the request processing and add the session cookie to the response.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param \Psr\Http\Server\RequestHandlerInterface $handler
+     * @param ServerRequestInterface $request
+     * @param RequestHandlerInterface $handler
      *
-     * @return \Psr\Http\Message\ResponseInterface
+     * @return ResponseInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -58,12 +56,11 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Decrypt the non bypassed cookie values attached to the given request
-     * and return a new request with those values.
+     * Decrypt the non bypassed cookie values attached to the given request and return a new request with those values.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param ServerRequestInterface $request
      *
-     * @return \Psr\Http\Message\ServerRequestInterface
+     * @return ServerRequestInterface
      */
     private function withDecryptedCookies(ServerRequestInterface $request): ServerRequestInterface
     {
@@ -79,9 +76,9 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
     /**
      * Encode cookies from a response's Set-Cookie header.
      *
-     * @param \Psr\Http\Message\ResponseInterface $response The response to encode cookies in.
+     * @param ResponseInterface $response The response to encode cookies in.
      *
-     * @return \Psr\Http\Message\ResponseInterface Updated response with encoded cookies.
+     * @return ResponseInterface Updated response with encoded cookies.
      */
     protected function withEncryptedCookies(ResponseInterface $response): ResponseInterface
     {
@@ -120,8 +117,8 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
     }
 
     /**
-     * Decrypt the given value using the key. Default to blank string when the
-     * key is wrong or the cypher text has been modified.
+     * Decrypt the given value using the key.
+     * Return default to blank string when the key is wrong or the cypher text has been modified.
      *
      * @param string $value
      *

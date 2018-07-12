@@ -71,7 +71,8 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
     public function retryAfter($retryAfter): self
     {
         if ($retryAfter instanceof DateTimeInterface) {
-            $retryAfter = $retryAfter->format('D, d M Y H:i:s \G\M\T'); //$retryAfter->format(DateTime::RFC2822);  //'D, d M Y H:i:s e' // j'ai aussi vu un formatage en RFC1123
+            // TODO : à partir de la version 7.1.5 de PHP on peut utiliser la constante : \DateTime::RFC7231   qui est compliant avec la norme HTTP !!!!!!!!!!!
+            $retryAfter = $retryAfter->format('D, d M Y H:i:s \G\M\T'); //$retryAfter->format(\DateTime::RFC2822);  //'D, d M Y H:i:s e' // j'ai aussi vu un formatage en RFC1123 => gmdate(DATE_RFC1123, ...
         }
 
         $this->retryAfter = $retryAfter;
@@ -147,57 +148,11 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
                     ->withBody($body);
         */
 
+        //https://www.shellhacks.com/redirect-site-maintenance-page-apache-htaccess/
+        // Header Set Cache-Control "max-age=0, no-store"
+
         return $handler->handle($request);
     }
 
-    /*
-     * Create an HTTP date (RFC 1123 / RFC 822) formatted UTC date-time string
-     *
-     * @param string|integer|\DateTime $value Date time value
-     *
-     * @return string
-     */
-    /*
-    private function formatDateTimeHttp($value)
-    {
-        return $this->dateFormatter($value, 'D, d M Y H:i:s \G\M\T');
-    }*/
 
-    /*
-     * Perform the actual DateTime formatting
-     *
-     * @param int|string|\DateTime $dateTime Date time value
-     * @param string               $format   Format of the result
-     *
-     * @return string
-     * @throws \InvalidArgumentException
-     */
-    /*
-    protected function dateFormatter($dateTime, $format)
-    {
-        if (is_numeric($dateTime)) {
-            return gmdate($format, (int) $dateTime);
-        }
-        if (is_string($dateTime)) {
-            $dateTime = new \DateTime($dateTime);
-        }
-        if ($dateTime instanceof \DateTimeInterface) {
-            static $utc;
-            if (!$utc) {
-                $utc = new \DateTimeZone('UTC');
-            }
-            return $dateTime->setTimezone($utc)->format($format);
-        }
-        throw new \InvalidArgumentException('Date/Time values must be either '
-            . 'be a string, integer, or DateTime object');
-    }*/
-
-/*
-    private function initDate()
-    {
-        $now = new \DateTime('now', new \DateTimeZone('UTC'));
-        $now = \DateTimeImmutable::createFromMutable($now);
-        return $now->format('D, d M Y H:i:s').' GMT';
-    }
-*/
 }

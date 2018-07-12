@@ -23,6 +23,20 @@ use Psr\Http\Server\RequestHandlerInterface;
 class ParsedBodyMiddleware implements MiddlewareInterface
 {
     /**
+     * List of request methods that do not have any defined body semantics, and thus
+     * will not have the body parsed.
+     *
+     * @see https://tools.ietf.org/html/rfc7231
+     *
+     * @var array
+     */
+    private $nonBodyRequests = [
+        'GET',
+        'HEAD',
+        'OPTIONS',
+    ];
+
+    /**
      * Process request.
      *
      * @param ServerRequestInterface  $request request
@@ -32,9 +46,7 @@ class ParsedBodyMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        // TODO : ajouter un test quand la méthode n'est pas la bonne
-        // TODO : vérifier quelles méthodes ont un body !!!!!
-        if (empty($request->getParsedBody()) && ! in_array($request->getMethod(), ['GET', 'HEAD', 'OPTIONS']) && $request->hasHeader('Content-Type')) {
+        if (empty($request->getParsedBody()) && ! in_array($request->getMethod(), $this->nonBodyRequests) && $request->hasHeader('Content-Type')) {
             $body = (string) $request->getBody();
             $parsedBody = null;
 
@@ -89,6 +101,8 @@ class ParsedBodyMiddleware implements MiddlewareInterface
             }
 
             // TODO : lever une exception 415 UnsupportedMediaTypeHttpException() si aucun deserializer n'est trouvé (cad si empty($parsedBody)=== true) ????
+            // https://github.com/phapi/middleware-postbox/blob/master/src/Phapi/Middleware/PostBox/PostBox.php#L75
+
             // TODO : eventuellement créer un second middleware qui serai executé aprés, et si il y a un objet body non vide, mais un objet ParsedBody empty c'est qu'on n'a pas réussi à trouver un deserializer pour faire le travail et dans ce cas on leverai une exception !!!!
 
             $request = $request->withParsedBody($parsedBody);

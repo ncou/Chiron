@@ -62,6 +62,8 @@ class HttpExceptionHandler extends AbstractHandler
                 break;
                 // TODO : gérer le cas : 'text/plain' avec la même chose que le html mais sans les balises html...
             default:
+                // TODO : If an Accept header field is present, and if the server cannot send a response which is acceptable according to the combined Accept field value, then the server SHOULD return a 406 (not acceptable) response.
+                //https://github.com/phapi/middleware-content-negotiation/blob/master/src/Phapi/Middleware/ContentNegotiation/FormatNegotiation.php#L83
                 throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType);
         }
 
@@ -254,16 +256,16 @@ class HttpExceptionHandler extends AbstractHandler
     /**
      * Translate ErrorException code into the represented constant.
      *
-     * @param int $error_code
+     * @param int $errorCode
      *
      * @return string
      */
-    private static function translateErrorCode($error_code): string
+    private static function translateErrorCode(int $errorCode): string
     {
         $constants = get_defined_constants(true);
         if (array_key_exists('Core', $constants)) {
             foreach ($constants['Core'] as $constant => $value) {
-                if (substr($constant, 0, 2) == 'E_' && $value == $error_code) {
+                if (substr($constant, 0, 2) == 'E_' && $value == $errorCode) {
                     return $constant;
                 }
             }
