@@ -153,6 +153,4 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
 
         return $handler->handle($request);
     }
-
-
 }

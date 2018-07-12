@@ -6,8 +6,8 @@ namespace Chiron\Http\Response;
 
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Stream;
-use Psr\Http\Message\StreamInterface;
 use InvalidArgumentException;
+use Psr\Http\Message\StreamInterface;
 use const JSON_ERROR_NONE;
 use function is_object;
 use function is_resource;
