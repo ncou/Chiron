@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Parser;
 
-use Psr\Http\Message\ServerRequestInterface;
-use Chiron\Http\Psr\UploadedFile;
 use Chiron\Http\Psr\Stream;
+use Chiron\Http\Psr\UploadedFile;
+use Psr\Http\Message\ServerRequestInterface;
 
 // TODO : finir de mettre le typehint sur chaque fonction pour connaitre le type de paramétre à utiliser !!!!!!!!!
 
 /**
- * [Internal] Parses a string body with "Content-Type: multipart/form-data" into structured data
+ * [Internal] Parses a string body with "Content-Type: multipart/form-data" into structured data.
  *
  * This is used internally to parse incoming request bodies into structured data
  * that resembles PHP's `$_POST` and `$_FILES` superglobals.
  *
  * @internal
- * @link https://tools.ietf.org/html/rfc7578
- * @link https://tools.ietf.org/html/rfc2046#section-5.1.1
+ *
+ * @see https://tools.ietf.org/html/rfc7578
+ * @see https://tools.ietf.org/html/rfc2046#section-5.1.1
  */
 class FormDataParser implements ParserInterface
 {
@@ -33,34 +34,36 @@ class FormDataParser implements ParserInterface
     private $maxFileSize;
 
     /**
-     * ini setting "max_input_vars"
+     * ini setting "max_input_vars".
      *
      * Does not exist in PHP < 5.3.9 or HHVM, so assume PHP's default 1000 here.
      *
      * @var int
-     * @link http://php.net/manual/en/info.configuration.php#ini.max-input-vars
+     *
+     * @see http://php.net/manual/en/info.configuration.php#ini.max-input-vars
      */
     private $maxInputVars = 1000;
 
     /**
-     * ini setting "max_input_nesting_level"
+     * ini setting "max_input_nesting_level".
      *
      * Does not exist in HHVM, but assumes hard coded to 64 (PHP's default).
      *
      * @var int
-     * @link http://php.net/manual/en/info.configuration.php#ini.max-input-nesting-level
+     *
+     * @see http://php.net/manual/en/info.configuration.php#ini.max-input-nesting-level
      */
     private $maxInputNestingLevel = 64;
 
     /**
-     * ini setting "upload_max_filesize"
+     * ini setting "upload_max_filesize".
      *
      * @var int
      */
     private $uploadMaxFilesize;
 
     /**
-     * ini setting "max_file_uploads"
+     * ini setting "max_file_uploads".
      *
      * Additionally, setting "file_uploads = off" effectively sets this to zero.
      *
@@ -69,23 +72,25 @@ class FormDataParser implements ParserInterface
     private $maxFileUploads;
 
     private $postCount = 0;
+
     private $filesCount = 0;
+
     private $emptyCount = 0;
 
     /**
      * @param int|string|null $uploadMaxFilesize
-     * @param int|null $maxFileUploads
+     * @param int|null        $maxFileUploads
      */
     // TODO : virer ces paramétre du constructeur, on doit uniquement se baser sur les infos présentes dans le fichier ini de PHP
     public function __construct($uploadMaxFilesize = null, $maxFileUploads = null)
     {
         $var = ini_get('max_input_vars');
         if ($var !== false) {
-            $this->maxInputVars = (int)$var;
+            $this->maxInputVars = (int) $var;
         }
         $var = ini_get('max_input_nesting_level');
         if ($var !== false) {
-            $this->maxInputNestingLevel = (int)$var;
+            $this->maxInputNestingLevel = (int) $var;
         }
 
         if ($uploadMaxFilesize === null) {
@@ -93,10 +98,10 @@ class FormDataParser implements ParserInterface
         }
 
         $this->uploadMaxFilesize = $this->iniSizeToBytes((string) $uploadMaxFilesize);
-        $this->maxFileUploads = $maxFileUploads === null ? (ini_get('file_uploads') === '' ? 0 : (int)ini_get('max_file_uploads')) : (int)$maxFileUploads;
+        $this->maxFileUploads = $maxFileUploads === null ? (ini_get('file_uploads') === '' ? 0 : (int) ini_get('max_file_uploads')) : (int) $maxFileUploads;
     }
 
-    public function match(string $contentType) : bool
+    public function match(string $contentType): bool
     {
         return (bool) preg_match('#^application/form-data($|[ ;])#', $contentType);
     }
@@ -104,12 +109,12 @@ class FormDataParser implements ParserInterface
     public function parse(ServerRequestInterface $request): ServerRequestInterface
     {
         $contentType = $request->getHeaderLine('content-type');
-        if(!preg_match('/boundary="?(.*)"?$/', $contentType, $matches)) {
+        if (! preg_match('/boundary="?(.*)"?$/', $contentType, $matches)) {
             return $request;
         }
 
         $this->request = $request;
-        $this->parseBody('--' . $matches[1], (string)$request->getBody());
+        $this->parseBody('--' . $matches[1], (string) $request->getBody());
 
         $request = $this->request;
         $this->request = null;
@@ -151,10 +156,10 @@ class FormDataParser implements ParserInterface
         }
 
         // Separate part headers from part body
-        $headers = $this->parseHeaders((string)substr($chunk, 0, $pos));
-        $body = (string)substr($chunk, $pos + 4);
+        $headers = $this->parseHeaders((string) substr($chunk, 0, $pos));
+        $body = (string) substr($chunk, $pos + 4);
 
-        if (!isset($headers['content-disposition'])) {
+        if (! isset($headers['content-disposition'])) {
             return;
         }
 
@@ -267,7 +272,7 @@ class FormDataParser implements ParserInterface
 
         //handle the special case with the hidden 'MAX_FILE_SIZE' field : http://php.net/manual/en/features.file-upload.post-method.php
         if (strtoupper($name) === 'MAX_FILE_SIZE') {
-            $this->maxFileSize = (int)$value;
+            $this->maxFileSize = (int) $value;
 
             if ($this->maxFileSize === 0) {
                 $this->maxFileSize = null;
@@ -277,11 +282,11 @@ class FormDataParser implements ParserInterface
 
     private function parseHeaders($header)
     {
-        $headers = array();
+        $headers = [];
 
         foreach (explode("\r\n", trim($header)) as $line) {
             $parts = explode(':', $line, 2);
-            if (!isset($parts[1])) {
+            if (! isset($parts[1])) {
                 continue;
             }
 
@@ -301,8 +306,6 @@ class FormDataParser implements ParserInterface
                 return $matches[1];
             }
         }
-
-        return null;
     }
 
     private function extractPost($postFields, $key, $value)
@@ -310,6 +313,7 @@ class FormDataParser implements ParserInterface
         $chunks = explode('[', $key);
         if (count($chunks) == 1) {
             $postFields[$key] = $value;
+
             return $postFields;
         }
 
@@ -324,12 +328,12 @@ class FormDataParser implements ParserInterface
             $previousChunkKey = $chunkKey;
 
             if ($previousChunkKey === '') {
-                $parent[] = array();
+                $parent[] = [];
                 end($parent);
                 $parent = &$parent[key($parent)];
             } else {
-                if (!isset($parent[$previousChunkKey]) || !is_array($parent[$previousChunkKey])) {
-                    $parent[$previousChunkKey] = array();
+                if (! isset($parent[$previousChunkKey]) || ! is_array($parent[$previousChunkKey])) {
+                    $parent[$previousChunkKey] = [];
                 }
                 $parent = &$parent[$previousChunkKey];
             }
@@ -350,17 +354,18 @@ class FormDataParser implements ParserInterface
      * Convert a ini like size to a numeric size in bytes.
      *
      * @param string $size
+     *
      * @return int
      */
     // TODO : déplacer cela dans une classe Utils ou alors faire une fonction php globale genre : convert_size_to_byte(string xxx)
     private function iniSizeToBytes(string $size): int
     {
         if (is_numeric($size)) {
-            return (int)$size;
+            return (int) $size;
         }
         $suffix = strtoupper(substr($size, -1));
         $strippedSize = substr($size, 0, -1);
-        if (!is_numeric($strippedSize)) {
+        if (! is_numeric($strippedSize)) {
             throw new \InvalidArgumentException("$size is not a valid ini size");
         }
         if ($strippedSize <= 0) {
@@ -376,8 +381,9 @@ class FormDataParser implements ParserInterface
             return $strippedSize * 1024 * 1024 * 1024;
         }
         if ($suffix === 'T') {
-            return $strippedSize * 1024  * 1024 * 1024 * 1024;
+            return $strippedSize * 1024 * 1024 * 1024 * 1024;
         }
-        return (int)$size;
+
+        return (int) $size;
     }
 }

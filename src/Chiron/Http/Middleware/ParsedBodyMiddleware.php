@@ -15,11 +15,11 @@ namespace Chiron\Http\Middleware;
 
 // TODO : regarder ici : https://github.com/zendframework/zend-expressive-helpers/blob/master/src/BodyParams/BodyParamsMiddleware.php    +    https://github.com/zendframework/zend-expressive-helpers/blob/master/src/BodyParams/FormUrlEncodedStrategy.php  +    https://github.com/zendframework/zend-expressive-helpers/blob/master/src/BodyParams/JsonStrategy.php
 
+use Chiron\Http\Parser\ParserInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Http\Parser\ParserInterface;
 
 class ParsedBodyMiddleware implements MiddlewareInterface
 {
@@ -39,7 +39,6 @@ class ParsedBodyMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         if ($request->hasHeader('Content-Type')) {
-
             $contentType = $request->getHeaderLine('Content-Type');
             foreach ($this->parsers as $parser) {
                 if (! $parser->match($contentType)) {
@@ -51,7 +50,6 @@ class ParsedBodyMiddleware implements MiddlewareInterface
 
             // TODO : lever une exception 415 UnsupportedMediaTypeHttpException() si aucun la desarialization n'est pas marché ???? Eventuellement ajouter un paramétre pour indiquer si on doit faire un throw de l'exception ou non.
             // https://github.com/phapi/middleware-postbox/blob/master/src/Phapi/Middleware/PostBox/PostBox.php#L75
-
         }
 
         return $handler->handle($request);
@@ -73,17 +71,16 @@ class ParsedBodyMiddleware implements MiddlewareInterface
         $this->parsers = [];
     }
 
+    /*
+        if ($type === 'application/x-www-form-urlencoded') {
+            return $next($this->parseFormUrlencoded($request));
+        }
+        if ($type === 'multipart/form-data') {
+            return $next($this->multipart->parse($request));
+        }
+    */
 
-/*
-    if ($type === 'application/x-www-form-urlencoded') {
-        return $next($this->parseFormUrlencoded($request));
-    }
-    if ($type === 'multipart/form-data') {
-        return $next($this->multipart->parse($request));
-    }
-*/
-
-    /**
+    /*
      * Get request media type, if known.
      *
      * @param ServerRequestInterface $request request

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Http\Parser;
 
-use Chiron\Http\Psr\Response;
-use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Parser\FormDataParser;
 use Chiron\Http\Psr\Stream;
@@ -13,7 +11,8 @@ use PHPUnit\Framework\TestCase;
 
 final class FormDataParserTest extends TestCase
 {
-    private function createBodyWithData(string $data) {
+    private function createBodyWithData(string $data)
+    {
         $body = new Stream(fopen('php://temp', 'wb+'));
         $body->write($data);
         $body->rewind();
@@ -23,9 +22,9 @@ final class FormDataParserTest extends TestCase
 
     public function testDoesNotParseWithoutMultipartFormDataContentType()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"single\"\r\n";
         $data .= "\r\n";
         $data .= "single\r\n";
@@ -51,9 +50,9 @@ final class FormDataParserTest extends TestCase
 
     public function testPostKey()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"users[one]\"\r\n";
         $data .= "\r\n";
         $data .= "single\r\n";
@@ -75,21 +74,21 @@ final class FormDataParserTest extends TestCase
 
         $this->assertEmpty($parsedRequest->getUploadedFiles());
         $this->assertSame(
-            array(
-                'users' => array(
+            [
+                'users' => [
                     'one' => 'single',
                     'two' => 'second',
-                ),
-            ),
+                ],
+            ],
             $parsedRequest->getParsedBody()
         );
     }
 
     public function testPostStringOverwritesMap()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"users[one]\"\r\n";
         $data .= "\r\n";
         $data .= "ignored\r\n";
@@ -111,18 +110,18 @@ final class FormDataParserTest extends TestCase
 
         $this->assertEmpty($parsedRequest->getUploadedFiles());
         $this->assertSame(
-            array(
-                'users' => '2'
-            ),
+            [
+                'users' => '2',
+            ],
             $parsedRequest->getParsedBody()
         );
     }
 
     public function testPostMapOverwritesString()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"users\"\r\n";
         $data .= "\r\n";
         $data .= "ignored\r\n";
@@ -144,20 +143,20 @@ final class FormDataParserTest extends TestCase
 
         $this->assertEmpty($parsedRequest->getUploadedFiles());
         $this->assertSame(
-            array(
-                'users' => array(
+            [
+                'users' => [
                     'two' => '2',
-                ),
-            ),
+                ],
+            ],
             $parsedRequest->getParsedBody()
         );
     }
 
     public function testPostVectorOverwritesString()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"users\"\r\n";
         $data .= "\r\n";
         $data .= "ignored\r\n";
@@ -179,20 +178,20 @@ final class FormDataParserTest extends TestCase
 
         $this->assertEmpty($parsedRequest->getUploadedFiles());
         $this->assertSame(
-            array(
-                'users' => array(
+            [
+                'users' => [
                     '2',
-                ),
-            ),
+                ],
+            ],
             $parsedRequest->getParsedBody()
         );
     }
 
     public function testPostDeeplyNestedArray()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"users[][]\"\r\n";
         $data .= "\r\n";
         $data .= "1\r\n";
@@ -214,25 +213,25 @@ final class FormDataParserTest extends TestCase
 
         $this->assertEmpty($parsedRequest->getUploadedFiles());
         $this->assertSame(
-            array(
-                'users' => array(
-                    array(
-                        '1'
-                    ),
-                    array(
-                        '2'
-                    )
-                ),
-            ),
+            [
+                'users' => [
+                    [
+                        '1',
+                    ],
+                    [
+                        '2',
+                    ],
+                ],
+            ],
             $parsedRequest->getParsedBody()
         );
     }
 
     public function testEmptyPostValue()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"key\"\r\n";
         $data .= "\r\n";
         $data .= "\r\n";
@@ -250,18 +249,18 @@ final class FormDataParserTest extends TestCase
 
         $this->assertEmpty($parsedRequest->getUploadedFiles());
         $this->assertSame(
-            array(
-                'key' => ''
-            ),
+            [
+                'key' => '',
+            ],
             $parsedRequest->getParsedBody()
         );
     }
 
     public function testEmptyPostKey()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"\"\r\n";
         $data .= "\r\n";
         $data .= "value\r\n";
@@ -279,18 +278,18 @@ final class FormDataParserTest extends TestCase
 
         $this->assertEmpty($parsedRequest->getUploadedFiles());
         $this->assertSame(
-            array(
-                '' => 'value'
-            ),
+            [
+                '' => 'value',
+            ],
             $parsedRequest->getParsedBody()
         );
     }
 
     public function testNestedPostKeyAssoc()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"a[b][c]\"\r\n";
         $data .= "\r\n";
         $data .= "value\r\n";
@@ -308,22 +307,22 @@ final class FormDataParserTest extends TestCase
 
         $this->assertEmpty($parsedRequest->getUploadedFiles());
         $this->assertSame(
-            array(
-                'a' => array(
-                    'b' => array(
-                        'c' => 'value'
-                    )
-                )
-            ),
+            [
+                'a' => [
+                    'b' => [
+                        'c' => 'value',
+                    ],
+                ],
+            ],
             $parsedRequest->getParsedBody()
         );
     }
 
     public function testNestedPostKeyVector()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"a[][]\"\r\n";
         $data .= "\r\n";
         $data .= "value\r\n";
@@ -341,24 +340,24 @@ final class FormDataParserTest extends TestCase
 
         $this->assertEmpty($parsedRequest->getUploadedFiles());
         $this->assertSame(
-            array(
-                'a' => array(
-                    array(
-                        'value'
-                    )
-                )
-            ),
+            [
+                'a' => [
+                    [
+                        'value',
+                    ],
+                ],
+            ],
             $parsedRequest->getParsedBody()
         );
     }
 
     public function testFileUpload()
     {
-        $boundary = "---------------------------12758086162038677464950549563";
+        $boundary = '---------------------------12758086162038677464950549563';
 
-        $file = base64_decode("R0lGODlhAQABAIAAAP///wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==");
+        $file = base64_decode('R0lGODlhAQABAIAAAP///wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==');
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"MAX_FILE_SIZE\"\r\n";
         $data .= "\r\n";
         $data .= "12000\r\n";
@@ -424,17 +423,17 @@ final class FormDataParserTest extends TestCase
         $parsedRequest = $parser->parse($request);
 
         $this->assertSame(
-            array(
+            [
                 'MAX_FILE_SIZE' => '12000',
-                'users' => array(
+                'users'         => [
                     'one' => 'single',
                     'two' => 'second',
-                    0 => 'first in array',
-                    1 => 'second in array',
-                ),
-                'user' => 'single',
+                    0     => 'first in array',
+                    1     => 'second in array',
+                ],
+                'user'  => 'single',
                 'user2' => 'second',
-            ),
+            ],
             $parsedRequest->getParsedBody()
         );
 
@@ -445,26 +444,26 @@ final class FormDataParserTest extends TestCase
 
         $this->assertSame('Us er.php', $files['file']->getClientFilename());
         $this->assertSame('text/php', $files['file']->getClientMediaType());
-        $this->assertSame("<?php echo 'User';\r\n", (string)$files['file']->getStream());
+        $this->assertSame("<?php echo 'User';\r\n", (string) $files['file']->getStream());
 
         $this->assertSame('blank.gif', $files['files'][0]->getClientFilename());
         $this->assertSame('image/gif', $files['files'][0]->getClientMediaType());
-        $this->assertSame($file, (string)$files['files'][0]->getStream());
+        $this->assertSame($file, (string) $files['files'][0]->getStream());
 
         $this->assertSame('User.php', $files['files'][1]->getClientFilename());
         $this->assertSame('text/php', $files['files'][1]->getClientMediaType());
-        $this->assertSame("<?php echo 'User';\r\n\r\n", (string)$files['files'][1]->getStream());
+        $this->assertSame("<?php echo 'User';\r\n\r\n", (string) $files['files'][1]->getStream());
 
         $this->assertSame('Owner.php', $files['files'][2]->getClientFilename());
         $this->assertSame('text/php', $files['files'][2]->getClientMediaType());
-        $this->assertSame("<?php echo 'Owner';\r\n\r\n", (string)$files['files'][2]->getStream());
+        $this->assertSame("<?php echo 'Owner';\r\n\r\n", (string) $files['files'][2]->getStream());
     }
 
     public function testInvalidDoubleContentDispositionUsesLast()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"ignored\"\r\n";
         $data .= "Content-Disposition: form-data; name=\"key\"\r\n";
         $data .= "\r\n";
@@ -483,21 +482,21 @@ final class FormDataParserTest extends TestCase
 
         $this->assertEmpty($parsedRequest->getUploadedFiles());
         $this->assertSame(
-            array(
-                'key' => 'value'
-            ),
+            [
+                'key' => 'value',
+            ],
             $parsedRequest->getParsedBody()
         );
     }
 
     public function testInvalidMissingNewlineAfterValueWillBeIgnored()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"key\"\r\n";
         $data .= "\r\n";
-        $data .= "value";
+        $data .= 'value';
         $data .= "--$boundary--\r\n";
 
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
@@ -516,9 +515,9 @@ final class FormDataParserTest extends TestCase
 
     public function testInvalidMissingValueWillBeIgnored()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"key\"\r\n";
         $data .= "\r\n";
         $data .= "--$boundary--\r\n";
@@ -539,9 +538,9 @@ final class FormDataParserTest extends TestCase
 
     public function testInvalidMissingValueAndEndBoundaryWillBeIgnored()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"key\"\r\n";
 
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
@@ -560,9 +559,9 @@ final class FormDataParserTest extends TestCase
 
     public function testInvalidContentDispositionMissingWillBeIgnored()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Type: text/plain\r\n";
         $data .= "\r\n";
         $data .= "hello\r\n";
@@ -584,9 +583,9 @@ final class FormDataParserTest extends TestCase
 
     public function testInvalidContentDispositionMissingValueWillBeIgnored()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition\r\n";
         $data .= "\r\n";
         $data .= "value\r\n";
@@ -608,9 +607,9 @@ final class FormDataParserTest extends TestCase
 
     public function testInvalidContentDispositionWithoutNameWillBeIgnored()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; something=\"key\"\r\n";
         $data .= "\r\n";
         $data .= "value\r\n";
@@ -632,9 +631,9 @@ final class FormDataParserTest extends TestCase
 
     public function testInvalidMissingEndBoundaryWillBeIgnored()
     {
-        $boundary = "---------------------------5844729766471062541057622570";
+        $boundary = '---------------------------5844729766471062541057622570';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"key\"\r\n";
         $data .= "\r\n";
         $data .= "value\r\n";
@@ -658,9 +657,9 @@ final class FormDataParserTest extends TestCase
 
     public function testInvalidUploadFileWithoutContentTypeUsesNullValue()
     {
-        $boundary = "---------------------------12758086162038677464950549563";
+        $boundary = '---------------------------12758086162038677464950549563';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"file\"; filename=\"hello.txt\"\r\n";
         $data .= "\r\n";
         $data .= "world\r\n";
@@ -689,14 +688,14 @@ final class FormDataParserTest extends TestCase
         $this->assertNull($file->getClientMediaType());
         $this->assertSame(5, $file->getSize());
         $this->assertSame(UPLOAD_ERR_OK, $file->getError());
-        $this->assertSame('world', (string)$file->getStream());
+        $this->assertSame('world', (string) $file->getStream());
     }
 
     public function testInvalidUploadFileWithoutMultipleContentTypeUsesLastValue()
     {
-        $boundary = "---------------------------12758086162038677464950549563";
+        $boundary = '---------------------------12758086162038677464950549563';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"file\"; filename=\"hello.txt\"\r\n";
         $data .= "Content-Type: text/ignored\r\n";
         $data .= "Content-Type: text/plain\r\n";
@@ -727,14 +726,14 @@ final class FormDataParserTest extends TestCase
         $this->assertSame('text/plain', $file->getClientMediaType());
         $this->assertSame(5, $file->getSize());
         $this->assertSame(UPLOAD_ERR_OK, $file->getError());
-        $this->assertSame('world', (string)$file->getStream());
+        $this->assertSame('world', (string) $file->getStream());
     }
 
     public function testUploadEmptyFile()
     {
-        $boundary = "---------------------------12758086162038677464950549563";
+        $boundary = '---------------------------12758086162038677464950549563';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"file\"; filename=\"empty\"\r\n";
         $data .= "Content-type: text/plain\r\n";
         $data .= "\r\n";
@@ -764,14 +763,14 @@ final class FormDataParserTest extends TestCase
         $this->assertSame('text/plain', $file->getClientMediaType());
         $this->assertSame(0, $file->getSize());
         $this->assertSame(UPLOAD_ERR_OK, $file->getError());
-        $this->assertSame('', (string)$file->getStream());
+        $this->assertSame('', (string) $file->getStream());
     }
 
     public function testUploadTooLargeFile()
     {
-        $boundary = "---------------------------12758086162038677464950549563";
+        $boundary = '---------------------------12758086162038677464950549563';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"file\"; filename=\"hello\"\r\n";
         $data .= "Content-type: text/plain\r\n";
         $data .= "\r\n";
@@ -805,9 +804,9 @@ final class FormDataParserTest extends TestCase
 
     public function testUploadTooLargeFileWithIniLikeSize()
     {
-        $boundary = "---------------------------12758086162038677464950549563";
+        $boundary = '---------------------------12758086162038677464950549563';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"file\"; filename=\"hello\"\r\n";
         $data .= "Content-type: text/plain\r\n";
         $data .= "\r\n";
@@ -841,9 +840,9 @@ final class FormDataParserTest extends TestCase
 
     public function testUploadNoFile()
     {
-        $boundary = "---------------------------12758086162038677464950549563";
+        $boundary = '---------------------------12758086162038677464950549563';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"file\"; filename=\"\"\r\n";
         $data .= "Content-type: application/octet-stream\r\n";
         $data .= "\r\n";
@@ -877,9 +876,9 @@ final class FormDataParserTest extends TestCase
 
     public function testUploadTooManyFilesReturnsTruncatedList()
     {
-        $boundary = "---------------------------12758086162038677464950549563";
+        $boundary = '---------------------------12758086162038677464950549563';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"first\"; filename=\"first\"\r\n";
         $data .= "Content-type: text/plain\r\n";
         $data .= "\r\n";
@@ -911,14 +910,14 @@ final class FormDataParserTest extends TestCase
         $this->assertSame('text/plain', $file->getClientMediaType());
         $this->assertSame(5, $file->getSize());
         $this->assertSame(UPLOAD_ERR_OK, $file->getError());
-        $this->assertSame('hello', (string)$file->getStream());
+        $this->assertSame('hello', (string) $file->getStream());
     }
 
     public function testUploadTooManyFilesIgnoresEmptyFilesAndIncludesThemDespiteTruncatedList()
     {
-        $boundary = "---------------------------12758086162038677464950549563";
+        $boundary = '---------------------------12758086162038677464950549563';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"first\"; filename=\"first\"\r\n";
         $data .= "Content-type: text/plain\r\n";
         $data .= "\r\n";
@@ -956,7 +955,7 @@ final class FormDataParserTest extends TestCase
         $this->assertSame('text/plain', $file->getClientMediaType());
         $this->assertSame(5, $file->getSize());
         $this->assertSame(UPLOAD_ERR_OK, $file->getError());
-        $this->assertSame('hello', (string)$file->getStream());
+        $this->assertSame('hello', (string) $file->getStream());
 
         $file = $files['empty'];
         $this->assertSame('', $file->getClientFilename());
@@ -967,9 +966,9 @@ final class FormDataParserTest extends TestCase
 
     public function testPostMaxFileSize()
     {
-        $boundary = "---------------------------12758086162038677464950549563";
+        $boundary = '---------------------------12758086162038677464950549563';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"MAX_FILE_SIZE\"\r\n";
         $data .= "\r\n";
         $data .= "12\r\n";
@@ -999,9 +998,9 @@ final class FormDataParserTest extends TestCase
 
     public function testPostMaxFileSizeIgnoredByFilesComingBeforeIt()
     {
-        $boundary = "---------------------------12758086162038677464950549563";
+        $boundary = '---------------------------12758086162038677464950549563';
 
-        $data  = "--$boundary\r\n";
+        $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"file\"; filename=\"User-one.php\"\r\n";
         $data .= "Content-type: text/php\r\n";
         $data .= "\r\n";

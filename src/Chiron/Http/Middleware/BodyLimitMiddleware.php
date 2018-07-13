@@ -6,12 +6,12 @@ namespace Chiron\Http\Middleware;
 
 //https://github.com/withelmo/CakePHP-PostMaxSizeException/blob/master/Lib/PostMaxSizeChecker.php
 
+use Chiron\Http\Exception\BadRequestHttpException;
 use Chiron\Http\Exception\RequestEntityTooLargeHttpException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Http\Exception\BadRequestHttpException;
 
 class BodyLimitMiddleware implements MiddlewareInterface
 {
@@ -36,7 +36,7 @@ class BodyLimitMiddleware implements MiddlewareInterface
                As per RFC : then the recipient MUST either reject the message as invalid or replace the duplicated field-values with a single valid Content-Length field
             */
             // TODO : déplacer cette vérification dans un autre middleware, et on devrait aussi lever une erreur 400 si on a plus de 100 headers, et une erreur 431 HeaderTooLong si le nom dépasse 64 caractéres
-            if(! preg_match('/^\d+$/', $contentLength)) {
+            if (! preg_match('/^\d+$/', $contentLength)) {
                 throw new BadRequestHttpException();
             }
 
@@ -73,7 +73,7 @@ class BodyLimitMiddleware implements MiddlewareInterface
         }
     }
 
-    /**
+    /*
      * Determine max upload size
      *
      * @return float|int
@@ -95,10 +95,6 @@ class BodyLimitMiddleware implements MiddlewareInterface
         return $max_size;
     }*/
 
-
-
-
-
 /*
     function parse_size(string $size): int {
           // Remove the non-unit characters from the size.
@@ -116,7 +112,7 @@ class BodyLimitMiddleware implements MiddlewareInterface
           }
     }*/
 
-    /**
+    /*
      * Gets post_max_size from PHP's configuration expressed in bytes
      *
      * @return int
@@ -140,7 +136,7 @@ class BodyLimitMiddleware implements MiddlewareInterface
         return (int) $size;
     }*/
 
-    /**
+    /*
      * Convert a ini like size to a numeric size in bytes.
      *
      * @param string $size

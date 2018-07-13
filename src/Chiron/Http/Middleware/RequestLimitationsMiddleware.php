@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\Http\Exception\RequestUriTooLongHttpException;
 use Chiron\Http\Exception\RequestHeaderFieldsTooLargeHttpException;
+use Chiron\Http\Exception\RequestUriTooLongHttpException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -13,7 +13,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class RequestLimitationsMiddleware implements MiddlewareInterface
 {
-
     // TODO : créer un constructeur qui initalise par défaut les valeurs du max uri length / header number...etc
 
     /**
