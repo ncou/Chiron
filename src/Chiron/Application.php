@@ -544,6 +544,8 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
     public function process(ServerRequestInterface $request): ResponseInterface
     {
+        //die(var_dump($request->getServerParam('HTTP_HOST')));
+
         // apply PHP config settings.
         $this->boot();
 

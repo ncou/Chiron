@@ -19,22 +19,14 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Chiron\Http\Parser\ParserInterface;
 
 class ParsedBodyMiddleware implements MiddlewareInterface
 {
     /**
-     * List of request methods that do not have any defined body semantics, and thus
-     * will not have the body parsed.
-     *
-     * @see https://tools.ietf.org/html/rfc7231
-     *
-     * @var array
+     * @var ParserInterface[]
      */
-    private $nonBodyRequests = [
-        'GET',
-        'HEAD',
-        'OPTIONS',
-    ];
+    private $parsers = [];
 
     /**
      * Process request.
@@ -46,70 +38,50 @@ class ParsedBodyMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        if (empty($request->getParsedBody()) && ! in_array($request->getMethod(), $this->nonBodyRequests) && $request->hasHeader('Content-Type')) {
-            $body = (string) $request->getBody();
-            $parsedBody = null;
+        if ($request->hasHeader('Content-Type')) {
 
-            $mediaType = $this->getMediaType($request);
-
-            // Regex for : 'application/json' or 'application/*+json'
-            //if (preg_match('~^application/([a-z.]+\+)?json($|;)~', $mediaType)) {
-            //return (bool) preg_match('#[/+]json$#', trim($mime));
-            if (preg_match('~application/([a-z.]+\+)?json~', $mediaType)) {
-                $parsedBody = json_decode($body, true);
-                if (! is_array($parsedBody)) {
-                    // TODO : on devrait peut etre lever une exception 400 BadRequestHttpException
-                    $parsedBody = null;
+            $contentType = $request->getHeaderLine('Content-Type');
+            foreach ($this->parsers as $parser) {
+                if (! $parser->match($contentType)) {
+                    continue;
                 }
-                // Throw error if we are unable to decode body
-                //if (is_null($parsed)) throw new BadRequest('Could not deserialize body (Json)');
+                // Matched! Parse the body, and pass on to the next middleware.
+                return $handler->handle($parser->parse($request));
             }
 
-            // Regex for : 'application/xml' or 'application/*+xml' or 'text/xml'
-            //if (preg_match('~^application/([a-z.]+\+)?xml($|;)~', $mediaType) || $mediaType === 'text/xml') {
-            //if (preg_match('~^application/([a-z.]+\+)?xml~', $mediaType) || preg_match('~^text/xml~', $mediaType)) {
-            //if (preg_match('~(application|text)/([a-z.]+\+)?xml~', $mediaType)) {
-            if (preg_match('~application/([a-z.]+\+)?xml~', $mediaType) || $mediaType === 'text/xml') {
-                // disable entity loading to prevent XXE (XML External Entity attacks) attacks
-                $backup = libxml_disable_entity_loader(true);
-                $backup_errors = libxml_use_internal_errors(true);
-                // parse XML and disable internet connection when parsing XML
-                //$parsed = simplexml_load_string($body);
-                // TODO : regarder un autre exemple ici : https://github.com/yiisoft/yii2-httpclient/blob/master/src/XmlParser.php
-                $parsedBody = simplexml_load_string($body, 'SimpleXMLElement', LIBXML_NONET);
-                // restore lib settings
-                libxml_disable_entity_loader($backup);
-                libxml_clear_errors();
-                libxml_use_internal_errors($backup_errors);
-                if ($parsedBody === false) {
-                    // TODO : on devrait peut etre lever une exception 400 BadRequestHttpException
-                    $parsedBody = null;
-                }
-            }
-
-            /*
-            //return (bool) preg_match('#^application/x-www-form-urlencoded($|[ ;])#', $contentType);
-                        $this->registerMediaTypeParser('application/x-www-form-urlencoded', function ($input) {
-                            parse_str($input, $data);
-                            return $data;
-                        });
-            */
-
-            // in real life application, this part of code is not used because the request factory initialize the parsedBody with the global $_POST variable which is already parsed.
-            if (preg_match('~application/x-www-form-urlencoded~', $mediaType)) {
-                parse_str($body, $parsedBody);
-            }
-
-            // TODO : lever une exception 415 UnsupportedMediaTypeHttpException() si aucun deserializer n'est trouvé (cad si empty($parsedBody)=== true) ????
+            // TODO : lever une exception 415 UnsupportedMediaTypeHttpException() si aucun la desarialization n'est pas marché ???? Eventuellement ajouter un paramétre pour indiquer si on doit faire un throw de l'exception ou non.
             // https://github.com/phapi/middleware-postbox/blob/master/src/Phapi/Middleware/PostBox/PostBox.php#L75
 
-            // TODO : eventuellement créer un second middleware qui serai executé aprés, et si il y a un objet body non vide, mais un objet ParsedBody empty c'est qu'on n'a pas réussi à trouver un deserializer pour faire le travail et dans ce cas on leverai une exception !!!!
-
-            $request = $request->withParsedBody($parsedBody);
         }
 
         return $handler->handle($request);
     }
+
+    /**
+     * Add a body parser to the middleware.
+     */
+    public function addParser(ParserInterface $parser): void
+    {
+        $this->parsers[] = $parser;
+    }
+
+    /**
+     * Clear all the Parsers from the middleware.
+     */
+    public function clearParsers(): void
+    {
+        $this->parsers = [];
+    }
+
+
+/*
+    if ($type === 'application/x-www-form-urlencoded') {
+        return $next($this->parseFormUrlencoded($request));
+    }
+    if ($type === 'multipart/form-data') {
+        return $next($this->multipart->parse($request));
+    }
+*/
 
     /**
      * Get request media type, if known.
@@ -119,6 +91,7 @@ class ParsedBodyMiddleware implements MiddlewareInterface
      * @return string|null The request media type, minus content-type params
      */
     // TODO : déplacer cettte méthode dans la classe MessageTrait car cela servira pour le serverrequest et pour la response ????
+/*
     private function getMediaType(ServerRequestInterface $request)
     {
         $contentType = $request->hasHeader('Content-Type') ? $request->getHeaderLine('Content-Type') : null;
@@ -129,7 +102,7 @@ class ParsedBodyMiddleware implements MiddlewareInterface
             return strtolower(trim(array_shift($parts)));
         }
     }
-
+*/
     //************************************************
 
     /*

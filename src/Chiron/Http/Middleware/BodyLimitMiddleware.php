@@ -11,6 +11,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Chiron\Http\Exception\BadRequestHttpException;
 
 class BodyLimitMiddleware implements MiddlewareInterface
 {
@@ -26,9 +27,20 @@ class BodyLimitMiddleware implements MiddlewareInterface
 
         // The presence of a message-body is signaled by the inclusion of a 'Content-Length' or 'Transfer-Encoding' header (cf rfc2616 / section 4.3)
         if ($request->hasHeader('Content-Length')) {
-            $contentLength = (int) $request->getHeaderLine('Content-Length');
+            $contentLength = $request->getHeaderLine('Content-Length');
 
-            if ($contentLength > $this->getPostMaxSize()) {
+            // Content-Length should be a base 10 number because it's represent the number of octet, throw a http error 400 BadRequest if the value is invalid.
+            // This could happen if there is multiple header and we will have => Content-Length = 100, 200
+            /*
+                https://tools.ietf.org/html/rfc7230#section-3.3.2
+               As per RFC : then the recipient MUST either reject the message as invalid or replace the duplicated field-values with a single valid Content-Length field
+            */
+            // TODO : déplacer cette vérification dans un autre middleware, et on devrait aussi lever une erreur 400 si on a plus de 100 headers, et une erreur 431 HeaderTooLong si le nom dépasse 64 caractéres
+            if(! preg_match('/^\d+$/', $contentLength)) {
+                throw new BadRequestHttpException();
+            }
+
+            if ((int) $contentLength > $this->getPostMaxSize()) {
                 throw new RequestEntityTooLargeHttpException();
             }
         }
@@ -60,6 +72,108 @@ class BodyLimitMiddleware implements MiddlewareInterface
                 return $byte;
         }
     }
+
+    /**
+     * Determine max upload size
+     *
+     * @return float|int
+     */
+    /*
+    public static function file_upload_max_size()
+    {
+        static $max_size = -1;
+        if ($max_size < 0) {
+            // Start with post_max_size.
+            $max_size = self::parse_size(ini_get('post_max_size'));
+            // If upload_max_size is less, then reduce. Except if upload_max_size is
+            // zero, which indicates no limit.
+            $upload_max = self::parse_size(ini_get('upload_max_filesize'));
+            if ($upload_max > 0 && $upload_max < $max_size) {
+                $max_size = $upload_max;
+            }
+        }
+        return $max_size;
+    }*/
+
+
+
+
+
+/*
+    function parse_size(string $size): int {
+          // Remove the non-unit characters from the size.
+          $unit = preg_replace('/[^bkmgtpezy]/i', '', $size);
+
+          // Remove the non-numeric characters from the size.
+          $size = preg_replace('/[^0-9\\.]/', '', $size);
+
+          if ($unit) {
+            // Find the position of the unit in the ordered string which is the power of magnitude to multiply a kilobyte by.
+            return round($size * pow(1024, stripos('bkmgtpezy', $unit[0])));
+          }
+          else {
+            return round($size);
+          }
+    }*/
+
+    /**
+     * Gets post_max_size from PHP's configuration expressed in bytes
+     *
+     * @return int
+     * @link http://php.net/manual/en/ini.core.php#ini.post-max-size
+     * @codeCoverageIgnore
+     */
+    /*
+    private function iniMaxPostSize(): int
+    {
+        $size = ini_get('post_max_size');
+        $suffix = strtoupper(substr($size, -1));
+        if ($suffix === 'K') {
+            return substr($size, 0, -1) * 1024;
+        }
+        if ($suffix === 'M') {
+            return substr($size, 0, -1) * 1024 * 1024;
+        }
+        if ($suffix === 'G') {
+            return substr($size, 0, -1) * 1024  * 1024 * 1024;
+        }
+        return (int) $size;
+    }*/
+
+    /**
+     * Convert a ini like size to a numeric size in bytes.
+     *
+     * @param string $size
+     * @return int
+     */
+    /*
+    public static function iniSizeToBytes(string $size): int
+    {
+        if (is_numeric($size)) {
+            return (int)$size;
+        }
+        $suffix = strtoupper(substr($size, -1));
+        $strippedSize = substr($size, 0, -1);
+        if (!is_numeric($strippedSize)) {
+            throw new \InvalidArgumentException("$size is not a valid ini size");
+        }
+        if ($strippedSize <= 0) {
+            throw new \InvalidArgumentException("Expect $size to be higher isn't zero or lower");
+        }
+        if ($suffix === 'K') {
+            return $strippedSize * 1024;
+        }
+        if ($suffix === 'M') {
+            return $strippedSize * 1024 * 1024;
+        }
+        if ($suffix === 'G') {
+            return $strippedSize * 1024 * 1024 * 1024;
+        }
+        if ($suffix === 'T') {
+            return $strippedSize * 1024  * 1024 * 1024 * 1024;
+        }
+        return (int)$size;
+    }*/
 
     /*
       * Converts a shorthand byte value to an integer byte value.

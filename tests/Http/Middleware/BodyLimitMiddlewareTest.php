@@ -48,4 +48,23 @@ class BodyLimitMiddlewareTest extends TestCase
         $middleware = new BodyLimitMiddleware();
         $middleware->process($request, new HandlerProxy2($handler));
     }
+
+    /**
+     * @expectedException Chiron\Http\Exception\BadRequestHttpException
+     */
+    public function testWithInvalidContentLengthValue()
+    {
+        $request = (new ServerRequestFactory())->createServerRequestFromArray([
+            'REQUEST_URI'            => '/',
+            'REQUEST_METHOD'         => 'POST',
+        ]);
+
+        $request = $request->withHeader('Content-Length', '100, 200');
+
+        $handler = function ($request) {
+            return new Response(200);
+        };
+        $middleware = new BodyLimitMiddleware();
+        $middleware->process($request, new HandlerProxy2($handler));
+    }
 }

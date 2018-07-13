@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Chiron\Http;
@@ -11,6 +10,8 @@ use Psr\Http\Message\ResponseInterface;
 //https://github.com/zendframework/zend-diactoros/blob/master/src/Response/Serializer.php
 //https://github.com/zendframework/zend-diactoros/blob/master/src/Request/Serializer.php
 //https://github.com/zendframework/zend-diactoros/blob/master/src/AbstractSerializer.php
+
+//https://github.com/ringcentral/psr7/blob/master/src/functions.php#L21
 
 //https://github.com/guzzle/psr7/blob/master/src/functions.php#L18
 

@@ -150,6 +150,31 @@ abstract class AbstractHandler implements RequestHandlerInterface
         return 'text/html';
     }
 
+    /**
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @return string
+     */
+    /*
+    protected function getAcceptType(ServerRequestInterface $request)
+    {
+        $accept = $request->getHeaderLine('Accept');
+        if (
+            strpos($accept, 'text/html') !== false ||
+            strpos($accept, 'application/xhtml+xml') !== false
+        ) {
+            return 'html';
+        }
+        if (
+            strpos($accept, 'application/json') !== false ||
+            strpos($accept, 'text/json') !== false ||
+            strpos($accept, 'application/x-json') !== false
+        ) {
+            return 'json';
+        }
+        return 'text';
+    }*/
+
     protected function shouldDisplayDetails(ServerRequestInterface $request): bool
     {
         return $request->getAttribute($this->attributeName . '_displayErrorDetails', false);
