@@ -151,8 +151,8 @@ abstract class AbstractHandler implements RequestHandlerInterface
     }
 
     /**
-     *
      * @param \Psr\Http\Message\ServerRequestInterface $request
+     *
      * @return string
      */
     /*

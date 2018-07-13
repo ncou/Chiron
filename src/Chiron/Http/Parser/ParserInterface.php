@@ -16,13 +16,14 @@ interface ParserInterface
      *
      * @return bool Whether or not the parser matches.
      */
-    public function match(string $contentType) : bool;
+    public function match(string $contentType): bool;
 
     /**
      * Parse the body content and return a new request.
      *
      * @param ServerRequestInterface $request
+     *
      * @return ServerRequestInterface
      */
-    public function parse(ServerRequestInterface $request) : ServerRequestInterface;
+    public function parse(ServerRequestInterface $request): ServerRequestInterface;
 }

@@ -10,12 +10,12 @@ use function preg_match;
 
 class FormUrlEncodedParser implements ParserInterface
 {
-    public function match(string $contentType) : bool
+    public function match(string $contentType): bool
     {
         return (bool) preg_match('#^application/x-www-form-urlencoded($|[ ;])#', $contentType);
     }
 
-    public function parse(ServerRequestInterface $request) : ServerRequestInterface
+    public function parse(ServerRequestInterface $request): ServerRequestInterface
     {
         // The body could already be parsed if the ServerRequestFactory used the superglobal $_POST to initialise the parsedBody field.
         // But this parser could be used also for PUT or PATCH request who have a body.

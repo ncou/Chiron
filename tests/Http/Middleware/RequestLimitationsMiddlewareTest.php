@@ -15,9 +15,13 @@ class RequestLimitationsMiddlewareTest extends TestCase
 {
     // define the max uri length (used in the middleware to check if the RequestUriTooLongHttpException should be throwed)
     private $maxUriLength = 2048;
+
     private $maxNumHeaders = 100;
+
     private $maxHeadersValue = 4096;
+
     private $maxHeaderValue = 2048;
+
     private $maxHeaderName = 64;
 
     public function testRequestUriNotTooLong()
@@ -67,7 +71,7 @@ class RequestLimitationsMiddlewareTest extends TestCase
         };
 
         for ($index = 1; $index <= $this->maxNumHeaders + 1; $index++) {
-            $request = $request->withHeader('X-Custom_' . $index , ['TEST']);
+            $request = $request->withHeader('X-Custom_' . $index, ['TEST']);
         }
 
         $middleware = new RequestLimitationsMiddleware();
@@ -88,7 +92,7 @@ class RequestLimitationsMiddlewareTest extends TestCase
         };
 
         for ($index = 1; $index <= 100; $index++) {
-            $request = $request->withHeader('X-Custom_' . $index , [str_pad('', intval($this->maxHeadersValue/100), '*')]);
+            $request = $request->withHeader('X-Custom_' . $index, [str_pad('', intval($this->maxHeadersValue / 100), '*')]);
         }
 
         $middleware = new RequestLimitationsMiddleware();
@@ -132,5 +136,4 @@ class RequestLimitationsMiddlewareTest extends TestCase
         $middleware = new RequestLimitationsMiddleware();
         $middleware->process($request, new HandlerProxy2($handler));
     }
-
 }
