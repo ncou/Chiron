@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Exception\Client;
 
-use Chiron\Tests\Http\Exception\HttpExceptionTest;
 use Chiron\Http\Exception\Client\ConflictHttpException;
+use Chiron\Tests\Http\Exception\HttpExceptionTest;
 
 class ConflictHttpExceptionTest extends HttpExceptionTest
 {
