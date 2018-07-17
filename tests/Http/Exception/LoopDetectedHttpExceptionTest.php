@@ -6,7 +6,7 @@ namespace Chiron\Tests\Http\Exception;
 
 use Chiron\Http\Exception\ LoopDetectedHttpException;
 
-class  LoopDetectedHttpExceptionTest extends HttpExceptionTest
+class LoopDetectedHttpExceptionTest extends HttpExceptionTest
 {
     protected function createException()
     {
