@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Parser;
 
-use Psr\Http\Exception\BadRequestHttpException;
+use Chiron\Http\Exception\BadRequestHttpException;
 use Psr\Http\Message\ServerRequestInterface;
 use function array_shift;
 use function explode;
