@@ -41,7 +41,7 @@ class RequestLimitationsMiddlewareTest extends TestCase
     }
 
     /**
-     * @expectedException Chiron\Http\Exception\RequestUriTooLongHttpException
+     * @expectedException Chiron\Http\Exception\Client\RequestUriTooLongHttpException
      */
     public function testRequestUriTooLong()
     {
@@ -58,7 +58,7 @@ class RequestLimitationsMiddlewareTest extends TestCase
     }
 
     /**
-     * @expectedException Chiron\Http\Exception\RequestHeaderFieldsTooLargeHttpException
+     * @expectedException Chiron\Http\Exception\Client\RequestHeaderFieldsTooLargeHttpException
      */
     public function testTooMuchHeaders()
     {
@@ -79,7 +79,7 @@ class RequestLimitationsMiddlewareTest extends TestCase
     }
 
     /**
-     * @expectedException Chiron\Http\Exception\RequestHeaderFieldsTooLargeHttpException
+     * @expectedException Chiron\Http\Exception\Client\RequestHeaderFieldsTooLargeHttpException
      */
     public function testAllHeadersTooBig()
     {
@@ -100,7 +100,7 @@ class RequestLimitationsMiddlewareTest extends TestCase
     }
 
     /**
-     * @expectedException Chiron\Http\Exception\RequestHeaderFieldsTooLargeHttpException
+     * @expectedException Chiron\Http\Exception\Client\RequestHeaderFieldsTooLargeHttpException
      */
     public function testOneHeaderTooBig()
     {
@@ -119,7 +119,7 @@ class RequestLimitationsMiddlewareTest extends TestCase
     }
 
     /**
-     * @expectedException Chiron\Http\Exception\RequestHeaderFieldsTooLargeHttpException
+     * @expectedException Chiron\Http\Exception\Client\RequestHeaderFieldsTooLargeHttpException
      */
     public function testHeaderNameTooLong()
     {

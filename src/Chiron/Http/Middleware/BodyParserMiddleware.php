@@ -17,7 +17,7 @@ namespace Chiron\Http\Middleware;
 
 // TODO : regarder ici : https://github.com/zendframework/zend-expressive-helpers/blob/master/src/BodyParams/BodyParamsMiddleware.php    +    https://github.com/zendframework/zend-expressive-helpers/blob/master/src/BodyParams/FormUrlEncodedStrategy.php  +    https://github.com/zendframework/zend-expressive-helpers/blob/master/src/BodyParams/JsonStrategy.php
 
-use Chiron\Http\Exception\UnsupportedMediaTypeHttpException;
+use Chiron\Http\Exception\Client\UnsupportedMediaTypeHttpException;
 use Chiron\Http\Parser\RequestParserInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

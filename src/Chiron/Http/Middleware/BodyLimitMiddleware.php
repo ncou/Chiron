@@ -6,8 +6,8 @@ namespace Chiron\Http\Middleware;
 
 //https://github.com/withelmo/CakePHP-PostMaxSizeException/blob/master/Lib/PostMaxSizeChecker.php
 
-use Chiron\Http\Exception\BadRequestHttpException;
-use Chiron\Http\Exception\PayloadTooLargeHttpException;
+use Chiron\Http\Exception\Client\BadRequestHttpException;
+use Chiron\Http\Exception\Client\PayloadTooLargeHttpException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;

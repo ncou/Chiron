@@ -252,7 +252,7 @@ class RoutingMiddlewareTest extends TestCase
     }
 
     /**
-     * @expectedException \Chiron\Http\Exception\NotFoundHttpException
+     * @expectedException \Chiron\Http\Exception\Client\NotFoundHttpException
      */
     public function testRouteNotFound()
     {
@@ -282,7 +282,7 @@ class RoutingMiddlewareTest extends TestCase
     }
 
     /**
-     * @expectedException \Chiron\Http\Exception\MethodNotAllowedHttpException
+     * @expectedException \Chiron\Http\Exception\Client\MethodNotAllowedHttpException
      */
     public function testRouteMethodNotAllowed()
     {

@@ -27,9 +27,9 @@ class JsonParser implements RequestParserInterface
     public function supports(string $contentType): bool
     {
         $parts = explode(';', $contentType);
-        $mime = array_shift($parts);
+        $mime = trim(array_shift($parts));
 
-        return (bool) preg_match('#[/+]json$#', trim($mime));
+        return (bool) preg_match('#[/+]json$#', $mime);
 
         // Regex for : 'application/json' or 'application/*+json'
         //if (preg_match('~^application/([a-z.]+\+)?json($|;)~', $mediaType)) {

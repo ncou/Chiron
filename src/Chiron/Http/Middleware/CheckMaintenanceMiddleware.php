@@ -24,7 +24,7 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\Http\Exception\ServiceUnavailableHttpException;
+use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
 use DateTimeInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;

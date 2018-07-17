@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Http;
 
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Exception\HttpException;
 use Chiron\Http\Psr\Uri;
 use Chiron\Http\StatusCode;
 use DOMDocument;
@@ -87,49 +88,6 @@ class StatusCodeTest extends TestCase
         508 => 'The server detected an infinite loop while processing the request.',
         510 => 'Further extensions to the request are required for the server to fulfill it.A mandatory extension policy in the request is not accepted by the server for this resource.',
         511 => 'The client needs to authenticate to gain network access.',
-    ];
-
-    private $phrasesExceptions = [
-        400 => Exception\BadRequestException::class,
-        401 => Exception\UnauthorizedException::class,
-        402 => Exception\PaymentRequiredException::class,
-        403 => Exception\ForbiddenException::class,
-        404 => Exception\NotFoundException::class,
-        405 => Exception\MethodNotAllowedException::class,
-        406 => Exception\NotAcceptableException::class,
-        407 => Exception\ProxyAuthenticationRequiredException::class,
-        408 => Exception\RequestTimeoutException::class,
-        409 => Exception\ConflictException::class,
-        410 => Exception\GoneException::class,
-        411 => Exception\LengthRequiredException::class,
-        412 => Exception\PreconditionFailedException::class,
-        413 => Exception\PayloadTooLargeException::class,
-        414 => Exception\RequestUriTooLongException::class,
-        415 => Exception\UnsupportedMediaTypeException::class,
-        416 => Exception\RequestedRangeNotSatisfiableException::class,
-        417 => Exception\ExpectationFailedException::class,
-        418 => Exception\ImATeapotException::class,
-        421 => Exception\MisdirectedRequestException::class,
-        422 => Exception\UnprocessableEntityException::class,
-        423 => Exception\LockedException::class,
-        424 => Exception\FailedDependencyException::class,
-        426 => Exception\UpgradeRequiredException::class,
-        428 => Exception\PreconditionRequiredException::class,
-        429 => Exception\TooManyRequestsException::class,
-        431 => Exception\RequestHeaderFieldsTooLargeException::class,
-        451 => Exception\UnavailableForLegalReasonsException::class,
-        //Server Error 5xx
-        500 => Exception\InternalServerErrorException::class,
-        501 => Exception\NotImplementedException::class,
-        502 => Exception\BadGatewayException::class,
-        503 => Exception\ServiceUnavailableException::class,
-        504 => Exception\GatewayTimeoutException::class,
-        505 => Exception\HttpVersionNotSupportedException::class,
-        506 => Exception\VariantAlsoNegotiatesException::class,
-        507 => Exception\InsufficientStorageException::class,
-        508 => Exception\LoopDetectedException::class,
-        510 => Exception\NotExtendedException::class,
-        511 => Exception\NetworkAuthenticationRequiredException::class,
     ];
 
     public function testGetReasonMessage(): void
@@ -232,6 +190,7 @@ class StatusCodeTest extends TestCase
                 $exception = new $exceptionName();
             }
 
+            $this->assertInstanceOf(HttpException::class, $exception);
             self::assertSame($reasonPhrase, $exception->getMessage());
             self::assertSame((int) $code, $exception->getStatusCode());
         }

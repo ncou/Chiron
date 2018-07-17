@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Middleware;
 
-use Chiron\Http\Exception\ServiceUnavailableHttpException;
+use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\CheckMaintenanceMiddleware;
 use Chiron\Http\Psr\Response;

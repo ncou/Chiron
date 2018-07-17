@@ -31,7 +31,7 @@ class BodyLimitMiddlewareTest extends TestCase
     }
 
     /**
-     * @expectedException Chiron\Http\Exception\PayloadTooLargeHttpException
+     * @expectedException Chiron\Http\Exception\Client\PayloadTooLargeHttpException
      */
     public function testBodyIsTooLarge()
     {
@@ -50,7 +50,7 @@ class BodyLimitMiddlewareTest extends TestCase
     }
 
     /**
-     * @expectedException Chiron\Http\Exception\BadRequestHttpException
+     * @expectedException Chiron\Http\Exception\Client\BadRequestHttpException
      */
     public function testWithInvalidContentLengthValue()
     {

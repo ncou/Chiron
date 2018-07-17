@@ -21,9 +21,9 @@ class XmlParser implements RequestParserInterface
     public function supports(string $contentType): bool
     {
         $parts = explode(';', $contentType);
-        $mime = array_shift($parts);
+        $mime = trim(array_shift($parts));
 
-        return (bool) preg_match('#[/+]xml$#', trim($mime));
+        return (bool) preg_match('#[/+]xml$#', $mime);
 
         // Regex for : 'application/xml' or 'application/*+xml' or 'text/xml'
         //if (preg_match('~^application/([a-z.]+\+)?xml($|;)~', $mediaType) || $mediaType === 'text/xml') {

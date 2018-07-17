@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\Http\Exception\RequestHeaderFieldsTooLargeHttpException;
-use Chiron\Http\Exception\RequestUriTooLongHttpException;
+use Chiron\Http\Exception\Client\RequestHeaderFieldsTooLargeHttpException;
+use Chiron\Http\Exception\Client\RequestUriTooLongHttpException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
