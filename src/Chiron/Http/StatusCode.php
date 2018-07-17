@@ -4,46 +4,46 @@ declare(strict_types=1);
 
 namespace Chiron\Http;
 
-use Chiron\Http\Exception\BadRequestHttpException;
-use Chiron\Http\Exception\UnauthorizedHttpException;
-use Chiron\Http\Exception\PaymentRequiredHttpException;
-use Chiron\Http\Exception\ForbiddenHttpException;
-use Chiron\Http\Exception\NotFoundHttpException;
-use Chiron\Http\Exception\MethodNotAllowedHttpException;
-use Chiron\Http\Exception\NotAcceptableHttpException;
-use Chiron\Http\Exception\ProxyAuthenticationRequiredHttpException;
-use Chiron\Http\Exception\RequestTimeoutHttpException;
-use Chiron\Http\Exception\ConflictHttpException;
-use Chiron\Http\Exception\GoneHttpException;
-use Chiron\Http\Exception\LengthRequiredHttpException;
-use Chiron\Http\Exception\PreconditionFailedHttpException;
-use Chiron\Http\Exception\PayloadTooLargeHttpException;
-use Chiron\Http\Exception\RequestUriTooLongHttpException;
-use Chiron\Http\Exception\UnsupportedMediaTypeHttpException;
-use Chiron\Http\Exception\RequestedRangeNotSatisfiableHttpException;
-use Chiron\Http\Exception\ExpectationFailedHttpException;
-use Chiron\Http\Exception\ImATeapotHttpException;
-use Chiron\Http\Exception\MisdirectedRequestHttpException;
-use Chiron\Http\Exception\UnprocessableEntityHttpException;
-use Chiron\Http\Exception\LockedHttpException;
-use Chiron\Http\Exception\FailedDependencyHttpException;
-use Chiron\Http\Exception\UpgradeRequiredHttpException;
-use Chiron\Http\Exception\PreconditionRequiredHttpException;
-use Chiron\Http\Exception\TooManyRequestsHttpException;
-use Chiron\Http\Exception\RequestHeaderFieldsTooLargeHttpException;
-use Chiron\Http\Exception\UnavailableForLegalReasonsHttpException;
-use Chiron\Http\Exception\InternalServerErrorHttpException;
-use Chiron\Http\Exception\NotImplementedHttpException;
 use Chiron\Http\Exception\BadGatewayHttpException;
-use Chiron\Http\Exception\ServiceUnavailableHttpException;
+use Chiron\Http\Exception\BadRequestHttpException;
+use Chiron\Http\Exception\ConflictHttpException;
+use Chiron\Http\Exception\ExpectationFailedHttpException;
+use Chiron\Http\Exception\FailedDependencyHttpException;
+use Chiron\Http\Exception\ForbiddenHttpException;
 use Chiron\Http\Exception\GatewayTimeoutHttpException;
+use Chiron\Http\Exception\GoneHttpException;
 use Chiron\Http\Exception\HttpVersionNotSupportedHttpException;
-use Chiron\Http\Exception\VariantAlsoNegotiatesHttpException;
+use Chiron\Http\Exception\ImATeapotHttpException;
 use Chiron\Http\Exception\InsufficientStorageHttpException;
+use Chiron\Http\Exception\InternalServerErrorHttpException;
+use Chiron\Http\Exception\LengthRequiredHttpException;
+use Chiron\Http\Exception\LockedHttpException;
 use Chiron\Http\Exception\LoopDetectedHttpException;
-use Chiron\Http\Exception\NotExtendedHttpException;
+use Chiron\Http\Exception\MethodNotAllowedHttpException;
+use Chiron\Http\Exception\MisdirectedRequestHttpException;
 use Chiron\Http\Exception\NetworkAuthenticationRequiredHttpException;
+use Chiron\Http\Exception\NotAcceptableHttpException;
+use Chiron\Http\Exception\NotExtendedHttpException;
+use Chiron\Http\Exception\NotFoundHttpException;
+use Chiron\Http\Exception\NotImplementedHttpException;
+use Chiron\Http\Exception\PayloadTooLargeHttpException;
+use Chiron\Http\Exception\PaymentRequiredHttpException;
+use Chiron\Http\Exception\PreconditionFailedHttpException;
+use Chiron\Http\Exception\PreconditionRequiredHttpException;
+use Chiron\Http\Exception\ProxyAuthenticationRequiredHttpException;
+use Chiron\Http\Exception\RequestedRangeNotSatisfiableHttpException;
+use Chiron\Http\Exception\RequestHeaderFieldsTooLargeHttpException;
+use Chiron\Http\Exception\RequestTimeoutHttpException;
+use Chiron\Http\Exception\RequestUriTooLongHttpException;
+use Chiron\Http\Exception\ServiceUnavailableHttpException;
 use Chiron\Http\Exception\TooEarlyRequestHttpException;
+use Chiron\Http\Exception\TooManyRequestsHttpException;
+use Chiron\Http\Exception\UnauthorizedHttpException;
+use Chiron\Http\Exception\UnavailableForLegalReasonsHttpException;
+use Chiron\Http\Exception\UnprocessableEntityHttpException;
+use Chiron\Http\Exception\UnsupportedMediaTypeHttpException;
+use Chiron\Http\Exception\UpgradeRequiredHttpException;
+use Chiron\Http\Exception\VariantAlsoNegotiatesHttpException;
 
 // TODO : renommer cette classe en HttpStatus ?????
 class StatusCode
@@ -53,150 +53,215 @@ class StatusCode
      */
     // TODO : renommer en MINIMUM_CODE_VALUE et MAXIMUM_CODE_VALUE ????
     public const MIN_STATUS_CODE_VALUE = 100;
+
     public const MAX_STATUS_CODE_VALUE = 599;
 
-//https://github.com/ncou/Http-PSR7-Wandu-Upload-Cookie-etc/blob/master/Psr/Response.php#L13
+    //https://github.com/ncou/Http-PSR7-Wandu-Upload-Cookie-etc/blob/master/Psr/Response.php#L13
 
     /* Http Status Code, http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml */
     // TODO : attention il manque des code genre le 103...etc et virer le code 599 par exemple !!!!
-    const HTTP_CONTINUE = 100;
-    const HTTP_SWITCHING_PROTOCOLS = 101;
-    const HTTP_PROCESSING = 102;
-    const HTTP_OK = 200;
-    const HTTP_CREATED = 201;
-    const HTTP_ACCEPTED = 202;
-    const HTTP_NONAUTHORITATIVE_INFORMATION = 203;
-    const HTTP_NO_CONTENT = 204;
-    const HTTP_RESET_CONTENT = 205;
-    const HTTP_PARTIAL_CONTENT = 206;
-    const HTTP_MULTI_STATUS = 207;
-    const HTTP_ALREADY_REPORTED = 208;
-    const HTTP_IM_USED = 226;
-    const HTTP_MULTIPLE_CHOICES = 300;
-    const HTTP_MOVED_PERMANENTLY = 301;
-    const HTTP_FOUND = 302;
-    const HTTP_SEE_OTHER = 303;
-    const HTTP_NOT_MODIFIED = 304;
-    const HTTP_USE_PROXY = 305;
-    const HTTP_UNUSED= 306;
-    const HTTP_TEMPORARY_REDIRECT = 307;
-    const HTTP_PERMANENT_REDIRECT = 308;
-    const HTTP_BAD_REQUEST = 400;
-    const HTTP_UNAUTHORIZED  = 401;
-    const HTTP_PAYMENT_REQUIRED = 402;
-    const HTTP_FORBIDDEN = 403;
-    const HTTP_NOT_FOUND = 404;
-    const HTTP_METHOD_NOT_ALLOWED = 405;
-    const HTTP_NOT_ACCEPTABLE = 406;
-    const HTTP_PROXY_AUTHENTICATION_REQUIRED = 407;
-    const HTTP_REQUEST_TIMEOUT = 408;
-    const HTTP_CONFLICT = 409;
-    const HTTP_GONE = 410;
-    const HTTP_LENGTH_REQUIRED = 411;
-    const HTTP_PRECONDITION_FAILED = 412;
-    const HTTP_REQUEST_ENTITY_TOO_LARGE = 413;
-    const HTTP_REQUEST_URI_TOO_LONG = 414;
-    const HTTP_UNSUPPORTED_MEDIA_TYPE = 415;
-    const HTTP_REQUESTED_RANGE_NOT_SATISFIABLE = 416;
-    const HTTP_EXPECTATION_FAILED = 417;
-    const HTTP_IM_A_TEAPOT = 418;
-    const HTTP_MISDIRECTED_REQUEST = 421;
-    const HTTP_UNPROCESSABLE_ENTITY = 422;
-    const HTTP_LOCKED = 423;
-    const HTTP_FAILED_DEPENDENCY = 424;
-    const HTTP_TOO_EARLY = 425;
-    const HTTP_UPGRADE_REQUIRED = 426;
-    const HTTP_PRECONDITION_REQUIRED = 428;
-    const HTTP_TOO_MANY_REQUESTS = 429;
-    const HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE = 431;
-    const HTTP_CONNECTION_CLOSED_WITHOUT_RESPONSE = 444;
-    const HTTP_UNAVAILABLE_FOR_LEGAL_REASONS = 451;
-    const HTTP_CLIENT_CLOSED_REQUEST = 499;
-    const HTTP_INTERNAL_SERVER_ERROR = 500;
-    const HTTP_NOT_IMPLEMENTED = 501;
-    const HTTP_BAD_GATEWAY = 502;
-    const HTTP_SERVICE_UNAVAILABLE = 503;
-    const HTTP_GATEWAY_TIMEOUT = 504;
-    const HTTP_VERSION_NOT_SUPPORTED = 505;
-    const HTTP_VARIANT_ALSO_NEGOTIATES = 506;
-    const HTTP_INSUFFICIENT_STORAGE = 507;
-    const HTTP_LOOP_DETECTED = 508;
-    const HTTP_NOT_EXTENDED = 510;
-    const HTTP_NETWORK_AUTHENTICATION_REQUIRED = 511;
-    const HTTP_NETWORK_CONNECTION_TIMEOUT_ERROR = 599;
+    public const HTTP_CONTINUE = 100;
 
-//https://github.com/symfony/http-foundation/blob/master/Response.php
-/*
-    const HTTP_CONTINUE = 100;
-    const HTTP_SWITCHING_PROTOCOLS = 101;
-    const HTTP_PROCESSING = 102;            // RFC2518
-    const HTTP_EARLY_HINTS = 103;           // RFC8297
-    const HTTP_OK = 200;
-    const HTTP_CREATED = 201;
-    const HTTP_ACCEPTED = 202;
-    const HTTP_NON_AUTHORITATIVE_INFORMATION = 203;
-    const HTTP_NO_CONTENT = 204;
-    const HTTP_RESET_CONTENT = 205;
-    const HTTP_PARTIAL_CONTENT = 206;
-    const HTTP_MULTI_STATUS = 207;          // RFC4918
-    const HTTP_ALREADY_REPORTED = 208;      // RFC5842
-    const HTTP_IM_USED = 226;               // RFC3229
-    const HTTP_MULTIPLE_CHOICES = 300;
-    const HTTP_MOVED_PERMANENTLY = 301;
-    const HTTP_FOUND = 302;
-    const HTTP_SEE_OTHER = 303;
-    const HTTP_NOT_MODIFIED = 304;
-    const HTTP_USE_PROXY = 305;
-    const HTTP_RESERVED = 306;
-    const HTTP_TEMPORARY_REDIRECT = 307;
-    const HTTP_PERMANENTLY_REDIRECT = 308;  // RFC7238
-    const HTTP_BAD_REQUEST = 400;
-    const HTTP_UNAUTHORIZED = 401;
-    const HTTP_PAYMENT_REQUIRED = 402;
-    const HTTP_FORBIDDEN = 403;
-    const HTTP_NOT_FOUND = 404;
-    const HTTP_METHOD_NOT_ALLOWED = 405;
-    const HTTP_NOT_ACCEPTABLE = 406;
-    const HTTP_PROXY_AUTHENTICATION_REQUIRED = 407;
-    const HTTP_REQUEST_TIMEOUT = 408;
-    const HTTP_CONFLICT = 409;
-    const HTTP_GONE = 410;
-    const HTTP_LENGTH_REQUIRED = 411;
-    const HTTP_PRECONDITION_FAILED = 412;
-    const HTTP_REQUEST_ENTITY_TOO_LARGE = 413;
-    const HTTP_REQUEST_URI_TOO_LONG = 414;
-    const HTTP_UNSUPPORTED_MEDIA_TYPE = 415;
-    const HTTP_REQUESTED_RANGE_NOT_SATISFIABLE = 416;
-    const HTTP_EXPECTATION_FAILED = 417;
-    const HTTP_I_AM_A_TEAPOT = 418;                                               // RFC2324
-    const HTTP_MISDIRECTED_REQUEST = 421;                                         // RFC7540
-    const HTTP_UNPROCESSABLE_ENTITY = 422;                                        // RFC4918
-    const HTTP_LOCKED = 423;                                                      // RFC4918
-    const HTTP_FAILED_DEPENDENCY = 424;                                           // RFC4918
-*/
+    public const HTTP_SWITCHING_PROTOCOLS = 101;
+
+    public const HTTP_PROCESSING = 102;
+
+    public const HTTP_OK = 200;
+
+    public const HTTP_CREATED = 201;
+
+    public const HTTP_ACCEPTED = 202;
+
+    public const HTTP_NONAUTHORITATIVE_INFORMATION = 203;
+
+    public const HTTP_NO_CONTENT = 204;
+
+    public const HTTP_RESET_CONTENT = 205;
+
+    public const HTTP_PARTIAL_CONTENT = 206;
+
+    public const HTTP_MULTI_STATUS = 207;
+
+    public const HTTP_ALREADY_REPORTED = 208;
+
+    public const HTTP_IM_USED = 226;
+
+    public const HTTP_MULTIPLE_CHOICES = 300;
+
+    public const HTTP_MOVED_PERMANENTLY = 301;
+
+    public const HTTP_FOUND = 302;
+
+    public const HTTP_SEE_OTHER = 303;
+
+    public const HTTP_NOT_MODIFIED = 304;
+
+    public const HTTP_USE_PROXY = 305;
+
+    public const HTTP_UNUSED = 306;
+
+    public const HTTP_TEMPORARY_REDIRECT = 307;
+
+    public const HTTP_PERMANENT_REDIRECT = 308;
+
+    public const HTTP_BAD_REQUEST = 400;
+
+    public const HTTP_UNAUTHORIZED = 401;
+
+    public const HTTP_PAYMENT_REQUIRED = 402;
+
+    public const HTTP_FORBIDDEN = 403;
+
+    public const HTTP_NOT_FOUND = 404;
+
+    public const HTTP_METHOD_NOT_ALLOWED = 405;
+
+    public const HTTP_NOT_ACCEPTABLE = 406;
+
+    public const HTTP_PROXY_AUTHENTICATION_REQUIRED = 407;
+
+    public const HTTP_REQUEST_TIMEOUT = 408;
+
+    public const HTTP_CONFLICT = 409;
+
+    public const HTTP_GONE = 410;
+
+    public const HTTP_LENGTH_REQUIRED = 411;
+
+    public const HTTP_PRECONDITION_FAILED = 412;
+
+    public const HTTP_REQUEST_ENTITY_TOO_LARGE = 413;
+
+    public const HTTP_REQUEST_URI_TOO_LONG = 414;
+
+    public const HTTP_UNSUPPORTED_MEDIA_TYPE = 415;
+
+    public const HTTP_REQUESTED_RANGE_NOT_SATISFIABLE = 416;
+
+    public const HTTP_EXPECTATION_FAILED = 417;
+
+    public const HTTP_IM_A_TEAPOT = 418;
+
+    public const HTTP_MISDIRECTED_REQUEST = 421;
+
+    public const HTTP_UNPROCESSABLE_ENTITY = 422;
+
+    public const HTTP_LOCKED = 423;
+
+    public const HTTP_FAILED_DEPENDENCY = 424;
+
+    public const HTTP_TOO_EARLY = 425;
+
+    public const HTTP_UPGRADE_REQUIRED = 426;
+
+    public const HTTP_PRECONDITION_REQUIRED = 428;
+
+    public const HTTP_TOO_MANY_REQUESTS = 429;
+
+    public const HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE = 431;
+
+    public const HTTP_CONNECTION_CLOSED_WITHOUT_RESPONSE = 444;
+
+    public const HTTP_UNAVAILABLE_FOR_LEGAL_REASONS = 451;
+
+    public const HTTP_CLIENT_CLOSED_REQUEST = 499;
+
+    public const HTTP_INTERNAL_SERVER_ERROR = 500;
+
+    public const HTTP_NOT_IMPLEMENTED = 501;
+
+    public const HTTP_BAD_GATEWAY = 502;
+
+    public const HTTP_SERVICE_UNAVAILABLE = 503;
+
+    public const HTTP_GATEWAY_TIMEOUT = 504;
+
+    public const HTTP_VERSION_NOT_SUPPORTED = 505;
+
+    public const HTTP_VARIANT_ALSO_NEGOTIATES = 506;
+
+    public const HTTP_INSUFFICIENT_STORAGE = 507;
+
+    public const HTTP_LOOP_DETECTED = 508;
+
+    public const HTTP_NOT_EXTENDED = 510;
+
+    public const HTTP_NETWORK_AUTHENTICATION_REQUIRED = 511;
+
+    public const HTTP_NETWORK_CONNECTION_TIMEOUT_ERROR = 599;
+
+    //https://github.com/symfony/http-foundation/blob/master/Response.php
+    /*
+        const HTTP_CONTINUE = 100;
+        const HTTP_SWITCHING_PROTOCOLS = 101;
+        const HTTP_PROCESSING = 102;            // RFC2518
+        const HTTP_EARLY_HINTS = 103;           // RFC8297
+        const HTTP_OK = 200;
+        const HTTP_CREATED = 201;
+        const HTTP_ACCEPTED = 202;
+        const HTTP_NON_AUTHORITATIVE_INFORMATION = 203;
+        const HTTP_NO_CONTENT = 204;
+        const HTTP_RESET_CONTENT = 205;
+        const HTTP_PARTIAL_CONTENT = 206;
+        const HTTP_MULTI_STATUS = 207;          // RFC4918
+        const HTTP_ALREADY_REPORTED = 208;      // RFC5842
+        const HTTP_IM_USED = 226;               // RFC3229
+        const HTTP_MULTIPLE_CHOICES = 300;
+        const HTTP_MOVED_PERMANENTLY = 301;
+        const HTTP_FOUND = 302;
+        const HTTP_SEE_OTHER = 303;
+        const HTTP_NOT_MODIFIED = 304;
+        const HTTP_USE_PROXY = 305;
+        const HTTP_RESERVED = 306;
+        const HTTP_TEMPORARY_REDIRECT = 307;
+        const HTTP_PERMANENTLY_REDIRECT = 308;  // RFC7238
+        const HTTP_BAD_REQUEST = 400;
+        const HTTP_UNAUTHORIZED = 401;
+        const HTTP_PAYMENT_REQUIRED = 402;
+        const HTTP_FORBIDDEN = 403;
+        const HTTP_NOT_FOUND = 404;
+        const HTTP_METHOD_NOT_ALLOWED = 405;
+        const HTTP_NOT_ACCEPTABLE = 406;
+        const HTTP_PROXY_AUTHENTICATION_REQUIRED = 407;
+        const HTTP_REQUEST_TIMEOUT = 408;
+        const HTTP_CONFLICT = 409;
+        const HTTP_GONE = 410;
+        const HTTP_LENGTH_REQUIRED = 411;
+        const HTTP_PRECONDITION_FAILED = 412;
+        const HTTP_REQUEST_ENTITY_TOO_LARGE = 413;
+        const HTTP_REQUEST_URI_TOO_LONG = 414;
+        const HTTP_UNSUPPORTED_MEDIA_TYPE = 415;
+        const HTTP_REQUESTED_RANGE_NOT_SATISFIABLE = 416;
+        const HTTP_EXPECTATION_FAILED = 417;
+        const HTTP_I_AM_A_TEAPOT = 418;                                               // RFC2324
+        const HTTP_MISDIRECTED_REQUEST = 421;                                         // RFC7540
+        const HTTP_UNPROCESSABLE_ENTITY = 422;                                        // RFC4918
+        const HTTP_LOCKED = 423;                                                      // RFC4918
+        const HTTP_FAILED_DEPENDENCY = 424;                                           // RFC4918
+    */
     /**
      * @deprecated
      */
-/*
-    const HTTP_RESERVED_FOR_WEBDAV_ADVANCED_COLLECTIONS_EXPIRED_PROPOSAL = 425;   // RFC2817
-    const HTTP_TOO_EARLY = 425;                                                   // RFC-ietf-httpbis-replay-04
-    const HTTP_UPGRADE_REQUIRED = 426;                                            // RFC2817
-    const HTTP_PRECONDITION_REQUIRED = 428;                                       // RFC6585
-    const HTTP_TOO_MANY_REQUESTS = 429;                                           // RFC6585
-    const HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE = 431;                             // RFC6585
-    const HTTP_UNAVAILABLE_FOR_LEGAL_REASONS = 451;
-    const HTTP_INTERNAL_SERVER_ERROR = 500;
-    const HTTP_NOT_IMPLEMENTED = 501;
-    const HTTP_BAD_GATEWAY = 502;
-    const HTTP_SERVICE_UNAVAILABLE = 503;
-    const HTTP_GATEWAY_TIMEOUT = 504;
-    const HTTP_VERSION_NOT_SUPPORTED = 505;
-    const HTTP_VARIANT_ALSO_NEGOTIATES_EXPERIMENTAL = 506;                        // RFC2295
-    const HTTP_INSUFFICIENT_STORAGE = 507;                                        // RFC4918
-    const HTTP_LOOP_DETECTED = 508;                                               // RFC5842
-    const HTTP_NOT_EXTENDED = 510;                                                // RFC2774
-    const HTTP_NETWORK_AUTHENTICATION_REQUIRED = 511;                             // RFC6585
-*/
+    /*
+        const HTTP_RESERVED_FOR_WEBDAV_ADVANCED_COLLECTIONS_EXPIRED_PROPOSAL = 425;   // RFC2817
+        const HTTP_TOO_EARLY = 425;                                                   // RFC-ietf-httpbis-replay-04
+        const HTTP_UPGRADE_REQUIRED = 426;                                            // RFC2817
+        const HTTP_PRECONDITION_REQUIRED = 428;                                       // RFC6585
+        const HTTP_TOO_MANY_REQUESTS = 429;                                           // RFC6585
+        const HTTP_REQUEST_HEADER_FIELDS_TOO_LARGE = 431;                             // RFC6585
+        const HTTP_UNAVAILABLE_FOR_LEGAL_REASONS = 451;
+        const HTTP_INTERNAL_SERVER_ERROR = 500;
+        const HTTP_NOT_IMPLEMENTED = 501;
+        const HTTP_BAD_GATEWAY = 502;
+        const HTTP_SERVICE_UNAVAILABLE = 503;
+        const HTTP_GATEWAY_TIMEOUT = 504;
+        const HTTP_VERSION_NOT_SUPPORTED = 505;
+        const HTTP_VARIANT_ALSO_NEGOTIATES_EXPERIMENTAL = 506;                        // RFC2295
+        const HTTP_INSUFFICIENT_STORAGE = 507;                                        // RFC4918
+        const HTTP_LOOP_DETECTED = 508;                                               // RFC5842
+        const HTTP_NOT_EXTENDED = 510;                                                // RFC2774
+        const HTTP_NETWORK_AUTHENTICATION_REQUIRED = 511;                             // RFC6585
+    */
 
     /**
      * Array Map of standard HTTP status code/reason phrases.
@@ -278,7 +343,9 @@ class StatusCode
 
     /**
      * Array of standard HTTP status code/reason phrases.
+     *
      * @see https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
+     *
      * @var array
      */
     // TODO : utiliser les constantes définies précédemment dans la classe (ex : remplacer '400' par self::HTTP_BAD_REQUEST)
@@ -423,8 +490,10 @@ class StatusCode
         if (! isset(self::$errorPhrases[$code])) {
             throw new \OutOfBoundsException(\sprintf('Unknown http status code: `%s`.', $code));
         }
+
         return self::$errorPhrases[$code];
     }
+
     /**
      * Get the name for a given status code.
      *
@@ -441,8 +510,10 @@ class StatusCode
         if (! isset(self::$statusNames[$code])) {
             throw new \OutOfBoundsException(\sprintf('Unknown http status code: `%s`.', $code));
         }
+
         return self::$statusNames[$code];
     }
+
     /**
      * Get the text for a given status code.
      *
@@ -457,6 +528,7 @@ class StatusCode
         if (! isset(self::$mapExceptionName[$code])) {
             throw new \OutOfBoundsException(\sprintf('Unknown http status code: `%s`.', $code));
         }
+
         return self::$mapExceptionName[$code];
     }
 

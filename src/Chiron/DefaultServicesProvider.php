@@ -13,16 +13,15 @@
 
 namespace Chiron;
 
+use Chiron\Http\Middleware\BodyParserMiddleware;
+use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
 use Chiron\Http\Middleware\CheckMaintenanceMiddleware;
+use Chiron\Http\Middleware\ContentLengthMiddleware;
+use Chiron\Http\Middleware\ContentTypeByDefaultMiddleware;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\EmitterMiddleware;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
-use Chiron\Http\Middleware\BodyParserMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
-use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
-use Chiron\Http\Middleware\ContentTypeByDefaultMiddleware;
-use Chiron\Http\Middleware\ContentLengthMiddleware;
-use Chiron\Http\Psr\Response;
 use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
@@ -86,8 +85,6 @@ class DefaultServicesProvider
         $container[ContentLengthMiddleware::class] = function ($c) {
             return new ContentLengthMiddleware();
         };
-
-
 
         /*
            $container['callableResolver'] = function ($container) {

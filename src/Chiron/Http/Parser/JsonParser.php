@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Parser;
 
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Exception\BadRequestHttpException;
+use Psr\Http\Message\ServerRequestInterface;
 use function array_shift;
 use function explode;
 use function json_decode;
@@ -18,11 +18,11 @@ class JsonParser implements RequestParserInterface
      * @var bool whether to return objects in terms of associative arrays.
      */
     public $asArray = true;
+
     /**
      * @var bool whether to throw a [[BadRequestHttpException]] if the body is invalid
      */
     public $throwException = false;
-
 
     public function supports(string $contentType): bool
     {
@@ -42,10 +42,13 @@ class JsonParser implements RequestParserInterface
 
     /**
      * Parses a HTTP request body.
-     * @param string $rawBody the raw HTTP request body.
+     *
+     * @param string $rawBody     the raw HTTP request body.
      * @param string $contentType the content type specified for the request body.
-     * @return array parameters parsed from the request body
+     *
      * @throws BadRequestHttpException if the body contains invalid json and [[throwException]] is `true`.
+     *
+     * @return array parameters parsed from the request body
      */
     public function parse(ServerRequestInterface $request): ServerRequestInterface
     {

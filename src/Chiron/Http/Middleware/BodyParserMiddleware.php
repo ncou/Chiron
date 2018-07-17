@@ -35,9 +35,10 @@ class BodyParserMiddleware implements MiddlewareInterface
     /**
      * Constructor.
      *
-     * @param bool    $throwExceptionOnUnsupportedContentType
+     * @param bool $throwExceptionOnUnsupportedContentType
      */
-    public function __construct(bool $throwExceptionOnUnsupportedContentType = false) {
+    public function __construct(bool $throwExceptionOnUnsupportedContentType = false)
+    {
         $this->throwExceptionOnUnsupportedContentType = $throwExceptionOnUnsupportedContentType;
 
         // TODO : initialiser par défaut certains Parser ???? ou alors lui passer directement un array d'instance de parser pour faire un populate de $this->parsers[] ?????
@@ -62,6 +63,7 @@ class BodyParserMiddleware implements MiddlewareInterface
                 }
                 // Matched! Parse the body, and pass on to the next middleware.
                 $request = $parser->parse($request);
+
                 return $handler->handle($request);
             }
 

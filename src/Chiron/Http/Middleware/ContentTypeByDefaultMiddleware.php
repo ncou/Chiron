@@ -5,10 +5,8 @@ declare(strict_types=1);
 namespace Chiron\Http\Middleware;
 
 use Chiron\Http\Psr\Response;
-use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\MessageInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -21,7 +19,6 @@ class ContentTypeByDefaultMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-
         $request = $this->addDefaultContentTypeInRequest($request);
 
         $response = $handler->handle($request);
@@ -41,6 +38,7 @@ class ContentTypeByDefaultMiddleware implements MiddlewareInterface
             if (! empty($rawContent)) {
                 // add default content-type for the request if there is a body to sniff/analyze
                 $contentType = $this->detectMimeBySniffingContent($rawContent);
+
                 return $request->withHeader('Content-Type', $contentType);
             }
         }

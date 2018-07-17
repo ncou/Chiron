@@ -5,18 +5,15 @@ declare(strict_types=1);
 namespace Tests\Http;
 
 use Chiron\Http\Psr\Response;
-use Chiron\Http\Psr\ServerRequest;
-use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\Uri;
 use Chiron\Http\StatusCode;
-use PHPUnit\Framework\TestCase;
 use DOMDocument;
 use DomXPath;
+use PHPUnit\Framework\TestCase;
 
 class StatusCodeTest extends TestCase
 {
-
-    const URL_IANA = 'https://www.iana.org/assignments/http-status-codes/http-status-codes.xml';
+    public const URL_IANA = 'https://www.iana.org/assignments/http-status-codes/http-status-codes.xml';
 
     protected function setUp()
     {
@@ -91,6 +88,7 @@ class StatusCodeTest extends TestCase
         510 => 'Further extensions to the request are required for the server to fulfill it.A mandatory extension policy in the request is not accepted by the server for this resource.',
         511 => 'The client needs to authenticate to gain network access.',
     ];
+
     private $phrasesExceptions = [
         400 => Exception\BadRequestException::class,
         401 => Exception\UnauthorizedException::class,
@@ -133,6 +131,7 @@ class StatusCodeTest extends TestCase
         510 => Exception\NotExtendedException::class,
         511 => Exception\NetworkAuthenticationRequiredException::class,
     ];
+
     public function testGetReasonMessage(): void
     {
         foreach ($this->errorPhrases as $code => $text) {
@@ -143,6 +142,7 @@ class StatusCodeTest extends TestCase
             );
         }
     }
+
     /**
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid status code "700"; must be an integer between 100 and 599, inclusive.
@@ -151,6 +151,7 @@ class StatusCodeTest extends TestCase
     {
         StatusCode::getReasonPhrase(700);
     }
+
     /**
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid status code "700"; must be an integer between 100 and 599, inclusive.
@@ -159,6 +160,7 @@ class StatusCodeTest extends TestCase
     {
         StatusCode::getReasonMessage(700);
     }
+
     /**
      * @expectedException \OutOfBoundsException
      * @expectedExceptionMessage Unknown http status code: `509`.
@@ -167,6 +169,7 @@ class StatusCodeTest extends TestCase
     {
         StatusCode::getReasonMessage(509);
     }
+
     /**
      * @expectedException \OutOfBoundsException
      * @expectedExceptionMessage Unknown http status code: `509`.
@@ -175,6 +178,7 @@ class StatusCodeTest extends TestCase
     {
         StatusCode::getReasonPhrase(509);
     }
+
     /**
      * @expectedException \OutOfBoundsException
      * @expectedExceptionMessage Unknown http status code: `509`.
@@ -183,6 +187,7 @@ class StatusCodeTest extends TestCase
     {
         StatusCode::getExceptionNameByStatusCode(509);
     }
+
     /**
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Invalid status code "200"; must be an integer between 400 and 599, inclusive.
@@ -206,6 +211,7 @@ class StatusCodeTest extends TestCase
             'Expected StatusCode::getReasonPhrase(' . $code . ') to return ' . $reasonPhrase
         );
     }
+
     /**
      * @dataProvider ianaCodesReasonPhrasesProvider
      *
@@ -220,7 +226,7 @@ class StatusCodeTest extends TestCase
         } else {
             $exceptionName = StatusCode::getExceptionNameByStatusCode((int) $code);
             // the HTTPException for 401/407/426 class requiere a mandatory parameter
-            if (strpos($exceptionName, 'UnauthorizedHttpException') > 0 || strpos($exceptionName, 'ProxyAuthenticationRequiredHttpException') >0 || strpos($exceptionName, 'UpgradeRequiredHttpException') >0) {
+            if (strpos($exceptionName, 'UnauthorizedHttpException') > 0 || strpos($exceptionName, 'ProxyAuthenticationRequiredHttpException') > 0 || strpos($exceptionName, 'UpgradeRequiredHttpException') > 0) {
                 $exception = new $exceptionName('foo');
             } else {
                 $exception = new $exceptionName();
@@ -230,8 +236,9 @@ class StatusCodeTest extends TestCase
             self::assertSame((int) $code, $exception->getStatusCode());
         }
     }
+
     /**
-     * Grab the reason phrase directly from the IANA specs
+     * Grab the reason phrase directly from the IANA specs.
      */
     public function ianaCodesReasonPhrasesProvider(): array
     {
@@ -250,11 +257,11 @@ class StatusCodeTest extends TestCase
             self::fail('Invalid IANA\'s HTTP status code list.');
         }
         $ianaCodesReasonPhrases = [];
-        $xpath                  = new DomXPath($ianaHttpStatusCodes);
+        $xpath = new DomXPath($ianaHttpStatusCodes);
         $xpath->registerNamespace('ns', 'http://www.iana.org/assignments');
         $records = $xpath->query('//ns:record');
         foreach ($records as $record) {
-            $value       = $xpath->query('.//ns:value', $record)->item(0)->nodeValue;
+            $value = $xpath->query('.//ns:value', $record)->item(0)->nodeValue;
             $description = $xpath->query('.//ns:description', $record)->item(0)->nodeValue;
             if (in_array($description, ['Unassigned', '(Unused)'], true)) {
                 continue;
@@ -267,7 +274,7 @@ class StatusCodeTest extends TestCase
                 $ianaCodesReasonPhrases[] = [$value, $description];
             }
         }
+
         return $ianaCodesReasonPhrases;
     }
-
 }
