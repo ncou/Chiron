@@ -17,7 +17,7 @@ class JsonParser implements RequestParserInterface
     /**
      * @var bool whether to return objects in terms of associative arrays.
      */
-    public $asArray = true;
+    //public $asArray = true;
 
     /**
      * @var bool whether to throw a [[BadRequestHttpException]] if the body is invalid
@@ -29,15 +29,12 @@ class JsonParser implements RequestParserInterface
         $parts = explode(';', $contentType);
         $mime = trim(array_shift($parts));
 
-        return (bool) preg_match('#[/+]json$#', $mime);
+        return (bool) preg_match('~application/([a-z.]+\+)?json~', $mime);
+        //return (bool) preg_match('#[/+]json$#', $mime);
 
         // Regex for : 'application/json' or 'application/*+json'
         //if (preg_match('~^application/([a-z.]+\+)?json($|;)~', $mediaType)) {
         //return (bool) preg_match('#[/+]json$#', trim($mime));
-        if (preg_match('~application/([a-z.]+\+)?json~', $mediaType)) {
-            // Throw error if we are unable to decode body
-                //if (is_null($parsed)) throw new BadRequest('Could not deserialize body (Json)');
-        }
     }
 
     /**
@@ -53,7 +50,8 @@ class JsonParser implements RequestParserInterface
     public function parse(ServerRequestInterface $request): ServerRequestInterface
     {
         $rawBody = (string) $request->getBody();
-        $parsedBody = json_decode($rawBody, $this->asArray);
+        $parsedBody = json_decode($rawBody, true);
+        //$parsedBody = json_decode($rawBody, $this->asArray);
         if (! is_array($parsedBody)) {
             $parsedBody = null;
 

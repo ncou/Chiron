@@ -23,14 +23,13 @@ class XmlParser implements RequestParserInterface
         $parts = explode(';', $contentType);
         $mime = trim(array_shift($parts));
 
-        return (bool) preg_match('#[/+]xml$#', $mime);
+        return (bool) preg_match('~application/([a-z.]+\+)?xml~', $mime) || $mime === 'text/xml';
+        //return (bool) preg_match('#[/+]xml$#', $mediaType);
 
         // Regex for : 'application/xml' or 'application/*+xml' or 'text/xml'
         //if (preg_match('~^application/([a-z.]+\+)?xml($|;)~', $mediaType) || $mediaType === 'text/xml') {
         //if (preg_match('~^application/([a-z.]+\+)?xml~', $mediaType) || preg_match('~^text/xml~', $mediaType)) {
         //if (preg_match('~(application|text)/([a-z.]+\+)?xml~', $mediaType)) {
-        if (preg_match('~application/([a-z.]+\+)?xml~', $mediaType) || $mediaType === 'text/xml') {
-        }
     }
 
     /**
