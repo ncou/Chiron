@@ -8,7 +8,7 @@ use Throwable;
 
 class RequestedRangeNotSatisfiableHttpException extends HttpException
 {
-    public function __construct(string $message = 'Requested range not satisfiable', Throwable $previous = null, array $headers = [])
+    public function __construct(string $message = 'Range Not Satisfiable', Throwable $previous = null, array $headers = [])
     {
         parent::__construct(416, $message, $previous, $headers);
     }

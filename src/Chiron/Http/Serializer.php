@@ -15,6 +15,8 @@ use Psr\Http\Message\ResponseInterface;
 
 //https://github.com/guzzle/psr7/blob/master/src/functions.php#L18
 
+//https://github.com/php-http/message/blob/master/src/Formatter/FullHttpMessageFormatter.php
+
 abstract class Serializer
 {
     //private const CR  = "\r";

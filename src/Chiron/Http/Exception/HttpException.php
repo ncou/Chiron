@@ -22,6 +22,8 @@ class HttpException extends RuntimeException //implements \ExceptionInterface
 
     public function __construct(int $statusCode, string $message = null, Throwable $previous = null, array $headers = [])
     {
+        // TODO : ajouter un controle pour vérifier que le statuscode est bien compris entre 400 et 599, sinon lever une InvalidArgumentException !!!!
+
         $this->statusCode = $statusCode;
         $this->headers = $headers;
 

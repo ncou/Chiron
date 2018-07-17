@@ -8,7 +8,7 @@ use Throwable;
 
 class RequestUriTooLongHttpException extends HttpException
 {
-    public function __construct(string $message = 'Request-URI Too Long', Throwable $previous = null, array $headers = [])
+    public function __construct(string $message = 'URI Too Long', Throwable $previous = null, array $headers = [])
     {
         parent::__construct(414, $message, $previous, $headers);
     }

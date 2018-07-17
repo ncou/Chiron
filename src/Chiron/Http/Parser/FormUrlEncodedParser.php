@@ -8,9 +8,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use function parse_str;
 use function preg_match;
 
-class FormUrlEncodedParser implements ParserInterface
+class FormUrlEncodedParser implements RequestParserInterface
 {
-    public function match(string $contentType): bool
+    public function supports(string $contentType): bool
     {
         return (bool) preg_match('#^application/x-www-form-urlencoded($|[ ;])#', $contentType);
     }
@@ -29,6 +29,7 @@ class FormUrlEncodedParser implements ParserInterface
             return $request;
         }
         parse_str($rawBody, $parsedBody);
+        // TODO : ajouter une vérification si il y a eu une erreur et lever une erreur HTTP 400 si c'est le cas => https://github.com/middlewares/payload/blob/master/src/UrlEncodePayload.php#L26
 
         return $request->withParsedBody($parsedBody);
     }

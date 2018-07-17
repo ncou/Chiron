@@ -11,12 +11,13 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+// Add a default charset if the "Content-Type" header is found and there is not already a charset defined in this header.
 class CharsetByDefaultMiddleware implements MiddlewareInterface
 {
     /**
      * @var string default charset to use
      */
-    private $www;
+    private $charset;
 
     /**
      * Configure the default charset.
@@ -48,16 +49,17 @@ class CharsetByDefaultMiddleware implements MiddlewareInterface
     // @see : https://tools.ietf.org/html/rfc7231#section-3.1.1.2
     private function addDefaultCharset(ResponseInterface $response): ResponseInterface
     {
-        $contentType = $response->hasHeader('Content-Type') ? $response->getHeaderLine('Content-Type') : null;
+        if (! $response->hasHeader('Content-Type')) {
+            // we can't add the default charset if there is not the Content-Type header.
+            return $response;
+        }
 
-        if (! $contentType) {
-            // add default content-type and charset
-            // TODO : rendre le content-type par défaut réglable (dans notre cas on va toujours utiliser pas défaut 'text/html'). Ou alors créer un nouveau middleware qui serait appellé juste avant celui ci pour mettre uniquement le contenttype par défaut sans ajouter le charset.
-            $response = $response->withHeader('Content-Type', 'text/html; charset=' . $this->charset);
-        } elseif (stripos($contentType, 'charset') === false) {
+        $contentType = $response->getHeaderLine('Content-Type');
+
+        if (stripos($contentType, 'charset') === false) {
             if ($this->isResponseTextual($contentType)) {
                 // add the charset to the content-type header
-                $response = $response->withHeader('Content-Type', $contentType . '; charset=' . $this->charset);
+                return $response->withHeader('Content-Type', $contentType . '; charset=' . $this->charset);
             }
         }
 

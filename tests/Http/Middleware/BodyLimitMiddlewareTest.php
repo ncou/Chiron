@@ -31,7 +31,7 @@ class BodyLimitMiddlewareTest extends TestCase
     }
 
     /**
-     * @expectedException Chiron\Http\Exception\RequestEntityTooLargeHttpException
+     * @expectedException Chiron\Http\Exception\PayloadTooLargeHttpException
      */
     public function testBodyIsTooLarge()
     {

@@ -8,6 +8,8 @@ use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\UploadedFile;
 use Psr\Http\Message\ServerRequestInterface;
 
+//https://github.com/yiisoft/yii2/blob/master/framework/web/MultipartFormDataParser.php
+
 // TODO : finir de mettre le typehint sur chaque fonction pour connaitre le type de paramétre à utiliser !!!!!!!!!
 
 /**
@@ -21,7 +23,8 @@ use Psr\Http\Message\ServerRequestInterface;
  * @see https://tools.ietf.org/html/rfc7578
  * @see https://tools.ietf.org/html/rfc2046#section-5.1.1
  */
-class FormDataParser implements ParserInterface
+// TODO : renommer en MultipartFormDataParser.php + nettoyer le code qui fait référence à du PHP 5
+class FormDataParser implements RequestParserInterface
 {
     /**
      * @var ServerRequestInterface|null
@@ -101,9 +104,9 @@ class FormDataParser implements ParserInterface
         $this->maxFileUploads = $maxFileUploads === null ? (ini_get('file_uploads') === '' ? 0 : (int) ini_get('max_file_uploads')) : (int) $maxFileUploads;
     }
 
-    public function match(string $contentType): bool
+    public function supports(string $contentType): bool
     {
-        return (bool) preg_match('#^application/form-data($|[ ;])#', $contentType);
+        return (bool) preg_match('#^multipart/form-data($|[ ;])#', $contentType);
     }
 
     public function parse(ServerRequestInterface $request): ServerRequestInterface

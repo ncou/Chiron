@@ -14,6 +14,9 @@ use function is_object;
 use function is_string;
 use function sprintf;
 
+// TODO : gérer le cas du ajax : https://github.com/yiisoft/yii2/blob/master/framework/web/Response.php#L851
+// TODO : créer une RefreshResponse qui étend de RedirectResponse mais qui utilise comme uri l'a page courante : https://github.com/yiisoft/yii2/blob/master/framework/web/Response.php#L889
+
 /**
  * Produce a redirect response.
  */
@@ -41,6 +44,8 @@ class RedirectResponse extends Response
             ));
         }
         $headers['location'] = [(string) $uri];
+
+        // TODO : gérer le cas du ajax : https://github.com/yiisoft/yii2/blob/master/framework/web/Response.php#L851
 
         parent::__construct($status, $headers, new Stream(fopen('php://temp', 'r+')));
     }

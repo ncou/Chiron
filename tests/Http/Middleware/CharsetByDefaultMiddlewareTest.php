@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 
 class CharsetByDefaultMiddlewareTest extends TestCase
 {
-    public function testDefaultContentTypeAndDefaultCharset()
+    public function testContentTypeIsNotAdded()
     {
         $request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
@@ -25,23 +25,7 @@ class CharsetByDefaultMiddlewareTest extends TestCase
         $middleware = new CharsetByDefaultMiddleware();
         $response = $middleware->process($request, new HandlerProxy2($handler));
 
-        $this->assertEquals('text/html; charset=utf-8', $response->getHeaderLine('Content-Type'));
-    }
-
-    public function testDefaultContentTypeAndWithDefinedCharset()
-    {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
-
-        $handler = function ($request) {
-            return new Response();
-        };
-        $middleware = new CharsetByDefaultMiddleware('iso-8859-1');
-        $response = $middleware->process($request, new HandlerProxy2($handler));
-
-        $this->assertEquals('text/html; charset=iso-8859-1', $response->getHeaderLine('Content-Type'));
+        $this->assertFalse($response->hasHeader('Content-Type'));
     }
 
     public function testWithTextualContentType()

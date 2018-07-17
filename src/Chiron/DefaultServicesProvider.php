@@ -17,8 +17,11 @@ use Chiron\Http\Middleware\CheckMaintenanceMiddleware;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\EmitterMiddleware;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
-use Chiron\Http\Middleware\ParsedBodyMiddleware;
+use Chiron\Http\Middleware\BodyParserMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
+use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
+use Chiron\Http\Middleware\ContentTypeByDefaultMiddleware;
+use Chiron\Http\Middleware\ContentLengthMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
@@ -56,8 +59,16 @@ class DefaultServicesProvider
             return new DispatcherMiddleware($c);
         };
 
-        $container[ParsedBodyMiddleware::class] = function ($c) {
-            return new ParsedBodyMiddleware();
+        $container[ContentTypeByDefaultMiddleware::class] = function ($c) {
+            return new ContentTypeByDefaultMiddleware();
+        };
+
+        $container[CharsetByDefaultMiddleware::class] = function ($c) {
+            return new CharsetByDefaultMiddleware();
+        };
+
+        $container[BodyParserMiddleware::class] = function ($c) {
+            return new BodyParserMiddleware();
         };
 
         $container[EmitterMiddleware::class] = function ($c) {
@@ -71,6 +82,12 @@ class DefaultServicesProvider
         $container[MethodOverrideMiddleware::class] = function ($c) {
             return new MethodOverrideMiddleware();
         };
+
+        $container[ContentLengthMiddleware::class] = function ($c) {
+            return new ContentLengthMiddleware();
+        };
+
+
 
         /*
            $container['callableResolver'] = function ($container) {
@@ -108,22 +125,6 @@ class DefaultServicesProvider
                 return Request::fromGlobals();
             };
         */
-
-        // TODO : à virer car maintenant la réponse est créée directement dans le controler. il faudrait plutot utiliser une ResponseFactory appellé directement dans le controller !!!
-        // TODO : vérifier l'utilité de créer cette response ici !!!!! normalement chaque controller ou errorhandler va créer une nouvelle response...
-        $container['response'] = function ($c) {
-            //$headers = new Headers(['Content-Type' => 'text/html; charset=UTF-8']);
-            //$response = new Response(200, $headers);
-            //return $response->withProtocolVersion($container->get('settings')['httpVersion']);
-
-            // TODO : à améliorer il faut passer le header text/heml et charset UTF8 par défaut + le code de réposne à 200 + si c'est du http ou https !!!!!!!!!
-            $response = new Response();
-            // TODO : ajouter 2 lignes "Content-Type" avec text/html puis avec charset=XXXX, ca fera la même chose qu'une ligne séparée avec une virgule
-            // TODO : récuperer le charset directement dans la partie ->getContainer()->get('config') !!!!
-            $response = $response->withAddedHeader('Content-Type', 'text/html; charset=' . $c->get('charset'));
-            //$response->setProtocolVersion($c->get('httpVersion'));
-            return $response;
-        };
 
         // -----------------------------------------------------------------------------
         // Service providers

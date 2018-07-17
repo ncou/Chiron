@@ -7,16 +7,16 @@ namespace Chiron\Http\Parser;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Interface defining a body parser.
+ * Interface for classes that parse the raw request body into a parameters array.
  */
-interface ParserInterface
+interface RequestParserInterface
 {
     /**
-     * Match the content type to the parser criteria.
+     * Check if the parser supports the content type.
      *
      * @return bool Whether or not the parser matches.
      */
-    public function match(string $contentType): bool;
+    public function supports(string $contentType): bool;
 
     /**
      * Parse the body content and return a new request.

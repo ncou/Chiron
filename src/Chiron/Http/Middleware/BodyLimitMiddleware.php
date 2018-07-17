@@ -7,7 +7,7 @@ namespace Chiron\Http\Middleware;
 //https://github.com/withelmo/CakePHP-PostMaxSizeException/blob/master/Lib/PostMaxSizeChecker.php
 
 use Chiron\Http\Exception\BadRequestHttpException;
-use Chiron\Http\Exception\RequestEntityTooLargeHttpException;
+use Chiron\Http\Exception\PayloadTooLargeHttpException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -41,7 +41,7 @@ class BodyLimitMiddleware implements MiddlewareInterface
             }
 
             if ((int) $contentLength > $this->getPostMaxSize()) {
-                throw new RequestEntityTooLargeHttpException();
+                throw new PayloadTooLargeHttpException();
             }
         }
 

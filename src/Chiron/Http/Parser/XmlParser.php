@@ -5,15 +5,20 @@ declare(strict_types=1);
 namespace Chiron\Http\Parser;
 
 use Psr\Http\Message\ServerRequestInterface;
-use Zend\Expressive\Helper\Exception\MalformedRequestBodyException;
+use Psr\Http\Exception\BadRequestHttpException;
 use function array_shift;
 use function explode;
 use function preg_match;
 use function trim;
 
-class XmlParser implements ParserInterface
+class XmlParser implements RequestParserInterface
 {
-    public function match(string $contentType): bool
+    /**
+     * @var bool whether to throw a [[BadRequestHttpException]] if the body is invalid
+     */
+    public $throwException = false;
+
+    public function supports(string $contentType): bool
     {
         $parts = explode(';', $contentType);
         $mime = array_shift($parts);
@@ -50,8 +55,11 @@ class XmlParser implements ParserInterface
 
         // TODO : on devrait pas ajouter un "if (! empty($rawBody) && $parsedBody === false)" ??? comme c'est fait pour le JSON ????
         if ($parsedBody === false) {
-            // TODO : on devrait peut etre lever une exception 400 BadRequestHttpException
             $parsedBody = null;
+
+            if ($this->throwException) {
+                throw new BadRequestHttpException('Error when parsing XML request body');
+            }
         }
 
         return $request->withParsedBody($parsedBody);

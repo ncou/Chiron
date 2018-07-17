@@ -10,6 +10,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+//https://github.com/yiisoft/yii2/blob/master/framework/web/Response.php#L411
+
 //https://github.com/contributte/middlewares/blob/master/src/Application/MiddlewareApplication.php
 
 // Range : https://tools.ietf.org/html/rfc7233#section-4.3

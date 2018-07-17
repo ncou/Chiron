@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
+//https://github.com/FriendsOfSymfony/FOSRestBundle/blob/master/EventListener/BodyListener.php
+
 //https://github.com/phapi/middleware-postbox
 
 // TODO : regarder ici : https://github.com/juliangut/body-parser/blob/master/src/Parser.php   +  https://github.com/juliangut/body-parser/tree/master/src/Decoder
@@ -15,18 +17,31 @@ namespace Chiron\Http\Middleware;
 
 // TODO : regarder ici : https://github.com/zendframework/zend-expressive-helpers/blob/master/src/BodyParams/BodyParamsMiddleware.php    +    https://github.com/zendframework/zend-expressive-helpers/blob/master/src/BodyParams/FormUrlEncodedStrategy.php  +    https://github.com/zendframework/zend-expressive-helpers/blob/master/src/BodyParams/JsonStrategy.php
 
-use Chiron\Http\Parser\ParserInterface;
+use Chiron\Http\Parser\RequestParserInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class ParsedBodyMiddleware implements MiddlewareInterface
+class BodyParserMiddleware implements MiddlewareInterface
 {
+    private $throwExceptionOnUnsupportedContentType;
+
     /**
-     * @var ParserInterface[]
+     * @var RequestParserInterface[]
      */
     private $parsers = [];
+
+    /**
+     * Constructor.
+     *
+     * @param bool    $throwExceptionOnUnsupportedContentType
+     */
+    public function __construct(bool $throwExceptionOnUnsupportedContentType = false) {
+        $this->throwExceptionOnUnsupportedContentType = $throwExceptionOnUnsupportedContentType;
+
+        // TODO : initialiser par défaut certains Parser ???? ou alors lui passer directement un array d'instance de parser pour faire un populate de $this->parsers[] ?????
+    }
 
     /**
      * Process request.
@@ -38,18 +53,21 @@ class ParsedBodyMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        // TODO : on devrait aussi ajouter un test dans ce if, si le "(string)$request->getBody()" n'est pas empty !!!!
         if ($request->hasHeader('Content-Type')) {
             $contentType = $request->getHeaderLine('Content-Type');
             foreach ($this->parsers as $parser) {
-                if (! $parser->match($contentType)) {
+                if (! $parser->supports($contentType)) {
                     continue;
                 }
                 // Matched! Parse the body, and pass on to the next middleware.
-                return $handler->handle($parser->parse($request));
+                $request = $parser->parse($request);
+                return $handler->handle($request);
             }
 
-            // TODO : lever une exception 415 UnsupportedMediaTypeHttpException() si aucun la desarialization n'est pas marché ???? Eventuellement ajouter un paramétre pour indiquer si on doit faire un throw de l'exception ou non.
-            // https://github.com/phapi/middleware-postbox/blob/master/src/Phapi/Middleware/PostBox/PostBox.php#L75
+            if ($this->throwExceptionOnUnsupportedContentType) {
+                throw new UnsupportedMediaTypeHttpException("Request body format '$contentType' not supported");
+            }
         }
 
         return $handler->handle($request);
@@ -58,7 +76,7 @@ class ParsedBodyMiddleware implements MiddlewareInterface
     /**
      * Add a body parser to the middleware.
      */
-    public function addParser(ParserInterface $parser): void
+    public function addParser(RequestParserInterface $parser): void
     {
         $this->parsers[] = $parser;
     }

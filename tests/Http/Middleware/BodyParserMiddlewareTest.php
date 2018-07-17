@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Tests\Http\Middleware;
 
 use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Middleware\ParsedBodyMiddleware;
+use Chiron\Http\Middleware\BodyParserMiddleware;
 use Chiron\Http\Parser\FormUrlEncodedParser;
 use Chiron\Http\Parser\JsonParser;
 use Chiron\Http\Parser\XmlParser;
@@ -14,12 +14,12 @@ use Chiron\Http\Psr\Stream;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
-class ParsedBodyMiddlewareTest extends TestCase
+class BodyParserMiddlewareTest extends TestCase
 {
     protected function setUp()
     {
         parent::setUp();
-        $this->middleware = new ParsedBodyMiddleware();
+        $this->middleware = new BodyParserMiddleware();
         $this->middleware->clearParsers(); // this call is only used for code coverage.
         $this->middleware->addParser(new JsonParser());
         $this->middleware->addParser(new XmlParser());
