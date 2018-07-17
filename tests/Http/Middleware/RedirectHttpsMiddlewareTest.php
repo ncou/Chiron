@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Chiron\Tests\Http\Middleware;
 
 use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Middleware\HttpsMiddleware;
+use Chiron\Http\Middleware\RedirectHttpsMiddleware;
 //use Chiron\Http\Uri;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
-class HttpsMiddlewareTest extends TestCase
+class RedirectHttpsMiddlewareTest extends TestCase
 {
     protected $middleware;
 
@@ -21,7 +21,7 @@ class HttpsMiddlewareTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
-        $this->middleware = new HttpsMiddleware();
+        $this->middleware = new RedirectHttpsMiddleware();
         $this->request = (new ServerRequestFactory())->createServerRequestFromArray([
             'REQUEST_URI'            => '/',
             'REQUEST_METHOD'         => 'GET',
@@ -76,7 +76,7 @@ class HttpsMiddlewareTest extends TestCase
         $handler = function ($request) {
             throw new \Exception('Should not make it here');
         };
-        $middleware = new HttpsMiddleware(307);
+        $middleware = new RedirectHttpsMiddleware(307);
         $result = $middleware->process($request, new HandlerProxy2($handler));
         $this->assertEquals(307, $result->getStatusCode());
         $this->assertEquals('https://domain.com', $result->getHeaderLine('Location'));
@@ -90,7 +90,7 @@ class HttpsMiddlewareTest extends TestCase
         $handler = function ($request) {
             return (new Response())->write('SUCCESS');
         };
-        $middleware = new HttpsMiddleware(301, ['http://domain.com']);
+        $middleware = new RedirectHttpsMiddleware(301, ['http://domain.com']);
         $result = $middleware->process($request, new HandlerProxy2($handler));
         $this->assertEquals('SUCCESS', (string) $result->getBody());
     }
@@ -103,7 +103,7 @@ class HttpsMiddlewareTest extends TestCase
         $handler = function ($request) {
             return (new Response())->write('SUCCESS');
         };
-        $middleware = new HttpsMiddleware(301, ['http://domain.com/*']);
+        $middleware = new RedirectHttpsMiddleware(301, ['http://domain.com/*']);
         $result = $middleware->process($request, new HandlerProxy2($handler));
         $this->assertEquals('SUCCESS', (string) $result->getBody());
     }

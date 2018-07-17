@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Chiron\Tests\Http\Middleware;
 
 use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Middleware\WwwMiddleware;
+use Chiron\Http\Middleware\RedirectWwwMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
-class WwwMiddlewareTest extends TestCase
+class RedirectWwwMiddlewareTest extends TestCase
 {
     public function wwwProvider()
     {
@@ -52,7 +52,7 @@ class WwwMiddlewareTest extends TestCase
         $handler = function ($request) {
             return new Response(200);
         };
-        $middleware = new WwwMiddleware($addWww);
+        $middleware = new RedirectWwwMiddleware($addWww);
         $response = $middleware->process($request, new HandlerProxy2($handler));
 
         if ($uri === $result) {

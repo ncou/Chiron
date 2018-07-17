@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Chiron\Tests\Http\Middleware;
 
 use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Middleware\TrailingSlashMiddleware;
+use Chiron\Http\Middleware\RedirectTrailingSlashMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
-class TrailingSlashMiddlewareTest extends TestCase
+class RedirectTrailingSlashMiddlewareTest extends TestCase
 {
     public function removeProvider(): array
     {
@@ -32,7 +32,7 @@ class TrailingSlashMiddlewareTest extends TestCase
             'REQUEST_METHOD'         => 'GET',
         ]);
 
-        $middleware = new TrailingSlashMiddleware();
+        $middleware = new RedirectTrailingSlashMiddleware();
         $handler = function ($request) use (&$path) {
             $path = $request->getUri()->getPath();
 
@@ -66,7 +66,7 @@ class TrailingSlashMiddlewareTest extends TestCase
             'REQUEST_METHOD'         => 'GET',
         ]);
 
-        $middleware = new TrailingSlashMiddleware(true);
+        $middleware = new RedirectTrailingSlashMiddleware(true);
         $handler = function ($request) use (&$path) {
             $path = $request->getUri()->getPath();
 
@@ -85,7 +85,7 @@ class TrailingSlashMiddlewareTest extends TestCase
             'REQUEST_METHOD'         => 'GET',
         ]);
 
-        $middleware = (new TrailingSlashMiddleware())->redirect(true);
+        $middleware = (new RedirectTrailingSlashMiddleware())->redirect(true);
         $handler = function ($request) {
             return new Response();
         };
