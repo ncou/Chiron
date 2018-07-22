@@ -10,10 +10,90 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use UnexpectedValueException;
+use Chiron\Handler\Error\Formatter\HtmlFormatter;
+use Chiron\Handler\Error\Formatter\JsonFormatter;
+use Chiron\Handler\Error\Formatter\XmlFormatter;
+use Chiron\Handler\Error\Formatter\PlainTextFormatter;
+use Chiron\Handler\Error\Formatter\WhoopsFormatter;
+use Chiron\Http\Psr\Response;
+use Psr\Http\Server\RequestHandlerInterface;
+
+// TODO : regarder ici pour gérer les formater pour les messages : https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Error/ExceptionHandlerManager.php
 
 // TODO : utiliser des renderer : https://github.com/userfrosting/UserFrosting/tree/master/app/sprinkles/core/src/Error/Renderer
-class HttpExceptionHandler extends AbstractHandler
+class HttpExceptionHandler implements RequestHandlerInterface
 {
+    /**
+     * The request attribute name used to retrieve the exception stored previously (in the middleware).
+     *
+     * @var string
+     */
+    protected $attributeName = 'Chiron:exception';
+
+    /**
+     * Known handled content types.
+     *
+     * @var array
+     */
+    protected $knownContentTypes = [
+        'application/json',
+        'application/xml',
+        'text/xml',
+        'text/html',
+        'text/plain',
+    ];
+
+    /**
+     * Dependency injection container.
+     *
+     * @var ContainerInterface
+     */
+    //protected $container;
+
+    /**
+     * Set container.
+     *
+     * @param ContainerInterface $container
+     */
+    /*
+    public function setContainer(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }*/
+
+    /**
+     * Execute the error handler.
+     */
+    /*
+        public function handle(ServerRequestInterface $request): ResponseInterface
+        {
+            $error = $request->getAttribute('error');
+            $accept = $request->getHeaderLine('Accept');
+
+            $response = new Response($error->getStatusCode());
+
+            $headers = $error->getHeaders();
+            foreach ($headers as $header => $value) {
+                $response = $response->withAddedHeader($header, $value);
+            }
+
+            foreach ($this->handlers as $method => $types) {
+                foreach ($types as $type) {
+                    if (stripos($accept, $type) !== false) {
+                        $response->getBody()->write(call_user_func(__CLASS__.'::'.$method, $error));
+
+                        return $response->withHeader('Content-Type', $type);
+                    }
+                }
+            }
+
+            //$response->getBody()->write(static::html($error));
+            $response->write(static::html($error));
+
+            return $response->withHeader('Content-Type', 'text/html');
+        }
+    */
+
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         /*
@@ -48,229 +128,158 @@ class HttpExceptionHandler extends AbstractHandler
     {
         switch ($contentType) {
             case 'application/json':
-                $body = $this->renderJsonBody($exception);
+                $formatter = new JsonFormatter();
 
                 break;
             case 'text/xml':
             case 'application/xml':
-                $body = $this->renderXmlBody($exception);
+                $formatter = new XmlFormatter();
+
+                break;
+            case 'text/plain':
+                $formatter = new PlainTextFormatter();
 
                 break;
             case 'text/html':
-                $body = $this->renderHtmlBody($exception, $displayErrorDetails);
+                $formatter = new HtmlFormatter();
+                //$formatter = new WhoopsFormatter();
 
                 break;
                 // TODO : gérer le cas : 'text/plain' avec la même chose que le html mais sans les balises html...
             default:
                 // TODO : If an Accept header field is present, and if the server cannot send a response which is acceptable according to the combined Accept field value, then the server SHOULD return a 406 (not acceptable) response.
                 //https://github.com/phapi/middleware-content-negotiation/blob/master/src/Phapi/Middleware/ContentNegotiation/FormatNegotiation.php#L83
+                // TODO : lever plutot une exception du genre http error 406 Not acceptable
+                // TODO : réfléchir à ce cas car cela ne peut pas arriver car si le contentType n'est pas dans la liste définie en constante de classe on renvoit par défaut text/html !!!!!!!!!!
                 throw new UnexpectedValueException('Cannot render unknown content type ' . $contentType);
         }
 
-        return $body;
+        return $formatter->formatException($exception, $displayErrorDetails);
+    }
+
+
+    protected function retrieveException(ServerRequestInterface $request): Throwable
+    {
+        //retrieve the "HttpException object" stored in the request attribute
+        $exception = $request->getAttribute($this->attributeName);
+
+        if (! $exception instanceof Throwable) {
+            throw new UnexpectedValueException(
+                sprintf(
+                    'No valid exception provided (%s) for the request attribute [%s]. It must return an instance of (\Throwable)',
+                    is_object($exception) ? get_class($exception) : gettype($exception),
+                    $this->attributeName
+                )
+            );
+        }
+
+        return $exception;
     }
 
     /**
-     * Render HTML error page.
+     * Determine which content type we know about is wanted using Accept header.
      *
-     * @param Chiron\Http\Exception\HttpException $error
+     * Note: This method is a bare-bones implementation designed specifically for
+     * Slim's error handling requirements. Consider a fully-feature solution such
+     * as willdurand/negotiation for any other situation.
+     *
+     * @param ServerRequestInterface $request
      *
      * @return string
      */
-    private function renderHtmlBody(Throwable $error, bool $displayErrorDetails)
+    // TODO : autre exemple : https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Http/Concerns/DeterminesContentType.php#L42
+    // TODO : autre example : https://github.com/franzliedke/whoops-middleware/blob/master/src/FormatNegotiator.php#L28
+    protected function determineContentType(ServerRequestInterface $request): string
     {
-        $title = 'Chiron Error';
-        $html = '<p class="lead">Whoops, looks like something went wrong.</p>';
+        $acceptHeader = $request->getHeaderLine('Accept');
+        $selectedContentTypes = array_intersect(explode(',', $acceptHeader), $this->knownContentTypes);
+        $count = count($selectedContentTypes);
+        if ($count) {
+            $current = current($selectedContentTypes);
+            /*
+             * Ensure other supported content types take precedence over text/plain
+             * when multiple content types are provided via Accept header.
+             */
+            if ($current === 'text/plain' && $count > 1) {
+                return next($selectedContentTypes);
+            }
 
-        if ($displayErrorDetails) {
-            $html .= '<h2>&bull; Error Details</h2>';
-            $html .= $this->renderThrowableFragment($error);
-            while ($error = $error->getPrevious()) {
-                $html .= '<h2>&bull; Previous Error</h2>';
-                $html .= $this->renderThrowableFragment($error);
+            return $current;
+        }
+        if (preg_match('/\+(json|xml)/', $acceptHeader, $matches)) {
+            $mediaType = 'application/' . $matches[1];
+            if (in_array($mediaType, $this->knownContentTypes)) {
+                return $mediaType;
             }
         }
 
-        return sprintf(
-            '<html>' .
-            '   <head>' .
-            "       <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>" .
-            '       <title>%s</title>' .
-            '       <style>' .
-            '           body{margin:0;padding:20px;font-family:Helvetica,Arial,Verdana,sans-serif;font-size:15px;line-height:1.5em}' .
-            '           h1{margin:0;font-size:40px;font-weight:normal;line-height:40px;padding-bottom: 10px;border-bottom:1px solid #eee}' .
-            '           p.lead{font-size:22px}' .
-            '           strong{display:inline-block;width:85px}' .
-            '           table{border-spacing:0;border-collapse:collapse}' .
-            '           table tbody tr td{padding:8px;line-height:1.5em;vertical-align:middle;border-top:1px solid #ddd;font-family:monospace}' .
-            '           table>tbody>tr:nth-child(odd)>td{background-color:#f9f9f9}' .
-            '       </style>' .
-            '   </head>' .
-            '   <body>' .
-            '       <h1>%s</h1>' .
-            '       <div>%s</div>' .
-            "       <a href='#' onClick='window.history.go(-1)'>Go Back</a>" .
-            '   </body>' .
-            '</html>',
-            $this->escapeHtml($title),
-            $this->escapeHtml($title),
-            $html
-        );
+        return 'text/html';
     }
 
     /**
-     * Render error as HTML.
+     * Determine which content type we know about is wanted using Accept header
      *
-     * @param Throwable $error
+     * @param ServerRequestInterface $request
      *
      * @return string
      */
-    private function renderThrowableFragment(Throwable $e): string
+    /*
+    private function determineContentType(ServerRequestInterface $request)
     {
-        $html = sprintf('<div><strong>Type:</strong> %s (%s)</div>', $this->escapeHtml(get_class($e)), $this->getExceptionCode($e));
-
-        //if (($code = $e->getCode())) {
-        //    $html .= sprintf('<div><strong>Code:</strong> %s</div>', $code);
-        //}
-        if (($message = $e->getMessage())) {
-            $html .= sprintf('<div><strong>Message:</strong> %s</div>', $this->escapeHtml($message));
+        $acceptHeader = $request->getHeaderLine('Accept');
+        $selectedContentTypes = array_intersect(explode(',', $acceptHeader), $this->knownContentTypes);
+        if (count($selectedContentTypes)) {
+            return reset($selectedContentTypes);
         }
-        if (($file = $e->getFile())) {
-            $html .= sprintf('<div><strong>File:</strong> %s</div>', $this->escapeHtml($this->replaceRoot($file)));
+        return 'text/html';
+    }*/
+
+    /**
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     *
+     * @return string
+     */
+    /*
+    protected function getAcceptType(ServerRequestInterface $request)
+    {
+        $accept = $request->getHeaderLine('Accept');
+        if (
+            strpos($accept, 'text/html') !== false ||
+            strpos($accept, 'application/xhtml+xml') !== false
+        ) {
+            return 'html';
         }
-        if (($line = $e->getLine())) {
-            $html .= sprintf('<div><strong>Line:</strong> %s</div>', (int) $line);
+        if (
+            strpos($accept, 'application/json') !== false ||
+            strpos($accept, 'text/json') !== false ||
+            strpos($accept, 'application/x-json') !== false
+        ) {
+            return 'json';
         }
+        return 'text';
+    }*/
 
-        $traces = $this->normalizeBacktraces($e->getTrace());
-        if (! empty($traces)) {
-            $html .= '<h2>Trace</h2>';
+    protected function shouldDisplayDetails(ServerRequestInterface $request): bool
+    {
+        return $request->getAttribute($this->attributeName . '_displayErrorDetails', false);
+    }
 
-            $html .= '<table><tbody>';
+    // TODO : attention il manque le choix de la version HTTP 1.1 ou 1.0 lorsqu'on initialise cette nouvelle response.
+    protected function createResponseFromException(Throwable $e): ResponseInterface
+    {
+        // TODO : lui passer plutot une factory en paramétre comme ca on évite de rendre cette classe adhérente à la classe "Chiron\Http\Response"
+        $response = new Response(500);
 
-            foreach ($traces as $index => $frame) {
-                $html .= sprintf('<tr><td>#%d</td><td>%s</td><td>%s</td></tr>', count($traces) - $index, $this->escapeHtml($frame['function']), $this->escapeHtml($this->replaceRoot($frame['file'] ?: '')));
+        if ($e instanceof HttpException) {
+            // add the headers stored in the exception
+            $headers = $e->getHeaders();
+            foreach ($headers as $header => $value) {
+                $response = $response->withAddedHeader($header, $value);
             }
-            $html .= '</table></tbody>';
+            $response = $response->withStatus($e->getStatusCode());
         }
 
-        return $html;
+        return $response;
     }
 
-    /**
-     * Render JSON error.
-     *
-     * @param Throwable $error
-     *
-     * @return string
-     */
-    private function renderJsonBody(Throwable $error): string
-    {
-        $json = [
-            'message' => 'Chiron Application Error',
-        ];
-//        if ($this->displayErrorDetails) {
-        $json['error'] = [];
-        do {
-            $json['error'][] = [
-                'type'    => get_class($error),
-                'code'    => $error->getCode(),
-                'message' => $error->getMessage(),
-                'file'    => $this->replaceRoot($error->getFile()),
-                'line'    => $error->getLine(),
-                'trace'   => explode("\n", $error->getTraceAsString()),
-            ];
-        } while ($error = $error->getPrevious());
-//        }
-        return json_encode($json, JSON_PRETTY_PRINT); //JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
-    }
-
-    /**
-     * Render XML error.
-     *
-     * @param Throwable $error
-     *
-     * @return string
-     */
-    private function renderXmlBody(Throwable $error): string
-    {
-        $xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
-        $xml .= "<errors>\n  <message>Chiron Application Error</message>\n";
-//        if ($this->displayErrorDetails) {
-        do {
-            $xml .= "  <error>\n";
-            $xml .= '    <type>' . get_class($error) . "</type>\n";
-            $xml .= '    <code>' . $error->getCode() . "</code>\n";
-            $xml .= '    <message>' . $this->createCdataSection($error->getMessage()) . "</message>\n";
-            $xml .= '    <file>' . $error->getFile() . "</file>\n";
-            $xml .= '    <line>' . $error->getLine() . "</line>\n";
-            $xml .= '    <trace>' . $this->createCdataSection($error->getTraceAsString()) . "</trace>\n";
-            $xml .= "  </error>\n";
-        } while ($error = $error->getPrevious());
-//        }
-        $xml .= '</errors>';
-
-        return $xml;
-    }
-
-    /**
-     * Returns a CDATA section with the given content.
-     *
-     * @param string $content
-     *
-     * @return string
-     */
-    private function createCdataSection(string $content): string
-    {
-        return sprintf('<![CDATA[%s]]>', str_replace(']]>', ']]]]><![CDATA[>', $content));
-    }
-
-    /**
-     * Get the code of the exception that is currently being handled.
-     *
-     * @return string
-     */
-    private function getExceptionCode(Throwable $exception): string
-    {
-        /*
-        // TODO : utiliser plutot ce bout de code au lieu de faire un test sur l'instance HttpException
-                if (method_exists($e, 'getStatusCode')) {
-                    $code = $e->getStatusCode();
-                } else {
-                    $code = $e->getCode();
-                }
-        */
-        $code = $exception->getCode();
-        if ($exception instanceof HttpException) {
-            // ErrorExceptions wrap the php-error types within the 'severity' property
-            $code = $exception->getStatusCode();
-        }
-        if ($exception instanceof ErrorException) {
-            // ErrorExceptions wrap the php-error types within the 'severity' property
-            $code = $this->translateErrorCode($exception->getSeverity());
-        }
-
-        return (string) $code;
-    }
-
-    /**
-     * Translate ErrorException code into the represented constant.
-     *
-     * @param int $errorCode
-     *
-     * @return string
-     */
-    private static function translateErrorCode(int $errorCode): string
-    {
-        $constants = get_defined_constants(true);
-        if (array_key_exists('Core', $constants)) {
-            foreach ($constants['Core'] as $constant => $value) {
-                if (substr($constant, 0, 2) == 'E_' && $value == $errorCode) {
-                    return $constant;
-                }
-            }
-        }
-
-        return 'E_UNKNOWN';
-    }
 }

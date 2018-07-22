@@ -6,8 +6,9 @@ namespace Chiron\Handler\Error;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class MaintenanceHandler extends AbstractHandler
+class MaintenanceHandler implements RequestHandlerInterface
 {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

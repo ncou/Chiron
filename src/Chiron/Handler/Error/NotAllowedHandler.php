@@ -12,8 +12,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use UnexpectedValueException;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class NotAllowedHandler extends AbstractHandler
+class NotAllowedHandler implements RequestHandlerInterface
 {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {

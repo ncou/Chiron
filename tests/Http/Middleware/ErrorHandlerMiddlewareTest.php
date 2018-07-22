@@ -22,16 +22,10 @@ class ErrorHandlerMiddlewareTest extends TestCase
 {
     protected function setUp()
     {
-        //$this->request = (new ServerRequestFactory())->createServerRequestFromArray($this->getMockServerValues());
         $this->request = $this->prophesize(ServerRequestInterface::class);
 
         $this->request->withAttribute(Argument::type('string'), Argument::type(Throwable::class))->will([$this->request, 'reveal']);
         $this->request->withAttribute(Argument::type('string'), Argument::type('bool'))->will([$this->request, 'reveal']);
-
-        /*
-        $this->request->withAttribute(Argument::type('string'), Argument::type('bool'))->will(function ($args) {
-            return $args[1];
-        });*/
 
         $this->errorReporting = error_reporting();
     }

@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 // TODO : regarder ici comment c'est fait : https://github.com/zendframework/zend-problem-details/blob/master/src/ProblemDetailsMiddleware.php
 
-//https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php
-
 namespace Chiron\Http\Middleware;
 
 use Chiron\Http\Exception\HttpException;
@@ -128,7 +126,8 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
          * @return void
          * @throws ErrorException if error is not within the error_reporting mask.
          */
-        return function ($errno, $errstr, $errfile, $errline) {
+        return function (int $errno, string $errstr, string $errfile, int $errline) : void {
+        //return function ($errno, $errstr, $errfile, $errline) {
             if (! (error_reporting() & $errno)) {
                 // error_reporting does not include this error
                 return;

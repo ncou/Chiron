@@ -22,6 +22,7 @@ use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\EmitterMiddleware;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
+use Chiron\Http\Middleware\LogExceptionMiddleware;
 use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
@@ -52,6 +53,10 @@ class DefaultServicesProvider
 
         $container[RoutingMiddleware::class] = function ($c) {
             return new RoutingMiddleware($c['router']);
+        };
+
+        $container[LogExceptionMiddleware::class] = function ($c) {
+            return new LogExceptionMiddleware($c['logger']);
         };
 
         $container[DispatcherMiddleware::class] = function ($c) {

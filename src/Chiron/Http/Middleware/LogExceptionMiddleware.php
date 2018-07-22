@@ -88,6 +88,7 @@ final class LogExceptionMiddleware implements MiddlewareInterface
      *
      * @return string
      */
+    // TODO : améliorer le formatage : https://github.com/filp/whoops/blob/master/src/Whoops/Exception/Formatter.php#L59
     private function formatExceptionTraces(array $traces): string
     {
         $trace = '';
