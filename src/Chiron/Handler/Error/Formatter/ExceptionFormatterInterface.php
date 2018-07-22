@@ -10,9 +10,10 @@ namespace Chiron\Handler\Error\Formatter;
 interface ExceptionFormatterInterface
 {
     /**
-     * Format the exception as a string
+     * Format the exception as a string.
      *
-     * @param \Throwable            $exception
+     * @param \Throwable $exception
+     *
      * @return string The formatted exception.
      */
     public function formatException(\Throwable $exception, bool $displayErrorDetails): string;

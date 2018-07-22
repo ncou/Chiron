@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Error\Formatter;
 
-use Chiron\Http\Exception\HttpException;
-use ErrorException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-use UnexpectedValueException;
 
 class PlainTextFormatter implements ExceptionFormatterInterface
 {
@@ -23,6 +18,7 @@ class PlainTextFormatter implements ExceptionFormatterInterface
         if ($displayErrorDetails) {
             return $this->formatExceptionBody($exception);
         }
+
         return $exception->getMessage();
     }
 
@@ -34,10 +30,13 @@ class PlainTextFormatter implements ExceptionFormatterInterface
             $text .= PHP_EOL . 'Previous Error:' . PHP_EOL;
             $text .= $this->formatExceptionFragment($e);
         }
+
         return $text;
     }
+
     /**
      * @param \Throwable $e
+     *
      * @return string
      */
     // TODO : utiliser la méthode replaceRoot pour le champ "file"
@@ -60,6 +59,7 @@ class PlainTextFormatter implements ExceptionFormatterInterface
         if ($trace = $e->getTraceAsString()) {
             $text .= sprintf('Trace: %s', $trace);
         }
+
         return $text;
     }
 }

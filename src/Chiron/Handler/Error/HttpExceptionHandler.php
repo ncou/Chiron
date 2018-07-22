@@ -4,19 +4,18 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Error;
 
-use Chiron\Http\Exception\HttpException;
-use ErrorException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Throwable;
-use UnexpectedValueException;
 use Chiron\Handler\Error\Formatter\HtmlFormatter;
 use Chiron\Handler\Error\Formatter\JsonFormatter;
-use Chiron\Handler\Error\Formatter\XmlFormatter;
 use Chiron\Handler\Error\Formatter\PlainTextFormatter;
 use Chiron\Handler\Error\Formatter\WhoopsFormatter;
+use Chiron\Handler\Error\Formatter\XmlFormatter;
+use Chiron\Http\Exception\HttpException;
 use Chiron\Http\Psr\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Throwable;
+use UnexpectedValueException;
 
 // TODO : regarder ici pour gérer les formater pour les messages : https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Error/ExceptionHandlerManager.php
 
@@ -157,7 +156,6 @@ class HttpExceptionHandler implements RequestHandlerInterface
         return $formatter->formatException($exception, $displayErrorDetails);
     }
 
-
     protected function retrieveException(ServerRequestInterface $request): Throwable
     {
         //retrieve the "HttpException object" stored in the request attribute
@@ -217,7 +215,7 @@ class HttpExceptionHandler implements RequestHandlerInterface
     }
 
     /**
-     * Determine which content type we know about is wanted using Accept header
+     * Determine which content type we know about is wanted using Accept header.
      *
      * @param ServerRequestInterface $request
      *
@@ -281,5 +279,4 @@ class HttpExceptionHandler implements RequestHandlerInterface
 
         return $response;
     }
-
 }

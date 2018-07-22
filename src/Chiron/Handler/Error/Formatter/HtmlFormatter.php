@@ -6,10 +6,7 @@ namespace Chiron\Handler\Error\Formatter;
 
 use Chiron\Http\Exception\HttpException;
 use ErrorException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-use UnexpectedValueException;
 
 //https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Error/Renderer/HtmlRenderer.php
 

@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Error\Formatter;
 
-use Chiron\Http\Exception\HttpException;
-use ErrorException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-use UnexpectedValueException;
 
 //https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Error/Renderer/JsonRenderer.php
 
@@ -46,6 +41,7 @@ class JsonFormatter implements ExceptionFormatterInterface
                 ];
             } while ($error = $error->getPrevious());
         }
+
         return json_encode($json, JSON_PRETTY_PRINT); //JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
     }
 
