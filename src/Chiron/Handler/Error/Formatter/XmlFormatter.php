@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Error\Formatter;
 
-use Chiron\Http\Exception\HttpException;
-use ErrorException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-use UnexpectedValueException;
 
 class XmlFormatter implements ExceptionFormatterInterface
 {
@@ -33,7 +28,7 @@ class XmlFormatter implements ExceptionFormatterInterface
         /*
         $xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
         */
-        $xml = "";
+        $xml = '';
         $xml .= "<errors>\n  <message>Chiron Application Error</message>\n";
 
         if ($displayErrorDetails) {

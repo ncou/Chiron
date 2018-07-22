@@ -18,12 +18,14 @@ class HttpExceptionBasicTest extends TestCase
     public function testExceptionWithStatusCodeBelow400()
     {
         $this->expectException(\InvalidArgumentException::class);
+
         return new HttpException(399);
     }
 
     public function testExceptionWithStatusCodeAboveOrEquals600()
     {
         $this->expectException(\InvalidArgumentException::class);
+
         return new HttpException(600);
     }
 }
