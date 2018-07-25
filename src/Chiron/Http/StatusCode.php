@@ -232,56 +232,6 @@ class StatusCode
     ];
 
     /**
-     * Array of mapping beetween Exceptions Name and the Client/Server error status code.
-     *
-     * @var array
-     */
-    // TODO : utiliser les constantes définies précédemment dans la classe (ex : remplacer '400' par self::HTTP_BAD_REQUEST)
-    // TODO : regarder ici pour utiliser un namespace generic lors de l'initialisation de la classe : https://github.com/ncou/http-HttpException/blob/master/src/Http/Exception/Factory.php#L58
-    private static $mapExceptionName = [
-        400 => BadRequestHttpException::class,
-        401 => UnauthorizedHttpException::class,
-        402 => PaymentRequiredHttpException::class,
-        403 => ForbiddenHttpException::class,
-        404 => NotFoundHttpException::class,
-        405 => MethodNotAllowedHttpException::class,
-        406 => NotAcceptableHttpException::class,
-        407 => ProxyAuthenticationRequiredHttpException::class,
-        408 => RequestTimeoutHttpException::class,
-        409 => ConflictHttpException::class,
-        410 => GoneHttpException::class,
-        411 => LengthRequiredHttpException::class,
-        412 => PreconditionFailedHttpException::class,
-        413 => PayloadTooLargeHttpException::class,
-        414 => RequestUriTooLongHttpException::class,
-        415 => UnsupportedMediaTypeHttpException::class,
-        416 => RequestedRangeNotSatisfiableHttpException::class,
-        417 => ExpectationFailedHttpException::class,
-        418 => ImATeapotHttpException::class,
-        421 => MisdirectedRequestHttpException::class,
-        422 => UnprocessableEntityHttpException::class,
-        423 => LockedHttpException::class,
-        424 => FailedDependencyHttpException::class,
-        425 => TooEarlyRequestHttpException::class,
-        426 => UpgradeRequiredHttpException::class,
-        428 => PreconditionRequiredHttpException::class,
-        429 => TooManyRequestsHttpException::class,
-        431 => RequestHeaderFieldsTooLargeHttpException::class,
-        451 => UnavailableForLegalReasonsHttpException::class,
-        500 => InternalServerErrorHttpException::class,
-        501 => NotImplementedHttpException::class,
-        502 => BadGatewayHttpException::class,
-        503 => ServiceUnavailableHttpException::class,
-        504 => GatewayTimeoutHttpException::class,
-        505 => HttpVersionNotSupportedHttpException::class,
-        506 => VariantAlsoNegotiatesHttpException::class,
-        507 => InsufficientStorageHttpException::class,
-        508 => LoopDetectedHttpException::class,
-        510 => NotExtendedHttpException::class,
-        511 => NetworkAuthenticationRequiredHttpException::class,
-    ];
-
-    /**
      * Private constructor; non-instantiable use only the static methods !
      *
      * @codeCoverageIgnore
