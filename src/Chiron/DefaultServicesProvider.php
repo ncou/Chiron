@@ -13,6 +13,9 @@
 
 namespace Chiron;
 
+use Chiron\Handler\Error\ExceptionManager;
+use Chiron\Http\Exception\Client\NotFoundHttpException;
+use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
 use Chiron\Http\Middleware\BodyParserMiddleware;
 use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
 use Chiron\Http\Middleware\CheckMaintenanceMiddleware;
@@ -20,17 +23,14 @@ use Chiron\Http\Middleware\ContentLengthMiddleware;
 use Chiron\Http\Middleware\ContentTypeByDefaultMiddleware;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\EmitterMiddleware;
+use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Http\Middleware\LogExceptionMiddleware;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
-use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
-use Chiron\Handler\Error\ExceptionManager;
 use Throwable;
-use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
-use Chiron\Http\Exception\Client\NotFoundHttpException;
 
 /**
  * Chiron system services provider.
@@ -111,15 +111,6 @@ class DefaultServicesProvider
 
             return new ErrorHandlerMiddleware($exceptionManager);
         };
-
-
-
-
-
-
-
-
-
 
         /*
            $container['callableResolver'] = function ($container) {

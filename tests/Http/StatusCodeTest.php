@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Http;
 
-use Chiron\Http\Exception\HttpException;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Uri;
 use Chiron\Http\StatusCode;
