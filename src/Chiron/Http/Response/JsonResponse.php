@@ -25,6 +25,8 @@ use function sprintf;
  */
 class JsonResponse extends Response
 {
+    protected $contentType = 'application/json';
+
     /**
      * Default flags for json_encode; value of:.
      *
@@ -75,7 +77,7 @@ class JsonResponse extends Response
         $this->encodingOptions = $encodingOptions;
         $json = $this->jsonEncode($data, $this->encodingOptions);
         $body = $this->createBodyFromJson($json);
-        $headers = $this->injectContentType('application/json', $headers);
+        $headers = $this->injectContentType($this->contentType, $headers);
         parent::__construct($status, $headers, $body);
     }
 

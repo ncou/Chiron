@@ -17,6 +17,7 @@ class HtmlResponseTest extends TestCase
         $response = new HtmlResponse($body);
         $this->assertSame($body, (string) $response->getBody());
         $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('text/html', $response->getHeaderLine('Content-Type'));
     }
 
     public function testConstructorAllowsPassingStatus()

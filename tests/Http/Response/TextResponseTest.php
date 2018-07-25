@@ -17,6 +17,7 @@ class TextResponseTest extends TestCase
         $response = new TextResponse($body);
         $this->assertSame($body, (string) $response->getBody());
         $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('text/plain', $response->getHeaderLine('Content-Type'));
     }
 
     public function testConstructorAllowsPassingStatus()

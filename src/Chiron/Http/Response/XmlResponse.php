@@ -22,6 +22,8 @@ use function sprintf;
  */
 class XmlResponse extends Response
 {
+    protected $contentType = 'application/xml';
+
     /**
      * Create an XML response.
      *
@@ -41,7 +43,7 @@ class XmlResponse extends Response
     ) {
         parent::__construct(
             $status,
-            $this->injectContentType('application/xml', $headers),
+            $this->injectContentType($this->contentType, $headers),
             $this->createBody($xml)
         );
     }

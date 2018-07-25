@@ -23,6 +23,8 @@ use function sprintf;
  */
 class HtmlResponse extends Response
 {
+    protected $contentType = 'text/html';
+
     /**
      * Create an HTML response.
      *
@@ -39,7 +41,7 @@ class HtmlResponse extends Response
     {
         parent::__construct(
             $status,
-            $this->injectContentType('text/html', $headers),
+            $this->injectContentType($this->contentType, $headers),
             $this->createBody($html)
         );
     }

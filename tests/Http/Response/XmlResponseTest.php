@@ -12,19 +12,27 @@ use const PHP_EOL;
 
 class XmlResponseTest extends TestCase
 {
+    protected $contentType = 'application/xml';
+
+    protected function createResponse($body,int $status = 200,array $headers = [])
+    {
+        return new XmlResponse($body, $status, $headers);
+    }
+
     public function testConstructorAcceptsBodyAsString()
     {
         $body = 'Super valid XML';
-        $response = new XmlResponse($body);
+        $response = $this->createResponse($body);
         $this->assertSame($body, (string) $response->getBody());
         $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame($this->contentType, $response->getHeaderLine('Content-Type'));
     }
 
     public function testConstructorAllowsPassingStatus()
     {
         $body = 'More valid XML';
         $status = 404;
-        $response = new XmlResponse($body, $status);
+        $response = $this->createResponse($body, $status);
         $this->assertSame(404, $response->getStatusCode());
         $this->assertSame($body, (string) $response->getBody());
     }
@@ -36,9 +44,8 @@ class XmlResponseTest extends TestCase
         $headers = [
             'x-custom' => ['foo-bar'],
         ];
-        $response = new XmlResponse($body, $status, $headers);
+        $response = $this->createResponse($body, $status, $headers);
         $this->assertSame(['foo-bar'], $response->getHeader('x-custom'));
-        $this->assertSame('application/xml', $response->getHeaderLine('content-type'));
         $this->assertSame(404, $response->getStatusCode());
         $this->assertSame($body, (string) $response->getBody());
     }
@@ -48,7 +55,7 @@ class XmlResponseTest extends TestCase
         $headers = [
             'Content-Type' => ['foo-bar'],
         ];
-        $response = new XmlResponse('', 200, $headers);
+        $response = $this->createResponse('', 200, $headers);
         $this->assertSame(['foo-bar'], $response->getHeader('Content-Type'));
     }
 
@@ -56,7 +63,7 @@ class XmlResponseTest extends TestCase
     {
         $stream = $this->prophesize(StreamInterface::class);
         $body = $stream->reveal();
-        $response = new XmlResponse($body);
+        $response = $this->createResponse($body);
         $this->assertSame($body, $response->getBody());
     }
 
@@ -81,13 +88,13 @@ class XmlResponseTest extends TestCase
     public function testRaisesExceptionforNonStringNonStreamBodyContent($body)
     {
         $this->expectException(InvalidArgumentException::class);
-        new XmlResponse($body);
+        $this->createResponse($body);
     }
 
     public function testConstructorRewindsBodyStream()
     {
         $body = '<?xml version="1.0"?>' . PHP_EOL . '<something>Valid XML</something>';
-        $response = new XmlResponse($body);
+        $response = $this->createResponse($body);
         $actual = $response->getBody()->getContents();
         $this->assertSame($body, $actual);
     }

@@ -23,6 +23,8 @@ use function sprintf;
  */
 class TextResponse extends Response
 {
+    protected $contentType = 'text/plain';
+
     /**
      * Create a plain text response.
      *
@@ -39,7 +41,7 @@ class TextResponse extends Response
     {
         parent::__construct(
             $status,
-            $this->injectContentType('text/plain', $headers),
+            $this->injectContentType($this->contentType, $headers),
             $this->createBody($text)
         );
     }
