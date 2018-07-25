@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Middleware;
 
+use Chiron\Handler\Error\ExceptionManager;
 use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Http\Psr\Response;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\ExceptionHandlerCallable;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Psr\Http\Message\ResponseInterface;
@@ -35,20 +36,19 @@ class ErrorHandlerMiddlewareTest extends TestCase
         error_reporting($this->errorReporting);
     }
 
-    public function createMiddleware($isDevelopmentMode = true)
+    public function createMiddleware()
     {
-        $errorHandlerMiddleware = new ErrorHandlerMiddleware($isDevelopmentMode);
-
-        $handler = function ($request) {
+        $handler = function ($exception, $request) {
             $response = new Response(500);
             $response->getBody()->write('Oops..');
 
             return $response;
         };
 
-        $errorHandlerMiddleware->bindExceptionHandler(Throwable::class, new HandlerProxy2($handler));
+        $exceptionManager = new ExceptionManager();
+        $exceptionManager->bindExceptionHandler(Throwable::class, new ExceptionHandlerCallable($handler));
 
-        return $errorHandlerMiddleware;
+        return new ErrorHandlerMiddleware($exceptionManager);
     }
 
     public function testReturnsResponseFromHandlerWhenNoProblemsOccur()
@@ -77,7 +77,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
             ->handle(Argument::type(ServerRequestInterface::class))
             ->willThrow(new RuntimeException('Exception raised'));
 
-        $middleware = new ErrorHandlerMiddleware(true);
+        $middleware = new ErrorHandlerMiddleware(new ExceptionManager());
 
         $result = $middleware->process($this->request->reveal(), $handler->reveal());
     }

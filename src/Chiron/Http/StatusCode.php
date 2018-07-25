@@ -295,7 +295,7 @@ class StatusCode
     public static function assertValidStatusCode(int $code): void
     {
         if ($code < self::MIN_STATUS_CODE_VALUE || $code > self::MAX_STATUS_CODE_VALUE) {
-            throw new \InvalidArgumentException("Invalid status code '$code'; must be an integer between 400 and 599, inclusive.");
+            throw new \InvalidArgumentException("Invalid status code '$code'; must be an integer between 100 and 599, inclusive.");
         }
     }
 }

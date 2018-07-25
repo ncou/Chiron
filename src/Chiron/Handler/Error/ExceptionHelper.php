@@ -4,19 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Error;
 
-use Fig\Http\Message\RequestMethodInterface;
-use Fig\Http\Message\StatusCodeInterface;
-
-
-use Jgut\HttpException\ForbiddenHttpException;
-use Jgut\HttpException\HttpException;
-use Jgut\HttpException\InternalServerErrorHttpException;
-use Jgut\HttpException\MethodNotAllowedHttpException;
-use Jgut\HttpException\NotFoundHttpException;
-use Jgut\HttpException\UnauthorizedHttpException;
-use Jgut\Slim\Exception\Whoops\Formatter\Text;
-
-
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
