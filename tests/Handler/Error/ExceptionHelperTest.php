@@ -4,11 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Handler\Error;
 
-use Chiron\Http\Exception\HttpException;
 use Chiron\Handler\Error\ExceptionHelper;
-use Chiron\Http\Psr\Response;
-use Chiron\Http\Psr\Uri;
-use Chiron\Http\StatusCode;
+use Chiron\Http\Exception\HttpException;
 use DOMDocument;
 use DomXPath;
 use PHPUnit\Framework\TestCase;

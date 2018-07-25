@@ -4,28 +4,16 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Error;
 
-use Fig\Http\Message\RequestMethodInterface;
-use Fig\Http\Message\StatusCodeInterface;
-
-
-use Jgut\HttpException\ForbiddenHttpException;
+use Chiron\Http\Psr\Response;
+use ErrorException;
+use InvalidArgumentException;
 use Jgut\HttpException\HttpException;
-use Jgut\HttpException\InternalServerErrorHttpException;
-use Jgut\HttpException\MethodNotAllowedHttpException;
-use Jgut\HttpException\NotFoundHttpException;
-use Jgut\HttpException\UnauthorizedHttpException;
 use Jgut\Slim\Exception\Whoops\Formatter\Text;
-
-
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
-use Chiron\Http\Psr\Response;
-use InvalidArgumentException;
-use ErrorException;
 use Throwable;
 
 //https://github.com/cakephp/cakephp/blob/master/src/Error/BaseErrorHandler.php#L390
@@ -33,7 +21,6 @@ use Throwable;
 
 /**
  * HTTP Exceptions Manager.
- *
  */
 class ExceptionManager implements LoggerAwareInterface
 {
@@ -87,7 +74,6 @@ class ExceptionManager implements LoggerAwareInterface
         $this->setDefaultHandler($defaultHandler);
     }*/
 
-
     /**
      * Get callable to handle scenarios where an error
      * occurs when processing the current request.
@@ -96,7 +82,6 @@ class ExceptionManager implements LoggerAwareInterface
      *
      * @return null|ExceptionHandlerInterface
      */
-
     public function getExceptionHandler(Throwable $exception): ?ExceptionHandlerInterface
     {
         $exceptionHandler = null;
@@ -130,7 +115,7 @@ class ExceptionManager implements LoggerAwareInterface
      * The callable MUST return an instance of
      * \Psr\Http\Message\ResponseInterface.
      *
-     * @param string|array            $exceptionTypes
+     * @param string|array              $exceptionTypes
      * @param ExceptionHandlerInterface $handler
      */
     // TODO : il faudrait faire un test si on passe un seul attribut qui est un callable dans ce cas c'est qu'on ne précise pas le type d'exception rattaché au handler et donc qu'il s'agit du handler par défaut pour traiter toutes les exceptions. Dans ce cas la méthode setDefaultErrorHandler ne servirai plus à rien !!!
@@ -145,14 +130,10 @@ class ExceptionManager implements LoggerAwareInterface
         foreach ($exceptionTypes as $exceptionType) {
             if (! interface_exists($exceptionType) && ! class_exists($exceptionType)) {
                 throw new InvalidArgumentException("The class '$exceptionType' doesn't exist, so you can't bind Handler.");
-
             }
             $this->handlers[$exceptionType] = $handler;
         }
     }
-
-
-
 
     /**
      * Set default HTTP status code handler.
@@ -266,7 +247,7 @@ class ExceptionManager implements LoggerAwareInterface
     /**
      * Log exception.
      *
-     * @param Throwablable          $e
+     * @param Throwablable           $e
      * @param ServerRequestInterface $request
      */
     private function log(Throwable $e, ServerRequestInterface $request)
@@ -277,23 +258,21 @@ class ExceptionManager implements LoggerAwareInterface
 
         $level = $this->getLogLevel($e);
 
-// TODO : regarder pour analyser le context, voir si on pourra l'utiliser !!!!
-/*
-        $logContext = [
-            'http_method' => $request->getMethod(),
-            'request_uri' => (string) $request->getUri(),
-            'level_name' => \strtoupper($level),
-            'stack_trace' => $this->getStackTrace($e),
-        ];
-
-        $this->logger->log($level, $exception->getMessage(), $logContext);
-        */
-
+        // TODO : regarder pour analyser le context, voir si on pourra l'utiliser !!!!
+        /*
+                $logContext = [
+                    'http_method' => $request->getMethod(),
+                    'request_uri' => (string) $request->getUri(),
+                    'level_name' => \strtoupper($level),
+                    'stack_trace' => $this->getStackTrace($e),
+                ];
+        
+                $this->logger->log($level, $exception->getMessage(), $logContext);
+                */
 
         $this->logger->log($level, $this->formatException($e));
         //$this->logger->log($level, $exception->getMessage().$exception->getTraceAsString());
         // $output = Formatter::formatExceptionPlain(new Inspector($exception));
-
     }
 
     /**
@@ -368,7 +347,7 @@ class ExceptionManager implements LoggerAwareInterface
 
     /**
      * Get log level to use for the PSR3 Logger.
-     * By default for the NON 'ErrorException' exception it will always be 'CRITICAL'
+     * By default for the NON 'ErrorException' exception it will always be 'CRITICAL'.
      *
      * @param Throwable $e
      *

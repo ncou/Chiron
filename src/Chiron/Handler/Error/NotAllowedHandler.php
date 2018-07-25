@@ -10,7 +10,6 @@ use Chiron\Http\Exception\HttpException;
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 use UnexpectedValueException;
 

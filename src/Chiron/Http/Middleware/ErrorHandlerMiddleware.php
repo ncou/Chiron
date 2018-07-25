@@ -25,18 +25,16 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
+use Chiron\Handler\Error\ExceptionManager;
 use Chiron\Http\Exception\HttpException;
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 //use Psr\Container\ContainerInterface;
 
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
-use function is_a;
-use function is_array;
-use Chiron\Handler\Error\ExceptionManager;
 
 class ErrorHandlerMiddleware implements MiddlewareInterface
 {

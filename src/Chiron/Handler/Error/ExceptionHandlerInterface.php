@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Error;
 
-use Throwable;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 /**
  * Interface for classes that handle exception.

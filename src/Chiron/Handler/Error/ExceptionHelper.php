@@ -4,18 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Error;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
-use Psr\Log\LogLevel;
-use Chiron\Http\Psr\Response;
-
-use Chiron\Http\StatusCode;
-
-
-
-
 use Chiron\Http\Exception\Client\BadRequestHttpException;
 use Chiron\Http\Exception\Client\ConflictHttpException;
 use Chiron\Http\Exception\Client\ExpectationFailedHttpException;
@@ -128,5 +116,4 @@ class ExceptionHelper
 
         return self::$mapExceptionName[$code];
     }
-
 }

@@ -215,9 +215,10 @@ class HttpExceptionHandler implements RequestHandlerInterface
     }
 
     /**
-     * Returns the preferred format based on the Accept header
+     * Returns the preferred format based on the Accept header.
      *
      * @param ServerRequestInterface $request
+     *
      * @return string
      */
     //https://github.com/franzliedke/whoops-middleware/blob/master/src/FormatNegotiator.php#L28

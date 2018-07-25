@@ -6,7 +6,6 @@ namespace Chiron\Handler\Error;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 
 class MaintenanceHandler implements ExceptionHandlerInterface

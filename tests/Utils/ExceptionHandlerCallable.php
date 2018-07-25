@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Utils;
 
+use Chiron\Handler\Error\ExceptionHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Handler\Error\ExceptionHandlerInterface;
 use Throwable;
 
 class ExceptionHandlerCallable implements ExceptionHandlerInterface

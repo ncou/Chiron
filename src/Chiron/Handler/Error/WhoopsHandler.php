@@ -4,33 +4,19 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Error;
 
-use Chiron\Handler\Error\Formatter\HtmlFormatter;
-use Chiron\Handler\Error\Formatter\JsonFormatter;
-use Chiron\Handler\Error\Formatter\PlainTextFormatter;
-use Chiron\Handler\Error\Formatter\WhoopsFormatter;
-use Chiron\Handler\Error\Formatter\XmlFormatter;
 use Chiron\Http\Exception\HttpException;
 use Chiron\Http\Psr\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 use UnexpectedValueException;
-use ErrorException;
-use InvalidArgumentException;
-use RuntimeException;
-use Symfony\Component\VarDumper\Cloner\AbstractCloner;
-use Symfony\Component\VarDumper\Cloner\VarCloner;
-use Whoops\Exception\Formatter;
-use Whoops\Exception\Inspector;
-use Whoops\Handler\PlainTextHandler;
 use Whoops\Handler\HandlerInterface;
-use Whoops\Handler\PrettyPageHandler;
 use Whoops\Handler\JsonResponseHandler;
+use Whoops\Handler\PlainTextHandler;
+use Whoops\Handler\PrettyPageHandler;
 use Whoops\Handler\XmlResponseHandler;
 use Whoops\Run as Whoops;
 use Whoops\Util\Misc;
-use Whoops\Util\TemplateHelper;
 
 // TODO : regarder ici pour gérer les formater pour les messages : https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Error/ExceptionHandlerManager.php
 
@@ -41,10 +27,9 @@ use Whoops\Util\TemplateHelper;
 // TODO : créer une interface
 class WhoopsHandler implements ExceptionHandlerInterface
 {
-
     use DeterminesContentTypeTrait;
 
-    const DEFAULT_STATUS_CODE = 500;
+    public const DEFAULT_STATUS_CODE = 500;
     /**
      * The request attribute name used to retrieve the exception stored previously (in the middleware).
      *
@@ -52,19 +37,17 @@ class WhoopsHandler implements ExceptionHandlerInterface
      */
 //    protected $attributeName = 'Chiron:exception';
 
-
-
     /**
      * @var WhoopsRun
      */
     protected $whoops;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct()
     {
-        $this->whoops = new Whoops;
+        $this->whoops = new Whoops();
         $this->whoops->writeToOutput(false);
         $this->whoops->allowQuit(false);
     }
@@ -80,9 +63,9 @@ class WhoopsHandler implements ExceptionHandlerInterface
     }
 
     /**
-     * @param Callable|HandlerInterface $handler
+     * @param callable|HandlerInterface $handler
      *
-     * @throws \InvalidArgumentException  If argument is not callable or instance of HandlerInterface
+     * @throws \InvalidArgumentException If argument is not callable or instance of HandlerInterface
      */
     public function pushHandler($handler)
     {
@@ -91,7 +74,8 @@ class WhoopsHandler implements ExceptionHandlerInterface
 
     /**
      * @param Throwable $e
-     * @param string $body
+     * @param string    $body
+     *
      * @return ResponseInterface
      */
     protected function respond(Throwable $e, string $body)
@@ -109,9 +93,7 @@ class WhoopsHandler implements ExceptionHandlerInterface
         }
 
         return $response->write($body);
-
     }
-
 
     /**
      * @param string $contentType
@@ -128,15 +110,18 @@ class WhoopsHandler implements ExceptionHandlerInterface
             case 'application/json':
                 $contentTypeBasedHandler = new JsonResponseHandler();
                 $contentTypeBasedHandler->addTraceToOutput(true);
+
                 break;
             case 'text/xml':
             case 'application/xml':
                 $contentTypeBasedHandler = new XmlResponseHandler();
                 $contentTypeBasedHandler->addTraceToOutput(true);
+
                 break;
             case 'text/plain':
                 $contentTypeBasedHandler = new PlainTextHandler();
                 $contentTypeBasedHandler->addTraceToOutput(true);
+
                 break;
             // TODO : attention dans le cas du default (cas que le content-type n'est pas dans la liste du switch) il faudrait écraser le content-type utilisé pour le mettre à text/html, sinon on aura un body non cohérent avec le content-type
             default:
@@ -163,7 +148,7 @@ class WhoopsHandler implements ExceptionHandlerInterface
     }
 
     /**
-     * @param Callable|HandlerInterface $handler
+     * @param callable|HandlerInterface $handler
      */
     private function prependHandler($handler)
     {
