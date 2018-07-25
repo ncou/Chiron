@@ -266,7 +266,7 @@ class ExceptionManager implements LoggerAwareInterface
                     'level_name' => \strtoupper($level),
                     'stack_trace' => $this->getStackTrace($e),
                 ];
-        
+
                 $this->logger->log($level, $exception->getMessage(), $logContext);
                 */
 
