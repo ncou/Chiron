@@ -14,9 +14,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 use UnexpectedValueException;
 
-class NotAllowedHandler implements RequestHandlerInterface
+class NotAllowedHandler implements ExceptionHandlerInterface
 {
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    public function handleException(Throwable $exception, ServerRequestInterface $request): ResponseInterface
     {
         $exception = $this->retrieveException($request);
 

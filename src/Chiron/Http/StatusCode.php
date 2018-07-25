@@ -4,47 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Http;
 
-use Chiron\Http\Exception\Client\BadRequestHttpException;
-use Chiron\Http\Exception\Client\ConflictHttpException;
-use Chiron\Http\Exception\Client\ExpectationFailedHttpException;
-use Chiron\Http\Exception\Client\FailedDependencyHttpException;
-use Chiron\Http\Exception\Client\ForbiddenHttpException;
-use Chiron\Http\Exception\Client\GoneHttpException;
-use Chiron\Http\Exception\Client\ImATeapotHttpException;
-use Chiron\Http\Exception\Client\LengthRequiredHttpException;
-use Chiron\Http\Exception\Client\LockedHttpException;
-use Chiron\Http\Exception\Client\MethodNotAllowedHttpException;
-use Chiron\Http\Exception\Client\MisdirectedRequestHttpException;
-use Chiron\Http\Exception\Client\NotAcceptableHttpException;
-use Chiron\Http\Exception\Client\NotFoundHttpException;
-use Chiron\Http\Exception\Client\PayloadTooLargeHttpException;
-use Chiron\Http\Exception\Client\PaymentRequiredHttpException;
-use Chiron\Http\Exception\Client\PreconditionFailedHttpException;
-use Chiron\Http\Exception\Client\PreconditionRequiredHttpException;
-use Chiron\Http\Exception\Client\ProxyAuthenticationRequiredHttpException;
-use Chiron\Http\Exception\Client\RequestedRangeNotSatisfiableHttpException;
-use Chiron\Http\Exception\Client\RequestHeaderFieldsTooLargeHttpException;
-use Chiron\Http\Exception\Client\RequestTimeoutHttpException;
-use Chiron\Http\Exception\Client\RequestUriTooLongHttpException;
-use Chiron\Http\Exception\Client\TooEarlyRequestHttpException;
-use Chiron\Http\Exception\Client\TooManyRequestsHttpException;
-use Chiron\Http\Exception\Client\UnauthorizedHttpException;
-use Chiron\Http\Exception\Client\UnavailableForLegalReasonsHttpException;
-use Chiron\Http\Exception\Client\UnprocessableEntityHttpException;
-use Chiron\Http\Exception\Client\UnsupportedMediaTypeHttpException;
-use Chiron\Http\Exception\Client\UpgradeRequiredHttpException;
-use Chiron\Http\Exception\Server\BadGatewayHttpException;
-use Chiron\Http\Exception\Server\GatewayTimeoutHttpException;
-use Chiron\Http\Exception\Server\HttpVersionNotSupportedHttpException;
-use Chiron\Http\Exception\Server\InsufficientStorageHttpException;
-use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
-use Chiron\Http\Exception\Server\LoopDetectedHttpException;
-use Chiron\Http\Exception\Server\NetworkAuthenticationRequiredHttpException;
-use Chiron\Http\Exception\Server\NotExtendedHttpException;
-use Chiron\Http\Exception\Server\NotImplementedHttpException;
-use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
-use Chiron\Http\Exception\Server\VariantAlsoNegotiatesHttpException;
-
 // TODO : renommer cette classe en HttpStatus ?????
 class StatusCode
 {
@@ -372,24 +331,6 @@ class StatusCode
     }
 
     /**
-     * Get the text for a given status code.
-     *
-     * @param int $code http status code
-     *
-     * @return string Returns name for the given Exception corresponding to the status code
-     */
-    // TODO : on devrait peut-être directement renvoyer une instance de 'new $ExceptionName()', et eventuellement faire un "new HttpException($code)", et si on n'a pas trouvé l'exception dans la liste des noms (ca ferait une initialisation par défaut de l'exception en utilisant la classe de base !!!!)
-    public static function getExceptionNameByStatusCode(int $code): string
-    {
-        static::assertValidStatusCode($code, 400);
-        if (! isset(self::$mapExceptionName[$code])) {
-            throw new \OutOfBoundsException(\sprintf('Unknown http status code: `%s`.', $code));
-        }
-
-        return self::$mapExceptionName[$code];
-    }
-
-    /**
      * Filter a HTTP Status code.
      *
      * @param int $code
@@ -401,15 +342,10 @@ class StatusCode
      * @return int
      */
     // TODO : renommer cette méthode en assertXXXX() et virer l'ancien code pour ne pas retourner un int mais seulement lever une exception si le test est KO !!!!
-    public static function assertValidStatusCode(int $code, int $min = self::MIN_STATUS_CODE_VALUE, int $max = self::MAX_STATUS_CODE_VALUE): void
+    public static function assertValidStatusCode(int $code): void
     {
-        if ($code < $min || $code > $max) {
-            throw new \InvalidArgumentException(sprintf(
-                'Invalid status code "%s"; must be an integer between %d and %d, inclusive.',
-                $code,
-                $min,
-                $max
-            ));
+        if ($code < self::MIN_STATUS_CODE_VALUE || $code > self::MAX_STATUS_CODE_VALUE) {
+            throw new \InvalidArgumentException("Invalid status code '$code'; must be an integer between 400 and 599, inclusive.");
         }
     }
 }

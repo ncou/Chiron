@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Chiron\Routing;
 
 // TODO : ajouter le support pour les méthodes TRACE et CONNECT ????

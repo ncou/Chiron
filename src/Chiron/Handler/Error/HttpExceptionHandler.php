@@ -215,6 +215,35 @@ class HttpExceptionHandler implements RequestHandlerInterface
     }
 
     /**
+     * Returns the preferred format based on the Accept header
+     *
+     * @param ServerRequestInterface $request
+     * @return string
+     */
+    //https://github.com/franzliedke/whoops-middleware/blob/master/src/FormatNegotiator.php#L28
+    /*
+    public static function getPreferredFormat(ServerRequestInterface $request)
+    {
+        $acceptTypes = $request->getHeader('accept');
+        if (count($acceptTypes) > 0) {
+            $acceptType = $acceptTypes[0];
+            // As many formats may match for a given Accept header, let's try to find the one that fits the best
+            $counters = [];
+            foreach (self::$formats as $format => $values) {
+                foreach ($values as $value) {
+                    $counters[$format] = isset($counters[$format]) ? $counters[$format] : 0;
+                    $counters[$format] += intval(strpos($acceptType, $value) !== false);
+                }
+            }
+            // Sort the array to retrieve the format that best matches the Accept header
+            asort($counters);
+            end($counters);
+            return key($counters);
+        }
+        return 'html';
+    }*/
+
+    /**
      * Determine which content type we know about is wanted using Accept header.
      *
      * @param ServerRequestInterface $request

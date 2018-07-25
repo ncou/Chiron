@@ -23,7 +23,7 @@ class HttpException extends RuntimeException //implements \ExceptionInterface
     public function __construct(int $statusCode, string $message = null, Throwable $previous = null, array $headers = [])
     {
         if ($statusCode < 400 || $statusCode > 599) {
-            throw new \InvalidArgumentException("Invalid status code '$statusCode', must be 4xx or 5xx");
+            throw new \InvalidArgumentException("Invalid status code '$statusCode'; must be an integer between 400 and 599, inclusive.");
         }
 
         $this->statusCode = $statusCode;

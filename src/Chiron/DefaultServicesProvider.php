@@ -23,9 +23,14 @@ use Chiron\Http\Middleware\EmitterMiddleware;
 use Chiron\Http\Middleware\LogExceptionMiddleware;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
+use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
 use Psr\Log\NullLogger;
+use Chiron\Handler\Error\ExceptionManager;
+use Throwable;
+use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
+use Chiron\Http\Exception\Client\NotFoundHttpException;
 
 /**
  * Chiron system services provider.
@@ -49,6 +54,11 @@ class DefaultServicesProvider
 
         $container['logger'] = function ($c) {
             return new NullLogger();
+            //$logger = new NullLogger();
+            // TODO : à améliorer !!!! regarder la notion de daily et single et de log_max_files : https://laravel.com/docs/5.2/errors
+
+            // TODO : rajouter le composant logger dans le fichier composer.json et ensuite décommenter cette ligne !!!!
+            //$app->setLogger(new Logger(Chiron\ROOT_DIR.Chiron\DS.Chiron\LOG_DIR_NAME.Chiron\DS.'CHIRON.log'));
         };
 
         $container[RoutingMiddleware::class] = function ($c) {
@@ -90,6 +100,26 @@ class DefaultServicesProvider
         $container[ContentLengthMiddleware::class] = function ($c) {
             return new ContentLengthMiddleware();
         };
+
+        $container[ErrorHandlerMiddleware::class] = function ($c) {
+            $exceptionManager = new ExceptionManager();
+            $exceptionManager->setLogger($c['logger']);
+
+            $exceptionManager->bindExceptionHandler(Throwable::class, new \Chiron\Handler\Error\WhoopsHandler());
+            $exceptionManager->bindExceptionHandler(ServiceUnavailableHttpException::class, new \Chiron\Handler\Error\MaintenanceHandler());
+            $exceptionManager->bindExceptionHandler(NotFoundHttpException::class, new \Chiron\Handler\Error\NotFoundHandler());
+
+            return new ErrorHandlerMiddleware($exceptionManager);
+        };
+
+
+
+
+
+
+
+
+
 
         /*
            $container['callableResolver'] = function ($container) {

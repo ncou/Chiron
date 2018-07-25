@@ -7,10 +7,11 @@ namespace Chiron\Handler\Error;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Throwable;
 
-class MaintenanceHandler implements RequestHandlerInterface
+class MaintenanceHandler implements ExceptionHandlerInterface
 {
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    public function handleException(Throwable $exception, ServerRequestInterface $request): ResponseInterface
     {
         $exception = $this->retrieveException($request);
         $response = $this->createResponseFromException($exception);

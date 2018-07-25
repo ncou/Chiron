@@ -47,8 +47,7 @@ class PlainTextFormatter implements ExceptionFormatterInterface
             $text .= sprintf('Code: %s' . PHP_EOL, $code);
         }
         if ($message = $e->getMessage()) {
-            // TODO : vérifier l'utilité du htmlentities alors qu'on fait du plain text
-            $text .= sprintf('Message: %s' . PHP_EOL, htmlentities($message));
+            $text .= sprintf('Message: %s' . PHP_EOL, $message);
         }
         if ($file = $e->getFile()) {
             $text .= sprintf('File: %s' . PHP_EOL, $file);

@@ -9,10 +9,11 @@ namespace Chiron\Handler\Error;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Throwable;
 
-class NotFoundHandler implements RequestHandlerInterface
+class NotFoundHandler implements ExceptionHandlerInterface
 {
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    public function handleException(Throwable $exception, ServerRequestInterface $request): ResponseInterface
     {
         die('404 not found');
     }
