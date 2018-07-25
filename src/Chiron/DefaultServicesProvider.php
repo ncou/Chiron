@@ -24,7 +24,6 @@ use Chiron\Http\Middleware\ContentTypeByDefaultMiddleware;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\EmitterMiddleware;
 use Chiron\Http\Middleware\ErrorHandlerMiddleware;
-use Chiron\Http\Middleware\LogExceptionMiddleware;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Routing\Router;
@@ -63,10 +62,6 @@ class DefaultServicesProvider
 
         $container[RoutingMiddleware::class] = function ($c) {
             return new RoutingMiddleware($c['router']);
-        };
-
-        $container[LogExceptionMiddleware::class] = function ($c) {
-            return new LogExceptionMiddleware($c['logger']);
         };
 
         $container[DispatcherMiddleware::class] = function ($c) {
