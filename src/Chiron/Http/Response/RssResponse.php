@@ -5,14 +5,6 @@ declare(strict_types=1);
 namespace Chiron\Http\Response;
 
 use Chiron\Http\Psr\Response;
-use Chiron\Http\Psr\Stream;
-use InvalidArgumentException;
-use Psr\Http\Message\StreamInterface;
-use function get_class;
-use function gettype;
-use function is_object;
-use function is_string;
-use function sprintf;
 
 /**
  * RSS response.

@@ -5,16 +5,12 @@ declare(strict_types=1);
 namespace Chiron\Tests\Http\Response;
 
 use Chiron\Http\Response\AtomResponse;
-use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\StreamInterface;
-use const PHP_EOL;
 
 class AtomResponseTest extends XmlResponseTest
 {
     protected $contentType = 'application/atom+xml';
 
-    protected function createResponse($body,int $status = 200,array $headers = [])
+    protected function createResponse($body, int $status = 200, array $headers = [])
     {
         return new AtomResponse($body, $status, $headers);
     }
