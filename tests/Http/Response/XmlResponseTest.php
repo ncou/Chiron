@@ -14,7 +14,7 @@ class XmlResponseTest extends TestCase
 {
     protected $contentType = 'application/xml';
 
-    protected function createResponse($body,int $status = 200,array $headers = [])
+    protected function createResponse($body, int $status = 200, array $headers = [])
     {
         return new XmlResponse($body, $status, $headers);
     }
