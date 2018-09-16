@@ -15,8 +15,6 @@ interface ExceptionReporterInterface
      * Report the exception.
      *
      * @param \Throwable $e
-     *
-     * @return void
      */
     public function report(Throwable $e): void;
 

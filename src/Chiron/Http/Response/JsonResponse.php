@@ -445,5 +445,4 @@ class JsonResponse extends Response
 
         return $responseWithJson;
     }*/
-
 }

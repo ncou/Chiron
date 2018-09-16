@@ -5,15 +5,10 @@ declare(strict_types=1);
 namespace Chiron\Handler\Error;
 
 use Chiron\Http\Psr\Response;
-use ErrorException;
 use InvalidArgumentException;
 use Jgut\HttpException\HttpExceptionInterface;
-use Jgut\Slim\Exception\Whoops\Formatter\Text;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log\LoggerAwareInterface;
-use Psr\Log\LoggerAwareTrait;
-use Psr\Log\LogLevel;
 use Throwable;
 
 // WHOOPS + Template 404...etc
@@ -22,15 +17,11 @@ use Throwable;
 //https://github.com/laravel/framework/blob/master/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php
 //https://github.com/laravel/framework/tree/master/src/Illuminate/Foundation/Exceptions/views
 
-
 // Ajouter dans le fichier .env des variable pour gérer les exceptions :
 //APP_ENV=dev|prod
 //APP_DEBUG=true|false
 //APP_KEY=SomeRandomString    <= à utiliser pour le cookie encrypt par exemple
 //APP_LOG_LEVEL="debug"
-
-
-
 
 // TODO : regarder ici pour gérer les template en cas d'erreurs (fatfree framework)
 //https://github.com/vijinho/f3-boilerplate/blob/3d3f8169bc3a73ccd09c2b45e61dbe5b88b4d845/app/lib/App/App.php
@@ -43,7 +34,6 @@ use Throwable;
  */
 class ExceptionManager
 {
-
     /**
      * List of HTTP exception handlers.
      *
@@ -132,7 +122,7 @@ class ExceptionManager
     }
 
     /**
-     * @param Throwable          $exception
+     * @param Throwable              $exception
      * @param ServerRequestInterface $request
      *
      * @return ResponseInterface
@@ -154,5 +144,4 @@ class ExceptionManager
         // generate the error response to use.
         return $exceptionHandler->render($exception, $request);
     }
-
 }

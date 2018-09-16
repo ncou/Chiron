@@ -13,18 +13,6 @@
 
 namespace Chiron\Provider;
 
-use Chiron\Handler\Error\ExceptionManager;
-use Chiron\Handler\Error\ExceptionInfo;
-use Chiron\Handler\Error\ExceptionHandler;
-use Chiron\Handler\Error\Formatter\HtmlFormatter;
-use Chiron\Handler\Error\Formatter\JsonFormatter;
-use Chiron\Handler\Error\Formatter\ViewFormatter;
-use Chiron\Handler\Error\Formatter\PlainTextFormatter;
-use Chiron\Handler\Error\Formatter\WhoopsFormatter;
-use Chiron\Handler\Error\Formatter\TemplateHtmlFormatter;
-use Chiron\Handler\Error\Formatter\XmlFormatter;
-use Chiron\Http\Exception\Client\NotFoundHttpException;
-use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
 use Chiron\Http\Middleware\BodyParserMiddleware;
 use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
 use Chiron\Http\Middleware\CheckMaintenanceMiddleware;
@@ -34,15 +22,12 @@ use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\EmitterMiddleware;
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
-use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Http\Middleware\OriginalRequestMiddleware;
+use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Routing\Router;
-use Chiron\Views\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
-use Psr\Log\NullLogger;
 use Psr\Log\LoggerInterface;
-use Throwable;
-use Exception;
+use Psr\Log\NullLogger;
 
 /**
  * Chiron system services provider.
@@ -96,11 +81,11 @@ class MiddlewaresServiceProvider
             return new BodyParserMiddleware();
         };
 
-/*
-        $container[EmitterMiddleware::class] = function ($c) {
-            return new EmitterMiddleware();
-        };
-*/
+        /*
+                $container[EmitterMiddleware::class] = function ($c) {
+                    return new EmitterMiddleware();
+                };
+        */
 
         $container[CheckMaintenanceMiddleware::class] = function ($c) {
             return new CheckMaintenanceMiddleware();

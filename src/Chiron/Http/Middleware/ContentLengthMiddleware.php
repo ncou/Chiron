@@ -16,7 +16,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-
 // TODO : regarder ici : https://github.com/reactphp/http/blob/master/src/StreamingServer.php#L359
 
 class ContentLengthMiddleware implements MiddlewareInterface
@@ -44,7 +43,6 @@ class ContentLengthMiddleware implements MiddlewareInterface
 
         //throw new \Chiron\Http\Exception\Client\NotFoundHttpException();
         //throw new \Chiron\Http\Exception\Client\NotFoundHttpException('toto is better than me ! enjoy !');
-
 
         $response = $handler->handle($request);
 

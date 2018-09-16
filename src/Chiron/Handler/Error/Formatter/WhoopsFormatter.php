@@ -4,27 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Error\Formatter;
 
-use Chiron\Http\Exception\HttpException;
-use ErrorException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-use UnexpectedValueException;
-
-use InvalidArgumentException;
-use RuntimeException;
-use Symfony\Component\VarDumper\Cloner\AbstractCloner;
-use Symfony\Component\VarDumper\Cloner\VarCloner;
-use Whoops\Exception\Formatter;
-use Whoops\Exception\Inspector;
-use Whoops\Handler\PlainTextHandler;
-use Whoops\Handler\HandlerInterface;
 use Whoops\Handler\PrettyPageHandler;
-use Whoops\Handler\JsonResponseHandler;
-use Whoops\Handler\XmlResponseHandler;
 use Whoops\Run as Whoops;
-use Whoops\Util\Misc;
-use Whoops\Util\TemplateHelper;
 
 // ajouter les informations sur la request de l'application !!!!
 //https://github.com/zendframework/zend-expressive/blob/master/src/Middleware/WhoopsErrorResponseGenerator.php#L95
@@ -36,7 +18,6 @@ use Whoops\Util\TemplateHelper;
 
 class WhoopsFormatter implements ExceptionFormatterInterface
 {
-
     public function format(Throwable $e): string
     {
         return $this->whoops()->handleException($e);
@@ -53,6 +34,7 @@ class WhoopsFormatter implements ExceptionFormatterInterface
         $whoops->allowQuit(false);
         $whoops->writeToOutput(false);
         $whoops->pushHandler(new PrettyPageHandler());
+
         return $whoops;
     }
 

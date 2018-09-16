@@ -11,7 +11,7 @@ use Throwable;
 //avec l'équivalent au fichier errors.json      https://github.com/otherguy/laravel-error-handler/blob/master/resources/lang/en/messages.php
 
 /**
- * Class to retrieve the Exception information (description...etc)
+ * Class to retrieve the Exception information (description...etc).
  */
 class ExceptionInfo
 {
@@ -26,13 +26,12 @@ class ExceptionInfo
      * Create a exception info instance.
      *
      * @param string|null $path
-     *
-     * @return void
      */
     public function __construct(string $path = null)
     {
         $this->path = $path;
     }
+
     /**
      * Get the exception information.
      *
@@ -54,29 +53,27 @@ class ExceptionInfo
         if ($exception instanceof HttpExceptionInterface) {
             $msg = (string) $exception->getMessage();
             // TODO : regarder l'utilité de la vérification sur la longueur de 4 ou 36 caractéres.
-            $info['detail'] = !empty($msg) && strlen($msg) > strlen($info['message']) ? $msg : $info['message'];
+            $info['detail'] = ! empty($msg) && strlen($msg) > strlen($info['message']) ? $msg : $info['message'];
         } else {
             $info['detail'] = $info['message'];
         }
         // the 'message' value is not used in the final array (it's used before to conditionaly populate the 'detail' value) so we remove it.
         unset($info['message']);
 
-
-/*
-        if ($exception instanceof HttpExceptionInterface) {
-            $msg = (string) $exception->getMessage();
-            // TODO : regarder l'utilité de la vérification sur la longueur de 4 ou 36 caractéres.
-            $info['detail'] = (strlen($msg) > 4) ? $msg : $info['message'];
-            $info['summary'] = (strlen($msg) < 36 && strlen($msg) > 4) ? $msg : 'Houston, We Have A Problem.';
-        } else {
-            $info['detail'] = $info['message'];
-            $info['summary'] = 'Houston, We Have A Problem.';
-        }
-        // the 'message' value is not used in the final array (it's used before to conditionaly populate the 'detail' value) so we remove it.
-        unset($info['message']);
-*/
+        /*
+                if ($exception instanceof HttpExceptionInterface) {
+                    $msg = (string) $exception->getMessage();
+                    // TODO : regarder l'utilité de la vérification sur la longueur de 4 ou 36 caractéres.
+                    $info['detail'] = (strlen($msg) > 4) ? $msg : $info['message'];
+                    $info['summary'] = (strlen($msg) < 36 && strlen($msg) > 4) ? $msg : 'Houston, We Have A Problem.';
+                } else {
+                    $info['detail'] = $info['message'];
+                    $info['summary'] = 'Houston, We Have A Problem.';
+                }
+                // the 'message' value is not used in the final array (it's used before to conditionaly populate the 'detail' value) so we remove it.
+                unset($info['message']);
+        */
 
         return $info;
     }
-
 }

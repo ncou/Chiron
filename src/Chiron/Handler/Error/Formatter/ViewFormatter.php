@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Error\Formatter;
 
-use Chiron\Http\Exception\HttpExceptionInterface;
 use Chiron\Handler\Error\ExceptionInfo;
+use Chiron\Http\Exception\HttpExceptionInterface;
 use Chiron\Views\TemplateRendererInterface;
 use Throwable;
 
@@ -29,8 +29,6 @@ class ViewFormatter implements ExceptionFormatterInterface
      * Create a new json displayer instance.
      *
      * @param \Chiron\Handler\Error\ExceptionInfo $info
-     *
-     * @return void
      */
     public function __construct(ExceptionInfo $info, TemplateRendererInterface $renderer)
     {
@@ -84,6 +82,7 @@ class ViewFormatter implements ExceptionFormatterInterface
     public function canFormat(Throwable $e): bool
     {
         $code = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
+
         return $this->renderer->exists("errors::{$code}");
     }
 }

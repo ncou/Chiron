@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Error\Formatter;
 
-use Chiron\Http\Exception\HttpExceptionInterface;
 use Chiron\Handler\Error\ExceptionInfo;
+use Chiron\Http\Exception\HttpExceptionInterface;
 use Throwable;
 
 class XmlFormatter implements ExceptionFormatterInterface
@@ -16,12 +16,11 @@ class XmlFormatter implements ExceptionFormatterInterface
      * @var \Chiron\Handler\Error\ExceptionInfo
      */
     protected $info;
+
     /**
      * Create a new json displayer instance.
      *
      * @param \Chiron\Handler\Error\ExceptionInfo $info
-     *
-     * @return void
      */
     public function __construct(ExceptionInfo $info)
     {

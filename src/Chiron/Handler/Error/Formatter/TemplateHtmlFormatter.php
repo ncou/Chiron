@@ -4,16 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Error\Formatter;
 
-use Chiron\Http\Exception\HttpExceptionInterface;
 use Chiron\Handler\Error\ExceptionInfo;
-use ErrorException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use Chiron\Http\Exception\HttpExceptionInterface;
 use Throwable;
-use UnexpectedValueException;
-
-use InvalidArgumentException;
-use RuntimeException;
 
 class TemplateHtmlFormatter implements ExceptionFormatterInterface
 {
@@ -35,9 +28,7 @@ class TemplateHtmlFormatter implements ExceptionFormatterInterface
      * Create a new html displayer instance.
      *
      * @param \Chiron\Handler\Error\ExceptionInfo $info
-     * @param string                                            $path
-     *
-     * @return void
+     * @param string                              $path
      */
     public function __construct(ExceptionInfo $info, string $path)
     {
@@ -49,6 +40,7 @@ class TemplateHtmlFormatter implements ExceptionFormatterInterface
     {
         $code = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
         $info = $this->info->generate($e, $code);
+
         return $this->render($info);
     }
 
@@ -68,6 +60,7 @@ class TemplateHtmlFormatter implements ExceptionFormatterInterface
         foreach ($info as $key => $val) {
             $content = str_replace("{{ $$key }}", $val, $content);
         }
+
         return $content;
     }
 

@@ -4,52 +4,34 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Error;
 
-use Chiron\Handler\Error\ExceptionInfo;
+use Chiron\Handler\Error\Formatter\ExceptionFormatterInterface;
 use Chiron\Handler\Error\Reporter\ExceptionReporterInterface;
-use Chiron\Handler\Error\Formatter\HtmlFormatter;
-use Chiron\Handler\Error\Formatter\JsonFormatter;
-use Chiron\Handler\Error\Formatter\ViewFormatter;
-use Chiron\Handler\Error\Formatter\PlainTextFormatter;
-use Chiron\Handler\Error\Formatter\WhoopsFormatter;
-use Chiron\Handler\Error\Formatter\TemplateHtmlFormatter;
-use Chiron\Handler\Error\Formatter\XmlFormatter;
-use Chiron\Http\Exception\HttpExceptionInterface;
 use Chiron\Http\Psr\Response;
-use Chiron\Http\Psr\Stream;
+use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
-use Exception;
-use RuntimeException;
-use UnexpectedValueException;
-use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
-use Chiron\Handler\Error\Formatter\ExceptionFormatterInterface;
-use Chiron\Handler\Error\Formatter\Filter\FormatterFilterInterface;
-
 
 //https://github.com/yiisoft/yii2/blob/master/framework/base/ErrorHandler.php
-
 
 class ExceptionHandler implements ExceptionHandlerInterface
 {
     /**
-     * List of reporters used to report the exception data
+     * List of reporters used to report the exception data.
      *
      * @var \Chiron\Handler\Error\Reporter\ExceptionReporterInterface[]
      */
     private $reporters = [];
+
     /**
-     * List of formatters used to format the exception data
+     * List of formatters used to format the exception data.
      *
      * @var \Chiron\Handler\Error\Formatter\ExceptionFormatterInterface[]
      */
     private $formatters = [];
 
     /**
-     * Default formatter to use in case all the filters fails
+     * Default formatter to use in case all the filters fails.
      *
      * @var \Chiron\Handler\Error\Formatter\ExceptionFormatterInterface
      */
@@ -66,8 +48,6 @@ class ExceptionHandler implements ExceptionHandlerInterface
      * Create a new ExceptionHandler instance.
      *
      * @param bool $debug
-     *
-     * @return void
      */
     public function __construct(bool $debug)
     {
@@ -77,11 +57,9 @@ class ExceptionHandler implements ExceptionHandlerInterface
     /**
      * Report or log an exception.
      *
-     * @param \Throwable $e
+     * @param \Throwable                               $e
      * @param \Psr\Http\Message\ServerRequestInterface $request
-     *
-     * @return void
-    */
+     */
     // TODO : vérifier si le $request est utilisé et nécessaire
     public function report(Throwable $e, ServerRequestInterface $request): void
     {
@@ -109,7 +87,7 @@ class ExceptionHandler implements ExceptionHandlerInterface
     /**
      * Get the formatter instance.
      *
-     * @param \Throwable               $e
+     * @param \Throwable             $e
      * @param ServerRequestInterface $request
      *
      * @return \Chiron\Handler\Error\Formatter\ExceptionFormatterInterface
@@ -123,17 +101,20 @@ class ExceptionHandler implements ExceptionHandlerInterface
             if (! $this->debug) {
                 if ($formatter->isVerbose()) {
                     unset($filtered[$index]);
+
                     break;
                 }
             }
             // *** CanFormat Filter ***
-            if (!$formatter->canFormat($e)) {
+            if (! $formatter->canFormat($e)) {
                 unset($filtered[$index]);
+
                 break;
             }
             // *** Content-Type Filter ***
-            if (!$this->isAcceptableContentType($request, $formatter->contentType())) {
+            if (! $this->isAcceptableContentType($request, $formatter->contentType())) {
                 unset($filtered[$index]);
+
                 break;
             }
         }
@@ -154,7 +135,7 @@ class ExceptionHandler implements ExceptionHandlerInterface
      * as willdurand/negotiation for any other situation.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param string $contentType
+     * @param string                                   $contentType
      *
      * @return bool
      */
