@@ -88,7 +88,7 @@ class ErrorHandlerServiceProvider
             $hasRenderer = $c->has(TemplateRendererInterface::class);
             if ($hasRenderer) {
                 $renderer = $c[TemplateRendererInterface::class];
-                registerErrorViewPaths($renderer);
+                //registerErrorViewPaths($renderer);
                 //$renderer->addPath(\Chiron\TEMPLATES_DIR . "/errors", 'errors');
                 $exceptionHandler->addFormatter(new ViewFormatter($c[ExceptionInfo::class], $renderer));
             }
@@ -112,7 +112,7 @@ class ErrorHandlerServiceProvider
             $hasRenderer = $c->has(TemplateRendererInterface::class);
             if ($hasRenderer) {
                 $renderer = $c[TemplateRendererInterface::class];
-                registerErrorViewPaths($renderer);
+                //registerErrorViewPaths($renderer);
                 //$renderer->addPath(\Chiron\TEMPLATES_DIR . "/errors", 'errors');
                 $exceptionHandler->addFormatter(new ViewFormatter($c[ExceptionInfo::class], $renderer));
             }
@@ -130,6 +130,7 @@ class ErrorHandlerServiceProvider
          * Register all the possible error template namespaced paths.
          */
         // TODO : virer cette fonction et améliorer l'intialisation du répertoire des erreurs pour les templates
+        /*
         function registerErrorViewPaths(TemplateRendererInterface $renderer)
         {
             $paths = $renderer->getPaths();
@@ -154,6 +155,6 @@ class ErrorHandlerServiceProvider
             //$exceptionManager->bindExceptionHandler(NotFoundHttpException::class, new \Chiron\Handler\Error\NotFoundHandler());
 
             return new ErrorHandlerMiddleware($exceptionManager);
-        };
+        };*/
     }
 }
