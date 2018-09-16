@@ -284,8 +284,6 @@ class StatusCode
      * @param int $code
      *
      * @throws \InvalidArgumentException if the HTTP status code is invalid
-     *
-     * @return void
      */
     public static function assertValidStatusCode(int $code): void
     {

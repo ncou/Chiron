@@ -34,13 +34,12 @@ use Psr\Http\Server\RequestHandlerInterface;
  */
 class OriginalRequestMiddleware implements MiddlewareInterface
 {
-
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-
         $request = $request
             ->withAttribute('originalUri', $request->getUri())
             ->withAttribute('originalRequest', $request);
+
         return $handler->handle($request);
     }
 }

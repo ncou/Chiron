@@ -13,42 +13,28 @@
 
 namespace Chiron\Provider;
 
-use Chiron\Handler\Error\ExceptionManager;
-use Chiron\Handler\Error\ExceptionInfo;
 use Chiron\Handler\Error\ExceptionHandler;
-use Chiron\Handler\Error\HttpExceptionHandler;
-use Chiron\Handler\Error\Reporter\LoggerReporter;
-use Chiron\Handler\Error\Formatter\HtmlFormatter;
-use Chiron\Handler\Error\Formatter\JsonFormatter;
-use Chiron\Handler\Error\Formatter\ViewFormatter;
-use Chiron\Handler\Error\Formatter\PlainTextFormatter;
-use Chiron\Handler\Error\Formatter\WhoopsFormatter;
-use Chiron\Handler\Error\Formatter\TemplateHtmlFormatter;
-use Chiron\Handler\Error\Formatter\XmlFormatter;
-use Chiron\Http\Exception\Client\NotFoundHttpException;
-use Chiron\Http\Exception\HttpException;
-use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
-use Chiron\Http\Middleware\BodyParserMiddleware;
-use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
-use Chiron\Http\Middleware\CheckMaintenanceMiddleware;
-use Chiron\Http\Middleware\ContentLengthMiddleware;
-use Chiron\Http\Middleware\ContentTypeByDefaultMiddleware;
-use Chiron\Http\Middleware\DispatcherMiddleware;
-use Chiron\Http\Middleware\EmitterMiddleware;
-use Chiron\Http\Middleware\ErrorHandlerMiddleware;
-use Chiron\Http\Middleware\MethodOverrideMiddleware;
-use Chiron\Http\Middleware\RoutingMiddleware;
-use Chiron\Http\Middleware\OriginalRequestMiddleware;
-use Chiron\Routing\Router;
-use Chiron\Views\TemplateRendererInterface;
-use Psr\Container\ContainerInterface;
-use Psr\Log\NullLogger;
-use Psr\Log\LoggerInterface;
-use Throwable;
-use Exception;
+use Chiron\Handler\Error\ExceptionInfo;
+use Chiron\Handler\Error\ExceptionManager;
 use Chiron\Handler\Error\Formatter\Filter\CanFormatFilter;
 use Chiron\Handler\Error\Formatter\Filter\ContentTypeFilter;
 use Chiron\Handler\Error\Formatter\Filter\VerboseFilter;
+use Chiron\Handler\Error\Formatter\JsonFormatter;
+use Chiron\Handler\Error\Formatter\TemplateHtmlFormatter;
+use Chiron\Handler\Error\Formatter\ViewFormatter;
+use Chiron\Handler\Error\Formatter\WhoopsFormatter;
+use Chiron\Handler\Error\Formatter\XmlFormatter;
+use Chiron\Handler\Error\HttpExceptionHandler;
+use Chiron\Handler\Error\Reporter\LoggerReporter;
+use Chiron\Http\Exception\Client\NotFoundHttpException;
+use Chiron\Http\Exception\HttpException;
+use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
+use Chiron\Http\Middleware\ErrorHandlerMiddleware;
+use Chiron\Routing\Router;
+use Chiron\Views\TemplateRendererInterface;
+use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
+use Throwable;
 
 /**
  * Chiron system services provider.
@@ -65,15 +51,16 @@ class ErrorHandlerServiceProvider
     public function register(ContainerInterface $container)
     {
         $container[ExceptionInfo::class] = function ($c) {
-            return new ExceptionInfo(__DIR__.'/../../../resources/lang/en/errors.json');
+            return new ExceptionInfo(__DIR__ . '/../../../resources/lang/en/errors.json');
         };
 
         $container[ExceptionInfo::class] = function ($c) {
-            return new ExceptionInfo(__DIR__.'/../../../resources/lang/en/errors.json');
+            return new ExceptionInfo(__DIR__ . '/../../../resources/lang/en/errors.json');
         };
 
         $container[TemplateHtmlFormatter::class] = function ($c) {
-            $path = __DIR__.'/../../../resources/error.html';
+            $path = __DIR__ . '/../../../resources/error.html';
+
             return new TemplateHtmlFormatter($c[ExceptionInfo::class], realpath($path));
         };
 
@@ -139,11 +126,8 @@ class ErrorHandlerServiceProvider
             return $exceptionHandler;
         };
 
-
         /**
          * Register all the possible error template namespaced paths.
-         *
-         * @return void
          */
         // TODO : virer cette fonction et améliorer l'intialisation du répertoire des erreurs pour les templates
         function registerErrorViewPaths(TemplateRendererInterface $renderer)
@@ -151,14 +135,12 @@ class ErrorHandlerServiceProvider
             $paths = $renderer->getPaths();
 
             // add all possible folders for errors based on the presents paths
-            foreach ($paths as $path)
-            {
+            foreach ($paths as $path) {
                 $renderer->addPath($path . '/errors', 'errors');
             }
             // at the end of the stack and in last resort we add the framework error template folder
             $renderer->addPath(__DIR__ . '/../../resources/errors', 'errors');
         }
-
 
         $container[ErrorHandlerMiddleware::class] = function ($c) {
             $exceptionManager = new ExceptionManager();
@@ -167,7 +149,6 @@ class ErrorHandlerServiceProvider
 
             $exceptionManager->bindExceptionHandler(Throwable::class, $c[ExceptionHandler::class]);
             $exceptionManager->bindExceptionHandler(HttpException::class, $c[HttpExceptionHandler::class]);
-
 
             //$exceptionManager->bindExceptionHandler(ServiceUnavailableHttpException::class, new \Chiron\Handler\Error\MaintenanceHandler());
             //$exceptionManager->bindExceptionHandler(NotFoundHttpException::class, new \Chiron\Handler\Error\NotFoundHandler());

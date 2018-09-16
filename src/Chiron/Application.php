@@ -52,18 +52,18 @@ if (! extension_loaded('mbstring')) {
 
 use Chiron\Config\Config;
 use Chiron\Container\Container;
-use Chiron\Provider\MiddlewaresServiceProvider;
-use Chiron\Provider\ErrorHandlerServiceProvider;
-// TODO : virer la classe CallableRequestHandlerDecorator !!!!!!!!!!!!!
-//use Chiron\Handler\CallableRequestHandlerDecorator;
 use Chiron\Handler\DeferredRequestHandler;
 use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
+// TODO : virer la classe CallableRequestHandlerDecorator !!!!!!!!!!!!!
+//use Chiron\Handler\CallableRequestHandlerDecorator;
 use Chiron\Handler\Stack\Decorator\FixedResponseHandler;
 use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Response\EmptyResponse;
 use Chiron\Http\ResponseEmitter;
+use Chiron\Provider\ErrorHandlerServiceProvider;
+use Chiron\Provider\MiddlewaresServiceProvider;
 use Chiron\Routing\RoutableInterface;
 use Chiron\Routing\RoutableTrait;
 use Chiron\Routing\Route;
@@ -443,82 +443,80 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $this->getRouter()->setBasePath($this->container->config['settings.basePath'] ?? '/');
 
         // initialise the Router constructor
-    //parent::__construct($this->basePath, $this->container);
+        //parent::__construct($this->basePath, $this->container);
 
-/*
-//https://github.com/laravel/lumen-framework/blob/5.5/src/Application.php#L91
-    if (! empty(env('APP_TIMEZONE'))) {
-        date_default_timezone_set(env('APP_TIMEZONE', 'UTC'));
-    }
-*/
+        /*
+        //https://github.com/laravel/lumen-framework/blob/5.5/src/Application.php#L91
+            if (! empty(env('APP_TIMEZONE'))) {
+                date_default_timezone_set(env('APP_TIMEZONE', 'UTC'));
+            }
+        */
 
-    // TODO : à améliorer
-    //$this->basePath = $basePath;
-    // TODO : tester les fonctions "path()" et basePath() dans le cas ou la configuration du basePath n'a pas été spécifiée dans le constructeur de l'application. je pense qu'on aura une erreur :(
+        // TODO : à améliorer
+        //$this->basePath = $basePath;
+        // TODO : tester les fonctions "path()" et basePath() dans le cas ou la configuration du basePath n'a pas été spécifiée dans le constructeur de l'application. je pense qu'on aura une erreur :(
 
-    //$this->basePath = $this['basePath'];
+        //$this->basePath = $this['basePath'];
 
-    //$this['router']->setBasePath($this->basePath);
+        //$this['router']->setBasePath($this->basePath);
 
-/*
-    if (isset($settings['charset']))
-    {
-        // Set the system character set
-        Kohana::$charset = strtolower($settings['charset']);
-    }
-    if (function_exists('mb_internal_encoding'))
-    {
-        // Set the MB extension encoding to the same character set
-        mb_internal_encoding(Kohana::$charset);
-    }
-    if (isset($settings['base_url']))
-    {
-        // Set the base URL
-        Kohana::$base_url = rtrim($settings['base_url'], '/').'/';
-    }
-*/
+        /*
+            if (isset($settings['charset']))
+            {
+                // Set the system character set
+                Kohana::$charset = strtolower($settings['charset']);
+            }
+            if (function_exists('mb_internal_encoding'))
+            {
+                // Set the MB extension encoding to the same character set
+                mb_internal_encoding(Kohana::$charset);
+            }
+            if (isset($settings['base_url']))
+            {
+                // Set the base URL
+                Kohana::$base_url = rtrim($settings['base_url'], '/').'/';
+            }
+        */
 
-/*
-// TODO : regarder cette initialisation trouvée dans le framework de FatFree !!!!
-  // Managed directives
-  ini_set('default_charset',$charset='UTF-8');
-  if (extension_loaded('mbstring'))
-    mb_internal_encoding($charset);
-  ini_set('display_errors',0);
-  // Deprecated directives
-  @ini_set('magic_quotes_gpc',0);
-  @ini_set('register_globals',0);
-  // Intercept errors/exceptions; PHP5.3-compatible
-  $check=error_reporting((E_ALL|E_STRICT)&~(E_NOTICE|E_USER_NOTICE));
-  set_exception_handler(
-    function($obj) {
-      $this->hive['EXCEPTION']=$obj;
-      $this->error(500,
-        $obj->getmessage().' '.
-        '['.$obj->getFile().':'.$obj->getLine().']',
-        $obj->gettrace());
-    }
-  );
-  set_error_handler(
-    function($level,$text,$file,$line) {
-      if ($level & error_reporting())
-        $this->error(500,$text,NULL,$level);
-    }
-  );
-
-
-  date_default_timezone_set($this->hive['TZ']);
-  // Register framework autoloader
-  spl_autoload_register([$this,'autoload']);
-  // Register shutdown handler
-  register_shutdown_function([$this,'unload'],getcwd());
-*/
+        /*
+        // TODO : regarder cette initialisation trouvée dans le framework de FatFree !!!!
+          // Managed directives
+          ini_set('default_charset',$charset='UTF-8');
+          if (extension_loaded('mbstring'))
+            mb_internal_encoding($charset);
+          ini_set('display_errors',0);
+          // Deprecated directives
+          @ini_set('magic_quotes_gpc',0);
+          @ini_set('register_globals',0);
+          // Intercept errors/exceptions; PHP5.3-compatible
+          $check=error_reporting((E_ALL|E_STRICT)&~(E_NOTICE|E_USER_NOTICE));
+          set_exception_handler(
+            function($obj) {
+              $this->hive['EXCEPTION']=$obj;
+              $this->error(500,
+                $obj->getmessage().' '.
+                '['.$obj->getFile().':'.$obj->getLine().']',
+                $obj->gettrace());
+            }
+          );
+          set_error_handler(
+            function($level,$text,$file,$line) {
+              if ($level & error_reporting())
+                $this->error(500,$text,NULL,$level);
+            }
+          );
+        
+        
+          date_default_timezone_set($this->hive['TZ']);
+          // Register framework autoloader
+          spl_autoload_register([$this,'autoload']);
+          // Register shutdown handler
+          register_shutdown_function([$this,'unload'],getcwd());
+        */
 
 //      $this->registerPhpErrorHandling();
 
-
         $this->emitter = new ResponseEmitter();
-
     }
 
     //! Prohibit cloning
@@ -564,7 +562,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     public function run(): ResponseInterface
     {
         $request = (new \Chiron\Http\Factory\ServerRequestFactory())->createServerRequestFromArray($_SERVER);
-
 
         $response = $this->process($request);
 

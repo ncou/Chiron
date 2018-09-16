@@ -7,8 +7,6 @@ namespace Chiron\Http;
 use Chiron\Http\Psr\Stream;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 
 //https://github.com/yiisoft/yii2/blob/master/framework/web/Response.php#L411
 
@@ -46,9 +44,7 @@ class ResponseEmitter //implements EmitterInterface
     /**
      * Emit the http response (headers+body) to the client.
      *
-     * @param ResponseInterface  $response
-     *
-     * @return void
+     * @param ResponseInterface $response
      */
     public function emit(ResponseInterface $response): void
     {

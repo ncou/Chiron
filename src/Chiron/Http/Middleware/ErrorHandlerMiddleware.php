@@ -36,16 +36,14 @@ declare(strict_types=1);
 namespace Chiron\Http\Middleware;
 
 use Chiron\Handler\Error\ExceptionManager;
-use Chiron\Handler\Error\FatalThrowableError;
-use Chiron\Http\Exception\HttpException;
 use ErrorException;
-use Psr\Http\Message\ResponseInterface;
+use Exception;
 //use Psr\Container\ContainerInterface;
 
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Exception;
 use Throwable;
 
 class ErrorHandlerMiddleware implements MiddlewareInterface
@@ -80,12 +78,12 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
-/*
-            error_reporting(-1); // E_ALL
-            if (! $app->environment('testing')) {
-                ini_set('display_errors', 'Off'); // '0'
-            }
-*/
+            /*
+                        error_reporting(-1); // E_ALL
+                        if (! $app->environment('testing')) {
+                            ini_set('display_errors', 'Off'); // '0'
+                        }
+            */
 
             set_error_handler($this->createErrorHandler());
             $response = $handler->handle($request);
@@ -118,7 +116,6 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
          * @throws ErrorException if error is not within the error_reporting mask.
          */
         return function (int $severity, string $message, string $file, int $line): void {
-
             if (! (error_reporting() & $severity)) {
                 // error_reporting does not include this error
                 return;
@@ -127,5 +124,4 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
             throw new ErrorException($message, 0, $severity, $file, $line);
         };
     }
-
 }
