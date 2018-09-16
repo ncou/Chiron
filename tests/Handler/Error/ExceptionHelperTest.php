@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Handler\Error;
 
 use Chiron\Handler\Error\ExceptionHelper;
-use Chiron\Http\Exception\HttpException;
+use Chiron\Http\Exception\HttpExceptionInterface;
 use DOMDocument;
 use DomXPath;
 use PHPUnit\Framework\TestCase;
@@ -52,7 +52,7 @@ class ExceptionHelperTest extends TestCase
                 $exception = new $exceptionName();
             }
 
-            $this->assertInstanceOf(HttpException::class, $exception);
+            $this->assertInstanceOf(HttpExceptionInterface::class, $exception);
             self::assertSame($reasonPhrase, $exception->getMessage());
             self::assertSame((int) $code, $exception->getStatusCode());
         }

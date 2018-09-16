@@ -6,9 +6,10 @@ namespace Chiron\Handler\Error\Formatter;
 
 use Chiron\Http\Exception\HttpExceptionInterface;
 use Chiron\Handler\Error\ExceptionInfo;
+use Chiron\Views\TemplateRendererInterface;
 use Throwable;
 
-class XmlFormatter implements ExceptionFormatterInterface
+class ViewFormatter implements ExceptionFormatterInterface
 {
     /**
      * The exception info instance.
@@ -16,6 +17,14 @@ class XmlFormatter implements ExceptionFormatterInterface
      * @var \Chiron\Handler\Error\ExceptionInfo
      */
     protected $info;
+
+    /**
+     * The renderer instance.
+     *
+     * @var \Chiron\Views\TemplateRendererInterface
+     */
+    protected $renderer;
+
     /**
      * Create a new json displayer instance.
      *
@@ -23,15 +32,16 @@ class XmlFormatter implements ExceptionFormatterInterface
      *
      * @return void
      */
-    public function __construct(ExceptionInfo $info)
+    public function __construct(ExceptionInfo $info, TemplateRendererInterface $renderer)
     {
         $this->info = $info;
+        $this->renderer = $renderer;
     }
 
     /**
-     * Render XML error.
+     * Render JSON error.
      *
-     * @param Throwable $error
+     * @param \Throwable $e
      *
      * @return string
      */
@@ -40,32 +50,8 @@ class XmlFormatter implements ExceptionFormatterInterface
         $code = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
         $info = $this->info->generate($e, $code);
 
-        // TODO : virer ce header !!!!!!
-        /*
-        $xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
-        */
-        $xml = '';
-        $xml .= "<errors>\n";
-        $xml .= "  <error>\n";
-        $xml .= '    <status>' . $info['code'] . "</status>\n";
-        $xml .= '    <title>' . $this->createCdataSection($info['name']) . "</title>\n";
-        $xml .= '    <detail>' . $this->createCdataSection($info['detail']) . "</detail>\n";
-        $xml .= "  </error>\n";
-        $xml .= '</errors>';
-
-        return $xml;
-    }
-
-    /**
-     * Returns a CDATA section with the given content.
-     *
-     * @param string $content
-     *
-     * @return string
-     */
-    private function createCdataSection(string $content): string
-    {
-        return sprintf('<![CDATA[%s]]>', str_replace(']]>', ']]]]><![CDATA[>', $content));
+        // TODO : vérifier qu'on accéde bien aux informations ajoutées en attribut !!!!!!!!!!!!!
+        return $this->renderer->render("errors::{$code}", array_merge($info, ['exception' => $e]));
     }
 
     /**
@@ -75,7 +61,7 @@ class XmlFormatter implements ExceptionFormatterInterface
      */
     public function contentType(): string
     {
-        return 'application/xml';
+        return 'text/html';
     }
 
     /**
@@ -97,6 +83,7 @@ class XmlFormatter implements ExceptionFormatterInterface
      */
     public function canFormat(Throwable $e): bool
     {
-        return true;
+        $code = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
+        return $this->renderer->exists("errors::{$code}");
     }
 }

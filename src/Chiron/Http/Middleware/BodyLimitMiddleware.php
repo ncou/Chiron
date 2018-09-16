@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Http\Middleware;
 
 //https://github.com/withelmo/CakePHP-PostMaxSizeException/blob/master/Lib/PostMaxSizeChecker.php
+//https://github.com/reactphp/http/blob/master/src/Io/IniUtil.php#L16
 
 use Chiron\Http\Exception\Client\BadRequestHttpException;
 use Chiron\Http\Exception\Client\PayloadTooLargeHttpException;
@@ -53,6 +54,7 @@ class BodyLimitMiddleware implements MiddlewareInterface
      *
      * @return int size in byte
      */
+    //https://github.com/reactphp/http/blob/master/src/Io/IniUtil.php#L16
     protected function getPostMaxSize(): int
     {
         $postMaxSize = strtoupper(trim(ini_get('post_max_size')));

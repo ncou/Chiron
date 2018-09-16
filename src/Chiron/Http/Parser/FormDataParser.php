@@ -8,6 +8,8 @@ use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\UploadedFile;
 use Psr\Http\Message\ServerRequestInterface;
 
+// https://github.com/reactphp/http/blob/master/src/Io/MultipartParser.php
+
 //https://github.com/yiisoft/yii2/blob/master/framework/web/MultipartFormDataParser.php
 
 // TODO : finir de mettre le typehint sur chaque fonction pour connaitre le type de paramétre à utiliser !!!!!!!!!

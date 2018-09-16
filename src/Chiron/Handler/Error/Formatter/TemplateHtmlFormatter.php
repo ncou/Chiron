@@ -6,9 +6,16 @@ namespace Chiron\Handler\Error\Formatter;
 
 use Chiron\Http\Exception\HttpExceptionInterface;
 use Chiron\Handler\Error\ExceptionInfo;
+use ErrorException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
+use UnexpectedValueException;
 
-class XmlFormatter implements ExceptionFormatterInterface
+use InvalidArgumentException;
+use RuntimeException;
+
+class TemplateHtmlFormatter implements ExceptionFormatterInterface
 {
     /**
      * The exception info instance.
@@ -16,56 +23,52 @@ class XmlFormatter implements ExceptionFormatterInterface
      * @var \Chiron\Handler\Error\ExceptionInfo
      */
     protected $info;
+
     /**
-     * Create a new json displayer instance.
+     * The html template file path.
+     *
+     * @var string
+     */
+    protected $path;
+
+    /**
+     * Create a new html displayer instance.
      *
      * @param \Chiron\Handler\Error\ExceptionInfo $info
+     * @param string                                            $path
      *
      * @return void
      */
-    public function __construct(ExceptionInfo $info)
+    public function __construct(ExceptionInfo $info, string $path)
     {
         $this->info = $info;
+        $this->path = $path;
     }
 
-    /**
-     * Render XML error.
-     *
-     * @param Throwable $error
-     *
-     * @return string
-     */
     public function format(Throwable $e): string
     {
         $code = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
         $info = $this->info->generate($e, $code);
-
-        // TODO : virer ce header !!!!!!
-        /*
-        $xml = "<?xml version='1.0' encoding='UTF-8'?>\n";
-        */
-        $xml = '';
-        $xml .= "<errors>\n";
-        $xml .= "  <error>\n";
-        $xml .= '    <status>' . $info['code'] . "</status>\n";
-        $xml .= '    <title>' . $this->createCdataSection($info['name']) . "</title>\n";
-        $xml .= '    <detail>' . $this->createCdataSection($info['detail']) . "</detail>\n";
-        $xml .= "  </error>\n";
-        $xml .= '</errors>';
-
-        return $xml;
+        return $this->render($info);
     }
 
     /**
-     * Returns a CDATA section with the given content.
+     * Render the page with given info.
      *
-     * @param string $content
+     * @param array $info
      *
      * @return string
      */
-    private function createCdataSection(string $content): string
+    private function render(array $info)
     {
-        return sprintf('<![CDATA[%s]]>', str_replace(']]>', ']]]]><![CDATA[>', $content));
+        $content = file_get_contents($this->path);
+        //$generator = $this->assets;
+        //$info['home_url'] = $generator('/');
+        //$info['favicon_url'] = $generator('favicon.ico');
+        foreach ($info as $key => $val) {
+            $content = str_replace("{{ $$key }}", $val, $content);
+        }
+        return $content;
     }
 
     /**
@@ -75,7 +78,7 @@ class XmlFormatter implements ExceptionFormatterInterface
      */
     public function contentType(): string
     {
-        return 'application/xml';
+        return 'text/html';
     }
 
     /**

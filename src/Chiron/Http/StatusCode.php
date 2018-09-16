@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Chiron\Http;
 
-// TODO : renommer cette classe en HttpStatus ?????
 class StatusCode
 {
     /**
      * Allowed range for a valid HTTP status code.
      */
-    // TODO : renommer en MINIMUM_CODE_VALUE et MAXIMUM_CODE_VALUE ????
-    public const MIN_STATUS_CODE_VALUE = 100;
-    public const MAX_STATUS_CODE_VALUE = 599;
+    public const MINIMUM_CODE_VALUE = 100;
+    public const MAXIMUM_CODE_VALUE = 599;
 
     /* Http Status Code, http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml */
     public const HTTP_CONTINUE = 100;
@@ -165,7 +163,7 @@ class StatusCode
      * @var array
      */
     // TODO : utiliser les constantes définies précédemment dans la classe (ex : remplacer '400' par self::HTTP_BAD_REQUEST)
-    private static $errorPhrases = [
+    private static $reasonPhrases = [
         // Successful 2xx
         200 => 'Standard response for successful HTTP requests.',
         201 => 'The request has been fulfilled, resulting in the creation of a new resource.',
@@ -241,26 +239,6 @@ class StatusCode
     }
 
     /**
-     * Get the message for a given status code.
-     *
-     * @param int $code http status code
-     *
-     * @throws \InvalidArgumentException If the requested $code is not valid
-     * @throws \OutOfBoundsException     If the requested $code is not found
-     *
-     * @return string Returns message for the given status code
-     */
-    public static function getReasonMessage(int $code): string
-    {
-        static::assertValidStatusCode($code);
-        if (! isset(self::$errorPhrases[$code])) {
-            throw new \OutOfBoundsException(\sprintf('Unknown http status code: `%s`.', $code));
-        }
-
-        return self::$errorPhrases[$code];
-    }
-
-    /**
      * Get the name for a given status code.
      *
      * @param int $code http status code
@@ -270,7 +248,7 @@ class StatusCode
      *
      * @return string Returns name for the given status code
      */
-    public static function getReasonPhrase(int $code): string
+    public static function getStatusName(int $code): string
     {
         static::assertValidStatusCode($code);
         if (! isset(self::$statusNames[$code])) {
@@ -281,20 +259,37 @@ class StatusCode
     }
 
     /**
-     * Filter a HTTP Status code.
+     * Get the reason phrase for a given status code.
+     *
+     * @param int $code http status code
+     *
+     * @throws \InvalidArgumentException If the requested $code is not valid
+     * @throws \OutOfBoundsException     If the requested $code is not found
+     *
+     * @return string Returns message for the given status code
+     */
+    public static function getReasonPhrase(int $code): string
+    {
+        static::assertValidStatusCode($code);
+        if (! isset(self::$reasonPhrases[$code])) {
+            throw new \OutOfBoundsException(\sprintf('Unknown http status code: `%s`.', $code));
+        }
+
+        return self::$reasonPhrases[$code];
+    }
+
+    /**
+     * Assert a HTTP Status code is in the correct range.
      *
      * @param int $code
-     * @param int $min
-     * @param int $max
      *
      * @throws \InvalidArgumentException if the HTTP status code is invalid
      *
-     * @return int
+     * @return void
      */
-    // TODO : renommer cette méthode en assertXXXX() et virer l'ancien code pour ne pas retourner un int mais seulement lever une exception si le test est KO !!!!
     public static function assertValidStatusCode(int $code): void
     {
-        if ($code < self::MIN_STATUS_CODE_VALUE || $code > self::MAX_STATUS_CODE_VALUE) {
+        if ($code < self::MINIMUM_CODE_VALUE || $code > self::MAXIMUM_CODE_VALUE) {
             throw new \InvalidArgumentException("Invalid status code '$code'; must be an integer between 100 and 599, inclusive.");
         }
     }

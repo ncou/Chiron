@@ -7,7 +7,7 @@ namespace Chiron\Handler\Error;
 use Chiron\Http\Psr\Response;
 use ErrorException;
 use InvalidArgumentException;
-use Jgut\HttpException\HttpException;
+use Jgut\HttpException\HttpExceptionInterface;
 use Jgut\Slim\Exception\Whoops\Formatter\Text;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -16,38 +16,33 @@ use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
 use Throwable;
 
+// WHOOPS + Template 404...etc
+//https://github.com/laravel/framework/blob/master/src/Illuminate/Foundation/Exceptions/Handler.php
+//https://github.com/laravel/framework/blob/master/src/Illuminate/Foundation/Exceptions/WhoopsHandler.php
+//https://github.com/laravel/framework/blob/master/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php
+//https://github.com/laravel/framework/tree/master/src/Illuminate/Foundation/Exceptions/views
+
+
+// Ajouter dans le fichier .env des variable pour gérer les exceptions :
+//APP_ENV=dev|prod
+//APP_DEBUG=true|false
+//APP_KEY=SomeRandomString    <= à utiliser pour le cookie encrypt par exemple
+//APP_LOG_LEVEL="debug"
+
+
+
+
+// TODO : regarder ici pour gérer les template en cas d'erreurs (fatfree framework)
+//https://github.com/vijinho/f3-boilerplate/blob/3d3f8169bc3a73ccd09c2b45e61dbe5b88b4d845/app/lib/App/App.php
+
 //https://github.com/cakephp/cakephp/blob/master/src/Error/BaseErrorHandler.php#L390
 //https://github.com/Seldaek/monolog/blob/master/src/Monolog/ErrorHandler.php#L125
 
 /**
  * HTTP Exceptions Manager.
  */
-class ExceptionManager implements LoggerAwareInterface
+class ExceptionManager
 {
-    use LoggerAwareTrait;
-
-    /**
-     * PHP to PSR3 error map.
-     *
-     * @var array
-     */
-    private $errorLevelMap = [
-        E_ERROR             => LogLevel::CRITICAL,
-        E_WARNING           => LogLevel::WARNING,
-        E_PARSE             => LogLevel::ALERT,
-        E_NOTICE            => LogLevel::NOTICE,
-        E_CORE_ERROR        => LogLevel::CRITICAL,
-        E_CORE_WARNING      => LogLevel::WARNING,
-        E_COMPILE_ERROR     => LogLevel::ALERT,
-        E_COMPILE_WARNING   => LogLevel::WARNING,
-        E_USER_ERROR        => LogLevel::ERROR,
-        E_USER_WARNING      => LogLevel::WARNING,
-        E_USER_NOTICE       => LogLevel::NOTICE,
-        E_STRICT            => LogLevel::NOTICE,
-        E_RECOVERABLE_ERROR => LogLevel::ERROR,
-        E_DEPRECATED        => LogLevel::NOTICE,
-        E_USER_DEPRECATED   => LogLevel::NOTICE,
-    ];
 
     /**
      * List of HTTP exception handlers.
@@ -61,7 +56,7 @@ class ExceptionManager implements LoggerAwareInterface
      *
      * @var ExceptionHandler
      */
-    private $defaultHandler;
+    //private $defaultHandler;
 
     /**
      * HttpExceptionManager constructor.
@@ -78,10 +73,11 @@ class ExceptionManager implements LoggerAwareInterface
      * Get callable to handle scenarios where an error
      * occurs when processing the current request.
      *
-     * @param HttpException $exception
+     * @param Throwable $exception
      *
      * @return null|ExceptionHandlerInterface
      */
+    // TODO : passer cette méthode en private !!!!
     public function getExceptionHandler(Throwable $exception): ?ExceptionHandlerInterface
     {
         $exceptionHandler = null;
@@ -136,230 +132,27 @@ class ExceptionManager implements LoggerAwareInterface
     }
 
     /**
-     * Set default HTTP status code handler.
-     *
-     * @param ExceptionHandler $defaultHandler
-     */
-    /*
-    public function setDefaultHandler(ExceptionHandler $defaultHandler)
-    {
-        $this->defaultHandler = $defaultHandler;
-    }*/
-
-    /**
-     * Add HTTP exception handler.
-     *
-     * @param string|array     $exceptionTypes
-     * @param ExceptionHandler $handler
-     */
-    /*
-    public function addHandler($exceptionTypes, ExceptionHandler $handler)
-    {
-        if (!\is_array($exceptionTypes)) {
-            $exceptionTypes = [$exceptionTypes];
-        }
-
-        $exceptionTypes = \array_filter(
-            $exceptionTypes,
-            function ($exceptionType): bool {
-                return \is_string($exceptionType);
-            }
-        );
-
-        foreach ($exceptionTypes as $exceptionType) {
-            $this->handlers[$exceptionType] = $handler;
-        }
-    }*/
-
-    /**
-     * Helper - Add Unauthorized exception handler.
-     *
-     * @param ExceptionHandlerInterface $handler
-     */
-    public function addUnauthorizedHandler(ExceptionHandlerInterface $handler)
-    {
-        $this->handlers[ExceptionHelper::getExceptionNameByStatusCode(401)] = $handler;
-    }
-
-    /**
-     * Helper - Add Forbidden exception handler.
-     *
-     * @param ExceptionHandlerInterface $handler
-     */
-    public function addForbiddenHandler(ExceptionHandlerInterface $handler)
-    {
-        $this->handlers[ExceptionHelper::getExceptionNameByStatusCode(403)] = $handler;
-    }
-
-    /**
-     * Helper - Add Not Found exception handler.
-     *
-     * @param ExceptionHandlerInterface $handler
-     */
-    public function addNotFoundHandler(ExceptionHandlerInterface $handler)
-    {
-        $this->handlers[ExceptionHelper::getExceptionNameByStatusCode(404)] = $handler;
-    }
-
-    /**
-     * Helper - Add Method Not Allowed exception handler.
-     *
-     * @param ExceptionHandlerInterface $handler
-     */
-    public function addMethodNotAllowedHandler(ExceptionHandlerInterface $handler)
-    {
-        $this->handlers[ExceptionHelper::getExceptionNameByStatusCode(405)] = $handler;
-    }
-
-    /**
-     * Helper - Add ServiceUnavailable exception handler.
-     *
-     * @param ExceptionHandlerInterface $handler
-     */
-    public function addServiceUnavailableHandler(ExceptionHandlerInterface $handler)
-    {
-        $this->handlers[ExceptionHelper::getExceptionNameByStatusCode(503)] = $handler;
-    }
-
-    /**
+     * @param Throwable          $exception
      * @param ServerRequestInterface $request
-     * @param ResponseInterface      $response
-     * @param HttpException          $exception
      *
      * @return ResponseInterface
      */
-    public function handleException(Throwable $exception, ServerRequestInterface $request): ResponseInterface
+    // TODO : renommer en generateResponse() ????
+    // TODO : essayer de faire une réponse par défaut si il y a une exception dans une classe Reporter ou Formater ???? : https://github.com/yiisoft/yii2/blob/master/framework/base/ErrorHandler.php#L121
+    public function renderException(Throwable $exception, ServerRequestInterface $request): ResponseInterface
     {
         $exceptionHandler = $this->getExceptionHandler($exception);
 
         // re-throw the exception if there is no handler found to catch this type of exception
-        // this case should only happen if the user have unregistered the default handler for exception instanceof == HttpException
+        // this case should only happen if the user have unregistered the default handler for exception instanceof == HttpExceptionInterface
         if (empty($exceptionHandler)) {
             throw $exception;
         }
 
         // Log the exception and some request informations
-        $this->log($exception, $request);
-
-        return $exceptionHandler->handleException($exception, $request);
+        $exceptionHandler->report($exception, $request);
+        // generate the error response to use.
+        return $exceptionHandler->render($exception, $request);
     }
 
-    /**
-     * Log exception.
-     *
-     * @param Throwablable           $e
-     * @param ServerRequestInterface $request
-     */
-    private function log(Throwable $e, ServerRequestInterface $request)
-    {
-        if (! $this->logger) {
-            return;
-        }
-
-        $level = $this->getLogLevel($e);
-
-        // TODO : regarder pour analyser le context, voir si on pourra l'utiliser !!!!
-        /*
-                $logContext = [
-                    'http_method' => $request->getMethod(),
-                    'request_uri' => (string) $request->getUri(),
-                    'level_name' => \strtoupper($level),
-                    'stack_trace' => $this->getStackTrace($e),
-                ];
-
-                $this->logger->log($level, $exception->getMessage(), $logContext);
-                */
-
-        $this->logger->log($level, $this->formatException($e));
-        //$this->logger->log($level, $exception->getMessage().$exception->getTraceAsString());
-        // $output = Formatter::formatExceptionPlain(new Inspector($exception));
-    }
-
-    /**
-     * Get exception stack trace.
-     *
-     * @param HttpException $exception
-     *
-     * @return string
-     */
-    /*
-    private function getStackTrace(Throwable $exception): string
-    {
-        if (!\class_exists('Whoops\Run')) {
-            // @codeCoverageIgnoreStart
-            return $exception->getTraceAsString();
-            // @codeCoverageIgnoreEnd
-        }
-
-        $formatter = new Text();
-        $formatter->setException($exception);
-        $exceptionParts = \explode("\n", \rtrim($formatter->generateResponse(), "\n"));
-
-        if (\count($exceptionParts) !== 1) {
-            return \implode("\n", \array_filter(\array_splice($exceptionParts, 2)));
-        }
-
-        return '';
-    }*/
-
-    /**
-     * Create plain text response and return it as a string.
-     *
-     * @param Throwable $e
-     *
-     * @return string
-     */
-    private function formatException(Throwable $e): string
-    {
-        return sprintf(
-            "%s: %s in file %s on line %d\r\n%s",
-            get_class($e),
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine(),
-            $this->formatExceptionTraces($e->getTrace())
-        );
-    }
-
-    /**
-     * @param array $traces
-     *
-     * @return string
-     */
-    // TODO : améliorer le formatage : https://github.com/filp/whoops/blob/master/src/Whoops/Exception/Formatter.php#L59
-    private function formatExceptionTraces(array $traces): string
-    {
-        $trace = '';
-        foreach ($traces as $index => $record) {
-            $trace .= sprintf(
-                "    #%s %s%s%s() called at %s:%s\r\n",
-                $index,
-                $record['class'] ?? '',
-                isset($record['class'], $record['function']) ? $record['type'] : '',
-                $record['function'] ?? '',
-                $record['file'] ?? 'unknown',
-                $record['line'] ?? 0
-            );
-        }
-
-        return $trace;
-    }
-
-    /**
-     * Get log level to use for the PSR3 Logger.
-     * By default for the NON 'ErrorException' exception it will always be 'CRITICAL'.
-     *
-     * @param Throwable $e
-     *
-     * @return string
-     */
-    final public function getLogLevel(Throwable $e): string
-    {
-        if ($e instanceof ErrorException && \array_key_exists($e->getSeverity(), $this->errorLevelMap)) {
-            return $this->errorLevelMap[$e->getSeverity()];
-        }
-
-        // default log level for Throwable
-        return LogLevel::CRITICAL;
-    }
 }

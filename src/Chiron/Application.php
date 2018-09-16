@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+//***********************
+// Enregistrer automatiquement les services => cad un package discovery => https://medium.com/@taylorotwell/package-auto-discovery-in-laravel-5-5-ea9e3ab20518
+// https://github.com/laravel/framework/blob/master/src/Illuminate/Foundation/PackageManifest.php
+// Il y a aussi ce package :     https://github.com/appzcoder/laravel-package-discovery
+// Package installer auto avec ZEND : https://github.com/zendframework/zend-component-installer
+//***********************
+
 // TODO : AUTH service : https://github.com/harikt/expressive-auth   +   https://github.com/auraphp/Aura.Auth
 
 //TODO : stocker la réponse de base dans un objet : https://github.com/zendframework/zend-expressive/blob/release-2.2/src/Application.php#L101    "setResponsePrototype()"
@@ -45,6 +52,8 @@ if (! extension_loaded('mbstring')) {
 
 use Chiron\Config\Config;
 use Chiron\Container\Container;
+use Chiron\Provider\MiddlewaresServiceProvider;
+use Chiron\Provider\ErrorHandlerServiceProvider;
 // TODO : virer la classe CallableRequestHandlerDecorator !!!!!!!!!!!!!
 //use Chiron\Handler\CallableRequestHandlerDecorator;
 use Chiron\Handler\DeferredRequestHandler;
@@ -54,6 +63,7 @@ use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Response\EmptyResponse;
+use Chiron\Http\ResponseEmitter;
 use Chiron\Routing\RoutableInterface;
 use Chiron\Routing\RoutableTrait;
 use Chiron\Routing\Route;
@@ -73,6 +83,9 @@ class Application implements RoutableInterface
     use RoutableTrait;
 
     public const VERSION = '1.0.0';
+
+    /* @var ResponseEmitter */
+    private $emitter;
 
     /**
      * The logger instance.
@@ -251,7 +264,7 @@ class Application implements RoutableInterface
     public function getRouter(): Router
     {
         //return $this->router;
-        return $this->container->get('router');
+        return $this->container->get(Router::class);
     }
 
     /*
@@ -390,8 +403,13 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
         $this->container = new Container();
 
-        $services = new DefaultServicesProvider();
-        $services->register($this->container);
+        // Register Middlewares services
+        $middlewaresServices = new MiddlewaresServiceProvider();
+        $middlewaresServices->register($this->container);
+
+        // Register Error Handler services
+        $errorHandlerService = new ErrorHandlerServiceProvider();
+        $errorHandlerService->register($this->container);
 
         $this->container->set(self::class, $this);
 
@@ -404,10 +422,14 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $this->container['charset'] = 'UTF-8';
         $this->container['httpVersion'] = '1.1';
         $this->container['basePath'] = '';
+        // TODO : utiliser plutot un bout de code genre : on prend d'abord la valeur de APP_DEBUG si elle n'est pas présente on regarde dans le tableau de config passé en paramétre, si toujours pas présent on initialise à false.
+        // un truc du genre  : getEnv('APP_DEBUG') ? getEnv('APP_DEBUG') : $this->container['debug'] ? $this->container['debug'] : false
+        $this->container['debug'] = false;
 
         foreach ($settings as $key => $value) {
             $this->container[$key] = $value;
         }
+        //TODO : faire une méthode pour vérifier que les champs obligatoires de l'application sont bien présents, sinon on léve une erreur : https://github.com/yiisoft/yii2/blob/master/framework/base/Application.php#L217
 
         $config = new Config($settings);
         $this->container['config'] = $config;
@@ -493,6 +515,10 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 */
 
 //      $this->registerPhpErrorHandling();
+
+
+        $this->emitter = new ResponseEmitter();
+
     }
 
     //! Prohibit cloning
@@ -539,7 +565,12 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     {
         $request = (new \Chiron\Http\Factory\ServerRequestFactory())->createServerRequestFromArray($_SERVER);
 
-        return $this->process($request);
+
+        $response = $this->process($request);
+
+        $this->emit($response);
+
+        return $response;
     }
 
     public function process(ServerRequestInterface $request): ResponseInterface
@@ -547,7 +578,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         //die(var_dump($request->getServerParam('HTTP_HOST')));
 
         // apply PHP config settings.
-        $this->boot();
+        //$this->boot();
 
         // TODO : c'est plutot ici qu'on devrait la request::fromGlobals et éventuellement la mettre dans le container, non ????, avec éventuellement la possibilité de lui passer une request en paramétre de la méthode Run($request) et donc on créé la request ou on utilisera celle passée en paramétre. Celka peut servir si un utilisateur créé sa request avant (dans le cas ou il utilise du PSR7 request), mais aussi servir pour nos tests PHPUNIT avec une request pré-initilalisée. Cela peut aussi permettre à l'utilisateur de modifier la request, genre pour un sanitize, ou alors pour changer le type de méthode si il y a un champ formulaire hidden _method pour faire un override de la méthode http.
 
@@ -582,6 +613,11 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
             $response->isNotModified($request);
         }
 */
+    }
+
+    public function emit(ResponseInterface $response): void
+    {
+        $this->emitter->emit($response);
     }
 
     /**

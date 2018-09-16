@@ -6,6 +6,22 @@ namespace Chiron\Handler\Stack;
 
 //https://github.com/reactphp/http/blob/master/src/Io/MiddlewareRunner.php
 
+//https://github.com/cakephp/cakephp/blob/master/src/Http/MiddlewareQueue.php
+//https://github.com/cakephp/cakephp/blob/master/src/Http/Runner.php
+
+//https://github.com/narrowspark/framework/blob/master/src/Viserio/Component/Pipeline/Pipeline.php
+//https://github.com/illuminate/pipeline/blob/master/Pipeline.php
+//https://github.com/mpociot/pipeline/blob/master/src/Pipeline.php
+
+//https://github.com/emonkak/php-http-middleware/blob/master/src/Internal/Pipeline.php
+
+//https://github.com/relayphp/Relay.Relay/blob/2.x/src/Runner.php
+//https://github.com/cakephp/cakephp/blob/master/src/Http/Runner.php
+
+//https://github.com/guzzle/guzzle/blob/master/src/HandlerStack.php
+
+//https://github.com/reactphp/http/blob/master/src/Io/MiddlewareRunner.php
+
 //https://github.com/middlewares/utils
 
 //https://github.com/zendframework/zend-stratigility/blob/master/src/MiddlewarePipe.php

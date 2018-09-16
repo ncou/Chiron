@@ -4,60 +4,76 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Error\Formatter;
 
+use Chiron\Http\Exception\HttpExceptionInterface;
+use Chiron\Handler\Error\ExceptionInfo;
 use Throwable;
-
-//https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Error/Renderer/JsonRenderer.php
 
 class JsonFormatter implements ExceptionFormatterInterface
 {
-    public function formatException(Throwable $exception, bool $displayErrorDetails): string
+    /**
+     * The exception info instance.
+     *
+     * @var \Chiron\Handler\Error\ExceptionInfo
+     */
+    protected $info;
+    /**
+     * Create a new json displayer instance.
+     *
+     * @param \Chiron\Handler\Error\ExceptionInfo $info
+     *
+     * @return void
+     */
+    public function __construct(ExceptionInfo $info)
     {
-        return $this->renderJsonBody($exception, $displayErrorDetails);
+        $this->info = $info;
     }
 
     /**
      * Render JSON error.
      *
-     * @param Throwable $error
+     * @param \Throwable $e
      *
      * @return string
      */
-    private function renderJsonBody(Throwable $error, bool $displayErrorDetails): string
+    public function format(Throwable $e): string
     {
-        $json = [
-            'message' => 'Chiron Application Error',
-        ];
-        if ($displayErrorDetails) {
-            $json['error'] = [];
-            do {
-                $json['error'][] = [
-                    'type'    => get_class($error),
-                    'code'    => $error->getCode(),
-                    'message' => $error->getMessage(),
-                    'file'    => $this->replaceRoot($error->getFile()),
-                    'line'    => $error->getLine(),
-                    // TODO : réfléchir si on affiche la trace.
-                    'trace'   => explode("\n", $error->getTraceAsString()),
-                ];
-            } while ($error = $error->getPrevious());
-        }
+        $code = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
+        $info = $this->info->generate($e, $code);
 
-        return json_encode($json, JSON_PRETTY_PRINT); //JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT
+        $error = ['status' => $info['code'], 'title' => $info['name'], 'detail' => $info['detail']];
+
+        return json_encode(['errors' => [$error]], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
     /**
-     * replaceRoot.
-     *
-     * @param string $file
+     * Get the supported content type.
      *
      * @return string
      */
-    protected function replaceRoot(string $file): string
+    public function contentType(): string
     {
-        if (defined('Chiron\ROOT_DIR')) {
-            $file = 'ROOT' . substr($file, strlen(\Chiron\ROOT_DIR));
-        }
+        return 'application/json';
+    }
 
-        return $file;
+    /**
+     * Do we provide verbose information about the exception?
+     *
+     * @return bool
+     */
+    public function isVerbose(): bool
+    {
+        return false;
+    }
+
+    /**
+     * Can we format the exception?
+     *
+     * @param \Throwable $e
+     *
+     * @return bool
+     */
+    public function canFormat(Throwable $e): bool
+    {
+        return true;
     }
 }

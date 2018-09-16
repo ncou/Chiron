@@ -16,6 +16,9 @@ use function json_last_error;
 use function json_last_error_msg;
 use function sprintf;
 
+//https://github.com/symfony/http-foundation/blob/master/JsonResponse.php
+//https://github.com/laravel/framework/blob/master/src/Illuminate/Http/JsonResponse.php
+
 /**
  * JSON response.
  *
@@ -442,4 +445,5 @@ class JsonResponse extends Response
 
         return $responseWithJson;
     }*/
+
 }

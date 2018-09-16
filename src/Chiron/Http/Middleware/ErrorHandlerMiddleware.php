@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+// régle le niveau d'affichage des erreurs :
+//******************************************
+//https://github.com/laravel/framework/blob/master/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php#L28
+
+//https://github.com/laravel/framework/blob/master/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php
+
 //https://github.com/Lansoweb/api-problem/blob/master/src/ErrorResponseGenerator.php   +   https://github.com/Lansoweb/api-problem/blob/master/src/Model/ApiProblem.php
 
 //************************************
@@ -23,9 +29,14 @@ declare(strict_types=1);
 
 // TODO : regarder ici comment c'est fait : https://github.com/zendframework/zend-problem-details/blob/master/src/ProblemDetailsMiddleware.php
 
+//-----------------
+//https://github.com/samsonasik/ErrorHeroModule/blob/master/src/HeroTrait.php#L22
+//https://github.com/samsonasik/ErrorHeroModule/blob/master/src/Middleware/Expressive.php#L59
+
 namespace Chiron\Http\Middleware;
 
 use Chiron\Handler\Error\ExceptionManager;
+use Chiron\Handler\Error\FatalThrowableError;
 use Chiron\Http\Exception\HttpException;
 use ErrorException;
 use Psr\Http\Message\ResponseInterface;
@@ -34,6 +45,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Exception;
 use Throwable;
 
 class ErrorHandlerMiddleware implements MiddlewareInterface
@@ -68,22 +80,17 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
+/*
+            error_reporting(-1); // E_ALL
+            if (! $app->environment('testing')) {
+                ini_set('display_errors', 'Off'); // '0'
+            }
+*/
+
             set_error_handler($this->createErrorHandler());
             $response = $handler->handle($request);
-
-            // TODO : à virer c'est pour tester !!!!
-            //throw new \RuntimeException("TEST_Error 'Processing' \"Request\"", 1);
-            //throw new HttpException(404);
-            //throw new \Chiron\Exception\NotFoundHttpException();
-
-            // TODO : je ne pense pas que ce cas peut arriver !!!! à tester mais le dispacher (quand le stackHandler est executé) doit faire cette vérif de mémoire !!!!
-            /*
-            if (! $response instanceof ResponseInterface) {
-                throw new \LogicException('Application did not return a response');
-            }*/
         } catch (Throwable $exception) {
-            //$response = $this->handleThrowable($exception, $request);
-            $response = $this->exceptionManager->handleException($exception, $request);
+            $response = $this->exceptionManager->renderException($exception, $request);
         } finally {
             restore_error_handler();
         }
@@ -98,24 +105,27 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
      *
      * @return callable
      */
+    // TODO : améliorer avec le code suivant : https://github.com/laravel/framework/blob/master/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php#L57
+    // https://github.com/yiisoft/yii2/blob/master/framework/base/ErrorHandler.php#L205
     private function createErrorHandler()
     {
         /*
-         * @param int $errno
-         * @param string $errstr
-         * @param string $errfile
-         * @param int $errline
+         * @param int $severity
+         * @param string $message
+         * @param string $file
+         * @param int $line
          * @return void
          * @throws ErrorException if error is not within the error_reporting mask.
          */
-        return function (int $errno, string $errstr, string $errfile, int $errline): void {
-            //return function ($errno, $errstr, $errfile, $errline) {
-            if (! (error_reporting() & $errno)) {
+        return function (int $severity, string $message, string $file, int $line): void {
+
+            if (! (error_reporting() & $severity)) {
                 // error_reporting does not include this error
                 return;
             }
 
-            throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+            throw new ErrorException($message, 0, $severity, $file, $line);
         };
     }
+
 }
