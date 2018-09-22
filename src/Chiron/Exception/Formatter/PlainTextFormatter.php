@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Handler\Error\Formatter;
+namespace Chiron\Exception\Formatter;
 
 use Throwable;
 
-class PlainTextFormatter implements ExceptionFormatterInterface
+class PlainTextFormatter implements FormatterInterface
 {
     public function formatException(Throwable $exception, bool $displayErrorDetails): string
     {

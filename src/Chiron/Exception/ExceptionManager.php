@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Handler\Error;
+namespace Chiron\Exception;
 
 use Chiron\Http\Psr\Response;
 use InvalidArgumentException;
 use Jgut\HttpException\HttpExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Chiron\Exception\HandlerInterface;
 use Throwable;
 
 // WHOOPS + Template 404...etc
@@ -37,7 +38,7 @@ class ExceptionManager
     /**
      * List of HTTP exception handlers.
      *
-     * @var ExceptionHandlerInterface[]
+     * @var HandlerInterface[]
      */
     private $handlers = [];
 
@@ -65,10 +66,10 @@ class ExceptionManager
      *
      * @param Throwable $exception
      *
-     * @return null|ExceptionHandlerInterface
+     * @return null|HandlerInterface
      */
     // TODO : passer cette méthode en private !!!!
-    public function getExceptionHandler(Throwable $exception): ?ExceptionHandlerInterface
+    public function getExceptionHandler(Throwable $exception): ?HandlerInterface
     {
         $exceptionHandler = null;
 
@@ -102,12 +103,12 @@ class ExceptionManager
      * \Psr\Http\Message\ResponseInterface.
      *
      * @param string|array              $exceptionTypes
-     * @param ExceptionHandlerInterface $handler
+     * @param HandlerInterface $handler
      */
     // TODO : il faudrait faire un test si on passe un seul attribut qui est un callable dans ce cas c'est qu'on ne précise pas le type d'exception rattaché au handler et donc qu'il s'agit du handler par défaut pour traiter toutes les exceptions. Dans ce cas la méthode setDefaultErrorHandler ne servirai plus à rien !!!
     // TODO : mettre le type du paramétre $handler à RequestHandlerInterface
     // TODO : https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Error/ExceptionHandlerManager.php#L85
-    public function bindExceptionHandler($exceptionTypes, ExceptionHandlerInterface $handler)
+    public function bindExceptionHandler($exceptionTypes, HandlerInterface $handler)
     {
         if (! is_array($exceptionTypes)) {
             $exceptionTypes = [$exceptionTypes];

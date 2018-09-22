@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+// Gérer le cas ou il y a une erreur en interne dans le handler :
+//https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php#L138
+
 // régle le niveau d'affichage des erreurs :
 //******************************************
 //https://github.com/laravel/framework/blob/master/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php#L28
@@ -35,7 +38,7 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\Handler\Error\ExceptionManager;
+use Chiron\Exception\ExceptionManager;
 use ErrorException;
 use Exception;
 //use Psr\Container\ContainerInterface;
@@ -77,21 +80,23 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        try {
-            /*
-                        error_reporting(-1); // E_ALL
-                        if (! $app->environment('testing')) {
-                            ini_set('display_errors', 'Off'); // '0'
-                        }
-            */
+        /*
+                    error_reporting(E_ALL);
+                    if (! $app->environment('testing')) {
+                        ini_set('display_errors', 'Off'); // '0'
+                    }
+        */
 
-            set_error_handler($this->createErrorHandler());
+        set_error_handler($this->createErrorHandler());
+
+        try {
             $response = $handler->handle($request);
         } catch (Throwable $exception) {
+            //https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php#L138
             $response = $this->exceptionManager->renderException($exception, $request);
-        } finally {
-            restore_error_handler();
         }
+
+        restore_error_handler();
 
         return $response;
     }

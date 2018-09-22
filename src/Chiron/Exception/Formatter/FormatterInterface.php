@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Handler\Error\Formatter;
+namespace Chiron\Exception\Formatter;
 
 use Throwable;
 
 /**
  * Interface for classes that parse the raw request body into a parameters array.
  */
-interface ExceptionFormatterInterface
+interface FormatterInterface
 {
     /**
      * Format the exception as a string.

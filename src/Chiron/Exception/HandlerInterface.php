@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Handler\Error;
+namespace Chiron\Exception;
 
 use Exception;
 use Psr\Http\Message\ResponseInterface;
@@ -12,7 +12,7 @@ use Throwable;
 /**
  * Interface for classes that handle exception.
  */
-interface ExceptionHandlerInterface
+interface HandlerInterface
 {
     /**
      * Render the exception (format exception body and return a PSR7 response).

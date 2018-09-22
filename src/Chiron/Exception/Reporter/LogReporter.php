@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Handler\Error\Reporter;
+namespace Chiron\Exception\Reporter;
 
 use Chiron\Http\Psr\Response;
 use Exception;
@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
 
-class LoggerReporter implements ExceptionReporterInterface
+class LogReporter implements ReporterInterface
 {
     /**
      * PHP to PSR3 error levels map.

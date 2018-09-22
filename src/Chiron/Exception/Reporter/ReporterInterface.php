@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Handler\Error\Reporter;
+namespace Chiron\Exception\Reporter;
 
 use Throwable;
 
 /**
  * Interface for classes that implement a reporter for the exceptions.
  */
-interface ExceptionReporterInterface
+interface ReporterInterface
 {
     /**
      * Report the exception.

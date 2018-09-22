@@ -2,38 +2,42 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Handler\Error;
+namespace Chiron\Exception;
 
-use Chiron\Handler\Error\Formatter\ExceptionFormatterInterface;
-use Chiron\Handler\Error\Reporter\ExceptionReporterInterface;
+use Chiron\Exception\Formatter\FormatterInterface;
+use Chiron\Exception\Reporter\ReporterInterface;
 use Chiron\Http\Psr\Response;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
+//https://github.com/narrowspark/framework/blob/ccda2dca0c312dbea08814d1372c1802920ebcca/src/Viserio/Component/Exception/ErrorHandler.php
+//https://github.com/narrowspark/framework/blob/ccda2dca0c312dbea08814d1372c1802920ebcca/src/Viserio/Component/Exception/Http/Handler.php
+//https://github.com/narrowspark/framework/blob/d56a37a9271908ac1ed039331bbf17a8913449f5/src/Viserio/Component/Exception/Console/Handler.php
+
 //https://github.com/yiisoft/yii2/blob/master/framework/base/ErrorHandler.php
 
-class ExceptionHandler implements ExceptionHandlerInterface
+class ExceptionHandler implements HandlerInterface
 {
     /**
      * List of reporters used to report the exception data.
      *
-     * @var \Chiron\Handler\Error\Reporter\ExceptionReporterInterface[]
+     * @var \Chiron\Exception\Reporter\ReporterInterface[]
      */
     private $reporters = [];
 
     /**
      * List of formatters used to format the exception data.
      *
-     * @var \Chiron\Handler\Error\Formatter\ExceptionFormatterInterface[]
+     * @var \Chiron\Exception\Formatter\FormatterInterface[]
      */
     private $formatters = [];
 
     /**
      * Default formatter to use in case all the filters fails.
      *
-     * @var \Chiron\Handler\Error\Formatter\ExceptionFormatterInterface
+     * @var \Chiron\Exception\Formatter\FormatterInterface
      */
     private $defaultFormatter;
 
@@ -55,7 +59,7 @@ class ExceptionHandler implements ExceptionHandlerInterface
     }
 
     /**
-     * Report or log an exception.
+     * Report an exception.
      *
      * @param \Throwable                               $e
      * @param \Psr\Http\Message\ServerRequestInterface $request
@@ -72,16 +76,22 @@ class ExceptionHandler implements ExceptionHandlerInterface
 
     public function render(Throwable $e, ServerRequestInterface $request): ResponseInterface
     {
-        $formatter = $this->selectFormatter($e, $request);
+        $formatter = $this->getFilteredFormatter($e, $request);
 
-        $body = $formatter->format($e);
+        $content = $formatter->format($e);
 
         // TODO : attention il manque le choix de la version HTTP 1.1 ou 1.0 lorsqu'on initialise cette nouvelle response.
         // TODO : passer une ResponseFactory dans le constructeur de cette classe et utiliser la factory
         $response = new Response(500);
 
         // TODO : attention il manque le charset dans ce Content-Type !!!!!
-        return $response->withHeader('Content-type', $formatter->contentType())->write($body);
+        $response = $response->withHeader('Content-Type', $formatter->contentType());
+
+        $body = $response->getBody();
+        $body->write($content);
+        $body->rewind();
+
+        return $response->withBody($body);
     }
 
     /**
@@ -90,9 +100,9 @@ class ExceptionHandler implements ExceptionHandlerInterface
      * @param \Throwable             $e
      * @param ServerRequestInterface $request
      *
-     * @return \Chiron\Handler\Error\Formatter\ExceptionFormatterInterface
+     * @return \Chiron\Exception\Formatter\FormatterInterface
      */
-    private function selectFormatter(Throwable $e, ServerRequestInterface $request): ExceptionFormatterInterface
+    private function getFilteredFormatter(Throwable $e, ServerRequestInterface $request): FormatterInterface
     {
         $filtered = $this->formatters;
 
@@ -102,29 +112,26 @@ class ExceptionHandler implements ExceptionHandlerInterface
                 if ($formatter->isVerbose()) {
                     unset($filtered[$index]);
 
-                    break;
+                    continue;
                 }
             }
             // *** CanFormat Filter ***
             if (! $formatter->canFormat($e)) {
                 unset($filtered[$index]);
 
-                break;
+                continue;
             }
             // *** Content-Type Filter ***
             if (! $this->isAcceptableContentType($request, $formatter->contentType())) {
                 unset($filtered[$index]);
 
-                break;
+                continue;
             }
         }
 
-        // array_values() prevent missing index after using the 'unset()' function.
-        $filtered = array_values($filtered);
-
-        // use a default formatter if there is none present after applying the filters.
-        // TODO : attention on devrait lever une exception si il n'y a pas de default formatter de défini par l'utilisateur, ou alors à minima on fait un rethrow the l'exception.
-        return isset($filtered[0]) ? $filtered[0] : $this->defaultFormatter;
+        // use a default formatter if there is none present after applying the filters. Else use the first one present in the array.
+        // TODO : attention on devrait lever une exception si il n'y a pas de default formatter de défini par l'utilisateur, ou alors à minima on fait un rethrow de l'exception.
+        return reset($filtered) ?? $this->defaultFormatter;
     }
 
     /**
@@ -168,9 +175,9 @@ class ExceptionHandler implements ExceptionHandlerInterface
     /**
      * Add the reporter to the existing array of reporters.
      *
-     * @param \Chiron\Handler\Error\Reporter\ExceptionReporterInterface $reporter Reporter to use in this error handler
+     * @param \Chiron\Exception\Reporter\ReporterInterface $reporter Reporter to use in this error handler
      */
-    public function addReporter(ExceptionReporterInterface $reporter): void
+    public function addReporter(ReporterInterface $reporter): void
     {
         array_push($this->reporters, $reporter);
     }
@@ -178,9 +185,9 @@ class ExceptionHandler implements ExceptionHandlerInterface
     /**
      * Add the formatter to the existing array of formatters.
      *
-     * @param \Chiron\Handler\Error\Formatter\ExceptionFormatterInterface $formatter Formatter to use in this error handler
+     * @param \Chiron\Exception\Formatter\FormatterInterface $formatter Formatter to use in this error handler
      */
-    public function addFormatter(ExceptionFormatterInterface $formatter): void
+    public function addFormatter(FormatterInterface $formatter): void
     {
         array_push($this->formatters, $formatter);
     }
@@ -188,9 +195,9 @@ class ExceptionHandler implements ExceptionHandlerInterface
     /**
      * set a default formatter in case none of the formatters match the filters.
      *
-     * @param \Chiron\Handler\Error\Formatter\ExceptionFormatterInterface $formatter Formatter to use in this error handler
+     * @param \Chiron\Exception\Formatter\FormatterInterface $formatter Formatter to use in this error handler
      */
-    public function setDefaultFormatter(ExceptionFormatterInterface $formatter): void
+    public function setDefaultFormatter(FormatterInterface $formatter): void
     {
         $this->defaultFormatter = $formatter;
     }

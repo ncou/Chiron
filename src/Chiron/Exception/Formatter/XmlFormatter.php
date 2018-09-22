@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Handler\Error\Formatter;
+namespace Chiron\Exception\Formatter;
 
-use Chiron\Handler\Error\ExceptionInfo;
+use Chiron\Exception\ExceptionInfo;
 use Chiron\Http\Exception\HttpExceptionInterface;
 use Throwable;
 
-class JsonFormatter implements ExceptionFormatterInterface
+class XmlFormatter implements FormatterInterface
 {
     /**
      * The exception info instance.
      *
-     * @var \Chiron\Handler\Error\ExceptionInfo
+     * @var \Chiron\Exception\ExceptionInfo
      */
     protected $info;
 
     /**
      * Create a new json displayer instance.
      *
-     * @param \Chiron\Handler\Error\ExceptionInfo $info
+     * @param \Chiron\Exception\ExceptionInfo $info
      */
     public function __construct(ExceptionInfo $info)
     {
@@ -28,9 +28,9 @@ class JsonFormatter implements ExceptionFormatterInterface
     }
 
     /**
-     * Render JSON error.
+     * Render XML error.
      *
-     * @param \Throwable $e
+     * @param Throwable $error
      *
      * @return string
      */
@@ -39,9 +39,26 @@ class JsonFormatter implements ExceptionFormatterInterface
         $code = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
         $info = $this->info->generate($e, $code);
 
-        $error = ['status' => $info['code'], 'title' => $info['name'], 'detail' => $info['detail']];
+        $xml = "<?xml version='1.0' encoding='utf-8'?>\n";
+        $xml .= "<error>\n";
+        $xml .= '  <status>' . $info['code'] . "</status>\n";
+        $xml .= '  <title>' . $this->createCdataSection($info['name']) . "</title>\n";
+        $xml .= '  <detail>' . $this->createCdataSection($info['detail']) . "</detail>\n";
+        $xml .= '</error>';
 
-        return json_encode(['errors' => [$error]], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        return $xml;
+    }
+
+    /**
+     * Returns a CDATA section with the given content.
+     *
+     * @param string $content
+     *
+     * @return string
+     */
+    private function createCdataSection(string $content): string
+    {
+        return sprintf('<![CDATA[%s]]>', str_replace(']]>', ']]]]><![CDATA[>', $content));
     }
 
     /**
@@ -51,7 +68,7 @@ class JsonFormatter implements ExceptionFormatterInterface
      */
     public function contentType(): string
     {
-        return 'application/json';
+        return 'application/xml';
     }
 
     /**

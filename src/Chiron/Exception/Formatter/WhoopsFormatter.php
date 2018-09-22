@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Handler\Error\Formatter;
+namespace Chiron\Exception\Formatter;
 
 use Throwable;
 use Whoops\Handler\PrettyPageHandler;
@@ -16,7 +16,7 @@ use Whoops\Run as Whoops;
 
 //https://github.com/zeuxisoo/php-slim-whoops/blob/master/src/Zeuxisoo/Whoops/Provider/Slim/WhoopsGuard.php#L47
 
-class WhoopsFormatter implements ExceptionFormatterInterface
+class WhoopsFormatter implements FormatterInterface
 {
     public function format(Throwable $e): string
     {

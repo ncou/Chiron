@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Handler\Error;
+namespace Chiron\Exception;
 
 use Chiron\Http\Exception\HttpExceptionInterface;
 use Throwable;
@@ -25,7 +25,7 @@ class ExceptionInfo
     /**
      * Create a exception info instance.
      *
-     * @param string|null $path
+     * @param string|null $path the .json file path for the exception informations
      */
     public function __construct(string $path = null)
     {
@@ -44,11 +44,11 @@ class ExceptionInfo
     {
         $errors = $this->path ? json_decode(file_get_contents($this->path), true) : [500 => ['name' => 'Internal Server Error', 'message' => 'An error has occurred and this resource cannot be displayed.']];
 
-        if (isset($errors[$code])) {
-            $info = array_merge(['code' => $code], $errors[$code]);
-        } else {
-            $info = array_merge(['code' => 500], $errors[500]);
+        if (! isset($errors[$code])) {
+            $code = 500;
         }
+
+        $info = array_merge(['code' => $code], $errors[$code]);
 
         if ($exception instanceof HttpExceptionInterface) {
             $msg = (string) $exception->getMessage();

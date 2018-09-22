@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Handler\Error\Formatter;
+namespace Chiron\Exception\Formatter;
 
-use Chiron\Handler\Error\ExceptionInfo;
+use Chiron\Exception\ExceptionInfo;
 use Chiron\Http\Exception\HttpExceptionInterface;
 use Throwable;
 
-class TemplateHtmlFormatter implements ExceptionFormatterInterface
+class HtmlFormatter implements FormatterInterface
 {
     /**
      * The exception info instance.
      *
-     * @var \Chiron\Handler\Error\ExceptionInfo
+     * @var \Chiron\Exception\ExceptionInfo
      */
     protected $info;
 
@@ -27,7 +27,7 @@ class TemplateHtmlFormatter implements ExceptionFormatterInterface
     /**
      * Create a new html displayer instance.
      *
-     * @param \Chiron\Handler\Error\ExceptionInfo $info
+     * @param \Chiron\Exception\ExceptionInfo $info
      * @param string                              $path
      */
     public function __construct(ExceptionInfo $info, string $path)
