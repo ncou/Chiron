@@ -164,7 +164,7 @@ class ResponseEmitter //implements EmitterInterface
      * Emit the message body.
      *
      * @param \Psr\Http\Message\ResponseInterface $response        The response to emit
-     * @param int                                 $maxBufferLength The chunk size to emit
+     * @param int                                 $chunkSize The chunk size to emit
      */
     // TODO : regarder comment c'est géré ici : https://github.com/symfony/http-foundation/blob/ed75b71c6498bd9c020dea99f723fd5b20aae986/Response.php#L336
     private function emitBody(ResponseInterface $response, int $chunkSize): void
@@ -206,7 +206,7 @@ class ResponseEmitter //implements EmitterInterface
      *
      * @param array             $range
      * @param ResponseInterface $response
-     * @param int               $maxBufferLength
+     * @param int               $chunkSize
      */
     private function emitBodyRange(array $range, ResponseInterface $response, int $chunkSize): void
     {
@@ -553,7 +553,7 @@ class ResponseEmitter //implements EmitterInterface
      * @return false|array [unit, first, last, length]; returns false if no
      *                     content range or an invalid content range is provided
      */
-    protected function parseContentRange($header)
+    protected function parseContentRange(string $header)
     {
         if (preg_match('/(?P<unit>[\w]+)\s+(?P<first>\d+)-(?P<last>\d+)\/(?P<length>\d+|\*)/', $header, $matches)) {
             return [
