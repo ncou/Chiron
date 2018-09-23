@@ -1,34 +1,38 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Chiron\Exception\Reporter;
 
-use Throwable;
 use Rollbar;
-use InvalidArgumentException;
-
+use Throwable;
 
 class RollbarReporter implements ReporterInterface
 {
     /**
      * RollbarReporter constructor.
+     *
      * @param array $config
+     *
      * @throws \InvalidArgumentException
      */
     public function __construct(array $config)
     {
         Rollbar::init($config);
     }
+
     /**
-     * Report exception
+     * Report exception.
      *
      * @param Throwable $e
+     *
      * @return string|void
      */
     public function report(Throwable $e): void
     {
         Rollbar::report_exception($e);
     }
+
     /**
      * Can we report the exception?
      *
@@ -41,5 +45,4 @@ class RollbarReporter implements ReporterInterface
         // check if Rollbar client is installed.
         return class_exists(Rollbar::class);
     }
-
 }

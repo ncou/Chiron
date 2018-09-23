@@ -9,7 +9,6 @@ use InvalidArgumentException;
 use Jgut\HttpException\HttpExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Chiron\Exception\HandlerInterface;
 use Throwable;
 
 // WHOOPS + Template 404...etc
@@ -102,7 +101,7 @@ class ExceptionManager
      * The callable MUST return an instance of
      * \Psr\Http\Message\ResponseInterface.
      *
-     * @param string|array              $exceptionTypes
+     * @param string|array     $exceptionTypes
      * @param HandlerInterface $handler
      */
     // TODO : il faudrait faire un test si on passe un seul attribut qui est un callable dans ce cas c'est qu'on ne précise pas le type d'exception rattaché au handler et donc qu'il s'agit du handler par défaut pour traiter toutes les exceptions. Dans ce cas la méthode setDefaultErrorHandler ne servirai plus à rien !!!

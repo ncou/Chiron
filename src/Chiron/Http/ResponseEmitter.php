@@ -163,7 +163,7 @@ class ResponseEmitter //implements EmitterInterface
     /**
      * Emit the message body.
      *
-     * @param \Psr\Http\Message\ResponseInterface $response        The response to emit
+     * @param \Psr\Http\Message\ResponseInterface $response  The response to emit
      * @param int                                 $chunkSize The chunk size to emit
      */
     // TODO : regarder comment c'est géré ici : https://github.com/symfony/http-foundation/blob/ed75b71c6498bd9c020dea99f723fd5b20aae986/Response.php#L336

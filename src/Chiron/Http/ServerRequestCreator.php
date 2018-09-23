@@ -22,21 +22,16 @@ require_once __DIR__ . '/../../../../vendor/nyholm/psr7/src/Uri.php';
 
 //namespace Viserio\Component\HttpFactory;
 
-use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\UploadedFile;
 use Chiron\Http\Psr\Uri;
-use Psr\Http\Message\ServerRequestFactoryInterface;
 use InvalidArgumentException;
+use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UploadedFileInterface;
-use Psr\Http\Message\UriInterface;
-
 use Psr\Http\Message\StreamFactoryInterface;
-use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
+use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriFactoryInterface;
-
 
 //use Nyholm\Psr7\Factory\ServerRequestFactory as ServerRequestFactoryPsr17;
 
@@ -47,8 +42,11 @@ use Psr\Http\Message\UriFactoryInterface;
 class ServerRequestCreator
 {
     private $serverRequestFactory;
+
     private $uriFactory;
+
     private $uploadedFileFactory;
+
     private $streamFactory;
 
     public function __construct(
@@ -62,8 +60,6 @@ class ServerRequestCreator
         $this->uploadedFileFactory = $uploadedFileFactory;
         $this->streamFactory = $streamFactory;
     }
-
-
 
     /**
      * Function to use to get apache request headers; present only to simplify mocking.
