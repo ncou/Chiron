@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Exception\Reporter;
 
-use Chiron\Http\Psr\Response;
 use Exception;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 use Throwable;
 
 class CallableReporter implements ReporterInterface

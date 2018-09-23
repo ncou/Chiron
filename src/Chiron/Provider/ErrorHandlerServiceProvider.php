@@ -16,8 +16,8 @@ namespace Chiron\Provider;
 use Chiron\Exception\ExceptionHandler;
 use Chiron\Exception\ExceptionInfo;
 use Chiron\Exception\ExceptionManager;
-use Chiron\Exception\Formatter\JsonFormatter;
 use Chiron\Exception\Formatter\HtmlFormatter;
+use Chiron\Exception\Formatter\JsonFormatter;
 use Chiron\Exception\Formatter\ViewFormatter;
 use Chiron\Exception\Formatter\WhoopsFormatter;
 use Chiron\Exception\Formatter\XmlFormatter;
@@ -123,7 +123,7 @@ class ErrorHandlerServiceProvider
             return $exceptionHandler;
         };
 
-        /**
+        /*
          * Register all the possible error template namespaced paths.
          */
         // TODO : virer cette fonction et améliorer l'intialisation du répertoire des erreurs pour les templates
@@ -142,7 +142,6 @@ class ErrorHandlerServiceProvider
             $renderer->addPath(__DIR__ . '/../../resources/errors', 'errors');
         }
         */
-
 
         $container[ErrorHandlerMiddleware::class] = function ($c) {
             $exceptionManager = new ExceptionManager();

@@ -4,40 +4,41 @@ declare(strict_types=1);
 
 namespace Tests\Http;
 
-use Chiron\Http\Psr\Response;
-use Chiron\Http\Psr\Uri;
-use Chiron\Http\StatusCode;
-use DOMDocument;
-use DomXPath;
-use PHPUnit\Framework\TestCase;
-use Chiron\Http\ServerRequestCreator;
 use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Factory\UriFactory;
-use Chiron\Http\Factory\UploadedFileFactory;
 use Chiron\Http\Factory\StreamFactory;
+use Chiron\Http\Factory\UploadedFileFactory;
+use Chiron\Http\Factory\UriFactory;
+use Chiron\Http\Psr\Uri;
+use Chiron\Http\ServerRequestCreator;
+use PHPUnit\Framework\TestCase;
 
 class ServerRequestCreatorTest extends TestCase
 {
-    const NUMBER_OF_FILES = 11;
+    public const NUMBER_OF_FILES = 11;
+
     public static $filenames = [];
+
     /** @var ServerRequestCreator */
     private $creator;
+
     public static function initFiles()
     {
-        if (!empty(self::$filenames)) {
+        if (! empty(self::$filenames)) {
             return;
         }
         $tmpDir = sys_get_temp_dir();
-        for ($i = 0; $i < self::NUMBER_OF_FILES; ++$i) {
-            self::$filenames[] = $filename = $tmpDir.'/file_'.$i;
-            file_put_contents($filename, 'foo'.$i);
+        for ($i = 0; $i < self::NUMBER_OF_FILES; $i++) {
+            self::$filenames[] = $filename = $tmpDir . '/file_' . $i;
+            file_put_contents($filename, 'foo' . $i);
         }
     }
+
     public static function setUpBeforeClass()
     {
         parent::setUpBeforeClass();
         self::initFiles();
     }
+
     protected function setUp()/* The :void return type declaration that should be here would cause a BC issue */
     {
         parent::setUp();
@@ -48,18 +49,20 @@ class ServerRequestCreatorTest extends TestCase
         new StreamFactory()
         );
     }
+
     public function dataNormalizeFiles()
     {
         self::initFiles();
+
         return [
             'Single file' => [
                 [
                     'file' => [
-                        'name' => 'MyFile.txt',
-                        'type' => 'text/plain',
+                        'name'     => 'MyFile.txt',
+                        'type'     => 'text/plain',
                         'tmp_name' => self::$filenames[0],
-                        'error' => '0',
-                        'size' => '123',
+                        'error'    => '0',
+                        'size'     => '123',
                     ],
                 ],
                 [
@@ -133,18 +136,18 @@ class ServerRequestCreatorTest extends TestCase
             'Multiple files' => [
                 [
                     'text_file' => [
-                        'name' => 'MyFile.txt',
-                        'type' => 'text/plain',
+                        'name'     => 'MyFile.txt',
+                        'type'     => 'text/plain',
                         'tmp_name' => self::$filenames[3],
-                        'error' => '0',
-                        'size' => '123',
+                        'error'    => '0',
+                        'size'     => '123',
                     ],
                     'image_file' => [
-                        'name' => '',
-                        'type' => '',
+                        'name'     => '',
+                        'type'     => '',
                         'tmp_name' => self::$filenames[4],
-                        'error' => '4',
-                        'size' => '0',
+                        'error'    => '4',
+                        'size'     => '0',
                     ],
                 ],
                 [
@@ -191,35 +194,35 @@ class ServerRequestCreatorTest extends TestCase
                     'nested' => [
                         'name' => [
                             'other' => 'Flag.txt',
-                            'test' => [
+                            'test'  => [
                                 0 => 'Stuff.txt',
                                 1 => '',
                             ],
                         ],
                         'type' => [
                             'other' => 'text/plain',
-                            'test' => [
+                            'test'  => [
                                 0 => 'text/plain',
                                 1 => '',
                             ],
                         ],
                         'tmp_name' => [
                             'other' => self::$filenames[7],
-                            'test' => [
+                            'test'  => [
                                 0 => self::$filenames[8],
                                 1 => self::$filenames[9],
                             ],
                         ],
                         'error' => [
                             'other' => '0',
-                            'test' => [
+                            'test'  => [
                                 0 => '0',
                                 1 => '4',
                             ],
                         ],
                         'size' => [
                             'other' => '421',
-                            'test' => [
+                            'test'  => [
                                 0 => '32',
                                 1 => '0',
                             ],
@@ -272,6 +275,7 @@ class ServerRequestCreatorTest extends TestCase
             ],
         ];
     }
+
     /**
      * @dataProvider dataNormalizeFiles
      */
@@ -296,6 +300,7 @@ class ServerRequestCreatorTest extends TestCase
             foreach ($expected as $i => $e) {
                 if (is_array($e)) {
                     $self($e, $result[$i], $self);
+
                     continue;
                 }
                 $this->assertNotEmpty($result[$i]);
@@ -304,62 +309,64 @@ class ServerRequestCreatorTest extends TestCase
         };
         $validate($expected, $result, $validate);
     }
+
     public function testNormalizeFilesRaisesException()
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid value in files specification');
         $this->creator->fromArrays(['REQUEST_METHOD' => 'POST'], [], [], [], [], ['test' => 'something']);
     }
+
     public function testFromArrays()
     {
         $server = [
-            'PHP_SELF' => '/blog/article.php',
-            'GATEWAY_INTERFACE' => 'CGI/1.1',
-            'SERVER_ADDR' => 'Server IP: 217.112.82.20',
-            'SERVER_NAME' => 'www.blakesimpson.co.uk',
-            'SERVER_SOFTWARE' => 'Apache/2.2.15 (Win32) JRun/4.0 PHP/5.2.13',
-            'SERVER_PROTOCOL' => 'HTTP/1.0',
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_TIME' => 'Request start time: 1280149029',
-            'QUERY_STRING' => 'id=10&user=foo',
-            'DOCUMENT_ROOT' => '/path/to/your/server/root/',
-            'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'HTTP_ACCEPT_CHARSET' => 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+            'PHP_SELF'             => '/blog/article.php',
+            'GATEWAY_INTERFACE'    => 'CGI/1.1',
+            'SERVER_ADDR'          => 'Server IP: 217.112.82.20',
+            'SERVER_NAME'          => 'www.blakesimpson.co.uk',
+            'SERVER_SOFTWARE'      => 'Apache/2.2.15 (Win32) JRun/4.0 PHP/5.2.13',
+            'SERVER_PROTOCOL'      => 'HTTP/1.0',
+            'REQUEST_METHOD'       => 'POST',
+            'REQUEST_TIME'         => 'Request start time: 1280149029',
+            'QUERY_STRING'         => 'id=10&user=foo',
+            'DOCUMENT_ROOT'        => '/path/to/your/server/root/',
+            'HTTP_ACCEPT'          => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'HTTP_ACCEPT_CHARSET'  => 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
             'HTTP_ACCEPT_ENCODING' => 'gzip,deflate',
             'HTTP_ACCEPT_LANGUAGE' => 'en-gb,en;q=0.5',
-            'HTTP_CONNECTION' => 'keep-alive',
-            'HTTP_HOST' => 'www.blakesimpson.co.uk',
-            'HTTP_REFERER' => 'http://previous.url.com',
-            'HTTP_USER_AGENT' => 'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-GB; rv:1.9.2.6) Gecko/20100625 Firefox/3.6.6 ( .NET CLR 3.5.30729)',
-            'HTTPS' => '1',
-            'REMOTE_ADDR' => '193.60.168.69',
-            'REMOTE_HOST' => 'Client server\'s host name',
-            'REMOTE_PORT' => '5390',
-            'SCRIPT_FILENAME' => '/path/to/this/script.php',
-            'SERVER_ADMIN' => 'webmaster@blakesimpson.co.uk',
-            'SERVER_PORT' => '80',
-            'SERVER_SIGNATURE' => 'Version signature: 5.123',
-            'SCRIPT_NAME' => '/blog/article.php',
-            'REQUEST_URI' => '/blog/article.php?id=10&user=foo',
+            'HTTP_CONNECTION'      => 'keep-alive',
+            'HTTP_HOST'            => 'www.blakesimpson.co.uk',
+            'HTTP_REFERER'         => 'http://previous.url.com',
+            'HTTP_USER_AGENT'      => 'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-GB; rv:1.9.2.6) Gecko/20100625 Firefox/3.6.6 ( .NET CLR 3.5.30729)',
+            'HTTPS'                => '1',
+            'REMOTE_ADDR'          => '193.60.168.69',
+            'REMOTE_HOST'          => 'Client server\'s host name',
+            'REMOTE_PORT'          => '5390',
+            'SCRIPT_FILENAME'      => '/path/to/this/script.php',
+            'SERVER_ADMIN'         => 'webmaster@blakesimpson.co.uk',
+            'SERVER_PORT'          => '80',
+            'SERVER_SIGNATURE'     => 'Version signature: 5.123',
+            'SCRIPT_NAME'          => '/blog/article.php',
+            'REQUEST_URI'          => '/blog/article.php?id=10&user=foo',
         ];
         $cookie = [
             'logged-in' => 'yes!',
         ];
         $post = [
-            'name' => 'Pesho',
+            'name'  => 'Pesho',
             'email' => 'pesho@example.com',
         ];
         $get = [
-            'id' => 10,
+            'id'   => 10,
             'user' => 'foo',
         ];
         $files = [
             'file' => [
-                'name' => 'MyFile.txt',
-                'type' => 'text/plain',
+                'name'     => 'MyFile.txt',
+                'type'     => 'text/plain',
                 'tmp_name' => self::$filenames[10],
-                'error' => UPLOAD_ERR_OK,
-                'size' => 5,
+                'error'    => UPLOAD_ERR_OK,
+                'size'     => 5,
             ],
         ];
         $server = $this->creator->fromArrays($server, [], $cookie, $get, $post, $files, 'foobar');
@@ -382,39 +389,41 @@ class ServerRequestCreatorTest extends TestCase
         $this->assertEquals('text/plain', $file->getClientMediaType());
         $this->assertEquals(self::$filenames[10], $file->getStream()->getMetadata('uri'));
     }
+
     public function dataGetUriFromGlobals()
     {
         self::initFiles();
         $server = [
-            'PHP_SELF' => '/blog/article.php',
-            'GATEWAY_INTERFACE' => 'CGI/1.1',
-            'SERVER_ADDR' => 'Server IP: 217.112.82.20',
-            'SERVER_NAME' => 'www.blakesimpson.co.uk',
-            'SERVER_SOFTWARE' => 'Apache/2.2.15 (Win32) JRun/4.0 PHP/5.2.13',
-            'SERVER_PROTOCOL' => 'HTTP/1.0',
-            'REQUEST_METHOD' => 'POST',
-            'REQUEST_TIME' => 'Request start time: 1280149029',
-            'QUERY_STRING' => 'id=10&user=foo',
-            'DOCUMENT_ROOT' => '/path/to/your/server/root/',
-            'HTTP_ACCEPT' => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'HTTP_ACCEPT_CHARSET' => 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
+            'PHP_SELF'             => '/blog/article.php',
+            'GATEWAY_INTERFACE'    => 'CGI/1.1',
+            'SERVER_ADDR'          => 'Server IP: 217.112.82.20',
+            'SERVER_NAME'          => 'www.blakesimpson.co.uk',
+            'SERVER_SOFTWARE'      => 'Apache/2.2.15 (Win32) JRun/4.0 PHP/5.2.13',
+            'SERVER_PROTOCOL'      => 'HTTP/1.0',
+            'REQUEST_METHOD'       => 'POST',
+            'REQUEST_TIME'         => 'Request start time: 1280149029',
+            'QUERY_STRING'         => 'id=10&user=foo',
+            'DOCUMENT_ROOT'        => '/path/to/your/server/root/',
+            'HTTP_ACCEPT'          => 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'HTTP_ACCEPT_CHARSET'  => 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
             'HTTP_ACCEPT_ENCODING' => 'gzip,deflate',
             'HTTP_ACCEPT_LANGUAGE' => 'en-gb,en;q=0.5',
-            'HTTP_CONNECTION' => 'keep-alive',
-            'HTTP_HOST' => 'www.blakesimpson.co.uk',
-            'HTTP_REFERER' => 'http://previous.url.com',
-            'HTTP_USER_AGENT' => 'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-GB; rv:1.9.2.6) Gecko/20100625 Firefox/3.6.6 ( .NET CLR 3.5.30729)',
-            'HTTPS' => '1',
-            'REMOTE_ADDR' => '193.60.168.69',
-            'REMOTE_HOST' => 'Client server\'s host name',
-            'REMOTE_PORT' => '5390',
-            'SCRIPT_FILENAME' => '/path/to/this/script.php',
-            'SERVER_ADMIN' => 'webmaster@blakesimpson.co.uk',
-            'SERVER_PORT' => '80',
-            'SERVER_SIGNATURE' => 'Version signature: 5.123',
-            'SCRIPT_NAME' => '/blog/article.php',
-            'REQUEST_URI' => '/blog/article.php?id=10&user=foo',
+            'HTTP_CONNECTION'      => 'keep-alive',
+            'HTTP_HOST'            => 'www.blakesimpson.co.uk',
+            'HTTP_REFERER'         => 'http://previous.url.com',
+            'HTTP_USER_AGENT'      => 'Mozilla/5.0 (Windows; U; Windows NT 6.0; en-GB; rv:1.9.2.6) Gecko/20100625 Firefox/3.6.6 ( .NET CLR 3.5.30729)',
+            'HTTPS'                => '1',
+            'REMOTE_ADDR'          => '193.60.168.69',
+            'REMOTE_HOST'          => 'Client server\'s host name',
+            'REMOTE_PORT'          => '5390',
+            'SCRIPT_FILENAME'      => '/path/to/this/script.php',
+            'SERVER_ADMIN'         => 'webmaster@blakesimpson.co.uk',
+            'SERVER_PORT'          => '80',
+            'SERVER_SIGNATURE'     => 'Version signature: 5.123',
+            'SCRIPT_NAME'          => '/blog/article.php',
+            'REQUEST_URI'          => '/blog/article.php?id=10&user=foo',
         ];
+
         return [
             'Normal request' => [
                 'http://www.blakesimpson.co.uk/blog/article.php?id=10&user=foo',
@@ -442,6 +451,7 @@ class ServerRequestCreatorTest extends TestCase
             ],
         ];
     }
+
     /**
      * @dataProvider dataGetUriFromGlobals
      */
@@ -449,31 +459,33 @@ class ServerRequestCreatorTest extends TestCase
     {
         $this->assertEquals(new Uri($expected), NSA::invokeMethod($this->creator, 'createUriFromArray', $serverParams));
     }
+
     /**
      * Test from zendframework/zend-diactoros.
      */
     public function testMarshalsExpectedHeadersFromServerArray()
     {
         $server = [
-            'HTTP_COOKIE' => 'COOKIE',
+            'HTTP_COOKIE'        => 'COOKIE',
             'HTTP_AUTHORIZATION' => 'token',
-            'HTTP_CONTENT_TYPE' => 'application/json',
-            'HTTP_ACCEPT' => 'application/json',
-            'HTTP_X_FOO_BAR' => 'FOOBAR',
-            'CONTENT_MD5' => 'CONTENT-MD5',
-            'CONTENT_LENGTH' => 'UNSPECIFIED',
+            'HTTP_CONTENT_TYPE'  => 'application/json',
+            'HTTP_ACCEPT'        => 'application/json',
+            'HTTP_X_FOO_BAR'     => 'FOOBAR',
+            'CONTENT_MD5'        => 'CONTENT-MD5',
+            'CONTENT_LENGTH'     => 'UNSPECIFIED',
         ];
         $expected = [
-            'cookie' => 'COOKIE',
-            'authorization' => 'token',
-            'content-type' => 'application/json',
-            'accept' => 'application/json',
-            'x-foo-bar' => 'FOOBAR',
-            'content-md5' => 'CONTENT-MD5',
+            'cookie'         => 'COOKIE',
+            'authorization'  => 'token',
+            'content-type'   => 'application/json',
+            'accept'         => 'application/json',
+            'x-foo-bar'      => 'FOOBAR',
+            'content-md5'    => 'CONTENT-MD5',
             'content-length' => 'UNSPECIFIED',
         ];
         $this->assertSame($expected, ServerRequestCreator::getHeadersFromServer($server));
     }
+
     /**
      * Test from zendframework/zend-diactoros.
      */
@@ -481,16 +493,17 @@ class ServerRequestCreatorTest extends TestCase
     {
         // Non-prefixed versions will be preferred
         $server = [
-            'HTTP_X_FOO_BAR' => 'nonprefixed',
+            'HTTP_X_FOO_BAR'              => 'nonprefixed',
             'REDIRECT_HTTP_AUTHORIZATION' => 'token',
-            'REDIRECT_HTTP_X_FOO_BAR' => 'prefixed',
+            'REDIRECT_HTTP_X_FOO_BAR'     => 'prefixed',
         ];
         $expected = [
             'authorization' => 'token',
-            'x-foo-bar' => 'nonprefixed',
+            'x-foo-bar'     => 'nonprefixed',
         ];
         $this->assertEquals($expected, ServerRequestCreator::getHeadersFromServer($server));
     }
+
     /**
      * Test the fallback for a failing StreamFactoryInterface::createStreamFromFile.
      */
@@ -519,11 +532,11 @@ class ServerRequestCreatorTest extends TestCase
             $creator,
             'createUploadedFileFromSpec',
             [
-                'name' => 'MyFile.txt',
-                'type' => 'text/plain',
+                'name'     => 'MyFile.txt',
+                'type'     => 'text/plain',
                 'tmp_name' => '',
-                'error' => \UPLOAD_ERR_CANT_WRITE,
-                'size' => 0,
+                'error'    => \UPLOAD_ERR_CANT_WRITE,
+                'size'     => 0,
             ]
         );
         $this->assertEquals($expected, $created);

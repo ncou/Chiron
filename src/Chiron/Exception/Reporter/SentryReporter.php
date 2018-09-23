@@ -1,11 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Chiron\Exception\Reporter;
 
-use Throwable;
-use InvalidArgumentException;
 use Raven_Client;
+use Throwable;
 
 //https://github.com/thephpleague/booboo/blob/master/src/Handler/SentryHandler.php
 
@@ -37,20 +37,22 @@ class SentryReporter implements ReporterInterface
 
     private function extendConfig(array $config)
     {
-        if (!isset($config['sentry_options'])) {
+        if (! isset($config['sentry_options'])) {
             $config['sentry_options'] = [];
         }
-        if (!isset($config['sentry_options']['tags'])) {
+        if (! isset($config['sentry_options']['tags'])) {
             $config['sentry_options']['tags'] = [];
         }
-        if (!isset($config['sentry_options']['tags']['php_version'])) {
+        if (! isset($config['sentry_options']['tags']['php_version'])) {
             $config['sentry_options']['tags']['php_version'] = phpversion();
         }
-        if (!isset($config['sentry_options']['tags']['environment'])) {
+        if (! isset($config['sentry_options']['tags']['environment'])) {
             $config['sentry_options']['tags']['environment'] = app()->environment();
         }
+
         return $config;
     }
+
     /**
      * Can we report the exception?
      *
@@ -63,5 +65,4 @@ class SentryReporter implements ReporterInterface
         // check if Sentry client is installed.
         return class_exists(Raven_Client::class);
     }
-
 }

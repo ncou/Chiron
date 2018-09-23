@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Exception\Reporter;
 
-use Throwable;
 use Bugsnag\Client;
-use InvalidArgumentException;
+use Throwable;
 
 class BugsnagReporter implements ReporterInterface
 {
@@ -15,14 +14,16 @@ class BugsnagReporter implements ReporterInterface
 
     /**
      * BugsnagReporter constructor.
+     *
      * @param array $config
      */
     public function __construct(array $config)
     {
         $this->client = app(Client::class);
     }
+
     /**
-     * Report exception
+     * Report exception.
      *
      * @param Throwable $e
      */
@@ -30,6 +31,7 @@ class BugsnagReporter implements ReporterInterface
     {
         $this->client->notifyException($e);
     }
+
     /**
      * Can we report the exception?
      *
@@ -42,5 +44,4 @@ class BugsnagReporter implements ReporterInterface
         // check if Bugsnag client is installed.
         return class_exists(Client::class);
     }
-
 }

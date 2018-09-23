@@ -28,7 +28,7 @@ class HtmlFormatter implements FormatterInterface
      * Create a new html displayer instance.
      *
      * @param \Chiron\Exception\ExceptionInfo $info
-     * @param string                              $path
+     * @param string                          $path
      */
     public function __construct(ExceptionInfo $info, string $path)
     {

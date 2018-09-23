@@ -82,6 +82,7 @@ class ViewFormatter implements FormatterInterface
     public function canFormat(Throwable $e): bool
     {
         $code = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
+
         return $this->renderer->exists("errors::{$code}");
     }
 }
