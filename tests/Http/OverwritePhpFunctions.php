@@ -1,6 +1,6 @@
 <?php
 
-namespace Chiron\Http\Middleware;
+namespace Chiron\Http;
 
 use Chiron\Tests\Utils\HeaderStack;
 

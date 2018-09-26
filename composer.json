@@ -33,7 +33,7 @@
         }
     },
     "autoload-dev" : {
-        "files": ["tests/Http/Middleware/OverwritePhpFunctions.php"],
+        "files": ["tests/Http/OverwritePhpFunctions.php"],
         "psr-4": { "Chiron\\Tests\\" : "tests/" }
     },
     "scripts": {

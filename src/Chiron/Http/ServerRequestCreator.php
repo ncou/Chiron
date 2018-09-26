@@ -22,6 +22,7 @@ require_once __DIR__ . '/../../../../vendor/nyholm/psr7/src/Uri.php';
 
 //namespace Viserio\Component\HttpFactory;
 
+use Psr\Http\Message\UriInterface;
 use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\UploadedFile;
 use Chiron\Http\Psr\Uri;
@@ -199,7 +200,7 @@ class ServerRequestCreator
      *
      * @return \Psr\Http\Message\UriInterface
      */
-    private function marshalUriFromServer(array $server)
+    private function marshalUriFromServer(array $server):UriInterface
     {
         //$uri = new Uri('');
         $uri = $this->uriFactory->createUri('');
@@ -258,7 +259,8 @@ class ServerRequestCreator
      *
      * @return array
      */
-    public function marshalHeaders(array $server)
+    // TODO : passer cette méthode en private, et modifier les tests phpunits
+    public static function marshalHeaders(array $server)
     {
         $headers = [];
         foreach ($server as $key => $value) {
