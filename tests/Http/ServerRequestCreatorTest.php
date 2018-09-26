@@ -549,4 +549,17 @@ class ServerRequestCreatorTest extends TestCase
         );
         $this->assertEquals($expected, $created);
     }*/
+
+    public function testNormalizeFilesReturnsOnlyActualFilesWhenOriginalFilesContainsNestedAssociativeArrays()
+    {
+        $files = [ 'fooFiles' => [
+            'tmp_name' => ['file' => 'php://temp'],
+            'size'     => ['file' => 0],
+            'error'    => ['file' => 0],
+            'name'     => ['file' => 'foo.bar'],
+            'type'     => ['file' => 'text/plain'],
+        ]];
+        $normalizedFiles = $this->creator->normalizeUploadedFiles($files);
+        $this->assertCount(1, $normalizedFiles['fooFiles']);
+    }
 }

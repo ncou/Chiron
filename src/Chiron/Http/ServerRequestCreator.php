@@ -196,7 +196,7 @@ class ServerRequestCreator
             ->withCookieParams($cookie)
             ->withQueryParams($get)
             ->withParsedBody(empty($_POST) ? null : $_POST)
-            ->withUploadedFiles($this->normalizeFiles($files)); // TODO : il manque un appel à normalizeFiles directement dans le constructeur !!!!! => $files   = static::normalizeFiles($files ?: $_FILES);
+            ->withUploadedFiles($this->normalizeUploadedFiles($files)); // TODO : il manque un appel à normalizeFiles directement dans le constructeur !!!!! => $files   = static::normalizeFiles($files ?: $_FILES);
     }
 
     /**
@@ -412,7 +412,8 @@ class ServerRequestCreator
      *
      * @return array
      */
-    private function normalizeFiles(array $files): array
+    // TODO : méthode à passer en private et modifier les phpunit
+    public function normalizeUploadedFiles(array $files): array
     {
         $normalized = [];
         foreach ($files as $key => $value) {
@@ -421,7 +422,7 @@ class ServerRequestCreator
             } elseif (is_array($value) && isset($value['tmp_name'])) {
                 $normalized[$key] = $this->createUploadedFileFromSpec($value);
             } elseif (is_array($value)) {
-                $normalized[$key] = $this->normalizeFiles($value);
+                $normalized[$key] = $this->normalizeUploadedFiles($value);
 
                 continue;
             } else {
