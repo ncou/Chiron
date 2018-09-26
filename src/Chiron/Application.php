@@ -62,8 +62,10 @@ use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Response\EmptyResponse;
 use Chiron\Http\ResponseEmitter;
+use Chiron\Http\ServerRequestCreator;
 use Chiron\Provider\ErrorHandlerServiceProvider;
 use Chiron\Provider\MiddlewaresServiceProvider;
+use Chiron\Provider\ServerRequestCreatorServiceProvider;
 use Chiron\Routing\RoutableInterface;
 use Chiron\Routing\RoutableTrait;
 use Chiron\Routing\Route;
@@ -411,6 +413,10 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $errorHandlerService = new ErrorHandlerServiceProvider();
         $errorHandlerService->register($this->container);
 
+        // Register Error Handler services
+        $serverRequestCreatorService = new ServerRequestCreatorServiceProvider();
+        $serverRequestCreatorService->register($this->container);
+
         $this->container->set(self::class, $this);
 
 //        $this->container['debug'] = false;
@@ -505,8 +511,8 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
                 $this->error(500,$text,NULL,$level);
             }
           );
-        
-        
+
+
           date_default_timezone_set($this->hive['TZ']);
           // Register framework autoloader
           spl_autoload_register([$this,'autoload']);
@@ -561,7 +567,8 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
     public function run(): ResponseInterface
     {
-        $request = (new \Chiron\Http\Factory\ServerRequestFactory())->createServerRequestFromArray($_SERVER);
+        //$request = (new \Chiron\Http\Factory\ServerRequestFactory())->createServerRequestFromArray($_SERVER);
+        $request = $this->container->get(ServerRequestCreator::class)->fromGlobals();
 
         $response = $this->process($request);
 

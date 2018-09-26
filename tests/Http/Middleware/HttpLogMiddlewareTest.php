@@ -7,6 +7,8 @@ namespace Chiron\Tests\Http\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\HttpLogMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Logger;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
@@ -38,10 +40,7 @@ class HttpLogMiddlewareTest extends TestCase
 
     public function testLogRequestAndResponseWithoutDetails()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $handler = function ($request) {
             return new Response();
         };
@@ -60,10 +59,7 @@ class HttpLogMiddlewareTest extends TestCase
 
     public function testLogRequestAndResponseWithtDetails()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $handler = function ($request) {
             return new Response();
         };

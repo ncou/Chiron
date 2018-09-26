@@ -10,6 +10,8 @@ use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -21,10 +23,7 @@ class ApplicationMiddlewareTest extends TestCase
 
     public function testApplicationWithoutMiddleware()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $app = new Application();
         $response = $app->process($request);
@@ -35,10 +34,7 @@ class ApplicationMiddlewareTest extends TestCase
 
     public function testMiddlewareWithMiddlewareInterface()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $callable = function ($request, $handler) {
             return (new Response())->write('MIDDLEWARE');
@@ -56,10 +52,7 @@ class ApplicationMiddlewareTest extends TestCase
 
     public function testMiddlewareWithCallable()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $callable = function ($request, $handler) {
             return (new Response())->write('MIDDLEWARE');
@@ -80,10 +73,7 @@ class ApplicationMiddlewareTest extends TestCase
      */
     public function testMiddlewareWithStringNotPresentInContainer()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $app = new Application();
         $app->middleware('MiddlewareNotPresentInTheContainer');
@@ -93,10 +83,7 @@ class ApplicationMiddlewareTest extends TestCase
 
     public function testMiddlewareWithStringInContainer_MiddlewareInterface()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $entry = function ($c) {
             $callable = function ($request, $handler) {
@@ -119,10 +106,7 @@ class ApplicationMiddlewareTest extends TestCase
 
     public function testMiddlewareWithStringInContainer_Callable()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $entry = function ($c) {
             $callable = function ($request, $handler) {
@@ -149,10 +133,7 @@ class ApplicationMiddlewareTest extends TestCase
      */
     public function testMiddlewareWithInvalidMiddleware()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $app = new Application();
 
@@ -167,10 +148,7 @@ class ApplicationMiddlewareTest extends TestCase
      */
     public function testMiddlewareWithInvalidMiddlewareInContainer()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $badEntry = function ($c) {
             return 123456;
@@ -186,10 +164,7 @@ class ApplicationMiddlewareTest extends TestCase
 
     public function testMiddlewareWithArrayOfMiddlewareInterface()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $callable1 = function ($request, $handler) {
             $response = $handler->handle($request);
@@ -216,10 +191,7 @@ class ApplicationMiddlewareTest extends TestCase
 
     public function testMiddlewareWithArrayOfCallable()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $callable1 = function ($request, $handler) {
             $response = $handler->handle($request);
@@ -244,10 +216,7 @@ class ApplicationMiddlewareTest extends TestCase
 
     public function testMiddlewareWithArrayOfString_MiddlewareInterface()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $entry1 = function ($c) {
             $callable1 = function ($request, $handler) {
@@ -285,10 +254,7 @@ class ApplicationMiddlewareTest extends TestCase
 
     public function testMiddlewareWithArrayOfString_Callable()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $entry1 = function ($c) {
             $callable1 = function ($request, $handler) {
@@ -330,10 +296,7 @@ class ApplicationMiddlewareTest extends TestCase
 
     public function testRouteWithoutMiddleware()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $routeCallback = function (ServerRequestInterface $request) {
             $response = new Response();
@@ -353,10 +316,7 @@ class ApplicationMiddlewareTest extends TestCase
 
     public function testRouteWithMiddlewareInterface()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $routeCallback = function ($request) {
             $response = new Response();
@@ -388,10 +348,7 @@ class ApplicationMiddlewareTest extends TestCase
 
     public function testRouteGroupWithoutMiddleware()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo/bar',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo/bar'));
 
         $routeCallback = function (ServerRequestInterface $request) {
             $response = new Response();
@@ -413,10 +370,7 @@ class ApplicationMiddlewareTest extends TestCase
 
     public function testRouteGroupWithMiddlewareInterface()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo/bar',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo/bar'));
 
         $routeCallback = function ($request) {
             $response = new Response();
@@ -446,10 +400,7 @@ class ApplicationMiddlewareTest extends TestCase
 
     public function testRouteGroupAndRouteWithMiddlewareInterface()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo/bar',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo/bar'));
 
         $routeCallback = function ($request) {
             $response = new Response();

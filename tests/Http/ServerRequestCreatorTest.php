@@ -9,6 +9,7 @@ use Chiron\Http\Factory\StreamFactory;
 use Chiron\Http\Factory\UploadedFileFactory;
 use Chiron\Http\Factory\UriFactory;
 use Chiron\Http\Psr\Uri;
+use Chiron\Http\Psr\UploadedFile;
 use Chiron\Http\ServerRequestCreator;
 use PHPUnit\Framework\TestCase;
 
@@ -457,7 +458,13 @@ class ServerRequestCreatorTest extends TestCase
      */
     public function testGetUriFromGlobals($expected, $serverParams)
     {
-        $this->assertEquals(new Uri($expected), NSA::invokeMethod($this->creator, 'createUriFromArray', $serverParams));
+        // *** test private method ***
+        $class = new \ReflectionClass(ServerRequestCreator::class);
+        $method = $class->getMethod('marshalUriFromServer');
+        $method->setAccessible(true);
+        $uri =  $method->invokeArgs($this->creator, [$serverParams]);
+
+        $this->assertEquals(new Uri($expected), $uri);
     }
 
     /**

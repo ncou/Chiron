@@ -7,6 +7,8 @@ namespace Chiron\Tests\Http\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\UserAgentBlockerMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
@@ -35,10 +37,7 @@ class UserAgentBlockedMiddlewareTest extends TestCase
      */
     public function testBlockUserAgentFromArray(bool $allowed, string $userAgent)
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $request = $request->withHeader('User-Agent', $userAgent);
 
         $middleware = (new UserAgentBlockerMiddleware())->loadBadAgentsListFromArray(['360Spider', '80legs', 'Battleztar Bazinga']);
@@ -61,10 +60,7 @@ class UserAgentBlockedMiddlewareTest extends TestCase
      */
     public function testBlockUserAgentFromFile(bool $allowed, string $userAgent)
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $request = $request->withHeader('User-Agent', $userAgent);
 
         $middleware = (new UserAgentBlockerMiddleware())->loadBadAgentsListFromFile(__DIR__ . '/asset/badbots.txt');

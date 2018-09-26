@@ -7,6 +7,8 @@ namespace Chiron\Tests\Http\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\RequestIdMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
@@ -33,10 +35,7 @@ class RequestIdMiddlewareTest extends TestCase
 
     public function testRequestIdShouldBeFilledIfDoesNotExistInRequestAndResponse()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $handler = function ($request) use (&$uuid) {
             $uuid = $request->getHeaderLine('X-Request-Id');
             $this->assertNotEmpty($uuid);
@@ -54,10 +53,7 @@ class RequestIdMiddlewareTest extends TestCase
 
     public function testPropagateRequestIdToResponseIfProvidedInRequest()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $request = $request->withHeader('X-Request-Id', '09226165-364a-461a-bf5c-e859d70d907e');
         $handler = function ($request) {
             $this->assertEquals(

@@ -9,6 +9,8 @@ use Chiron\Http\Cookie\CookiesManager;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\EncryptCookiesMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
@@ -37,10 +39,7 @@ class EncryptCookiesMiddlewareTest extends TestCase
      */
     public function testDecodeRequestCookies()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $request = $request->withCookieParams([
             'plain'  => 'always plain',
             'secret' => CryptEngine::encrypt('decoded', $this->getCookieEncryptionKey()),
@@ -62,10 +61,7 @@ class EncryptCookiesMiddlewareTest extends TestCase
      */
     public function testEncodeResponseSetCookieHeader()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $handler = function ($request) {
             $response = new Response();
 
@@ -90,10 +86,7 @@ class EncryptCookiesMiddlewareTest extends TestCase
      */
     public function testErrorDecodeRequestCookies()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $request = $request->withCookieParams([
             'secret' => 'wrong-encoded-cookie',
         ]);
@@ -115,10 +108,7 @@ class EncryptCookiesMiddlewareTest extends TestCase
     /*
     public function testEncodeResponseCookieData()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $handler = function ($request) {
             $response = new Response();
             return $response->withCookie('secret', 'be quiet')

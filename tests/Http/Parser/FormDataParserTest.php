@@ -7,6 +7,8 @@ namespace Tests\Http\Parser;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Parser\FormDataParser;
 use Chiron\Http\Psr\Stream;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use PHPUnit\Framework\TestCase;
 
 final class FormDataParserTest extends TestCase
@@ -34,10 +36,7 @@ final class FormDataParserTest extends TestCase
         $data .= "second\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data');
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -62,10 +61,7 @@ final class FormDataParserTest extends TestCase
         $data .= "second\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -98,10 +94,7 @@ final class FormDataParserTest extends TestCase
         $data .= "2\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -131,10 +124,7 @@ final class FormDataParserTest extends TestCase
         $data .= "2\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -166,10 +156,7 @@ final class FormDataParserTest extends TestCase
         $data .= "2\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -201,10 +188,7 @@ final class FormDataParserTest extends TestCase
         $data .= "2\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -237,10 +221,7 @@ final class FormDataParserTest extends TestCase
         $data .= "\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -266,10 +247,7 @@ final class FormDataParserTest extends TestCase
         $data .= "value\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -295,10 +273,7 @@ final class FormDataParserTest extends TestCase
         $data .= "value\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -328,10 +303,7 @@ final class FormDataParserTest extends TestCase
         $data .= "value\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -412,10 +384,7 @@ final class FormDataParserTest extends TestCase
         $data .= "\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -470,10 +439,7 @@ final class FormDataParserTest extends TestCase
         $data .= "value\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -499,10 +465,7 @@ final class FormDataParserTest extends TestCase
         $data .= 'value';
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -522,10 +485,7 @@ final class FormDataParserTest extends TestCase
         $data .= "\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -543,10 +503,7 @@ final class FormDataParserTest extends TestCase
         $data = "--$boundary\r\n";
         $data .= "Content-Disposition: form-data; name=\"key\"\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -567,10 +524,7 @@ final class FormDataParserTest extends TestCase
         $data .= "hello\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -591,10 +545,7 @@ final class FormDataParserTest extends TestCase
         $data .= "value\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -615,10 +566,7 @@ final class FormDataParserTest extends TestCase
         $data .= "value\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -638,10 +586,7 @@ final class FormDataParserTest extends TestCase
         $data .= "\r\n";
         $data .= "value\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -665,10 +610,7 @@ final class FormDataParserTest extends TestCase
         $data .= "world\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -703,10 +645,7 @@ final class FormDataParserTest extends TestCase
         $data .= "world\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -740,10 +679,7 @@ final class FormDataParserTest extends TestCase
         $data .= "\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -777,10 +713,7 @@ final class FormDataParserTest extends TestCase
         $data .= "world\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -813,10 +746,7 @@ final class FormDataParserTest extends TestCase
         $data .= str_repeat('world', 1024) . "\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -849,10 +779,7 @@ final class FormDataParserTest extends TestCase
         $data .= "\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -890,10 +817,7 @@ final class FormDataParserTest extends TestCase
         $data .= "world\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -934,10 +858,7 @@ final class FormDataParserTest extends TestCase
         $data .= "world\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -980,10 +901,7 @@ final class FormDataParserTest extends TestCase
         $data .= "\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 
@@ -1038,10 +956,7 @@ final class FormDataParserTest extends TestCase
         $data .= "\r\n";
         $data .= "--$boundary--\r\n";
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withHeader('Content-Type', 'multipart/form-data; boundary=' . $boundary);
         $request = $request->withBody($this->createBodyWithData($data));
 

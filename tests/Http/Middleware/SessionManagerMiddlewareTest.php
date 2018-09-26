@@ -7,6 +7,8 @@ namespace Chiron\Tests\Http\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\SessionManagerMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Http\Session\SessionManager;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
@@ -27,10 +29,7 @@ class SessionManagerMiddlewareTest extends TestCase
     {
         $middleware = new SessionManagerMiddleware();
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $handler = function ($request) use (&$attribute) {
             $attribute = $request->getAttribute(SessionManager::class);
 

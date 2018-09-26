@@ -20,7 +20,8 @@ class ResponseTimeMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $response = $handler->handle($request);
+        $responseTime = sprintf('%2.3fms', (microtime(true) - $request->getServerParam('REQUEST_TIME_FLOAT')) * 1000);
 
-        return $response->withHeader(self::HEADER_NAME, sprintf('%2.3fms', (microtime(true) - $request->getServerParam('REQUEST_TIME_FLOAT')) * 1000));
+        return $response->withHeader(self::HEADER_NAME, $responseTime);
     }
 }

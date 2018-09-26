@@ -11,6 +11,8 @@ use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
 //use Prophecy\Prophecy\ObjectProphecy;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Routing\Router;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
@@ -45,10 +47,7 @@ class RoutingMiddlewareTest extends TestCase
     public function testRouteFound()
     {
         $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $handler = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom', 'foobar');
@@ -77,10 +76,7 @@ class RoutingMiddlewareTest extends TestCase
     public function testRouteFoundWithAttributes()
     {
         $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo/123456/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo/123456/'));
 
         $handler = function ($request) {
             $id = $request->getAttribute('id');
@@ -109,10 +105,7 @@ class RoutingMiddlewareTest extends TestCase
     public function testRouteFoundWithoutBodyFromHEADMethod()
     {
         $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'HEAD',
-        ]);
+        $request = new ServerRequest('HEAD', new Uri('/foo'));
 
         $handler = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom', 'foobar');
@@ -141,10 +134,7 @@ class RoutingMiddlewareTest extends TestCase
     public function testRouteFoundWithoutBodyFromHEADMethodWithCustomHandler()
     {
         $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'HEAD',
-        ]);
+        $request = new ServerRequest('HEAD', new Uri('/foo'));
 
         $handler = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom', 'foobar');
@@ -180,10 +170,7 @@ class RoutingMiddlewareTest extends TestCase
     public function testRouteFoundWithAllowHeaderForOPTIONSMethod()
     {
         $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'OPTIONS',
-        ]);
+        $request = new ServerRequest('OPTIONS', new Uri('/foo'));
 
         $handler = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom', 'foobar');
@@ -214,10 +201,7 @@ class RoutingMiddlewareTest extends TestCase
     public function testRouteFoundWithCustomHandlerForOPTIONSMethod()
     {
         $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'OPTIONS',
-        ]);
+        $request = new ServerRequest('OPTIONS', new Uri('/foo'));
 
         $handler = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom', 'foobar');
@@ -257,10 +241,7 @@ class RoutingMiddlewareTest extends TestCase
     public function testRouteNotFound()
     {
         $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foobar',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foobar'));
 
         $handler = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom', 'foobar');
@@ -287,10 +268,7 @@ class RoutingMiddlewareTest extends TestCase
     public function testRouteMethodNotAllowed()
     {
         $requestHandler = new RequestHandlerStack(new HandlerProxy2($this->empty));
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'PUT',
-        ]);
+        $request = new ServerRequest('PUT', new Uri('/foo'));
 
         $handler = function ($request) {
             $response = (new Response(200))->withHeader('X-Custom', 'foobar');

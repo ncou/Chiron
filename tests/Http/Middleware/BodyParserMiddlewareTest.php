@@ -11,6 +11,8 @@ use Chiron\Http\Parser\JsonParser;
 use Chiron\Http\Parser\XmlParser;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Stream;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
@@ -25,10 +27,7 @@ class BodyParserMiddlewareTest extends TestCase
         $this->middleware->addParser(new XmlParser());
         $this->middleware->addParser(new FormUrlEncodedParser());
 
-        $this->request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $this->request = new ServerRequest('POST', new Uri('/'));
     }
 
     /*******************************************************************************

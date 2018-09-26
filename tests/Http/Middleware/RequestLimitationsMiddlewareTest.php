@@ -7,6 +7,8 @@ namespace Chiron\Tests\Http\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\RequestLimitationsMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
@@ -26,10 +28,9 @@ class RequestLimitationsMiddlewareTest extends TestCase
 
     public function testRequestUriNotTooLong()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => str_pad('', $this->maxUriLength, '*'),
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $uri = str_pad('', $this->maxUriLength, '*');
+        $request = new ServerRequest('GET', new Uri($uri), [], null, '1.1', ['REQUEST_URI'     => $uri]);
+
         $handler = function ($request) {
             return new Response();
         };
@@ -45,10 +46,9 @@ class RequestLimitationsMiddlewareTest extends TestCase
      */
     public function testRequestUriTooLong()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => str_pad('', $this->maxUriLength + 1, '*'),
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $uri = str_pad('', $this->maxUriLength + 1, '*');
+        $request = new ServerRequest('GET', new Uri($uri), [], null, '1.1', ['REQUEST_URI'     => $uri]);
+
         $handler = function ($request) {
             return new Response();
         };
@@ -62,10 +62,9 @@ class RequestLimitationsMiddlewareTest extends TestCase
      */
     public function testTooMuchHeaders()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $uri = '/';
+        $request = new ServerRequest('GET', new Uri($uri), [], null, '1.1', ['REQUEST_URI'     => $uri]);
+
         $handler = function ($request) {
             return new Response();
         };
@@ -83,10 +82,9 @@ class RequestLimitationsMiddlewareTest extends TestCase
      */
     public function testAllHeadersTooBig()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $uri = '/';
+        $request = new ServerRequest('GET', new Uri($uri), [], null, '1.1', ['REQUEST_URI'     => $uri]);
+
         $handler = function ($request) {
             return new Response();
         };
@@ -104,10 +102,9 @@ class RequestLimitationsMiddlewareTest extends TestCase
      */
     public function testOneHeaderTooBig()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $uri = '/';
+        $request = new ServerRequest('GET', new Uri($uri), [], null, '1.1', ['REQUEST_URI'     => $uri]);
+
         $handler = function ($request) {
             return new Response();
         };
@@ -123,10 +120,9 @@ class RequestLimitationsMiddlewareTest extends TestCase
      */
     public function testHeaderNameTooLong()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $uri = '/';
+        $request = new ServerRequest('GET', new Uri($uri), [], null, '1.1', ['REQUEST_URI'     => $uri]);
+
         $handler = function ($request) {
             return new Response();
         };

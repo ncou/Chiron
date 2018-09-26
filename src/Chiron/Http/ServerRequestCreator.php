@@ -201,7 +201,8 @@ class ServerRequestCreator
      */
     private function marshalUriFromServer(array $server)
     {
-        $uri = new Uri('');
+        //$uri = new Uri('');
+        $uri = $this->uriFactory->createUri('');
 
         $scheme = 'http';
         if (isset($server['REQUEST_SCHEME'])) {
@@ -442,9 +443,11 @@ class ServerRequestCreator
         $content = $value['tmp_name'];
         $file = fopen(sys_get_temp_dir() . '/' . uniqid('uploaded_file', true), 'w+');
         fwrite($file, $content);
-        $stream = new Stream($file);
+        //$stream = new Stream($file);
+        $stream = $this->streamFactory->createStreamFromFile($file);
 
-        return new UploadedFile(
+        //return new UploadedFile(
+        return $this->uploadedFileFactory->createUploadedFile(
             $stream,
             (int) $value['size'],
             (int) $value['error'],

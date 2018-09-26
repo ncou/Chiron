@@ -5,6 +5,8 @@ namespace Chiron\Tests\Http\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\ResponseTimeMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
@@ -12,11 +14,8 @@ class ResponseTimeMiddlewareTest extends TestCase
 {
     public function testRequestTimeFloat()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-            'REQUEST_TIME_FLOAT'     => microtime(true),
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'), [], null, '1.1', ['REQUEST_TIME_FLOAT'     => microtime(true)]);
+
         $handler = function ($request) {
             return new Response();
         };

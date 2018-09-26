@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Middleware;
 
-use Chiron\Http\Factory\ServerRequestFactory;
+use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Middleware\RedirectWwwMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Uri;
@@ -40,10 +40,7 @@ class RedirectWwwMiddlewareTest extends TestCase
      */
     public function testAddWww(bool $addWww, string $uri, string $result)
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
 
         $request = $request->withUri(
             new Uri($uri)

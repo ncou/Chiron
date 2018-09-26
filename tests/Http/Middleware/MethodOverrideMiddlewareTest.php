@@ -7,6 +7,8 @@ namespace Chiron\Tests\Http\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
@@ -24,10 +26,7 @@ class MethodOverrideMiddlewareTest extends TestCase
 
     public function testGETMethodOverride()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $request = $request->withQueryParams(['_method' => 'POST']);
 
         $handler = function ($request) {
@@ -40,10 +39,7 @@ class MethodOverrideMiddlewareTest extends TestCase
 
     public function testGETMethodOverrideWithCaseSensitive()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $request = $request->withQueryParams(['_method' => 'PosT']);
 
         $handler = function ($request) {
@@ -56,10 +52,7 @@ class MethodOverrideMiddlewareTest extends TestCase
 
     public function testPOSTMethodOverride()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withParsedBody(['_method' => 'GET']);
 
         $handler = function ($request) {
@@ -72,10 +65,7 @@ class MethodOverrideMiddlewareTest extends TestCase
 
     public function testPOSTMethodOverrideCaseSensitive()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
         $request = $request->withParsedBody(['_method' => 'GeT']);
 
         $handler = function ($request) {
@@ -88,10 +78,7 @@ class MethodOverrideMiddlewareTest extends TestCase
 
     public function testHeaderMethodOverride()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $request = $request->withHeader('X-Http-Method-Override', 'PUT');
 
         $handler = function ($request) {
@@ -104,10 +91,7 @@ class MethodOverrideMiddlewareTest extends TestCase
 
     public function testHeaderMethodOverrideCaseSensitive()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $request = $request->withHeader('X-Http-Method-Override', 'PuT');
 
         $handler = function ($request) {

@@ -9,6 +9,8 @@ use Chiron\Handler\Stack\Decorator\CallableRequestHandlerDecorator;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
@@ -18,10 +20,7 @@ class RequestHandlerStackTest extends TestCase
 
     protected function setUp()
     {
-        $this->request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $this->request = new ServerRequest('GET', new Uri('/'));
     }
 
     protected function tearDown()

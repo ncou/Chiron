@@ -8,6 +8,8 @@ use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\CheckMaintenanceMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
@@ -21,10 +23,7 @@ class CheckMaintenanceMiddlewareTest extends TestCase
     {
         parent::setUp();
         $this->middleware = new CheckMaintenanceMiddleware();
-        $this->request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $this->request = new ServerRequest('GET', new Uri('/'));
     }
 
     public function retryAfterProvider(): array

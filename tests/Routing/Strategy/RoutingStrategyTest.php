@@ -9,6 +9,8 @@ use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -18,10 +20,7 @@ class RoutingStrategyTest extends TestCase
 {
     public function testRouteStrategyWithoutRequestTypeHintting()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $routeCallback = function ($request) {
             $response = new Response();
@@ -41,10 +40,7 @@ class RoutingStrategyTest extends TestCase
 
     public function testRouteStrategyWithRequestTypeHintting()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $routeCallback = function (ServerRequestInterface $request) {
             $response = new Response();
@@ -68,10 +64,7 @@ class RoutingStrategyTest extends TestCase
      */
     public function testRouteStrategyWithBadTypeHintting()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo'));
 
         $routeCallback = function (int $request) {
             $response = new Response();
@@ -88,10 +81,7 @@ class RoutingStrategyTest extends TestCase
 
     public function testRouteStrategyWithScalarTypeHintting()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo/123/bar/true/2.3',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo/123/bar/true/2.3'));
 
         $routeCallback = function (ServerRequestInterface $request, int $id, string $name, bool $isRegistered, float $floatNumber) {
             $response = new Response();
@@ -110,10 +100,7 @@ class RoutingStrategyTest extends TestCase
 
     public function testRouteStrategyWithScalarTypeHinttingAndDefaultValue()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo/'));
 
         $routeCallback = function (ServerRequestInterface $request, int $id = 123, string $name = 'bar', bool $isRegistered = true, float $floatNumber = 2.3) {
             $response = new Response();

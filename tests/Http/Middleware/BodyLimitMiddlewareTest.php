@@ -7,6 +7,8 @@ namespace Chiron\Tests\Http\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\BodyLimitMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\Uri;
+use Chiron\Http\Psr\ServerRequest;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
@@ -14,10 +16,7 @@ class BodyLimitMiddlewareTest extends TestCase
 {
     public function testBodyNotTooLarge()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
 
         $request = $request->withHeader('Content-Length', '1024');
 
@@ -35,10 +34,7 @@ class BodyLimitMiddlewareTest extends TestCase
      */
     public function testBodyIsTooLarge()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
 
         $request = $request->withHeader('Content-Length', '10485760');
 
@@ -54,10 +50,7 @@ class BodyLimitMiddlewareTest extends TestCase
      */
     public function testWithInvalidContentLengthValue()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'POST',
-        ]);
+        $request = new ServerRequest('POST', new Uri('/'));
 
         $request = $request->withHeader('Content-Length', '100, 200');
 

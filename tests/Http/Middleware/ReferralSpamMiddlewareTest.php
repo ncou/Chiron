@@ -7,6 +7,8 @@ namespace Chiron\Tests\Http\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\ReferralSpamMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
@@ -28,10 +30,7 @@ class ReferralSpamMiddlewareTest extends TestCase
      */
     public function testReferrerSpamFromArray(bool $allowed, string $refererHeader)
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $request = $request->withHeader('Referer', $refererHeader);
 
         $middleware = (new ReferralSpamMiddleware())->loadBadReferersListFromArray(['0n-line.tv', 'xn--90acenikpebbdd4f6d.xn--p1ai']);
@@ -54,10 +53,7 @@ class ReferralSpamMiddlewareTest extends TestCase
      */
     public function testReferrerSpamFromFile(bool $allowed, string $refererHeader)
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
         $request = $request->withHeader('Referer', $refererHeader);
 
         $middleware = (new ReferralSpamMiddleware())->loadBadReferersListFromFile(__DIR__ . '/asset/spammers.txt');

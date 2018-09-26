@@ -7,6 +7,8 @@ namespace Chiron\Tests\Http\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
@@ -14,10 +16,7 @@ class CharsetByDefaultMiddlewareTest extends TestCase
 {
     public function testContentTypeIsNotAdded()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'));
 
         $handler = function ($request) {
             return new Response();
@@ -30,11 +29,7 @@ class CharsetByDefaultMiddlewareTest extends TestCase
 
     public function testWithTextualContentType()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
-
+        $request = new ServerRequest('GET', new Uri('/'));
         $handler = function ($request) {
             $response = new Response();
             $response = $response->withHeader('Content-Type', 'text/plain; boundary=something');
@@ -49,11 +44,7 @@ class CharsetByDefaultMiddlewareTest extends TestCase
 
     public function testWithNonTextualContentType()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
-
+        $request = new ServerRequest('GET', new Uri('/'));
         $handler = function ($request) {
             $response = new Response();
             $response = $response->withHeader('Content-Type', 'application/pdf');
@@ -68,11 +59,7 @@ class CharsetByDefaultMiddlewareTest extends TestCase
 
     public function testWithNonTextualContentTypeButWhitlisted()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
-
+        $request = new ServerRequest('GET', new Uri('/'));
         $handler = function ($request) {
             $response = new Response();
             $response = $response->withHeader('Content-Type', 'application/json');
@@ -87,11 +74,7 @@ class CharsetByDefaultMiddlewareTest extends TestCase
 
     public function testWithNonTextualContentTypeButWhitlistedAndWithParamInContentTypeHeader()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
-
+        $request = new ServerRequest('GET', new Uri('/'));
         $handler = function ($request) {
             $response = new Response();
             $response = $response->withHeader('Content-Type', 'application/json; boundary=something');

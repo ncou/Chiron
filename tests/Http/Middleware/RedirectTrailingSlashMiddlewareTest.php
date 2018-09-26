@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Middleware;
 
-use Chiron\Http\Factory\ServerRequestFactory;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Http\Middleware\RedirectTrailingSlashMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Tests\Utils\HandlerProxy2;
@@ -27,10 +28,7 @@ class RedirectTrailingSlashMiddlewareTest extends TestCase
      */
     public function testRemove(string $uri, string $result)
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => $uri,
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri($uri));
 
         $middleware = new RedirectTrailingSlashMiddleware();
         $handler = function ($request) use (&$path) {
@@ -61,10 +59,7 @@ class RedirectTrailingSlashMiddlewareTest extends TestCase
      */
     public function testAdd(string $uri, string $result)
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => $uri,
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri($uri));
 
         $middleware = new RedirectTrailingSlashMiddleware(true);
         $handler = function ($request) use (&$path) {
@@ -80,10 +75,7 @@ class RedirectTrailingSlashMiddlewareTest extends TestCase
 
     public function testRedirect()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/foo/bar/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $request = new ServerRequest('GET', new Uri('/foo/bar/'));
 
         $middleware = (new RedirectTrailingSlashMiddleware())->redirect(true);
         $handler = function ($request) {

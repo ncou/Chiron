@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Middleware;
 
-use Chiron\Http\Factory\ServerRequestFactory;
+use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Middleware\RedirectHttpsMiddleware;
-//use Chiron\Http\Uri;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\HandlerProxy2;
@@ -22,10 +21,7 @@ class RedirectHttpsMiddlewareTest extends TestCase
     {
         parent::setUp();
         $this->middleware = new RedirectHttpsMiddleware();
-        $this->request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-        ]);
+        $this->request = new ServerRequest('GET', new Uri('/'));
     }
 
     public function testIsHttps()

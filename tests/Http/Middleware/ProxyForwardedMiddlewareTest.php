@@ -7,6 +7,8 @@ namespace Chiron\Tests\Http\Middleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\ProxyForwardedMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\HandlerProxy2;
 use PHPUnit\Framework\TestCase;
 
@@ -14,15 +16,13 @@ class ProxyForwardedMiddlewareTest extends TestCase
 {
     public function testSchemeAndHostAndPortWithPortInHostHeader()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-            'REMOTE_ADDR'            => '192.168.0.1',
+        $request = new ServerRequest('GET', new Uri('/'), [], null, '1.1', ['REMOTE_ADDR'            => '192.168.0.1',
             'HTTP_HOST'              => 'foo.com',
             'REQUEST_SCHEME'         => 'http',
             'HTTP_X_FORWARDED_PROTO' => 'https',
-            'HTTP_X_FORWARDED_HOST'  => 'example.com:1234',
-        ]);
+            'HTTP_X_FORWARDED_HOST'  => 'example.com:1234',]);
+
+
         $middleware = new ProxyForwardedMiddleware();
 
         $handler = function ($request) use (&$scheme, &$host, &$port) {
@@ -42,16 +42,13 @@ class ProxyForwardedMiddlewareTest extends TestCase
 
     public function testSchemeAndHostAndPortWithPortInPortHeader()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-            'REMOTE_ADDR'            => '192.168.0.1',
+        $request = new ServerRequest('GET', new Uri('/'), [], null, '1.1', ['REMOTE_ADDR'            => '192.168.0.1',
             'HTTP_HOST'              => 'foo.com',
             'REQUEST_SCHEME'         => 'http',
             'HTTP_X_FORWARDED_PROTO' => 'https',
             'HTTP_X_FORWARDED_HOST'  => 'example.com',
-            'HTTP_X_FORWARDED_PORT'  => '1234',
-        ]);
+            'HTTP_X_FORWARDED_PORT'  => '1234',]);
+
         $middleware = new ProxyForwardedMiddleware();
 
         $handler = function ($request) use (&$scheme, &$host, &$port) {
@@ -71,16 +68,13 @@ class ProxyForwardedMiddlewareTest extends TestCase
 
     public function testSchemeAndHostAndPortWithPortInHostAndPortHeader()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'            => '/',
-            'REQUEST_METHOD'         => 'GET',
-            'REMOTE_ADDR'            => '192.168.0.1',
+        $request = new ServerRequest('GET', new Uri('/'), [], null, '1.1', ['REMOTE_ADDR'            => '192.168.0.1',
             'HTTP_HOST'              => 'foo.com',
             'REQUEST_SCHEME'         => 'http',
             'HTTP_X_FORWARDED_PROTO' => 'https',
             'HTTP_X_FORWARDED_HOST'  => 'example.com:1000',
-            'HTTP_X_FORWARDED_PORT'  => '2000',
-        ]);
+            'HTTP_X_FORWARDED_PORT'  => '2000',]);
+
         $middleware = new ProxyForwardedMiddleware();
 
         $handler = function ($request) use (&$scheme, &$host, &$port) {
@@ -100,14 +94,12 @@ class ProxyForwardedMiddlewareTest extends TestCase
 
     public function testNonTrustedProxies()
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'           => '/',
-            'REQUEST_METHOD'        => 'GET',
-            'REMOTE_ADDR'           => '10.0.0.1',
+        $request = new ServerRequest('GET', new Uri('/'), [], null, '1.1', ['REMOTE_ADDR'           => '10.0.0.1',
             'REQUEST_SCHEME'        => 'http',
             'HTTP_HOST'             => 'foo.com',
-            'HTTP_X_FORWARDED_HOST' => 'example.com:1234',
-        ]);
+            'HTTP_X_FORWARDED_HOST' => 'example.com:1234',]);
+
+
         $middleware = new ProxyForwardedMiddleware(false);
 
         $handler = function ($request) use (&$scheme, &$host, &$port) {
@@ -132,13 +124,9 @@ class ProxyForwardedMiddlewareTest extends TestCase
     {
         $start = microtime(true);
 
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'GET',
-            //'REMOTE_ADDR' => '10.0.0.1',
-            'HTTP_HOST'             => 'foo.com',
-            'HTTP_X_FORWARDED_HOST' => $newHost,
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'), [], null, '1.1', ['HTTP_HOST'             => 'foo.com',
+            'HTTP_X_FORWARDED_HOST' => $newHost,]);
+
         $middleware = new ProxyForwardedMiddleware();
 
         $handler = function ($request) use (&$host) {
@@ -158,14 +146,9 @@ class ProxyForwardedMiddlewareTest extends TestCase
      */
     public function testHostValidity($newHost, $isValid, $expectedHost = null, $expectedPort = null)
     {
-        $request = (new ServerRequestFactory())->createServerRequestFromArray([
-            'REQUEST_URI'    => '/',
-            'REQUEST_METHOD' => 'GET',
-            //'REMOTE_ADDR' => '10.0.0.1',
-            'HTTP_HOST' => 'foo.com',
-            //'HTTP_HOST' => '[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:80',
-            'HTTP_X_FORWARDED_HOST' => $newHost,
-        ]);
+        $request = new ServerRequest('GET', new Uri('/'), [], null, '1.1', ['HTTP_HOST' => 'foo.com',
+            'HTTP_X_FORWARDED_HOST' => $newHost,]);
+
         $middleware = new ProxyForwardedMiddleware();
 
         $handler = function ($request) use (&$host, &$port) {
