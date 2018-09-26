@@ -511,7 +511,7 @@ class ServerRequestCreatorTest extends TestCase
         $this->assertEquals($expected, ServerRequestCreator::marshalHeaders($server));
     }
 
-    /**
+    /*
      * Test the fallback for a failing StreamFactoryInterface::createStreamFromFile.
      */
     /*
