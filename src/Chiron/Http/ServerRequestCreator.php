@@ -196,7 +196,7 @@ class ServerRequestCreator
             ->withCookieParams($cookie)
             ->withQueryParams($get)
             ->withParsedBody(empty($_POST) ? null : $_POST)
-            ->withUploadedFiles($this->normalizeFiles($file)); // TODO : il manque un appel à normalizeFiles directement dans le constructeur !!!!! => $files   = static::normalizeFiles($files ?: $_FILES);
+            ->withUploadedFiles($this->normalizeFiles($files)); // TODO : il manque un appel à normalizeFiles directement dans le constructeur !!!!! => $files   = static::normalizeFiles($files ?: $_FILES);
     }
 
     /**
@@ -452,7 +452,7 @@ class ServerRequestCreator
         $file = fopen(sys_get_temp_dir() . '/' . uniqid('uploaded_file', true), 'w+');
         fwrite($file, $content);
         //$stream = new Stream($file);
-        $stream = $this->streamFactory->createStreamFromFile($file);
+        $stream = $this->streamFactory->createStreamFromResource($file);
 
         //return new UploadedFile(
         return $this->uploadedFileFactory->createUploadedFile(
