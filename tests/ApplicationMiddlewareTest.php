@@ -6,7 +6,6 @@ namespace Chiron\Tests\Middleware;
 
 use Chiron\Application;
 use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
-use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Http\Psr\Response;

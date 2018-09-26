@@ -2,7 +2,6 @@
 
 namespace Chiron\Tests\Http\Middleware;
 
-use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\ResponseTimeMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;

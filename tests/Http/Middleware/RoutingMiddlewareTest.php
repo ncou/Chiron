@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Chiron\Tests\Http\Middleware;
 
 use Chiron\Handler\Stack\RequestHandlerStack;
-use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 //use Psr\Http\Server\MiddlewareInterface;
 use Chiron\Http\Middleware\RoutingMiddleware;

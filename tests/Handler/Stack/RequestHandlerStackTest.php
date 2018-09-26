@@ -7,7 +7,6 @@ namespace Tests\Handler\Stack;
 use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
 use Chiron\Handler\Stack\Decorator\CallableRequestHandlerDecorator;
 use Chiron\Handler\Stack\RequestHandlerStack;
-use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;

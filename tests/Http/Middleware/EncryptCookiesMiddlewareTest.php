@@ -6,7 +6,6 @@ namespace Chiron\Tests\Http\Middleware;
 
 use Chiron\CryptEngine;
 use Chiron\Http\Cookie\CookiesManager;
-use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Middleware\EncryptCookiesMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
