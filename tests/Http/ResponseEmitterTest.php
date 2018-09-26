@@ -7,11 +7,9 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http;
 
-use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\ResponseEmitter;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\ResponseEmitter;
 use Chiron\Tests\Utils\CallbackStream;
-use Chiron\Tests\Utils\HandlerProxy2;
 use Chiron\Tests\Utils\HeaderStack;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
@@ -36,7 +34,7 @@ class ResponseEmitterTest extends TestCase
 
     public function testEmitsResponseHeaders(): void
     {
-            $response = (new Response())
+        $response = (new Response())
                 ->withStatus(200)
                 ->withAddedHeader('Content-Type', 'text/plain');
 
@@ -50,14 +48,10 @@ class ResponseEmitterTest extends TestCase
 
     public function testEmitsMessageBody(): void
     {
-
-
-            $response = (new Response())
+        $response = (new Response())
                 ->withStatus(200)
                 ->withAddedHeader('Content-Type', 'text/plain');
-            $response->getBody()->write('Content!');
-
-
+        $response->getBody()->write('Content!');
 
         $this->expectOutputString('Content!');
 
@@ -66,16 +60,13 @@ class ResponseEmitterTest extends TestCase
 
     public function testEmitCallbackStreamResponseUnseekableBody()
     {
-
-            $response = (new Response())
+        $response = (new Response())
                 ->withStatus(200);
 
-            $body = new CallbackStream(function () {
-                return 'Content!';
-            });
-            $response = $response->withBody($body);
-
-
+        $body = new CallbackStream(function () {
+            return 'Content!';
+        });
+        $response = $response->withBody($body);
 
         $this->expectOutputString('Content!');
 
@@ -84,13 +75,10 @@ class ResponseEmitterTest extends TestCase
 
     public function testMultipleSetCookieHeadersAreNotReplaced(): void
     {
-
-            $response = (new Response())
+        $response = (new Response())
             ->withStatus(200)
             ->withAddedHeader('Set-Cookie', 'foo=bar')
             ->withAddedHeader('Set-Cookie', 'bar=baz');
-
-
 
         $this->emitter->emit($response);
 
@@ -104,12 +92,10 @@ class ResponseEmitterTest extends TestCase
 
     public function testDoesNotLetResponseCodeBeOverriddenByPHP(): void
     {
-
-            $response = (new Response())
+        $response = (new Response())
             ->withStatus(202)
             ->withAddedHeader('Location', 'http://api.my-service.com/12345678')
             ->withAddedHeader('Content-Type', 'text/plain');
-
 
         $this->emitter->emit($response);
 
@@ -123,12 +109,9 @@ class ResponseEmitterTest extends TestCase
 
     public function testEmitterRespectLocationHeader(): void
     {
-
-            $response = (new Response())
+        $response = (new Response())
             ->withStatus(200)
             ->withAddedHeader('Location', 'http://api.my-service.com/12345678');
-
-
 
         $this->emitter->emit($response);
 
@@ -145,13 +128,10 @@ class ResponseEmitterTest extends TestCase
     // TODO : faire aussi ce test avec un emitBodyRange !!!!! et pas seulement avec la méthode emitBody !!!!!
     public function testEmitNoContentResponse()
     {
-
-            $response = (new Response())
+        $response = (new Response())
             ->withHeader('X-testing', 'value')
             ->withStatus(204);
-            $response->getBody()->write('It worked');
-
-
+        $response->getBody()->write('It worked');
 
         $this->expectOutputString('');
 
@@ -173,13 +153,10 @@ class ResponseEmitterTest extends TestCase
      */
     public function testEmitResponseBodyRange()
     {
-
-            $response = (new Response())
+        $response = (new Response())
             ->withHeader('Content-Type', 'text/plain')
             ->withHeader('Content-Range', 'bytes 1-4/9');
-            $response->getBody()->write('It worked');
-
-
+        $response->getBody()->write('It worked');
 
         $this->expectOutputString('t wo');
 
@@ -198,13 +175,10 @@ class ResponseEmitterTest extends TestCase
      */
     public function testEmitResponseBodyRangeComplete()
     {
-
-            $response = (new Response())
+        $response = (new Response())
             ->withHeader('Content-Type', 'text/plain')
             ->withHeader('Content-Range', 'bytes 0-20/9');
-            $response->getBody()->write('It worked');
-
-
+        $response->getBody()->write('It worked');
 
         $this->expectOutputString('It worked');
 
@@ -217,13 +191,10 @@ class ResponseEmitterTest extends TestCase
      */
     public function testEmitResponseBodyRangeOverflow()
     {
-
-            $response = (new Response())
+        $response = (new Response())
             ->withHeader('Content-Type', 'text/plain')
             ->withHeader('Content-Range', 'bytes 5-20/*');
-            $response->getBody()->write('It worked');
-
-
+        $response->getBody()->write('It worked');
 
         $this->expectOutputString('rked');
 
@@ -235,13 +206,10 @@ class ResponseEmitterTest extends TestCase
      */
     public function testEmitResponseBodyRangeMalformed()
     {
-
-            $response = (new Response())
+        $response = (new Response())
             ->withHeader('Content-Type', 'text/plain')
             ->withHeader('Content-Range', 'bytes 9-ba/a');
-            $response->getBody()->write('It worked');
-
-
+        $response->getBody()->write('It worked');
 
         $this->expectOutputString('It worked');
 
@@ -253,13 +221,10 @@ class ResponseEmitterTest extends TestCase
      */
     public function testEmitResponseBodyRangeWithBadUnit()
     {
-
-            $response = (new Response())
+        $response = (new Response())
             ->withHeader('Content-Type', 'text/plain')
             ->withHeader('Content-Range', 'foobar 5-20/9');
-            $response->getBody()->write('It worked');
-
-
+        $response->getBody()->write('It worked');
 
         $this->expectOutputString('It worked');
 
@@ -273,11 +238,10 @@ class ResponseEmitterTest extends TestCase
     {
         // TODO : on devrait peut être ignorer un range qui est trop important par rapport à la tailler du fichier ??? non ??? et donc modifier ce test !!!!
 
-            $response = (new Response())
+        $response = (new Response())
             ->withHeader('Content-Type', 'text/plain')
             ->withHeader('Content-Range', 'bytes 50-100/9');
-            $response->getBody()->write('It worked');
-
+        $response->getBody()->write('It worked');
 
         //$this->expectOutputString('It worked');
 
@@ -286,17 +250,15 @@ class ResponseEmitterTest extends TestCase
 
     public function testContentRangeUnseekableBody()
     {
-
-            $response = (new Response())
+        $response = (new Response())
             ->withHeader('Content-Type', 'text/plain')
             ->withHeader('Content-Range', 'bytes 5-20/*');
 
-            $body = new CallbackStream(function () {
-                return 'It worked';
-            });
+        $body = new CallbackStream(function () {
+            return 'It worked';
+        });
 
-            $response = $response->withBody($body);
-
+        $response = $response->withBody($body);
 
         $this->expectOutputString('rked');
 
@@ -438,11 +400,9 @@ class ResponseEmitterTest extends TestCase
         $stream->isSeekable()->willReturn($seekable);
         $stream->isReadable()->willReturn($readable);
 
-            $response = (new Response())
+        $response = (new Response())
             ->withStatus(200)
             ->withBody($stream->reveal());
-
-
 
         ob_start();
         $this->emitter->setMaxBufferLength($maxBufferLength);
@@ -571,11 +531,10 @@ class ResponseEmitterTest extends TestCase
         $stream->isSeekable()->willReturn($seekable);
         $stream->isReadable()->willReturn($readable);
 
-            $response = (new Response())
+        $response = (new Response())
             ->withStatus(200)
             ->withHeader('Content-Range', 'bytes ' . $first . '-' . $last . '/*')
             ->withBody($stream->reveal());
-
 
         ob_start();
         $this->emitter->setMaxBufferLength($maxBufferLength);
@@ -695,14 +654,13 @@ class ResponseEmitterTest extends TestCase
         $stream->isSeekable()->willReturn($seekable);
         $stream->isReadable()->willReturn($readable);
 
-            $response = (new Response())
+        $response = (new Response())
             ->withStatus(200)
             ->withBody($stream->reveal());
 
-            if ($rangeBlocks) {
-                $response = $response->withHeader('Content-Range', 'bytes ' . $first . '-' . $last . '/*');
-            }
-
+        if ($rangeBlocks) {
+            $response = $response->withHeader('Content-Range', 'bytes ' . $first . '-' . $last . '/*');
+        }
 
         ob_start(
             function () use (&$closureTrackMemoryUsage) {
@@ -726,11 +684,9 @@ class ResponseEmitterTest extends TestCase
 
     public function testResponseReplacesPreviouslySetHeaders()
     {
-
-            $response = (new Response())
+        $response = (new Response())
             ->withHeader('X-Foo', 'baz1')
             ->withAddedHeader('X-Foo', 'baz2');
-
 
         $this->emitter->emit($response);
 
@@ -744,10 +700,9 @@ class ResponseEmitterTest extends TestCase
 
     public function testResponseDoesNotReplacePreviouslySetSetCookieHeaders()
     {
-            $response = (new Response())
+        $response = (new Response())
             ->withHeader('Set-Cookie', 'foo=bar')
             ->withAddedHeader('Set-Cookie', 'bar=baz');
-
 
         $this->emitter->emit($response);
 
