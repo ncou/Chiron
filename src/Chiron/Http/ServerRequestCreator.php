@@ -72,6 +72,14 @@ class ServerRequestCreator
     public function fromGlobals(): ServerRequestInterface
     {
         $server = $_SERVER;
+        $headers = $this->marshalHeaders($server);
+
+        return $this->fromArrays($server, $headers, $_COOKIE, $_GET, $_POST, $_FILES, fopen('php://input', 'r') ?: null);
+    }
+
+    // TODO : finir d'utiliser le paramétre $POST et $body dans cette méthode !!!!
+    public function fromArrays(array $server, array $headers = [], array $cookie = [], array $get = [], array $post = [], array $files = [], $body = null): ServerRequestInterface
+    {
 
         // Check if request is valid, need URI and method set at least.
         if (! isset($server['REQUEST_URI'])) {
@@ -100,7 +108,7 @@ class ServerRequestCreator
 //        $headers = function_exists('getallheaders') ? getallheaders() : $this->marshalHeaders($server);
 
         $server = $this->normalizeServer($server);
-        $headers = $this->marshalHeaders($server);
+
 
         /*
         // TODO : se passer du getallheaders : https://github.com/zendframework/zend-diactoros/blob/fb7f06e1b78c2aa17d08f30633bb2fa337428182/src/ServerRequestFactory.php#L196
@@ -187,10 +195,13 @@ class ServerRequestCreator
 
         // TODO : vérifier l'utilité de la vérification sur le empty, par défaut ca doit $etre vide je pense. ->withParsedBody(empty($_POST) ? null : $_POST)
         return $serverRequest
-            ->withCookieParams($_COOKIE)
-            ->withQueryParams($_GET)
+            ->withCookieParams($cookie)
+            ->withQueryParams($get)
             ->withParsedBody(empty($_POST) ? null : $_POST)
-            ->withUploadedFiles($this->normalizeFiles($_FILES)); // TODO : il manque un appel à normalizeFiles directement dans le constructeur !!!!! => $files   = static::normalizeFiles($files ?: $_FILES);
+            ->withUploadedFiles($this->normalizeFiles($file)); // TODO : il manque un appel à normalizeFiles directement dans le constructeur !!!!! => $files   = static::normalizeFiles($files ?: $_FILES);
+
+
+
     }
 
     /**
