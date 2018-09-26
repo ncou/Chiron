@@ -283,7 +283,7 @@ class ServerRequestCreatorTest extends TestCase
     public function testNormalizeFiles($files, $expected)
     {
         $result = $this->creator
-            ->fromArrays(['REQUEST_METHOD' => 'POST'], [], [], [], [], $files)
+            ->fromArrays(['REQUEST_METHOD' => 'POST', 'REQUEST_URI' => '/'], [], [], [], [], $files)
             ->getUploadedFiles();
         $validateInner = function (UploadedFileInterface $expectedFile, UploadedFileInterface $file) {
             $this->assertEquals($expectedFile->getSize(), $file->getSize());
@@ -315,7 +315,7 @@ class ServerRequestCreatorTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid value in files specification');
-        $this->creator->fromArrays(['REQUEST_METHOD' => 'POST'], [], [], [], [], ['test' => 'something']);
+        $this->creator->fromArrays(['REQUEST_METHOD' => 'POST', 'REQUEST_URI' => '/'], [], [], [], [], ['test' => 'something']);
     }
 
     public function testFromArrays()
