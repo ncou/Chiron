@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Http\Parser;
 
-use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Parser\FormDataParser;
-use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\Uri;
 use PHPUnit\Framework\TestCase;
 
