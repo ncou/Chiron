@@ -562,4 +562,70 @@ class ServerRequestCreatorTest extends TestCase
         $normalizedFiles = $this->creator->normalizeUploadedFiles($files);
         $this->assertCount(1, $normalizedFiles['fooFiles']);
     }
+
+
+    public function cookieHeaderValues()
+    {
+        return [
+            'ows-without-fold' => [
+                "\tfoo=bar ",
+                ['foo' => 'bar'],
+            ],
+            'url-encoded-value' => [
+                'foo=bar%3B+',
+                ['foo' => 'bar; '],
+            ],
+            'double-quoted-value' => [
+                'foo="bar"',
+                ['foo' => 'bar'],
+            ],
+            'multiple-pairs' => [
+                'foo=bar; baz="bat"; bau=bai',
+                ['foo' => 'bar', 'baz' => 'bat', 'bau' => 'bai'],
+            ],
+            'same-name-pairs' => [
+                'foo=bar; foo="bat"',
+                ['foo' => 'bat'],
+            ],
+            'period-in-name' => [
+                'foo.bar=baz',
+                ['foo.bar' => 'baz'],
+            ],
+        ];
+    }
+    /**
+     * @dataProvider cookieHeaderValues
+     * @param string $cookieHeader
+     * @param array $expectedCookies
+     */
+    public function testCookieHeaderVariations($cookieHeader, array $expectedCookies)
+    {
+        $_SERVER['HTTP_COOKIE'] = $cookieHeader;
+        $request = ServerRequestFactory::fromGlobals();
+        $this->assertSame($expectedCookies, $request->getCookieParams());
+    }
+    public function testNormalizeServerUsesMixedCaseAuthorizationHeaderFromApacheWhenPresent()
+    {
+        $server = normalizeServer([], function () {
+            return ['Authorization' => 'foobar'];
+        });
+        $this->assertArrayHasKey('HTTP_AUTHORIZATION', $server);
+        $this->assertSame('foobar', $server['HTTP_AUTHORIZATION']);
+    }
+    public function testNormalizeServerUsesLowerCaseAuthorizationHeaderFromApacheWhenPresent()
+    {
+        $server = normalizeServer([], function () {
+            return ['authorization' => 'foobar'];
+        });
+        $this->assertArrayHasKey('HTTP_AUTHORIZATION', $server);
+        $this->assertSame('foobar', $server['HTTP_AUTHORIZATION']);
+    }
+    public function testNormalizeServerReturnsArrayUnalteredIfApacheHeadersDoNotContainAuthorization()
+    {
+        $expected = ['FOO_BAR' => 'BAZ'];
+        $server = normalizeServer($expected, function () {
+            return [];
+        });
+        $this->assertSame($expected, $server);
+    }
 }

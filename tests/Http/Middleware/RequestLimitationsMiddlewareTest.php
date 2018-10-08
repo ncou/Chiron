@@ -14,7 +14,7 @@ use Psr\Http\Message\ResponseInterface;
 
 class RequestLimitationsMiddlewareTest extends TestCase
 {
-    // define the max uri length (used in the middleware to check if the RequestUriTooLongHttpException should be throwed)
+    // define the max uri length (used in the middleware to check if the UriTooLongHttpException should be throwed)
     private $maxUriLength = 2048;
 
     private $maxNumHeaders = 100;
@@ -41,7 +41,7 @@ class RequestLimitationsMiddlewareTest extends TestCase
     }
 
     /**
-     * @expectedException Chiron\Http\Exception\Client\RequestUriTooLongHttpException
+     * @expectedException Chiron\Http\Exception\Client\UriTooLongHttpException
      */
     public function testRequestUriTooLong()
     {

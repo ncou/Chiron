@@ -28,7 +28,7 @@ class ContentLengthMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        //$a = 1 % 0;
+        $a = 1 % 0;
 
         //$foo = [bar];
         //echo $foo;

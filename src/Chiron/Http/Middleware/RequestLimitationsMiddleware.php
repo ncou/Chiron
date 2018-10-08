@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Http\Middleware;
 
 use Chiron\Http\Exception\Client\RequestHeaderFieldsTooLargeHttpException;
-use Chiron\Http\Exception\Client\RequestUriTooLongHttpException;
+use Chiron\Http\Exception\Client\UriTooLongHttpException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -28,7 +28,7 @@ class RequestLimitationsMiddleware implements MiddlewareInterface
     {
         // *** Check limitation for the request uri length
         if (mb_strlen($request->getServerParam('REQUEST_URI'), '8bit') > 2048) {
-            throw new RequestUriTooLongHttpException();
+            throw new UriTooLongHttpException();
         }
 
         // *** Check limitation for the maximum number of headers in the request

@@ -7,6 +7,7 @@ declare(strict_types=1);
 // https://github.com/laravel/framework/blob/master/src/Illuminate/Foundation/PackageManifest.php
 // Il y a aussi ce package :     https://github.com/appzcoder/laravel-package-discovery
 // Package installer auto avec ZEND : https://github.com/zendframework/zend-component-installer
+// Yii2 => https://github.com/yiisoft/yii2-composer/blob/master/Installer.php
 //***********************
 
 // TODO : AUTH service : https://github.com/harikt/expressive-auth   +   https://github.com/auraphp/Aura.Auth
@@ -65,6 +66,7 @@ use Chiron\Http\ResponseEmitter;
 use Chiron\Http\ServerRequestCreator;
 use Chiron\Provider\ErrorHandlerServiceProvider;
 use Chiron\Provider\MiddlewaresServiceProvider;
+use Chiron\Provider\HttpFactoriesServiceProvider;
 use Chiron\Provider\ServerRequestCreatorServiceProvider;
 use Chiron\Routing\RoutableInterface;
 use Chiron\Routing\RoutableTrait;
@@ -413,7 +415,11 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $errorHandlerService = new ErrorHandlerServiceProvider();
         $errorHandlerService->register($this->container);
 
-        // Register Error Handler services
+        // Register HTTP Factories services
+        $httpFactoriesService = new HttpFactoriesServiceProvider();
+        $httpFactoriesService->register($this->container);
+
+        // Register ServerRequest creator services
         $serverRequestCreatorService = new ServerRequestCreatorServiceProvider();
         $serverRequestCreatorService->register($this->container);
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Exception;
 
-use Chiron\Http\Exception\HttpExceptionInterface;
+use Chiron\Http\Exception\HttpException;
 use Throwable;
 
 //Autre example :     https://github.com/otherguy/laravel-error-handler/blob/master/src/Classes/PlainDisplay.php#L114
@@ -50,7 +50,7 @@ class ExceptionInfo
 
         $info = array_merge(['code' => $code], $errors[$code]);
 
-        if ($exception instanceof HttpExceptionInterface) {
+        if ($exception instanceof HttpException) {
             $msg = (string) $exception->getMessage();
             // TODO : regarder l'utilité de la vérification sur la longueur de 4 ou 36 caractéres.
             $info['detail'] = ! empty($msg) && strlen($msg) > strlen($info['message']) ? $msg : $info['message'];
@@ -61,7 +61,7 @@ class ExceptionInfo
         unset($info['message']);
 
         /*
-                if ($exception instanceof HttpExceptionInterface) {
+                if ($exception instanceof HttpException) {
                     $msg = (string) $exception->getMessage();
                     // TODO : regarder l'utilité de la vérification sur la longueur de 4 ou 36 caractéres.
                     $info['detail'] = (strlen($msg) > 4) ? $msg : $info['message'];

@@ -6,7 +6,7 @@ namespace Chiron\Exception;
 
 use Chiron\Http\Psr\Response;
 use InvalidArgumentException;
-use Jgut\HttpException\HttpExceptionInterface;
+use Jgut\HttpException\HttpException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
@@ -134,7 +134,7 @@ class ExceptionManager
         $exceptionHandler = $this->getExceptionHandler($exception);
 
         // re-throw the exception if there is no handler found to catch this type of exception
-        // this case should only happen if the user have unregistered the default handler for exception instanceof == HttpExceptionInterface
+        // this case should only happen if the user have unregistered the default handler for exception instanceof == HttpException
         if (empty($exceptionHandler)) {
             throw $exception;
         }

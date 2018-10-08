@@ -8,6 +8,8 @@
  * @license   https://github.com/ncou/Chiron/blob/master/licenses/LICENSE.md (MIT License)
  */
 
+declare(strict_types=1);
+
 //https://github.com/userfrosting/UserFrosting/blob/master/app/system/ServicesProvider.php
 //https://github.com/slimphp/Slim/blob/3.x/Slim/DefaultServicesProvider.php
 
@@ -63,16 +65,6 @@ class ErrorHandlerServiceProvider
 
         $container[LogReporter::class] = function ($c) {
             return new LogReporter($c[LoggerInterface::class]);
-        };
-
-        $container[ContentTypeFilter::class] = function ($c) {
-            return new ContentTypeFilter();
-        };
-        $container[CanFormatFilter::class] = function ($c) {
-            return new CanFormatFilter();
-        };
-        $container[VerboseFilter::class] = function ($c) {
-            return new VerboseFilter($c['debug']);
         };
 
         $container[ExceptionHandler::class] = function ($c) {

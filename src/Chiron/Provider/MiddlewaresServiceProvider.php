@@ -10,6 +10,7 @@
 
 //https://github.com/userfrosting/UserFrosting/blob/master/app/system/ServicesProvider.php
 //https://github.com/slimphp/Slim/blob/3.x/Slim/DefaultServicesProvider.php
+declare(strict_types=1);
 
 namespace Chiron\Provider;
 

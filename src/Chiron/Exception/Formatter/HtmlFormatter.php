@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Exception\Formatter;
 
 use Chiron\Exception\ExceptionInfo;
-use Chiron\Http\Exception\HttpExceptionInterface;
+use Chiron\Http\Exception\HttpException;
 use Throwable;
 
 class HtmlFormatter implements FormatterInterface
@@ -38,7 +38,7 @@ class HtmlFormatter implements FormatterInterface
 
     public function format(Throwable $e): string
     {
-        $code = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
+        $code = $e instanceof HttpException ? $e->getStatusCode() : 500;
         $info = $this->info->generate($e, $code);
 
         return $this->render($info);

@@ -10,7 +10,6 @@
 
 //https://github.com/userfrosting/UserFrosting/blob/master/app/system/ServicesProvider.php
 //https://github.com/slimphp/Slim/blob/3.x/Slim/DefaultServicesProvider.php
-
 declare(strict_types=1);
 
 namespace Chiron\Provider;
@@ -33,7 +32,7 @@ use Psr\Http\Message\UriFactoryInterface;
  *
  * Registers system services for Chiron, such as config manager, middleware router and dispatcher...
  */
-class ServerRequestCreatorServiceProvider
+class HttpFactoriesServiceProvider
 {
     /**
      * Register Chiron system services.
@@ -42,11 +41,38 @@ class ServerRequestCreatorServiceProvider
      */
     public function register(ContainerInterface $container)
     {
-        $container[ServerRequestCreator::class] = function ($c) {
-            return new ServerRequestCreator($c[ServerRequestFactory::class],
-                $c[UriFactory::class],
-                $c[UploadedFileFactory::class],
-                $c[StreamFactory::class]);
+        // *** register factories ***
+        $container[ServerRequestFactoryInterface::class] = function ($c) {
+            return new ServerRequestFactory();
+        };
+
+        $container[UriFactoryInterface::class] = function ($c) {
+            return new UriFactory();
+        };
+
+        $container[UploadedFileFactoryInterface::class] = function ($c) {
+            return new UploadedFileFactory();
+        };
+
+        $container[StreamFactoryInterface::class] = function ($c) {
+            return new StreamFactory();
+        };
+
+        // *** register alias ***
+        $container[ServerRequestFactory::class] = function ($c) {
+            return $c->get(ServerRequestFactoryInterface::class);
+        };
+
+        $container[UriFactory::class] = function ($c) {
+            return $c->get(UriFactoryInterface::class);
+        };
+
+        $container[UploadedFileFactory::class] = function ($c) {
+            return $c->get(UploadedFileFactoryInterface::class);
+        };
+
+        $container[StreamFactory::class] = function ($c) {
+            return $c->get(StreamFactoryInterface::class);
         };
     }
 }
