@@ -23,10 +23,6 @@ use Chiron\Http\Factory\UriFactory;
 use Chiron\Http\ServerRequestCreator;
 use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ServerRequestFactoryInterface;
-use Psr\Http\Message\StreamFactoryInterface;
-use Psr\Http\Message\UploadedFileFactoryInterface;
-use Psr\Http\Message\UriFactoryInterface;
 
 /**
  * Chiron system services provider.

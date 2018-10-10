@@ -552,7 +552,7 @@ class ServerRequestCreatorTest extends TestCase
 
     public function testNormalizeFilesReturnsOnlyActualFilesWhenOriginalFilesContainsNestedAssociativeArrays()
     {
-        $files = [ 'fooFiles' => [
+        $files = ['fooFiles' => [
             'tmp_name' => ['file' => 'php://temp'],
             'size'     => ['file' => 0],
             'error'    => ['file' => 0],
@@ -562,7 +562,6 @@ class ServerRequestCreatorTest extends TestCase
         $normalizedFiles = $this->creator->normalizeUploadedFiles($files);
         $this->assertCount(1, $normalizedFiles['fooFiles']);
     }
-
 
     public function cookieHeaderValues()
     {
@@ -593,10 +592,12 @@ class ServerRequestCreatorTest extends TestCase
             ],
         ];
     }
+
     /**
      * @dataProvider cookieHeaderValues
+     *
      * @param string $cookieHeader
-     * @param array $expectedCookies
+     * @param array  $expectedCookies
      */
     public function testCookieHeaderVariations($cookieHeader, array $expectedCookies)
     {
@@ -604,6 +605,7 @@ class ServerRequestCreatorTest extends TestCase
         $request = ServerRequestFactory::fromGlobals();
         $this->assertSame($expectedCookies, $request->getCookieParams());
     }
+
     public function testNormalizeServerUsesMixedCaseAuthorizationHeaderFromApacheWhenPresent()
     {
         $server = normalizeServer([], function () {
@@ -612,6 +614,7 @@ class ServerRequestCreatorTest extends TestCase
         $this->assertArrayHasKey('HTTP_AUTHORIZATION', $server);
         $this->assertSame('foobar', $server['HTTP_AUTHORIZATION']);
     }
+
     public function testNormalizeServerUsesLowerCaseAuthorizationHeaderFromApacheWhenPresent()
     {
         $server = normalizeServer([], function () {
@@ -620,6 +623,7 @@ class ServerRequestCreatorTest extends TestCase
         $this->assertArrayHasKey('HTTP_AUTHORIZATION', $server);
         $this->assertSame('foobar', $server['HTTP_AUTHORIZATION']);
     }
+
     public function testNormalizeServerReturnsArrayUnalteredIfApacheHeadersDoNotContainAuthorization()
     {
         $expected = ['FOO_BAR' => 'BAZ'];

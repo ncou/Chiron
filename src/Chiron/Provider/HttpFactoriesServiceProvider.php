@@ -19,7 +19,6 @@ use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Factory\StreamFactory;
 use Chiron\Http\Factory\UploadedFileFactory;
 use Chiron\Http\Factory\UriFactory;
-use Chiron\Http\ServerRequestCreator;
 use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
