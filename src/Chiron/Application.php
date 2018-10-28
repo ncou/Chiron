@@ -583,7 +583,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         return $response;
     }
 
-// TODO : renommer cette fonction en "handleRequest()"
+    // TODO : renommer cette fonction en "handleRequest()"
     public function process(ServerRequestInterface $request): ResponseInterface
     {
         //die(var_dump($request->getServerParam('HTTP_HOST')));
