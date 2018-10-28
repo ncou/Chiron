@@ -49,7 +49,7 @@ class ViewFormatter implements FormatterInterface
         $info = $this->info->generate($e, $code);
 
         // TODO : vérifier qu'on accéde bien aux informations ajoutées en attribut !!!!!!!!!!!!!
-        return $this->renderer->render("errors::{$code}", array_merge($info, ['exception' => $e]));
+        return $this->renderer->render("errors/{$code}", array_merge($info, ['exception' => $e]));
     }
 
     /**
@@ -83,6 +83,6 @@ class ViewFormatter implements FormatterInterface
     {
         $code = $e instanceof HttpException ? $e->getStatusCode() : 500;
 
-        return $this->renderer->exists("errors::{$code}");
+        return $this->renderer->exists("errors/{$code}");
     }
 }

@@ -108,11 +108,10 @@ class RouteInvocationStrategy //implements InvocationStrategyInterface
                 $parameter = (int) $parameter;
 
                 break;
-            case 'string':
-                $parameter = (string) $parameter; // the "cast" is useless because the parameter is always a string
-                break;
             case 'bool':
-                $parameter = (bool) $parameter; //TODO : utiliser plutot ce bout de code (il faudra surement faire un lowercase en plus !!!) :     \in_array(\trim($value), ['1', 'true'], true);
+                //TODO : utiliser plutot ce bout de code (il faudra surement faire un lowercase en plus !!!) :     \in_array(\trim($value), ['1', 'true'], true);
+                $parameter = (bool) $parameter;
+
                 break;
             case 'float':
                 $parameter = (float) $parameter;
