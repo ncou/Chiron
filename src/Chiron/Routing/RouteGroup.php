@@ -11,6 +11,11 @@ class RouteGroup implements RoutableInterface
 {
     use RoutableTrait;
 
+    /** @var RouteCollectionInterface */
+    private $collector;
+
+
+
     private $router;
 
     private $container;
@@ -19,10 +24,10 @@ class RouteGroup implements RoutableInterface
 
     private $middlewares = [];
 
-    public function __construct(string $prefix, Router $router, ContainerInterface $container = null)
+    public function __construct(string $prefix, $collector, ContainerInterface $container = null)
     {
         $this->prefix = $prefix;
-        $this->router = $router;
+        $this->collector = $collector;
         $this->container = $container;
     }
 
@@ -44,10 +49,14 @@ class RouteGroup implements RoutableInterface
             throw new InvalidArgumentException('Handler should be a Psr\Http\Server\RequestHandlerInterface instance');
         }
 
-        $route = $this->router->map($this->appendPrefixToUri($pattern), $handler);
+        $route = $this->collector->map($this->appendPrefixToUri($pattern), $handler);
 
         // store the group in the "extra" section on the route object. Used later to get the middleware attached to the group and apply them on the route.
-        return $route->addExtra(RouteGroup::class, $this);
+        //return $route->addExtra(RouteGroup::class, $this);
+
+        $route->setParentGroup($this);
+
+        return $route;
     }
 
     private function appendPrefixToUri(string $uri)
@@ -79,4 +88,13 @@ class RouteGroup implements RoutableInterface
 
         return $this;
     }
+
+    /**
+     * Process the group and ensure routes are added to the collection.
+     */
+    /*
+    public function __invoke()
+    {
+        call_user_func_array($this->callback->bindTo($this), [$this]);
+    }*/
 }

@@ -15,7 +15,7 @@ use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Routing\Route;
 use Chiron\Routing\RouteGroup;
-use Chiron\Routing\RouteResult;
+use Chiron\Alto\RouteResult;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;

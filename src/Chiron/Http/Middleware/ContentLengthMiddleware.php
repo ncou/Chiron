@@ -28,7 +28,7 @@ class ContentLengthMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $a = 1 % 0;
+        //$a = 1 % 0;
 
         //$foo = [bar];
         //echo $foo;
@@ -39,9 +39,9 @@ class ContentLengthMiddleware implements MiddlewareInterface
 
         //throw new \Exception("Error Processing Request popopopo", 1);
 
-        //throw new \Chiron\Http\Exception\HttpException(400);
+        //throw new \Chiron\Http\Exception\HttpException(507);
 
-        //throw new \Chiron\Http\Exception\Client\NotFoundHttpException();
+        throw new \Chiron\Http\Exception\Client\NotFoundHttpException();
         //throw new \Chiron\Http\Exception\Client\NotFoundHttpException('toto is better than me ! enjoy !');
 
         $response = $handler->handle($request);

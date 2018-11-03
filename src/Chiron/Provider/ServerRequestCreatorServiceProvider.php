@@ -21,13 +21,10 @@ use Chiron\Http\Factory\StreamFactory;
 use Chiron\Http\Factory\UploadedFileFactory;
 use Chiron\Http\Factory\UriFactory;
 use Chiron\Http\ServerRequestCreator;
-use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
 
 /**
- * Chiron system services provider.
- *
- * Registers system services for Chiron, such as config manager, middleware router and dispatcher...
+ * Chiron server request creator services provider.
  */
 class ServerRequestCreatorServiceProvider
 {

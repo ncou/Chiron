@@ -29,16 +29,13 @@ use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Exception\HttpException;
 use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
 use Chiron\Http\Middleware\ErrorHandlerMiddleware;
-use Chiron\Routing\Router;
 use Chiron\Views\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
 /**
- * Chiron system services provider.
- *
- * Registers system services for Chiron, such as config manager, middleware router and dispatcher...
+ * Chiron error handler services provider.
  */
 class ErrorHandlerServiceProvider
 {

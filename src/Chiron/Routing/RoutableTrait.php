@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Routing;
 
-// TODO : ajouter le support pour les méthodes TRACE et CONNECT ????
-
 trait RoutableTrait
 {
     /**
@@ -124,22 +122,6 @@ trait RoutableTrait
     }
 
     /**
-     * Add PURGE route.
-     *
-     * PURGE is not an official method, and there is no RFC for the moment.
-     *
-     * @param string                                  $pattern The route URI pattern
-     * @param RequestHandlerInterface|callable|string $handler The route callback routine
-     *
-     * @return \Chiron\Routing\Route
-     */
-    /*
-    public function purge(string $pattern, $handler): Route
-    {
-        return $this->map($pattern, $handler)->method('PURGE');
-    }*/
-
-    /**
      * Add route for any (official or unofficial) HTTP method.
      * use ->seAllowedMethods([]) with an empty array to support ALL the values (for custom method).
      *
@@ -150,7 +132,6 @@ trait RoutableTrait
      */
     public function any(string $pattern, $handler): Route
     {
-        //return $this->map($pattern, $handler)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'PURGE', 'DELETE', 'OPTIONS']);
-        return $this->map($pattern, $handler)->setAllowedMethods(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
+        return $this->map($pattern, $handler)->setAllowedMethods(['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT']);
     }
 }

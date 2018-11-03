@@ -70,9 +70,9 @@ use Chiron\Provider\MiddlewaresServiceProvider;
 use Chiron\Provider\ServerRequestCreatorServiceProvider;
 use Chiron\Routing\RoutableInterface;
 use Chiron\Routing\RoutableTrait;
-use Chiron\Routing\Route;
-use Chiron\Routing\RouteGroup;
-use Chiron\Routing\Router;
+use Chiron\Routing\RouterTrait;
+use Chiron\Alto\Router;
+use Chiron\Routing\RouteCollector;
 use Closure;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
@@ -84,7 +84,7 @@ use Psr\Log\LoggerInterface;
 
 class Application implements RoutableInterface
 {
-    use RoutableTrait;
+    use RouterTrait;
 
     public const VERSION = '1.0.0';
 
@@ -199,67 +199,6 @@ class Application implements RoutableInterface
         error_reporting($debug ? E_ALL : 0);
         /* Report detected memory leaks. */
         ini_set('report_memleaks', $debug);
-    }
-
-    /********************************************************************************
-     * Router
-     *******************************************************************************/
-
-    /**
-     * Add route with multiple methods.
-     *
-     * @param string                                  $pattern The route URI pattern
-     * @param RequestHandlerInterface|callable|string $handler The route callback routine
-     *
-     * @return \Chiron\Routing\Route
-     */
-    // TODO : créer une classe RouteInterface qui servira comme type de retour (il faudra aussi l'ajouter dans le use en début de classe) !!!!!
-    // TODO : lever une exception si le type du handler n'est pas correct, par exemple si on lui passe un integer ou un objet non callable !!!!!
-    public function map(string $pattern, $handler): Route
-    {
-        /*
-        if (is_callable([$handler, 'setContainer']) && $this->container instanceof ContainerInterface) {
-            $handler->setContainer($this->container);
-        }
-
-        if (is_array($handler) && is_callable([$handler[0], 'setContainer']) && $this->container instanceof ContainerInterface) {
-            $handler[0]->setContainer($this->container);
-        }
-        */
-
-        /*
-                if (is_string($handler) || is_callable($handler)) {
-                    $handler = new DeferredRequestHandler($handler, $this->container);
-                }
-
-                if (! empty($middlewares)) {
-                    $handler = new RequestHandlerStack($handler);
-                    foreach ($middlewares as $middleware) {
-                        $handler->prepend($this->prepareMiddleware($middleware));
-                    }
-                }
-        */
-
-        if (is_string($handler) || is_callable($handler)) {
-            $handler = new DeferredRequestHandler($handler, $this->container);
-        }
-
-        if (! $handler instanceof RequestHandlerInterface) {
-            throw new InvalidArgumentException('Handler should be a Psr\Http\Server\RequestHandlerInterface instance');
-        }
-
-        return $this->getRouter()->map($pattern, $handler);
-    }
-
-    // $params => string|array
-    public function group(string $prefix, Closure $closure): RouteGroup
-    {
-        $group = new RouteGroup($prefix, $this->getRouter(), $this->getContainer());
-        // TODO : on fait un bind du this avec le group ????
-        //$closure = $closure->bindTo($group);
-        call_user_func($closure, $group);
-        // TODO : un return de type $group est à utiliser si on veux ajouter un middleware avec la notation : $app->group(xxxx, xxxxx)->middleware(xxx);
-        return $group;
     }
 
     // TODO : ajouter des méthodes proxy pour : getRoutes / getNamedRoute / hasRoute ?????? voir même pour generateUri et getBasePath/setBasePath ??????
@@ -400,6 +339,9 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
                     return $response;
                 });
         */
+
+        $this->routeCollector = new RouteCollector();
+
         //$emptyResponse = new FixedResponseHandler(new Response(204));
         $emptyResponse = new FixedResponseHandler(new EmptyResponse());
 
@@ -571,10 +513,12 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
      * Run App
      ******************************************************************************/
 
+    // TODO : function à renommer en "listen()"
     public function run(): ResponseInterface
     {
         //$request = (new \Chiron\Http\Factory\ServerRequestFactory())->createServerRequestFromArray($_SERVER);
-        $request = $this->container->get(ServerRequestCreator::class)->fromGlobals();
+        $requestCreator = $this->container->get(ServerRequestCreator::class);
+        $request = $requestCreator->fromGlobals();
 
         $response = $this->process($request);
 
@@ -586,6 +530,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     // TODO : renommer cette fonction en "handleRequest()"
     public function process(ServerRequestInterface $request): ResponseInterface
     {
+        $request = $request->withAttribute(RouteCollector::class, $this->getRouteCollector());
         //die(var_dump($request->getServerParam('HTTP_HOST')));
 
         // apply PHP config settings.

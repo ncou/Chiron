@@ -13,8 +13,9 @@ use Chiron\Http\Exception\Client\MethodNotAllowedHttpException;
 use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Stream;
-use Chiron\Routing\Router;
-use Chiron\Routing\RouteResult;
+use Chiron\Alto\Router;
+use Chiron\Alto\RouteResult;
+use Chiron\Routing\RouteCollector;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -38,7 +39,7 @@ class RoutingMiddleware implements MiddlewareInterface
     {
         // TODO : il faudrait peut etre récupérer la réponse via un $handle->handle() pour récupérer les headers de la réponse + le charset et version 1.1/1.0 pour le passer dans les exceptions (notfound+methodnotallowed) car on va recréer une nouvelle response !!!! donc si ca se trouve les headers custom genre X-Powered ou CORS vont être perdus lorsqu'on va afficher les message custom pour l'exception 404 par exemple !!!!
 
-        $matched = $this->router->match($request);
+        $matched = $this->getMatchedRoute($request);
 
         if ($matched->isMethodFailure()) {
             $allowedMethods = $matched->getAllowedMethods();
@@ -74,5 +75,19 @@ class RoutingMiddleware implements MiddlewareInterface
         }
 
         return $response;
+    }
+
+    private function getMatchedRoute(ServerRequestInterface $request): RouteResult
+    {
+        $routeCollector = $request->getAttribute(RouteCollector::class, []);
+        // add routes (if any specified directly via the application object)
+        if (! empty($routeCollector)) {
+            // add routes (if any specified directly on router object)
+            foreach ($routeCollector->getRoutes() as $route) {
+                $this->router->addRoute($route->getUrl(), $route->getHandler());
+            }
+        }
+
+        return $this->router->match($request);
     }
 }
