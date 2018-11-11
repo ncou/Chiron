@@ -181,7 +181,6 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
         // process routes
         $dispatcher = new Dispatcher($this->routes, $this->generator->getData());
 
-
         return $dispatcher->dispatchRequest($request);
     }
 
@@ -296,11 +295,11 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
     }
 
     /**
-     * Remove named route
+     * Remove named route.
      *
-     * @param string $name        Route name
+     * @param string $name Route name
      *
-     * @throws \InvalidArgumentException   If named route does not exist
+     * @throws \InvalidArgumentException If named route does not exist
      */
     public function removeNamedRoute(string $name)
     {

@@ -4,18 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Routing;
 
-use Chiron\MiddlewareAwareInterface;
-use Chiron\MiddlewareAwareTrait;
-use Chiron\Routing\Strategy\StrategyAwareInterface;
-use Chiron\Routing\Strategy\StrategyAwareTrait;
-use Chiron\Routing\Strategy\StrategyInterface;
-use FastRoute\DataGenerator;
-use FastRoute\Dispatcher as FastRoute;
 use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
-use FastRoute\RouteParser;
-use InvalidArgumentException;
-use RuntimeException;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -50,13 +39,13 @@ class Dispatcher extends GroupCountBasedDispatcher
     }
 
     /**
-     * Dispatch the current route
+     * Dispatch the current route.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function dispatchRequest(ServerRequestInterface $request) : RouteResult
+    public function dispatchRequest(ServerRequestInterface $request): RouteResult
     {
         $method = $request->getMethod();
         $path = $request->getUri()->getPath();
@@ -67,7 +56,6 @@ class Dispatcher extends GroupCountBasedDispatcher
             ? $this->marshalFailedRoute($result)
             : $this->marshalMatchedRoute($result, $method);
     }
-
 
     /**
      * Marshal a routing failure result.
