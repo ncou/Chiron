@@ -12,14 +12,9 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
-use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Routing\Route;
-use Chiron\Routing\RouteGroup;
 use Chiron\Routing\RouteResult;
-use InvalidArgumentException;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -68,7 +63,6 @@ class DispatcherMiddleware implements MiddlewareInterface
 
         return $middlewares;
 
-
         /*
     // add group and route specific middleware
         if ($group = $route->getParentGroup()) {
@@ -78,9 +72,5 @@ class DispatcherMiddleware implements MiddlewareInterface
         // add actual route to end of stack
         $this->middleware($route);
         */
-
-
-
     }
-
 }

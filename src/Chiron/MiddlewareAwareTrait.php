@@ -14,15 +14,16 @@ trait MiddlewareAwareTrait
      * @var \Psr\Http\Server\MiddlewareInterface[]
      */
     protected $middlewares = [];
+
     /**
      * {@inheritdoc}
      */
-    public function middleware($middleware) : MiddlewareAwareInterface
+    public function middleware($middleware): MiddlewareAwareInterface
     {
         $this->middlewares[] = $middleware;
+
         return $this;
     }
-
 
     /**
      * Add a middleware to the end of the stack.
@@ -47,25 +48,28 @@ trait MiddlewareAwareTrait
         return $this;
     }*/
 
-
     /**
      * {@inheritdoc}
      */
-    public function middlewares(array $middlewares) : MiddlewareAwareInterface
+    public function middlewares(array $middlewares): MiddlewareAwareInterface
     {
         foreach ($middlewares as $middleware) {
             $this->middleware($middleware);
         }
+
         return $this;
     }
+
     /**
      * {@inheritdoc}
      */
-    public function prependMiddleware($middleware) : MiddlewareAwareInterface
+    public function prependMiddleware($middleware): MiddlewareAwareInterface
     {
         array_unshift($this->middlewares, $middleware);
+
         return $this;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -74,19 +78,16 @@ trait MiddlewareAwareTrait
     {
         return array_shift($this->middleware);
     }*/
+
     /**
      * {@inheritdoc}
      */
-    public function getMiddlewareStack() : array
+    public function getMiddlewareStack(): array
     {
         return $this->middlewares;
     }
 
-
-
-
-
-    /**
+    /*
      * Add middleware to the beginning of the stack
      *
      * @param MiddlewareInterface $middleware Middleware function
@@ -99,7 +100,7 @@ trait MiddlewareAwareTrait
         return $this;
     }*/
 
-    /**
+    /*
      * Add middleware to the end of the stack
      *
      * @param MiddlewareInterface $middleware Middleware function
@@ -112,12 +113,7 @@ trait MiddlewareAwareTrait
         return $this;
     }*/
 
-
-
-
-
-
-    /**
+    /*
      * Add middleware to the end of the stack
      */
     /*
@@ -126,7 +122,7 @@ trait MiddlewareAwareTrait
         array_push($this->middlewares, ...$middleware);
         return $this;
     }*/
-    /**
+    /*
      * Add middleware to the beginning of the stack
      */
     /*

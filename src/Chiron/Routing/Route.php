@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Chiron\Routing;
 
+use Chiron\MiddlewareAwareInterface;
+use Chiron\MiddlewareAwareTrait;
+use Chiron\Routing\Strategy\StrategyAwareInterface;
+use Chiron\Routing\Strategy\StrategyAwareTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Container\ContainerInterface;
-use Chiron\Routing\Strategy\StrategyAwareTrait;
-use Chiron\Routing\Strategy\StrategyAwareInterface;
-use Psr\Http\Server\{MiddlewareInterface, RequestHandlerInterface};
-use Chiron\MiddlewareAwareTrait;
-use Chiron\MiddlewareAwareInterface;
+use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
-class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  MiddlewareAwareInterface, MiddlewareInterface
+class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, MiddlewareAwareInterface, MiddlewareInterface
 {
     use MiddlewareAwareTrait;
     use RouteConditionHandlerTrait;
@@ -21,24 +21,30 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
 
     /** @var array */
     private $requirements = [];
+
     /** @var array */
     private $defaults = [];
+
     /** @var array */
     private $schemes = [];
+
     /** @var string */
     private $name;
+
     /**
      * The route pattern (The URL pattern (e.g. "article/[:year]/[i:category]")).
      *
      * @var string
      */
     private $url;
+
     /**
      * Controller/method assigned to be executed when route is matched.
      *
      * @var mixed
      */
     private $handler;
+
     /**
      * List of supported HTTP methods for this route (GET, POST etc.).
      *
@@ -50,7 +56,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     private $group;
 
     /**
-     * Route identifier
+     * Route identifier.
      *
      * @var string
      */
@@ -71,7 +77,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     public function process(
         ServerRequestInterface $request,
         RequestHandlerInterface $requestHandler
-    ) : ResponseInterface {
+    ): ResponseInterface {
         return $this->getStrategy()->invokeRouteCallable($this, $request);
     }
 
@@ -99,9 +105,8 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
         return $this;
     }
 
-
     /**
-     * Get route identifier
+     * Get route identifier.
      *
      * @return string
      */
@@ -110,14 +115,12 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
         return $this->identifier;
     }
 
-
-
-
     // TODO ; renommer en getPath()
     public function getUrl(): string
     {
         return $this->url;
     }
+
     // return : mixed
     public function getHandler()
     {
@@ -127,8 +130,10 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     public function value($variable, $default)
     {
         $this->setDefault($variable, $default);
+
         return $this;
     }
+
     /**
      * Returns the defaults.
      *
@@ -138,6 +143,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     {
         return $this->defaults;
     }
+
     /**
      * Sets the defaults.
      *
@@ -150,8 +156,10 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     public function setDefaults(array $defaults)
     {
         $this->defaults = [];
+
         return $this->addDefaults($defaults);
     }
+
     /**
      * Adds defaults.
      *
@@ -169,6 +177,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
         //$this->compiled = null;
         return $this;
     }
+
     /**
      * Gets a default value.
      *
@@ -180,6 +189,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     {
         return isset($this->defaults[$name]) ? $this->defaults[$name] : null;
     }
+
     /**
      * Checks if a default value is set for the given variable.
      *
@@ -191,6 +201,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     {
         return array_key_exists($name, $this->defaults);
     }
+
     /**
      * Sets a default value.
      *
@@ -205,12 +216,15 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
         //$this->compiled = null;
         return $this;
     }
+
     // TODO : avoir la possibilité de passer un tableau ? si on détecte que c'est un is_array dans le getargs() on appel la méthode addReqirements() pour un tableau, sinon on appel setRequirement()
     public function assert($key, $regex)
     {
         $this->setRequirement($key, $regex);
+
         return $this;
     }
+
     /**
      * Returns the requirements.
      *
@@ -220,6 +234,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     {
         return $this->requirements;
     }
+
     /**
      * Sets the requirements.
      *
@@ -232,8 +247,10 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     public function setRequirements(array $requirements)
     {
         $this->requirements = [];
+
         return $this->addRequirements($requirements);
     }
+
     /**
      * Adds requirements.
      *
@@ -251,6 +268,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
         //$this->compiled = null;
         return $this;
     }
+
     /**
      * Returns the requirement for the given key.
      *
@@ -262,6 +280,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     {
         return isset($this->requirements[$key]) ? $this->requirements[$key] : null;
     }
+
     /**
      * Checks if a requirement is set for the given key.
      *
@@ -273,6 +292,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     {
         return array_key_exists($key, $this->requirements);
     }
+
     /**
      * Sets a requirement for the given key.
      *
@@ -287,6 +307,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
         //$this->compiled = null;
         return $this;
     }
+
     // remove the char "^" at the start of the regex, and the final "$" char at the end of the regex
     private function sanitizeRequirement($key, $regex)
     {
@@ -302,9 +323,12 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
         if ('' === $regex) {
             throw new \InvalidArgumentException(sprintf('Routing requirement for "%s" cannot be empty.', $key));
         }
+
         return $regex;
     }
+
     //https://github.com/silexphp/Silex/blob/master/src/Silex/Route.php#L138
+
     /**
      * Sets the requirement of HTTP (no HTTPS) on this Route.
      *
@@ -313,8 +337,10 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     public function requireHttp()
     {
         $this->setSchemes('http');
+
         return $this;
     }
+
     /**
      * Sets the requirement of HTTPS on this Route.
      *
@@ -323,9 +349,12 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     public function requireHttps()
     {
         $this->setSchemes('https');
+
         return $this;
     }
+
     //https://github.com/symfony/routing/blob/master/Route.php
+
     /**
      * Returns the lowercased schemes this route is restricted to.
      * So an empty array means that any scheme is allowed.
@@ -336,6 +365,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     {
         return $this->schemes;
     }
+
     /**
      * Sets the schemes (e.g. 'https') this route is restricted to.
      * So an empty array means that any scheme is allowed.
@@ -352,6 +382,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
         //$this->compiled = null;
         return $this;
     }
+
     /**
      * Checks if a scheme requirement has been set.
      *
@@ -363,6 +394,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     {
         return in_array(strtolower($scheme), $this->schemes, true);
     }
+
     public function name(string $name)
     {
         //TODO : mettre en place une vérif pour éviter qu'on ait pas des doublons de noms pour les routes. Eventuellement faire ce controle côté router !!!!
@@ -377,8 +409,10 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
                 }
         */
         $this->name = $name;
+
         return $this;
     }
+
     public function getName()
     {
         return $this->name;
@@ -389,8 +423,10 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
     {
         array_unshift($methods, $method);
         $this->setAllowedMethods($methods);
+
         return $this;
     }
+
     /**
      * Set supported HTTP method(s).
      *
@@ -409,8 +445,10 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  
 */
         // TODO : ajouter une vérification concernant la méthode ajoutée en la validant avec un regex : https://github.com/zendframework/zend-expressive-router/blob/master/src/Route.php#L170
         $this->methods = array_map('strtoupper', $methods);
+
         return $this;
     }
+
     /**
      * Get supported HTTP method(s).
      *

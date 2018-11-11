@@ -4,15 +4,10 @@ declare(strict_types=1);
 
 namespace Chiron\Routing\Strategy;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Chiron\Routing\Route;
-use Chiron\Http\Psr\Response;
 use Closure;
-
+use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
 use RuntimeException;
-use InvalidArgumentException;
 
 /**
  * This class resolves a string of the format 'class@method' into a closure
@@ -24,6 +19,7 @@ final class CallableResolver implements CallableResolverInterface
      * @var ContainerInterface
      */
     private $container;
+
     /**
      * @param ContainerInterface|null $container
      */
@@ -87,7 +83,4 @@ final class CallableResolver implements CallableResolverInterface
 
         return $resolved;
     }
-
-
-
 }

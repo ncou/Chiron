@@ -14,6 +14,7 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
+use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Http\Middleware\BodyParserMiddleware;
 use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
 use Chiron\Http\Middleware\CheckMaintenanceMiddleware;
@@ -21,7 +22,6 @@ use Chiron\Http\Middleware\ContentLengthMiddleware;
 use Chiron\Http\Middleware\ContentTypeByDefaultMiddleware;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\EmitterMiddleware;
-use Chiron\Handler\Stack\RequestHandlerStack;
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
 use Chiron\Http\Middleware\OriginalRequestMiddleware;
@@ -59,8 +59,6 @@ class MiddlewaresServiceProvider
             // TODO : rajouter le composant logger dans le fichier composer.json et ensuite décommenter cette ligne !!!!
             //$app->setLogger(new Logger(Chiron\ROOT_DIR.Chiron\DS.Chiron\LOG_DIR_NAME.Chiron\DS.'CHIRON.log'));
         };
-
-
 
         $container[RoutingMiddleware::class] = function ($c) {
             return new RoutingMiddleware($c[Router::class]);

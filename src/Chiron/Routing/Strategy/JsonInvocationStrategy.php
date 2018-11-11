@@ -6,10 +6,10 @@ declare(strict_types=1);
 
 namespace Chiron\Routing\Strategy;
 
+use Chiron\Http\Psr\Response;
+use Chiron\Routing\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Chiron\Routing\Route;
-use Chiron\Http\Psr\Response;
 
 /**
  * Route callback strategy with route parameters as individual arguments.
@@ -24,7 +24,7 @@ class JsonInvocationStrategy extends AbstractStrategy
         $this->resolver = $resolver;
     }
 
-    public function invokeRouteCallable(Route $route, ServerRequestInterface $request) : ResponseInterface
+    public function invokeRouteCallable(Route $route, ServerRequestInterface $request): ResponseInterface
     {
         $callable = $this->resolver->resolve($route->getHandler());
         $parameters = $this->getParametersFromCallable($callable);
@@ -33,7 +33,7 @@ class JsonInvocationStrategy extends AbstractStrategy
         $response = call_user_func_array($callable, $arguments);
 
         if ($this->isJsonEncodable($response)) {
-            $json     = json_encode($response); // json_encode($data, $encodingOptions)); // TODO : lui passer des options pour le json encode
+            $json = json_encode($response); // json_encode($data, $encodingOptions)); // TODO : lui passer des options pour le json encode
 
             // TODO : améliorer la gestion des exceptions :
             //https://github.com/knpuniversity/twig/blob/master/start/vendor/symfony/http-foundation/Symfony/Component/HttpFoundation/JsonResponse.php#L86
@@ -47,10 +47,8 @@ class JsonInvocationStrategy extends AbstractStrategy
             //https://github.com/sergant210/modHelpers/blob/master/core/components/modhelpers/classes/ResponseTrait.php#L19
             //https://github.com/sergant210/modHelpers/blob/master/core/components/modhelpers/classes/Response.php#L50
 
-
             // Encode <, >, ', &, and " for RFC4627-compliant JSON, which may also be embedded into HTML.
             //$this->data = json_encode($data, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
-
 
             // Ensure that the json encoding passed successfully
             if ($json === false) {
@@ -67,7 +65,7 @@ class JsonInvocationStrategy extends AbstractStrategy
     }
 
     /**
-     * Check if the response can be converted to JSON
+     * Check if the response can be converted to JSON.
      *
      * Arrays can always be converted, objects can be converted if they're not a response already
      *
@@ -76,11 +74,12 @@ class JsonInvocationStrategy extends AbstractStrategy
      * @return bool
      */
     // TODO : regarder ici : https://github.com/sergant210/modHelpers/blob/master/core/components/modhelpers/classes/Response.php#L50
-    private function isJsonEncodable($response) : bool
+    private function isJsonEncodable($response): bool
     {
         if ($response instanceof ResponseInterface) {
             return false;
         }
-        return (is_array($response) || is_object($response));
+
+        return is_array($response) || is_object($response);
     }
 }

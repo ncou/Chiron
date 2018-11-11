@@ -53,10 +53,8 @@ if (! extension_loaded('mbstring')) {
 
 use Chiron\Config\Config;
 use Chiron\Container\Container;
-use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
 use Chiron\Handler\Stack\Decorator\FixedResponseHandler;
 use Chiron\Handler\Stack\Decorator\FixedResponseMiddlewareDecorator;
-use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Response\EmptyResponse;
@@ -66,24 +64,19 @@ use Chiron\Provider\ErrorHandlerServiceProvider;
 use Chiron\Provider\HttpFactoriesServiceProvider;
 use Chiron\Provider\MiddlewaresServiceProvider;
 use Chiron\Provider\ServerRequestCreatorServiceProvider;
-use Chiron\Routing\RoutableInterface;
-use Chiron\Routing\RoutableTrait;
-use Chiron\Routing\RouterTrait;
-use Chiron\Routing\Router;
-use Closure;
-use InvalidArgumentException;
-use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Log\LoggerInterface;
-use Chiron\Routing\Strategy\RouteInvocationStrategy;
+use Chiron\Routing\Route;
 use Chiron\Routing\RouteCollectionInterface;
 use Chiron\Routing\RouteCollectionTrait;
 use Chiron\Routing\RouteGroup;
-use Chiron\Routing\Route;
+use Chiron\Routing\Router;
 use Chiron\Routing\Strategy\CallableResolver;
+use Chiron\Routing\Strategy\RouteInvocationStrategy;
+use Closure;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 // TODO : faire étendre cette classe de la classe "Router"
 class Application implements RouteCollectionInterface, MiddlewareAwareInterface
@@ -215,8 +208,6 @@ class Application implements RouteCollectionInterface, MiddlewareAwareInterface
         ini_set('report_memleaks', $debug);
     }
 
-
-
     /*******************************************************************************
      * Container
      ******************************************************************************/
@@ -339,9 +330,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
                     return $response;
                 });
         */
-
-
-
 
         $this->container = new Container();
 
@@ -551,7 +539,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         // add an empty response as default response if no route found and no 404 handler is added.
         array_push($this->middlewares, $emptyResponse);
 
-        $response =  $this->requestHandler->seed($this->middlewares)->handle($request);
+        $response = $this->requestHandler->seed($this->middlewares)->handle($request);
 
         return $response;
 
