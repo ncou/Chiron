@@ -84,6 +84,7 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
     public function group(string $prefix, callable $group): RouteGroup
     {
         $prefix = ($prefix === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($prefix, '/'));
+
         return $this->collection->group($prefix, $group);
     }
 

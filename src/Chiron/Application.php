@@ -60,14 +60,12 @@ use Chiron\Http\Psr\Response;
 use Chiron\Http\Response\EmptyResponse;
 use Chiron\Http\ResponseEmitter;
 use Chiron\Http\ServerRequestCreator;
+use Chiron\Provider\ApplicationServiceProvider;
 use Chiron\Provider\ErrorHandlerServiceProvider;
 use Chiron\Provider\HttpFactoriesServiceProvider;
 use Chiron\Provider\MiddlewaresServiceProvider;
-use Chiron\Provider\ApplicationServiceProvider;
 use Chiron\Provider\ServerRequestCreatorServiceProvider;
 use Chiron\Routing\Route;
-use Chiron\Routing\RouteCollectionInterface;
-use Chiron\Routing\RouteCollectionTrait;
 use Chiron\Routing\RouteGroup;
 use Chiron\Routing\Router;
 use Chiron\Routing\Strategy\CallableResolver;
@@ -523,10 +521,8 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     // TODO : renommer cette fonction en "handleRequest()"
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-
         //die(var_dump($this->getRouter()->getRoutes()));
         //die(var_dump($this->getRouter()->relativePathFor('test111', ['id' => '0123456'])));
-
 
         //die(var_dump($request->getServerParam('HTTP_HOST')));
 

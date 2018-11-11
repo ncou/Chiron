@@ -14,18 +14,7 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Chiron\Handler\Stack\RequestHandlerStack;
-use Chiron\Http\Middleware\BodyParserMiddleware;
-use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
-use Chiron\Http\Middleware\CheckMaintenanceMiddleware;
-use Chiron\Http\Middleware\ContentLengthMiddleware;
-use Chiron\Http\Middleware\ContentTypeByDefaultMiddleware;
-use Chiron\Http\Middleware\DispatcherMiddleware;
-use Chiron\Http\Middleware\EmitterMiddleware;
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
-use Chiron\Http\Middleware\MethodOverrideMiddleware;
-use Chiron\Http\Middleware\OriginalRequestMiddleware;
-use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;

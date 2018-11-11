@@ -106,7 +106,7 @@ class RequestHandlerStack implements RequestHandlerInterface
 
     /**
      * @param string|callable|MiddlewareInterface or an array of such arguments $middlewares
-     * @param callable $predicate Used to determine if the middleware should be executed
+     * @param callable                                                          $predicate   Used to determine if the middleware should be executed
      */
     public function pipeIf($middlewares, callable $predicate): self
     {
@@ -153,8 +153,6 @@ class RequestHandlerStack implements RequestHandlerInterface
 
         return $middleware->process($request, $this);
     }
-
-
 
     /**
      * Get a handler pointing to the next middleware.

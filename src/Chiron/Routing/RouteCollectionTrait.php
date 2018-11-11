@@ -9,7 +9,7 @@ trait RouteCollectionTrait
     /**
      * Group a bunch of routes.
      *
-     * @param string          $prefix
+     * @param string   $prefix
      * @param callable $group
      *
      * @return \Chiron\Routing\RouteGroup
