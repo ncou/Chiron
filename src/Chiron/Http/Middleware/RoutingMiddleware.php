@@ -71,6 +71,7 @@ class RoutingMiddleware implements MiddlewareInterface
         // Inject individual matched parameters.
         foreach ($result->getMatchedParams() as $param => $value) {
             $request = $request->withAttribute($param, $value);
+            //$request = $request->withAttribute($param, urldecode($value)); // TODO : regarder si un urldecode est nécessaire.
         }
         // Inject the actual route result in the request
         $request = $request->withAttribute(RouteResult::class, $result);

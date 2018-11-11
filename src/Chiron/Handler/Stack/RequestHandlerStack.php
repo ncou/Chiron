@@ -64,7 +64,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-// TODO : renommer cette classe en RequestHandlerStack
+// TODO : renommer cette classe en Pipeline et renommer la méthode seed() en ->pipe( middleware ou tableau de middleware)
 class RequestHandlerStack implements RequestHandlerInterface
 {
     /**
@@ -114,6 +114,7 @@ class RequestHandlerStack implements RequestHandlerInterface
         $middleware = $this->middlewares[$this->index] ?? null;
 
         // TODO : je pense qu'on peut aussi faire un test via un is_empty() => https://github.com/equip/dispatch/blob/master/src/Handler.php#L38
+        // TODO : je pense qu'on peut aussi vérifier l'index => https://github.com/emonkak/php-http-middleware/blob/master/src/Pipeline.php#L40
         if (is_null($middleware)) {
             throw new OutOfBoundsException('Reached end of middleware stack. Does your controller return a response ?');
         }

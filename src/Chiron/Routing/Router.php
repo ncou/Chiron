@@ -49,17 +49,12 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
     private $generator;
 
     /**
-     * @var \League\Route\Route[]
+     * @var \Chiron\Routing\Route[]
      */
     private $routes = [];
 
     /**
-     * @var \League\Route\Route[]
-     */
-    private $namedRoutes = [];
-
-    /**
-     * @var \League\Route\RouteGroup[]
+     * @var \Chiron\Routing\RouteGroup[]
      */
     private $groups = [];
 
@@ -133,7 +128,7 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
 
         $path = sprintf('/%s', ltrim($path, '/'));
         $route = new Route($path, $handler, $this->routeCounter);
-        $this->routes[] = $route;
+        $this->routes[$route->getIdentifier()] = $route;
         $this->routeCounter++;
 
         return $route;
@@ -145,7 +140,7 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
      * @param string   $prefix
      * @param callable $group
      *
-     * @return \League\Route\RouteGroup
+     * @return \Chiron\Routing\RouteGroup
      */
     public function group(string $prefix, callable $group): RouteGroup
     {
@@ -183,24 +178,11 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
 
         $this->prepareRoutes($request);
 
-        /*
-                return (new Dispatcher($this->getData()))
-                    ->middlewares($this->getMiddlewareStack())
-                    ->setStrategy($this->getStrategy())
-                    ->dispatchRequest($request)
-                ;*/
-
         // process routes
-        $dispatcher = new \FastRoute\Dispatcher\GroupCountBased($this->generator->getData());
+        $dispatcher = new Dispatcher($this->routes, $this->generator->getData());
 
-        $method = $request->getMethod();
-        $path = $request->getUri()->getPath();
 
-        $result = $dispatcher->dispatch($method, $path);
-
-        return $result[0] !== FastRoute::FOUND
-            ? $this->marshalFailedRoute($result)
-            : $this->marshalMatchedRoute($result, $method);
+        return $dispatcher->dispatchRequest($request);
     }
 
     public function getDefaultStrategy(): StrategyInterface
@@ -224,9 +206,8 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
     protected function prepareRoutes(ServerRequestInterface $request): void
     {
         $this->processGroups($request);
-        $this->buildNameIndex();
-        $routes = array_merge(array_values($this->routes), array_values($this->namedRoutes));
-        foreach ($routes as $key => $route) {
+
+        foreach ($this->routes as $key => $route) {
             // check for scheme condition
             if (! is_null($route->getScheme()) && $route->getScheme() !== $request->getUri()->getScheme()) {
                 continue;
@@ -239,9 +220,11 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
             if (! is_null($route->getPort()) && $route->getPort() !== $request->getUri()->getPort()) {
                 continue;
             }
+            // add a route strategy if no one is defined
             if (is_null($route->getStrategy())) {
                 $route->setStrategy($this->getStrategy());
             }
+
             $this->addRoute($route->getAllowedMethods(), $this->parseRoutePath($route->getUrl()), $route->getIdentifier());
         }
     }
@@ -262,19 +245,6 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
         foreach ((array) $httpMethod as $method) {
             foreach ($routeDatas as $routeData) {
                 $this->generator->addRoute($method, $routeData, $handler);
-            }
-        }
-    }
-
-    /**
-     * Build an index of named routes.
-     */
-    protected function buildNameIndex(): void
-    {
-        foreach ($this->routes as $key => $route) {
-            if (! is_null($route->getName())) {
-                unset($this->routes[$key]);
-                $this->namedRoutes[$route->getName()] = $route;
             }
         }
     }
@@ -308,20 +278,35 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
     /**
      * Get a named route.
      *
-     * @param string $name
+     * @param string $name Route name
      *
-     * @throws \InvalidArgumentException when no route of the provided name exists.
+     * @throws \InvalidArgumentException If named route does not exist
      *
-     * @return \League\Route\Route
+     * @return \Chiron\Routing\Route
      */
     public function getNamedRoute(string $name): Route
     {
-        $this->buildNameIndex();
-        if (isset($this->namedRoutes[$name])) {
-            return $this->namedRoutes[$name];
+        foreach ($this->routes as $route) {
+            if ($route->getName() === $name) {
+                return $route;
+            }
         }
 
-        throw new InvalidArgumentException(sprintf('No route of the name (%s) exists', $name));
+        throw new InvalidArgumentException('Named route does not exist for name: ' . $name);
+    }
+
+    /**
+     * Remove named route
+     *
+     * @param string $name        Route name
+     *
+     * @throws \InvalidArgumentException   If named route does not exist
+     */
+    public function removeNamedRoute(string $name)
+    {
+        $route = $this->getNamedRoute($name);
+        // no exception, route exists, now remove by id
+        unset($this->routes[$route->getIdentifier()]);
     }
 
     /**
@@ -351,66 +336,5 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
     protected function parseRoutePath(string $path): string
     {
         return preg_replace(array_keys($this->patternMatchers), array_values($this->patternMatchers), $path);
-    }
-
-    /**
-     * Marshal a routing failure result.
-     *
-     * If the failure was due to the HTTP method, passes the allowed HTTP
-     * methods to the factory.
-     */
-    private function marshalFailedRoute(array $result): RouteResult
-    {
-        if ($result[0] === FastRoute::METHOD_NOT_ALLOWED) {
-            return RouteResult::fromRouteFailure($result[1]);
-        }
-
-        return RouteResult::fromRouteFailure(RouteResult::HTTP_METHOD_ANY);
-    }
-
-    /**
-     * Marshals a route result based on the results of matching and the current HTTP method.
-     */
-    private function marshalMatchedRoute(array $result, string $method): RouteResult
-    {
-        $identifier = $result[1];
-
-        $route = $this->lookupRoute($identifier);
-
-        $params = $result[2];
-
-        /*
-        $options = $route->getOptions();
-        if (! empty($options['defaults'])) {
-            $params = array_merge($options['defaults'], $params);
-        }*/
-
-        return RouteResult::fromRoute($route, $params);
-    }
-
-    /**
-     * @param string $identifier
-     *
-     * @return RouteInterface
-     */
-    // TODO : améliorer ce bout de code !!!!!
-    private function lookupRoute(string $identifier): Route
-    {
-        /*
-        if (!isset($this->routes[$identifier])) {
-            throw new RuntimeException('Route not found.');
-        }
-        return $this->routes[$identifier];
-        */
-
-        $routes = array_merge(array_values($this->routes), array_values($this->namedRoutes));
-
-        foreach ($routes as $route) {
-            if ($route->getIdentifier() === $identifier) {
-                return $route;
-            }
-        }
-
-        throw new \RuntimeException('Route not found for the given identifier.');
     }
 }
