@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Chiron\Routing;
@@ -6,59 +7,65 @@ namespace Chiron\Routing;
 interface RouteConditionHandlerInterface
 {
     /**
-     * Get the host condition
+     * Get the host condition.
      *
      * @return string|null
      */
-    public function getHost() : ?string;
+    public function getHost(): ?string;
+
     /**
-     * Set the host condition
+     * Set the host condition.
      *
      * @param string $host
      *
      * @return static
      */
-    public function setHost(string $host) : RouteConditionHandlerInterface;
+    public function setHost(string $host): RouteConditionHandlerInterface;
+
     /**
-     * Get the route name
+     * Get the route name.
      *
      * @return string|null
      */
     //public function getName() : ?string;
     /**
-     * Set the route name
+     * Set the route name.
      *
      * @param string $name
      *
      * @return static
      */
     //public function setName(string $name) : RouteConditionHandlerInterface;
+
     /**
-     * Get the scheme condition
+     * Get the scheme condition.
      *
      * @return string|null
      */
-    public function getScheme() : ?string;
+    public function getScheme(): ?string;
+
     /**
-     * Set the scheme condition
+     * Set the scheme condition.
      *
      * @param string $scheme
      *
      * @return static
      */
-    public function setScheme(string $scheme) : RouteConditionHandlerInterface;
+    public function setScheme(string $scheme): RouteConditionHandlerInterface;
+
     /**
-     * Get the port condition
+     * Get the port condition.
      *
      * @return int|null
      */
-    public function getPort() : ?int;
+    public function getPort(): ?int;
+
     /**
-     * Set the port condition
+     * Set the port condition.
      *
      * @param int $port
      *
      * @return static
      */
-    public function setPort(int $port) : RouteConditionHandlerInterface;
+    public function setPort(int $port): RouteConditionHandlerInterface;
 }

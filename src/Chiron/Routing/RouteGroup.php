@@ -4,16 +4,12 @@ declare(strict_types=1);
 
 namespace Chiron\Routing;
 
-use Chiron\Handler\DeferredRequestHandler;
-use InvalidArgumentException;
-use Psr\Container\ContainerInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Routing\Strategy\StrategyAwareTrait;
-use Chiron\Routing\Strategy\StrategyAwareInterface;
-use Chiron\MiddlewareAwareTrait;
 use Chiron\MiddlewareAwareInterface;
+use Chiron\MiddlewareAwareTrait;
+use Chiron\Routing\Strategy\StrategyAwareInterface;
+use Chiron\Routing\Strategy\StrategyAwareTrait;
 
-class RouteGroup implements    MiddlewareAwareInterface,    RouteCollectionInterface,    RouteConditionHandlerInterface,    StrategyAwareInterface
+class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, RouteConditionHandlerInterface, StrategyAwareInterface
 {
     use MiddlewareAwareTrait;
     use RouteCollectionTrait;
@@ -24,33 +20,37 @@ class RouteGroup implements    MiddlewareAwareInterface,    RouteCollectionInter
      * @var callable
      */
     protected $callback;
+
     /**
      * @var \League\Route\RouteCollectionInterface
      */
     protected $collection;
+
     /**
      * @var string
      */
     protected $prefix;
+
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param string                                 $prefix
-     * @param callable                               $callback
+     * @param string                   $prefix
+     * @param callable                 $callback
      * @param RouteCollectionInterface $collection
      */
     public function __construct(string $prefix, callable $callback, RouteCollectionInterface $collection)
     {
-        $this->callback   = $callback;
+        $this->callback = $callback;
         $this->collection = $collection;
-        $this->prefix     = sprintf('/%s', ltrim($prefix, '/'));
+        $this->prefix = sprintf('/%s', ltrim($prefix, '/'));
     }
+
     /**
-     * Return the prefix of the group
+     * Return the prefix of the group.
      *
      * @return string
      */
-    public function getPrefix() : string
+    public function getPrefix(): string
     {
         return $this->prefix;
     }
@@ -58,9 +58,9 @@ class RouteGroup implements    MiddlewareAwareInterface,    RouteCollectionInter
     /**
      * {@inheritdoc}
      */
-    public function map(string $path, $handler) : Route
+    public function map(string $path, $handler): Route
     {
-        $path  = ($path === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($path, '/'));
+        $path = ($path === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($path, '/'));
 
         $route = $this->collection->map($path, $handler);
 
@@ -84,11 +84,9 @@ class RouteGroup implements    MiddlewareAwareInterface,    RouteCollectionInter
     }
 
     /**
-     * Process the group and ensure routes are added to the collection
-     *
-     * @return void
+     * Process the group and ensure routes are added to the collection.
      */
-    public function __invoke() : void
+    public function __invoke(): void
     {
         // TODO : voir si on fait un bind sur $this
         //call_user_func_array($this->callback->bindTo($this), [$this]);

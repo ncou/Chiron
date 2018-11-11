@@ -6,9 +6,8 @@ declare(strict_types=1);
 
 namespace Chiron\Routing\Strategy;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Chiron\Routing\Route;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Route callback strategy with route parameters as individual arguments.

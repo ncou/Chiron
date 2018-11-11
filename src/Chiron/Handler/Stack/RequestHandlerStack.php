@@ -54,16 +54,15 @@ namespace Chiron\Handler\Stack;
 
 // TODO : prendre exemple ici pour gérer la méthode offsetSet sur une stack ???? https://github.com/zendframework/zend-httphandlerrunner/blob/master/src/Emitter/EmitterStack.php#L55
 
-use InvalidArgumentException;
 use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
 use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
+use InvalidArgumentException;
+use OutOfBoundsException;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Container\ContainerInterface;
-use UnexpectedValueException;
-use OutOfBoundsException;
 
 // TODO : renommer cette classe en RequestHandlerStack
 class RequestHandlerStack implements RequestHandlerInterface
@@ -84,7 +83,6 @@ class RequestHandlerStack implements RequestHandlerInterface
      * @var int
      */
     private $index = 0;
-
 
     public function __construct(ContainerInterface $container = null)
     {
@@ -159,5 +157,4 @@ class RequestHandlerStack implements RequestHandlerInterface
             ));
         }
     }
-
 }

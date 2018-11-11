@@ -6,10 +6,9 @@ declare(strict_types=1);
 
 namespace Chiron\Routing\Strategy;
 
+use Chiron\Routing\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Chiron\Routing\Route;
-use Chiron\Container\Container;
 
 /**
  * Route callback strategy with route parameters as individual arguments.
@@ -24,7 +23,7 @@ class RouteInvocationStrategy extends AbstractStrategy
         $this->resolver = $resolver;
     }
 
-    public function invokeRouteCallable(Route $route, ServerRequestInterface $request) : ResponseInterface
+    public function invokeRouteCallable(Route $route, ServerRequestInterface $request): ResponseInterface
     {
         $callable = $this->resolver->resolve($route->getHandler());
         $parameters = $this->getParametersFromCallable($callable);

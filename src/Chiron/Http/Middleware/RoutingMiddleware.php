@@ -13,17 +13,14 @@ use Chiron\Http\Exception\Client\MethodNotAllowedHttpException;
 use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Stream;
-use Chiron\Routing\Router;
 use Chiron\Routing\Route;
+use Chiron\Routing\Router;
 use Chiron\Routing\RouteResult;
-use Chiron\Routing\RouteCollector;
+use FastRoute\RouteCollector as FastRouteCollector;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-
-use FastRoute\Dispatcher as FastRoute;
-use \FastRoute\RouteCollector as FastRouteCollector;
 
 class RoutingMiddleware implements MiddlewareInterface
 {
