@@ -28,7 +28,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  * Neither the arguments nor the return value need be typehinted; however, if
  * the signature is incompatible, a PHP Error will likely be thrown.
  */
-final class FixedResponseMiddlewareDecorator implements MiddlewareInterface
+final class FixedResponseMiddleware implements MiddlewareInterface
 {
     /**
      * fixed response to return.

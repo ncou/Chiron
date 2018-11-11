@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace Chiron\Routing;
 
-use Chiron\MiddlewareAwareInterface;
-use Chiron\MiddlewareAwareTrait;
 use Chiron\Routing\Strategy\StrategyAwareInterface;
 use Chiron\Routing\Strategy\StrategyAwareTrait;
 use Chiron\Routing\Strategy\StrategyInterface;
 use FastRoute\DataGenerator;
-use FastRoute\Dispatcher as FastRoute;
 use FastRoute\RouteParser;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
@@ -36,9 +33,9 @@ use Psr\Http\Message\ServerRequestInterface;
  * attaching via one of the exposed methods, and will raise an exception when a
  * collision occurs.
  */
-class Router implements RouteCollectionInterface, StrategyAwareInterface //, MiddlewareAwareInterface
+class Router implements RouteCollectionInterface, StrategyAwareInterface, MiddlewareAwareInterface
 {
-    //use MiddlewareAwareTrait;
+    use MiddlewareAwareTrait;
     use RouteCollectionTrait;
     use StrategyAwareTrait; // vérifier pourquoi on utilise un StrategyAware, normalement on devrait utiliser uniquement le det/setDefaultStrategy
 
@@ -56,7 +53,7 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
     /**
      * @var \Chiron\Routing\RouteGroup[]
      */
-    private $groups = [];
+    private $groups = []; // TODO : vérifier l'utilité d'avoir un tableau de groups !!!!
 
     /**
      * @var array
@@ -142,10 +139,15 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
      *
      * @return \Chiron\Routing\RouteGroup
      */
+    // TODO : vérifier si on pas plutot utiliser un Closure au lieu d'un callable pour le typehint
     public function group(string $prefix, callable $group): RouteGroup
     {
         $group = new RouteGroup($prefix, $group, $this);
+        // TODO : vérifier l'utilité d'avoir un tableau de groups !!!!
         $this->groups[] = $group;
+
+        $group();
+        array_pop($this->groups); // TODO : vérifier l'utilité d'avoir un tableau de groups !!!!
 
         return $group;
     }
@@ -202,9 +204,9 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      */
-    protected function prepareRoutes(ServerRequestInterface $request): void
+    private function prepareRoutes(ServerRequestInterface $request): void
     {
-        $this->processGroups($request);
+        //$this->processGroups();
 
         foreach ($this->routes as $key => $route) {
             // check for scheme condition
@@ -249,29 +251,13 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
     }
 
     /**
-     * Process all groups.
+     * Get route objects
      *
-     * Adds all of the group routes to the collection and determines if the group
-     * strategy should be be used.
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @return Route[]
      */
-    protected function processGroups(ServerRequestInterface $request): void
+    public function getRoutes(): array
     {
-        $activePath = $request->getUri()->getPath();
-        foreach ($this->groups as $key => $group) {
-            // we want to determine if we are technically in a group even if the
-            // route is not matched so exceptions are handled correctly
-            // TODO : vérifier que ce bout de code ne sert à rien !!!!
-            /*
-            if (strncmp($activePath, $group->getPrefix(), strlen($group->getPrefix())) === 0
-                && ! is_null($group->getStrategy())
-            ) {
-                $this->setStrategy($group->getStrategy());
-            }*/
-            unset($this->groups[$key]);
-            $group();
-        }
+        return $this->routes;
     }
 
     /**
@@ -335,5 +321,82 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface //, Mid
     protected function parseRoutePath(string $path): string
     {
         return preg_replace(array_keys($this->patternMatchers), array_values($this->patternMatchers), $path);
+    }
+
+    /**
+     * Build the path for a named route excluding the base path
+     *
+     * @param string $name        Route name
+     * @param array  $data        Named argument replacement data
+     * @param array  $queryParams Optional query string parameters
+     *
+     * @return string
+     *
+     * @throws InvalidArgumentException         If named route does not exist
+     * @throws InvalidArgumentException If required data not provided
+     */
+    public function relativePathFor(string $name, array $data = [], array $queryParams = []): string
+    {
+        $route = $this->getNamedRoute($name);
+        $pattern = $route->getUrl();
+        $routeDatas = $this->parser->parse($pattern);
+        // $routeDatas is an array of all possible routes that can be made. There is
+        // one routedata for each optional parameter plus one for no optional parameters.
+        //
+        // The most specific is last, so we look for that first.
+        $routeDatas = array_reverse($routeDatas);
+        $segments = [];
+        foreach ($routeDatas as $routeData) {
+            foreach ($routeData as $item) {
+                if (is_string($item)) {
+                    // this segment is a static string
+                    $segments[] = $item;
+                    continue;
+                }
+                // This segment has a parameter: first element is the name
+                if (!array_key_exists($item[0], $data)) {
+                    // we don't have a data element for this segment: cancel
+                    // testing this routeData item, so that we can try a less
+                    // specific routeData item.
+                    $segments = [];
+                    $segmentName = $item[0];
+                    break;
+                }
+                $segments[] = $data[$item[0]];
+            }
+            if (!empty($segments)) {
+                // we found all the parameters for this route data, no need to check
+                // less specific ones
+                break;
+            }
+        }
+        if (empty($segments)) {
+            throw new InvalidArgumentException('Missing data for URL segment: ' . $segmentName);
+        }
+        $url = implode('', $segments);
+        if ($queryParams) {
+            $url .= '?' . http_build_query($queryParams);
+        }
+        return $url;
+    }
+    /**
+     * Build the path for a named route including the base path
+     *
+     * @param string $name        Route name
+     * @param array  $data        Named argument replacement data
+     * @param array  $queryParams Optional query string parameters
+     *
+     * @return string
+     *
+     * @throws InvalidArgumentException         If named route does not exist
+     * @throws InvalidArgumentException If required data not provided
+     */
+    public function pathFor(string $name, array $data = [], array $queryParams = []): string
+    {
+        $url = $this->relativePathFor($name, $data, $queryParams);
+        if ($this->basePath) {
+            $url = $this->basePath . $url;
+        }
+        return $url;
     }
 }

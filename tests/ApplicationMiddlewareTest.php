@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Tests\Middleware;
 
 use Chiron\Application;
-use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
+use Chiron\Handler\Stack\Decorator\CallableMiddleware;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Http\Psr\Response;
@@ -38,7 +38,7 @@ class ApplicationMiddlewareTest extends TestCase
         $callable = function ($request, $handler) {
             return (new Response())->write('MIDDLEWARE');
         };
-        $middleware = new CallableMiddlewareDecorator($callable);
+        $middleware = new CallableMiddleware($callable);
 
         $app = new Application();
         $app->middleware($middleware);
@@ -89,7 +89,7 @@ class ApplicationMiddlewareTest extends TestCase
                 return (new Response())->write('MIDDLEWARE');
             };
 
-            return new CallableMiddlewareDecorator($callable);
+            return new CallableMiddleware($callable);
         };
 
         $app = new Application();
@@ -170,14 +170,14 @@ class ApplicationMiddlewareTest extends TestCase
 
             return $response->write('MIDDLEWARE_1');
         };
-        $middleware1 = new CallableMiddlewareDecorator($callable1);
+        $middleware1 = new CallableMiddleware($callable1);
         //---
         $callable2 = function ($request, $handler) {
             $response = new Response();
 
             return $response->write('MIDDLEWARE_2_');
         };
-        $middleware2 = new CallableMiddlewareDecorator($callable2);
+        $middleware2 = new CallableMiddleware($callable2);
 
         $app = new Application();
         $app->middleware([$middleware1, $middleware2]);
@@ -225,7 +225,7 @@ class ApplicationMiddlewareTest extends TestCase
                 return $response;
             };
 
-            return new CallableMiddlewareDecorator($callable1);
+            return new CallableMiddleware($callable1);
         };
         //---
         $entry2 = function ($c) {
@@ -236,7 +236,7 @@ class ApplicationMiddlewareTest extends TestCase
                 return $response;
             };
 
-            return new CallableMiddlewareDecorator($callable2);
+            return new CallableMiddleware($callable2);
         };
 
         $app = new Application();
@@ -332,7 +332,7 @@ class ApplicationMiddlewareTest extends TestCase
 
             return $response->write('_MIDDLEWARE');
         };
-        $middleware = new CallableMiddlewareDecorator($callable);
+        $middleware = new CallableMiddleware($callable);
         $route->middleware($middleware);
 
         $response = $app->handle($request);
@@ -388,7 +388,7 @@ class ApplicationMiddlewareTest extends TestCase
 
             return $response->write('_MIDDLEWARE-GROUP');
         };
-        $middleware = new CallableMiddlewareDecorator($callable);
+        $middleware = new CallableMiddleware($callable);
         $group->middleware($middleware);
 
         $response = $app->handle($request);
@@ -415,7 +415,7 @@ class ApplicationMiddlewareTest extends TestCase
 
                 return $response->write('_MIDDLEWARE-ROUTE');
             };
-            $middleware1 = new CallableMiddlewareDecorator($callable1);
+            $middleware1 = new CallableMiddleware($callable1);
 
             $group->get('/bar', $routeCallback)->middleware($middleware1);
         });
@@ -425,7 +425,7 @@ class ApplicationMiddlewareTest extends TestCase
 
             return $response->write('_MIDDLEWARE-GROUP');
         };
-        $middleware2 = new CallableMiddlewareDecorator($callable2);
+        $middleware2 = new CallableMiddleware($callable2);
         $group->middleware($middleware2);
 
         $response = $app->handle($request);

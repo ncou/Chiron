@@ -54,7 +54,7 @@ if (! extension_loaded('mbstring')) {
 use Chiron\Config\Config;
 use Chiron\Container\Container;
 use Chiron\Handler\Stack\Decorator\FixedResponseHandler;
-use Chiron\Handler\Stack\Decorator\FixedResponseMiddlewareDecorator;
+use Chiron\Handler\Stack\Decorator\FixedResponseMiddleware;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Response\EmptyResponse;
@@ -63,6 +63,7 @@ use Chiron\Http\ServerRequestCreator;
 use Chiron\Provider\ErrorHandlerServiceProvider;
 use Chiron\Provider\HttpFactoriesServiceProvider;
 use Chiron\Provider\MiddlewaresServiceProvider;
+use Chiron\Provider\ApplicationServiceProvider;
 use Chiron\Provider\ServerRequestCreatorServiceProvider;
 use Chiron\Routing\Route;
 use Chiron\Routing\RouteCollectionInterface;
@@ -78,12 +79,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
 
-// TODO : faire étendre cette classe de la classe "Router"
-class Application implements RouteCollectionInterface, MiddlewareAwareInterface
+class Application extends Router
 {
-    use RouteCollectionTrait;
-    use MiddlewareAwareTrait;
-
     public const VERSION = '1.0.0';
 
     /* @var ResponseEmitter */
@@ -153,7 +150,8 @@ class Application implements RouteCollectionInterface, MiddlewareAwareInterface
 
     // $params => string|array
     // TODO : renommer $closure en $group
-    public function group(string $prefix, Closure $closure): RouteGroup
+    // TODO : vérifier si on utilise Closure ou callable pour le typehint
+    public function group(string $prefix, callable $closure): RouteGroup
     {
         /*
         $group = new RouteGroup($prefix, $this->getRouter(), $this->getContainer());
@@ -338,6 +336,10 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $this->requestHandler = new RequestHandlerStack($this->container);
 
         // Register Middlewares services
+        $applicationServices = new ApplicationServiceProvider();
+        $applicationServices->register($this->container);
+
+        // Register Middlewares services
         $middlewaresServices = new MiddlewaresServiceProvider();
         $middlewaresServices->register($this->container);
 
@@ -505,7 +507,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
      * Run App
      ******************************************************************************/
 
-    public function run(): void
+    public function run(): ResponseInterface
     {
         //$request = (new \Chiron\Http\Factory\ServerRequestFactory())->createServerRequestFromArray($_SERVER);
         $requestCreator = $this->container->get(ServerRequestCreator::class);
@@ -514,11 +516,18 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $response = $this->handle($request);
 
         $this->emit($response);
+
+        return $response;
     }
 
     // TODO : renommer cette fonction en "handleRequest()"
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+
+        //die(var_dump($this->getRouter()->getRoutes()));
+        //die(var_dump($this->getRouter()->relativePathFor('test111', ['id' => '0123456'])));
+
+
         //die(var_dump($request->getServerParam('HTTP_HOST')));
 
         // apply PHP config settings.
@@ -534,12 +543,12 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $response = $response->withProtocolVersion($httpVersion);
         */
 
-        $emptyResponse = new FixedResponseMiddlewareDecorator(new EmptyResponse());
+        $emptyResponse = new FixedResponseMiddleware(new EmptyResponse());
 
         // add an empty response as default response if no route found and no 404 handler is added.
         array_push($this->middlewares, $emptyResponse);
 
-        $response = $this->requestHandler->seed($this->middlewares)->handle($request);
+        $response = $this->requestHandler->pipe($this->middlewares)->handle($request);
 
         return $response;
 

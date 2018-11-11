@@ -7,26 +7,6 @@ namespace Chiron\Routing;
 use FastRoute\Dispatcher\GroupCountBased as GroupCountBasedDispatcher;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * Aggregate routes for the router.
- *
- * This class provides * methods for creating path+HTTP method-based routes and
- * injecting them into the router:
- *
- * - get
- * - post
- * - put
- * - patch
- * - delete
- * - any
- *
- * A general `route()` method allows specifying multiple request methods and/or
- * arbitrary request methods when creating a path-based route.
- *
- * Internally, the class performs some checks for duplicate routes when
- * attaching via one of the exposed methods, and will raise an exception when a
- * collision occurs.
- */
 class Dispatcher extends GroupCountBasedDispatcher
 {
     private $routes;
@@ -48,7 +28,7 @@ class Dispatcher extends GroupCountBasedDispatcher
     public function dispatchRequest(ServerRequestInterface $request): RouteResult
     {
         $method = $request->getMethod();
-        $path = $request->getUri()->getPath();
+        $path = $request->getUri()->getPath(); //TODO vérifier pourquoi certain font un rawurldecode exemple dans Slim :    $uri = '/' . ltrim(rawurldecode($request->getUri()->getPath()), '/');
 
         $result = $this->dispatch($method, $path);
 

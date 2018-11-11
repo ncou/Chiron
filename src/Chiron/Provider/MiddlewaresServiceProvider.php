@@ -45,21 +45,6 @@ class MiddlewaresServiceProvider
      */
     public function register(ContainerInterface $container)
     {
-        // TODO : initialiser un logger ici ???? et éventuellement créer une propriété pour changer le formater dans la restitution de la log. cf nanologger et la liste des todo pour mettre un formater custom à passer en paramétre du constructeur !!!!
-
-        $container[Router::class] = function ($c) {
-            return new Router();
-        };
-
-        $container[LoggerInterface::class] = function ($c) {
-            return new NullLogger();
-            //$logger = new NullLogger();
-            // TODO : à améliorer !!!! regarder la notion de daily et single et de log_max_files : https://laravel.com/docs/5.2/errors
-
-            // TODO : rajouter le composant logger dans le fichier composer.json et ensuite décommenter cette ligne !!!!
-            //$app->setLogger(new Logger(Chiron\ROOT_DIR.Chiron\DS.Chiron\LOG_DIR_NAME.Chiron\DS.'CHIRON.log'));
-        };
-
         $container[RoutingMiddleware::class] = function ($c) {
             return new RoutingMiddleware($c[Router::class]);
         };

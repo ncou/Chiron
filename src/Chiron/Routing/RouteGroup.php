@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Routing;
 
-use Chiron\MiddlewareAwareInterface;
-use Chiron\MiddlewareAwareTrait;
 use Chiron\Routing\Strategy\StrategyAwareInterface;
 use Chiron\Routing\Strategy\StrategyAwareTrait;
 
@@ -83,9 +81,16 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
         return $route;
     }
 
+    public function group(string $prefix, callable $group): RouteGroup
+    {
+        $prefix = ($prefix === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($prefix, '/'));
+        return $this->collection->group($prefix, $group);
+    }
+
     /**
      * Process the group and ensure routes are added to the collection.
      */
+    // TODO : regarder aussi ici : https://github.com/slimphp/Slim/blob/3.x/Slim/RouteGroup.php#L38
     public function __invoke(): void
     {
         // TODO : voir si on fait un bind sur $this

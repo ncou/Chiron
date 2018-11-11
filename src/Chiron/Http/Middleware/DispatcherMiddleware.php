@@ -22,11 +22,11 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class DispatcherMiddleware implements MiddlewareInterface
 {
-    private $stack;
+    private $pipeline;
 
-    public function __construct(RequestHandlerStack $stack)
+    public function __construct(RequestHandlerStack $pipeline)
     {
-        $this->stack = $stack;
+        $this->pipeline = $pipeline;
     }
 
     /**
@@ -41,7 +41,7 @@ class DispatcherMiddleware implements MiddlewareInterface
             $route = $routeResult->getMatchedRoute();
             $middlewares = $this->gatherMiddlewares($route);
 
-            $routeHandler = $this->stack->seed($middlewares);
+            $routeHandler = $this->pipeline->pipe($middlewares);
 
             return $routeHandler->handle($request);
         }
@@ -49,6 +49,7 @@ class DispatcherMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 
+    // TODO : essayer de faire disparaitre cette méthode en utilisant directement la méthode ->seed du requesthandlerstack pour ajouter les middleware directement dans la stack.
     private function gatherMiddlewares(Route $route): array
     {
         $middlewares = $route->getMiddlewareStack();

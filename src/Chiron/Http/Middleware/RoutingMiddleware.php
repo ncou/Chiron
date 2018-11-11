@@ -61,6 +61,7 @@ class RoutingMiddleware implements MiddlewareInterface
 
             throw new MethodNotAllowedHttpException($allowedMethods);
         } elseif ($result->isFailure()) {
+            // Http error 404 not found
             throw new NotFoundHttpException();
         }
 
@@ -68,6 +69,8 @@ class RoutingMiddleware implements MiddlewareInterface
         // TODO : faire plutot porter ces informations (method et uri utilisé) directement dans l'objet RouteResult ??????
         //$request = $request->withAttribute('routeInfo', [$request->getMethod(), (string) $request->getUri()]);
 
+
+        // TODO : bout de code permettant d'injecter les attributs dans la session, à déplacer dans la classe de strategie pour l'invocation des routes !!!!!
         // Inject individual matched parameters.
         foreach ($result->getMatchedParams() as $param => $value) {
             $request = $request->withAttribute($param, $value);
@@ -75,6 +78,8 @@ class RoutingMiddleware implements MiddlewareInterface
         }
         // Inject the actual route result in the request
         $request = $request->withAttribute(RouteResult::class, $result);
+
+
 
         // Execute the next handler
         $response = $handler->handle($request);

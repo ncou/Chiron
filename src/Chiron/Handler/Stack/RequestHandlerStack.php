@@ -54,8 +54,9 @@ namespace Chiron\Handler\Stack;
 
 // TODO : prendre exemple ici pour gérer la méthode offsetSet sur une stack ???? https://github.com/zendframework/zend-httphandlerrunner/blob/master/src/Emitter/EmitterStack.php#L55
 
-use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
+use Chiron\Handler\Stack\Decorator\CallableMiddleware;
 use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
+use Chiron\Handler\Stack\Decorator\PredicateDecorator;
 use InvalidArgumentException;
 use OutOfBoundsException;
 use Psr\Container\ContainerInterface;
@@ -68,8 +69,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 class RequestHandlerStack implements RequestHandlerInterface
 {
     /**
-     * Dependency injection container.
-     *
      * @var ContainerInterface
      */
     private $container;
@@ -77,7 +76,7 @@ class RequestHandlerStack implements RequestHandlerInterface
     /**
      * @var array MiddlewareInterface[]
      */
-    private $middlewares = [];
+    private $middlewares;
 
     /**
      * @var int
@@ -90,13 +89,33 @@ class RequestHandlerStack implements RequestHandlerInterface
     }
 
     /**
-     * @param string|callable|MiddlewareInterface $middlewares
+     * @param string|callable|MiddlewareInterface or an array of such arguments $middlewares
      */
-    public function seed(array $middlewares = []): self
+    public function pipe($middlewares): self
     {
+        if (! is_array($middlewares)) {
+            $middlewares = [$middlewares];
+        }
+
         foreach ($middlewares as $middleware) {
-            //array_push($this->middlewares, $this->prepareMiddleware($middleware));
             $this->middlewares[] = $this->prepareMiddleware($middleware);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string|callable|MiddlewareInterface or an array of such arguments $middlewares
+     * @param callable $predicate Used to determine if the middleware should be executed
+     */
+    public function pipeIf($middlewares, callable $predicate): self
+    {
+        if (! is_array($middlewares)) {
+            $middlewares = [$middlewares];
+        }
+
+        foreach ($middlewares as $middleware) {
+            $this->middlewares[] = new PredicateDecorator($this->prepareMiddleware($middleware), $predicate);
         }
 
         return $this;
@@ -109,31 +128,48 @@ class RequestHandlerStack implements RequestHandlerInterface
      *
      * @return ResponseInterface
      */
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    /*
+    public function handle2(ServerRequestInterface $request): ResponseInterface
     {
         $middleware = $this->middlewares[$this->index] ?? null;
 
         // TODO : je pense qu'on peut aussi faire un test via un is_empty() => https://github.com/equip/dispatch/blob/master/src/Handler.php#L38
         // TODO : je pense qu'on peut aussi vérifier l'index => https://github.com/emonkak/php-http-middleware/blob/master/src/Pipeline.php#L40
         if (is_null($middleware)) {
+        //if (empty($this->middlewares[$this->index])) {
             throw new OutOfBoundsException('Reached end of middleware stack. Does your controller return a response ?');
         }
 
         return $middleware->process($request, $this->nextHandler());
+    }*/
+
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        if ($this->index >= count($this->middlewares)) {
+            throw new OutOfBoundsException('Reached end of middleware stack. Does your controller return a response ?');
+        }
+
+        $middleware = $this->middlewares[$this->index++];
+
+        return $middleware->process($request, $this);
     }
+
+
 
     /**
      * Get a handler pointing to the next middleware.
      *
      * @return static
      */
+    // TODO : vérifier si on a besoin de cette méthode !!!!
+    /*
     private function nextHandler(): RequestHandlerInterface
     {
         $copy = clone $this;
         $copy->index++;
 
         return $copy;
-    }
+    }*/
 
     /**
      * Decorate the middleware if necessary.
@@ -142,13 +178,16 @@ class RequestHandlerStack implements RequestHandlerInterface
      *
      * @return MiddlewareInterface
      */
+    // TODO : gérer les tableaux de ces type (string|callable...etc)
     private function prepareMiddleware($middleware): MiddlewareInterface
     {
         if ($middleware instanceof MiddlewareInterface) {
             return $middleware;
         } elseif (is_callable($middleware)) {
-            return new CallableMiddlewareDecorator($middleware);
+            return new CallableMiddleware($middleware);
         } elseif (is_string($middleware) && $middleware !== '') { // TODO : vérifier l'utilité du chaine vide !!!!
+            // TODO : essayer de vérifier que container->has($middlewareName) retourne bien true, sinon lever une exception pour dire que l'alias n'existe pas dans le container.
+            // TODO : attention on va avoir une erreur si le container est null. il faudra ajouter un test pour vérifier que $container est bien une instance de ContainerInterface !!!!!
             return new LazyLoadingMiddleware($middleware, $this->container);
         } else {
             throw new InvalidArgumentException(sprintf(

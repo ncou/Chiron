@@ -7,6 +7,16 @@ namespace Chiron\Routing;
 trait RouteCollectionTrait
 {
     /**
+     * Group a bunch of routes.
+     *
+     * @param string          $prefix
+     * @param callable $group
+     *
+     * @return \Chiron\Routing\RouteGroup
+     */
+    abstract public function group(string $prefix, callable $group): RouteGroup;
+
+    /**
      * Add a route to the map.
      *
      * @param string          $path

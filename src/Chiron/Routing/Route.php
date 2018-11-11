@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Routing;
 
-use Chiron\MiddlewareAwareInterface;
-use Chiron\MiddlewareAwareTrait;
 use Chiron\Routing\Strategy\StrategyAwareInterface;
 use Chiron\Routing\Strategy\StrategyAwareTrait;
 use Psr\Http\Message\ResponseInterface;
