@@ -251,7 +251,7 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
     }
 
     /**
-     * Get route objects
+     * Get route objects.
      *
      * @return Route[]
      */
@@ -324,16 +324,16 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
     }
 
     /**
-     * Build the path for a named route excluding the base path
+     * Build the path for a named route excluding the base path.
      *
      * @param string $name        Route name
      * @param array  $data        Named argument replacement data
      * @param array  $queryParams Optional query string parameters
      *
-     * @return string
-     *
-     * @throws InvalidArgumentException         If named route does not exist
+     * @throws InvalidArgumentException If named route does not exist
      * @throws InvalidArgumentException If required data not provided
+     *
+     * @return string
      */
     public function relativePathFor(string $name, array $data = [], array $queryParams = []): string
     {
@@ -351,20 +351,22 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
                 if (is_string($item)) {
                     // this segment is a static string
                     $segments[] = $item;
+
                     continue;
                 }
                 // This segment has a parameter: first element is the name
-                if (!array_key_exists($item[0], $data)) {
+                if (! array_key_exists($item[0], $data)) {
                     // we don't have a data element for this segment: cancel
                     // testing this routeData item, so that we can try a less
                     // specific routeData item.
                     $segments = [];
                     $segmentName = $item[0];
+
                     break;
                 }
                 $segments[] = $data[$item[0]];
             }
-            if (!empty($segments)) {
+            if (! empty($segments)) {
                 // we found all the parameters for this route data, no need to check
                 // less specific ones
                 break;
@@ -377,19 +379,21 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
         if ($queryParams) {
             $url .= '?' . http_build_query($queryParams);
         }
+
         return $url;
     }
+
     /**
-     * Build the path for a named route including the base path
+     * Build the path for a named route including the base path.
      *
      * @param string $name        Route name
      * @param array  $data        Named argument replacement data
      * @param array  $queryParams Optional query string parameters
      *
-     * @return string
-     *
-     * @throws InvalidArgumentException         If named route does not exist
+     * @throws InvalidArgumentException If named route does not exist
      * @throws InvalidArgumentException If required data not provided
+     *
+     * @return string
      */
     public function pathFor(string $name, array $data = [], array $queryParams = []): string
     {
@@ -397,6 +401,7 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
         if ($this->basePath) {
             $url = $this->basePath . $url;
         }
+
         return $url;
     }
 }
