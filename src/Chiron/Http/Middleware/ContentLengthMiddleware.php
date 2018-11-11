@@ -41,7 +41,7 @@ class ContentLengthMiddleware implements MiddlewareInterface
 
         //throw new \Chiron\Http\Exception\HttpException(507);
 
-        throw new \Chiron\Http\Exception\Client\NotFoundHttpException();
+        //throw new \Chiron\Http\Exception\Client\NotFoundHttpException();
         //throw new \Chiron\Http\Exception\Client\NotFoundHttpException('toto is better than me ! enjoy !');
 
         $response = $handler->handle($request);

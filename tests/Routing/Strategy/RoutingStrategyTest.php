@@ -31,7 +31,7 @@ class RoutingStrategyTest extends TestCase
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
         $route = $app->get('/foo', $routeCallback);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('SUCCESS', (string) $response->getBody());
@@ -51,7 +51,7 @@ class RoutingStrategyTest extends TestCase
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
         $route = $app->get('/foo', $routeCallback);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('SUCCESS', (string) $response->getBody());
@@ -75,7 +75,7 @@ class RoutingStrategyTest extends TestCase
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
         $route = $app->get('/foo', $routeCallback);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
     }
 
     public function testRouteStrategyWithScalarTypeHintting()
@@ -92,7 +92,7 @@ class RoutingStrategyTest extends TestCase
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
         $route = $app->get('/foo/[:id]/[:name]/[:isRegistered]/[:floatNumber]', $routeCallback);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals('123bartrue2.3', (string) $response->getBody());
     }
@@ -111,7 +111,7 @@ class RoutingStrategyTest extends TestCase
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
         $route = $app->get('/foo/[:id]?/[:name]?/[:isRegistered]?/[:floatNumber]?', $routeCallback);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals('123bartrue2.3', (string) $response->getBody());
     }

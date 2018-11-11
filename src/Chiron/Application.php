@@ -53,11 +53,9 @@ if (! extension_loaded('mbstring')) {
 
 use Chiron\Config\Config;
 use Chiron\Container\Container;
-use Chiron\Handler\DeferredRequestHandler;
 use Chiron\Handler\Stack\Decorator\CallableMiddlewareDecorator;
-// TODO : virer la classe CallableRequestHandlerDecorator !!!!!!!!!!!!!
-//use Chiron\Handler\CallableRequestHandlerDecorator;
 use Chiron\Handler\Stack\Decorator\FixedResponseHandler;
+use Chiron\Handler\Stack\Decorator\FixedResponseMiddlewareDecorator;
 use Chiron\Handler\Stack\Decorator\LazyLoadingMiddleware;
 use Chiron\Handler\Stack\RequestHandlerStack;
 use Chiron\Http\Psr\Response;
@@ -71,8 +69,7 @@ use Chiron\Provider\ServerRequestCreatorServiceProvider;
 use Chiron\Routing\RoutableInterface;
 use Chiron\Routing\RoutableTrait;
 use Chiron\Routing\RouterTrait;
-use Chiron\Alto\Router;
-use Chiron\Routing\RouteCollector;
+use Chiron\Routing\Router;
 use Closure;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
@@ -81,10 +78,18 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
+use Chiron\Routing\Strategy\RouteInvocationStrategy;
+use Chiron\Routing\RouteCollectionInterface;
+use Chiron\Routing\RouteCollectionTrait;
+use Chiron\Routing\RouteGroup;
+use Chiron\Routing\Route;
+use Chiron\Routing\Strategy\CallableResolver;
 
-class Application implements RoutableInterface
+// TODO : faire étendre cette classe de la classe "Router"
+class Application implements RouteCollectionInterface, MiddlewareAwareInterface
 {
-    use RouterTrait;
+    use RouteCollectionTrait;
+    use MiddlewareAwareTrait;
 
     public const VERSION = '1.0.0';
 
@@ -134,51 +139,60 @@ class Application implements RoutableInterface
     }
 */
 
+    //***************************************************
+    //************ ROUTER *******************************
+    //***************************************************
     /**
-     * Add a middleware to the end of the stack.
+     * Add route with multiple methods.
      *
-     * @param string|callable|MiddlewareInterface or an array of such arguments $middlewares
+     * @param string                                  $pattern The route URI pattern
+     * @param RequestHandlerInterface|callable|string $handler The route callback routine
      *
-     * @return $this (for chaining)
+     * @return \Chiron\Routing\Route
      */
-    // TODO : gérer aussi les tableaux de middleware, ainsi que les tableaux de tableaux de middlewares
-    public function middleware($middlewares)
+    // TODO : créer une classe RouteInterface qui servira comme type de retour (il faudra aussi l'ajouter dans le use en début de classe) !!!!!
+    // TODO : lever une exception si le type du handler n'est pas correct, par exemple si on lui passe un integer ou un objet non callable !!!!!
+    public function map(string $pattern, $handler): Route
     {
-        if (! is_array($middlewares)) {
-            $middlewares = [$middlewares];
-        }
+        //return $this->getRouter()->map($pattern, $handler);
+        return $this->getRouter()->map($pattern, $handler);
+    }
 
-        foreach ($middlewares as $middleware) {
-            $this->requestHandler->prepend($this->prepareMiddleware($middleware));
-        }
+    // $params => string|array
+    // TODO : renommer $closure en $group
+    public function group(string $prefix, Closure $closure): RouteGroup
+    {
+        /*
+        $group = new RouteGroup($prefix, $this->getRouter(), $this->getContainer());
+        // TODO : on fait un bind du this avec le group ????
+        //$closure = $closure->bindTo($group);
+        call_user_func($closure, $group);
+        // TODO : un return de type $group est à utiliser si on veux ajouter un middleware avec la notation : $app->group(xxxx, xxxxx)->middleware(xxx);
+        return $group;
+        */
+        $routeGroup = $this->getRouter()->group($prefix, $closure);
 
+        return $routeGroup;
+    }
+
+    // TODO : ajouter des méthodes proxy pour : getRoutes / getNamedRoute / hasRoute ?????? voir même pour generateUri et getBasePath/setBasePath ??????
+
+    // TODO : ajouter une interface pour le router, et faire en sorte que cette méthode ait un type de retour du genre "RouterInterface", et on pourra aussi créer une méthode "setRouter(RouterInterface $router)"
+    public function getRouter(): Router
+    {
+        //return $this->router;
+        return $this->container->get(Router::class);
+    }
+
+    /*
+    // TODO : méthode à implémenter !!!!!!
+    public function setRouter(RouterInterface $router)
+    {
+        $this->router = $router;
         return $this;
-    }
+    }*/
 
-    /**
-     * Decorate the middleware if necessary.
-     *
-     * @param string|callable|MiddlewareInterface $middleware
-     *
-     * @return MiddlewareInterface
-     */
-    // TODO : code à factoriser avec celui présent dans le DispatcherMiddleware
-    private function prepareMiddleware($middleware): MiddlewareInterface
-    {
-        if ($middleware instanceof MiddlewareInterface) {
-            return $middleware;
-        } elseif (is_callable($middleware)) {
-            return new CallableMiddlewareDecorator($middleware);
-        } elseif (is_string($middleware) && $middleware !== '') { // TODO : vérifier l'utilité du chaine vide !!!!
-            return new LazyLoadingMiddleware($middleware, $this->container);
-        } else {
-            throw new InvalidArgumentException(sprintf(
-                'Middleware "%s" is neither a string service name, a PHP callable, or a %s instance',
-                is_object($middleware) ? get_class($middleware) : gettype($middleware),
-                MiddlewareInterface::class
-            ));
-        }
-    }
+    //*****************************************************
 
     /**
      * Configure whether to display PHP errors or silence them.
@@ -201,26 +215,12 @@ class Application implements RoutableInterface
         ini_set('report_memleaks', $debug);
     }
 
-    // TODO : ajouter des méthodes proxy pour : getRoutes / getNamedRoute / hasRoute ?????? voir même pour generateUri et getBasePath/setBasePath ??????
 
-    // TODO : ajouter une interface pour le router, et faire en sorte que cette méthode ait un type de retour du genre "RouterInterface", et on pourra aussi créer une méthode "setRouter(RouterInterface $router)"
-    public function getRouter(): Router
-    {
-        //return $this->router;
-        return $this->container->get(Router::class);
-    }
-
-    /*
-    // TODO : méthode à implémenter !!!!!!
-    public function setRouter(RouterInterface $router)
-    {
-        $this->router = $router;
-        return $this;
-    }*/
 
     /*******************************************************************************
      * Container
      ******************************************************************************/
+    // TODO : créer un ContainerAwareTrait + une interface
 
     /**
      * Get container.
@@ -340,14 +340,14 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
                 });
         */
 
-        $this->routeCollector = new RouteCollector();
 
-        //$emptyResponse = new FixedResponseHandler(new Response(204));
-        $emptyResponse = new FixedResponseHandler(new EmptyResponse());
 
-        $this->requestHandler = new RequestHandlerStack($emptyResponse);
 
         $this->container = new Container();
+
+        //$emptyResponse = new FixedResponseHandler(new EmptyResponse());
+
+        $this->requestHandler = new RequestHandlerStack($this->container);
 
         // Register Middlewares services
         $middlewaresServices = new MiddlewaresServiceProvider();
@@ -394,7 +394,11 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         //$this->basePath = $this->container['basePath'];
         //$this->setBasePath($this->container['basePath']);
 
-        $this->getRouter()->setBasePath($this->container->config['settings.basePath'] ?? '/');
+        $router = $this->getRouter();
+
+        $router->setBasePath($this->container->config['settings.basePath'] ?? '/');
+
+        $router->setDefaultStrategy(new RouteInvocationStrategy(new CallableResolver($this->container)));
 
         // initialise the Router constructor
         //parent::__construct($this->basePath, $this->container);
@@ -513,24 +517,20 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
      * Run App
      ******************************************************************************/
 
-    // TODO : function à renommer en "listen()"
-    public function run(): ResponseInterface
+    public function run(): void
     {
         //$request = (new \Chiron\Http\Factory\ServerRequestFactory())->createServerRequestFromArray($_SERVER);
         $requestCreator = $this->container->get(ServerRequestCreator::class);
         $request = $requestCreator->fromGlobals();
 
-        $response = $this->process($request);
+        $response = $this->handle($request);
 
         $this->emit($response);
-
-        return $response;
     }
 
     // TODO : renommer cette fonction en "handleRequest()"
-    public function process(ServerRequestInterface $request): ResponseInterface
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $request = $request->withAttribute(RouteCollector::class, $this->getRouteCollector());
         //die(var_dump($request->getServerParam('HTTP_HOST')));
 
         // apply PHP config settings.
@@ -546,7 +546,12 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $response = $response->withProtocolVersion($httpVersion);
         */
 
-        $response = $this->requestHandler->handle($request);
+        $emptyResponse = new FixedResponseMiddlewareDecorator(new EmptyResponse());
+
+        // add an empty response as default response if no route found and no 404 handler is added.
+        array_push($this->middlewares, $emptyResponse);
+
+        $response =  $this->requestHandler->seed($this->middlewares)->handle($request);
 
         return $response;
 

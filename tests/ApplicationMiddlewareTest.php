@@ -25,7 +25,7 @@ class ApplicationMiddlewareTest extends TestCase
         $request = new ServerRequest('GET', new Uri('/foo'));
 
         $app = new Application();
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(204, $response->getStatusCode());
         $this->assertEquals('', (string) $response->getBody());
@@ -43,7 +43,7 @@ class ApplicationMiddlewareTest extends TestCase
         $app = new Application();
         $app->middleware($middleware);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('MIDDLEWARE', (string) $response->getBody());
@@ -60,7 +60,7 @@ class ApplicationMiddlewareTest extends TestCase
         $app = new Application();
         $app->middleware($callable);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('MIDDLEWARE', (string) $response->getBody());
@@ -77,7 +77,7 @@ class ApplicationMiddlewareTest extends TestCase
         $app = new Application();
         $app->middleware('MiddlewareNotPresentInTheContainer');
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
     }
 
     public function testMiddlewareWithStringInContainer_MiddlewareInterface()
@@ -97,7 +97,7 @@ class ApplicationMiddlewareTest extends TestCase
 
         $app->middleware('MiddlewareCallableInContainer');
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('MIDDLEWARE', (string) $response->getBody());
@@ -120,7 +120,7 @@ class ApplicationMiddlewareTest extends TestCase
 
         $app->middleware('MiddlewareCallableInContainer');
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('MIDDLEWARE', (string) $response->getBody());
@@ -138,7 +138,7 @@ class ApplicationMiddlewareTest extends TestCase
 
         $app->middleware(123456);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
     }
 
     /**
@@ -158,7 +158,7 @@ class ApplicationMiddlewareTest extends TestCase
 
         $app->middleware('BadMiddlewareType');
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
     }
 
     public function testMiddlewareWithArrayOfMiddlewareInterface()
@@ -182,7 +182,7 @@ class ApplicationMiddlewareTest extends TestCase
         $app = new Application();
         $app->middleware([$middleware1, $middleware2]);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('MIDDLEWARE_2_MIDDLEWARE_1', (string) $response->getBody());
@@ -207,7 +207,7 @@ class ApplicationMiddlewareTest extends TestCase
         $app = new Application();
         $app->middleware([$callable1, $callable2]);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('MIDDLEWARE_2_MIDDLEWARE_1', (string) $response->getBody());
@@ -245,7 +245,7 @@ class ApplicationMiddlewareTest extends TestCase
 
         $app->middleware(['ENTRY_1', 'ENTRY_2']);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('MIDDLEWARE_2_MIDDLEWARE_1', (string) $response->getBody());
@@ -283,7 +283,7 @@ class ApplicationMiddlewareTest extends TestCase
 
         $app->middleware(['ENTRY_1', 'ENTRY_2']);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('MIDDLEWARE_2_MIDDLEWARE_1', (string) $response->getBody());
@@ -307,7 +307,7 @@ class ApplicationMiddlewareTest extends TestCase
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
         $route = $app->get('/foo', $routeCallback);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('SUCCESS', (string) $response->getBody());
@@ -335,7 +335,7 @@ class ApplicationMiddlewareTest extends TestCase
         $middleware = new CallableMiddlewareDecorator($callable);
         $route->middleware($middleware);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('SUCCESS_MIDDLEWARE', (string) $response->getBody());
@@ -361,7 +361,7 @@ class ApplicationMiddlewareTest extends TestCase
             $group->get('/bar', $routeCallback);
         });
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('SUCCESS', (string) $response->getBody());
@@ -391,7 +391,7 @@ class ApplicationMiddlewareTest extends TestCase
         $middleware = new CallableMiddlewareDecorator($callable);
         $group->middleware($middleware);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('SUCCESS_MIDDLEWARE-GROUP', (string) $response->getBody());
@@ -428,7 +428,7 @@ class ApplicationMiddlewareTest extends TestCase
         $middleware2 = new CallableMiddlewareDecorator($callable2);
         $group->middleware($middleware2);
 
-        $response = $app->process($request);
+        $response = $app->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('SUCCESS_MIDDLEWARE-GROUP_MIDDLEWARE-ROUTE', (string) $response->getBody());

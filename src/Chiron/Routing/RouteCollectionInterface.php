@@ -4,8 +4,19 @@ declare(strict_types=1);
 
 namespace Chiron\Routing;
 
-trait RoutableTrait
+interface RouteCollectionInterface
 {
+
+    /**
+     * Add a route to the map.
+     *
+     * @param string          $path
+     * @param callable|string $handler
+     *
+     * @return \Chiron\Routing\Route
+     */
+    public function map(string $path, $handler) : Route;
+
     /**
      * Add GET route.
      *
@@ -13,14 +24,11 @@ trait RoutableTrait
      * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3
      *
      * @param string                                  $pattern The route URI pattern
-     * @param RequestHandlerInterface|callable|string $handler The route callback routine
+     * @param callable|string $handler The route callback routine
      *
      * @return \Chiron\Routing\Route
      */
-    public function get(string $pattern, $handler): Route
-    {
-        return $this->map($pattern, $handler)->method('GET');
-    }
+    public function get(string $pattern, $handler): Route;
 
     /**
      * Add HEAD route.
@@ -31,14 +39,11 @@ trait RoutableTrait
      * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4
      *
      * @param string                                  $pattern The route URI pattern
-     * @param RequestHandlerInterface|callable|string $handler The route callback routine
+     * @param callable|string $handler The route callback routine
      *
      * @return \Chiron\Routing\Route
      */
-    public function head(string $pattern, $handler): Route
-    {
-        return $this->map($pattern, $handler)->method('HEAD');
-    }
+    public function head(string $pattern, $handler): Route;
 
     /**
      * Add POST route.
@@ -47,14 +52,11 @@ trait RoutableTrait
      * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5
      *
      * @param string                                  $pattern The route URI pattern
-     * @param RequestHandlerInterface|callable|string $handler The route callback routine
+     * @param callable|string $handler The route callback routine
      *
      * @return \Chiron\Routing\Route
      */
-    public function post(string $pattern, $handler): Route
-    {
-        return $this->map($pattern, $handler)->method('POST');
-    }
+    public function post(string $pattern, $handler): Route;
 
     /**
      * Add PUT route.
@@ -63,14 +65,11 @@ trait RoutableTrait
      * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6
      *
      * @param string                                  $pattern The route URI pattern
-     * @param RequestHandlerInterface|callable|string $handler The route callback routine
+     * @param callable|string $handler The route callback routine
      *
      * @return \Chiron\Routing\Route
      */
-    public function put(string $pattern, $handler): Route
-    {
-        return $this->map($pattern, $handler)->method('PUT');
-    }
+    public function put(string $pattern, $handler): Route;
 
     /**
      * Add DELETE route.
@@ -79,14 +78,11 @@ trait RoutableTrait
      * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7
      *
      * @param string                                  $pattern The route URI pattern
-     * @param RequestHandlerInterface|callable|string $handler The route callback routine
+     * @param callable|string $handler The route callback routine
      *
      * @return \Chiron\Routing\Route
      */
-    public function delete(string $pattern, $handler): Route
-    {
-        return $this->map($pattern, $handler)->method('DELETE');
-    }
+    public function delete(string $pattern, $handler): Route;
 
     /**
      * Add OPTIONS route.
@@ -95,14 +91,11 @@ trait RoutableTrait
      * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2
      *
      * @param string                                  $pattern The route URI pattern
-     * @param RequestHandlerInterface|callable|string $handler The route callback routine
+     * @param callable|string $handler The route callback routine
      *
      * @return \Chiron\Routing\Route
      */
-    public function options(string $pattern, $handler): Route
-    {
-        return $this->map($pattern, $handler)->method('OPTIONS');
-    }
+    public function options(string $pattern, $handler): Route;
 
     /**
      * Add PATCH route.
@@ -112,26 +105,21 @@ trait RoutableTrait
      * @see http://tools.ietf.org/html/rfc5789
      *
      * @param string                                  $pattern The route URI pattern
-     * @param RequestHandlerInterface|callable|string $handler The route callback routine
+     * @param callable|string $handler The route callback routine
      *
      * @return \Chiron\Routing\Route
      */
-    public function patch(string $pattern, $handler): Route
-    {
-        return $this->map($pattern, $handler)->method('PATCH');
-    }
+    public function patch(string $pattern, $handler): Route;
 
     /**
      * Add route for any (official or unofficial) HTTP method.
      * use ->seAllowedMethods([]) with an empty array to support ALL the values (for custom method).
      *
      * @param string                                  $pattern The route URI pattern
-     * @param RequestHandlerInterface|callable|string $handler The route callback routine
+     * @param callable|string $handler The route callback routine
      *
      * @return \Chiron\Routing\Route
      */
-    public function any(string $pattern, $handler): Route
-    {
-        return $this->map($pattern, $handler)->setAllowedMethods(['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT']);
-    }
+    public function any(string $pattern, $handler): Route;
+
 }

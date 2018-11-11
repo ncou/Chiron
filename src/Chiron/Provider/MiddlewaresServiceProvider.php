@@ -21,11 +21,12 @@ use Chiron\Http\Middleware\ContentLengthMiddleware;
 use Chiron\Http\Middleware\ContentTypeByDefaultMiddleware;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\EmitterMiddleware;
+use Chiron\Handler\Stack\RequestHandlerStack;
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
 use Chiron\Http\Middleware\OriginalRequestMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
-use Chiron\Alto\Router;
+use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -59,12 +60,14 @@ class MiddlewaresServiceProvider
             //$app->setLogger(new Logger(Chiron\ROOT_DIR.Chiron\DS.Chiron\LOG_DIR_NAME.Chiron\DS.'CHIRON.log'));
         };
 
+
+
         $container[RoutingMiddleware::class] = function ($c) {
             return new RoutingMiddleware($c[Router::class]);
         };
 
         $container[DispatcherMiddleware::class] = function ($c) {
-            return new DispatcherMiddleware($c);
+            return new DispatcherMiddleware(new RequestHandlerStack($c));
         };
 
         $container[ContentTypeByDefaultMiddleware::class] = function ($c) {

@@ -18,6 +18,12 @@ namespace Chiron\Config;
 
 //https://github.com/adbario/php-dot-notation/blob/2.x/src/Dot.php
 
+// CAKE module + engine
+//https://github.com/cakephp/cakephp/blob/master/src/Core/Configure.php
+//https://github.com/cakephp/cakephp/blob/master/src/Core/Configure/Engine/PhpConfig.php
+//https://github.com/cakephp/cakephp/blob/master/src/Core/Configure/Engine/JsonConfig.php
+//https://github.com/cakephp/cakephp/blob/master/src/Core/Configure/Engine/IniConfig.php
+
 class Config implements \ArrayAccess, \Iterator, \Countable
 {
     /**

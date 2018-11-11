@@ -6,19 +6,25 @@ namespace Chiron\Routing;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Container\ContainerInterface;
+use Chiron\Routing\Strategy\StrategyAwareTrait;
+use Chiron\Routing\Strategy\StrategyAwareInterface;
+use Psr\Http\Server\{MiddlewareInterface, RequestHandlerInterface};
+use Chiron\MiddlewareAwareTrait;
+use Chiron\MiddlewareAwareInterface;
 
-class Route //implements RequestHandlerInterface
+class Route implements RouteConditionHandlerInterface, StrategyAwareInterface,  MiddlewareAwareInterface, MiddlewareInterface
 {
+    use MiddlewareAwareTrait;
+    use RouteConditionHandlerTrait;
+    use StrategyAwareTrait;
+
     /** @var array */
     private $requirements = [];
     /** @var array */
     private $defaults = [];
     /** @var array */
     private $schemes = [];
-    /** @var array */
-    private $extras = [];
-    /** @var array */
-    private $middlewares = [];
     /** @var string */
     private $name;
     /**
@@ -44,22 +50,37 @@ class Route //implements RequestHandlerInterface
     private $group;
 
     /**
+     * Route identifier
+     *
+     * @var string
+     */
+    private $identifier;
+
+    /**
      * @param $url string
      * @param $handler mixed
      */
     // TODO : passer en paramétre aussi les middlewares, un truc comme __construct(...., $middlewares = [])
-    public function __construct(string $url, $handler)
+    public function __construct(string $url, $handler, int $index)
     {
         $this->url = $url;
         $this->handler = $handler;
+        $this->identifier = 'route_' . $index;
+    }
+
+    public function process(
+        ServerRequestInterface $request,
+        RequestHandlerInterface $requestHandler
+    ) : ResponseInterface {
+        return $this->getStrategy()->invokeRouteCallable($this, $request);
     }
 
     /**
      * Get the parent group.
      *
-     * @return RouteGroup
+     * @return null|RouteGroup
      */
-    public function getParentGroup(): RouteGroup
+    public function getParentGroup(): ?RouteGroup
     {
         return $this->group;
     }
@@ -79,51 +100,20 @@ class Route //implements RequestHandlerInterface
     }
 
 
-
-
-
-
-
-
-    public function getExtras(): array
-    {
-        return $this->extras;
-    }
-    public function getExtra(string $key, $default = null)
-    {
-        if (! array_key_exists($key, $this->extras)) {
-            return $default;
-        }
-        return $this->extras[$key];
-    }
-    public function addExtra(string $key, $value)
-    {
-        $this->extras[$key] = $value;
-        return $this;
-    }
     /**
-     * Get the middlewares registered for the group.
+     * Get route identifier
      *
-     * @return mixed[]
+     * @return string
      */
-    public function getMiddlewares(): array
+    public function getIdentifier(): string
     {
-        return $this->middlewares;
+        return $this->identifier;
     }
-    /**
-     * Prepend middleware to the middleware collection.
-     *
-     * @param mixed $middleware The callback routine
-     *
-     * @return static
-     */
-    // TODO : gérer la possibilité de passer un tableau de middleware, attention aux tableaux de tableaux de tableaux....
-    public function middleware($middleware): self
-    {
-        $this->middlewares[] = $middleware;
-        return $this;
-    }
-    // TODO ; vérifier l'utilité de cette méthode
+
+
+
+
+    // TODO ; renommer en getPath()
     public function getUrl(): string
     {
         return $this->url;
@@ -426,7 +416,7 @@ class Route //implements RequestHandlerInterface
      *
      * @return array
      */
-    public function getAllowedMethods()
+    public function getAllowedMethods(): array
     {
         //return array_unique($this->methods);
         return $this->methods;

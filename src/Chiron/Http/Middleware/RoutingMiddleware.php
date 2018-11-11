@@ -13,23 +13,33 @@ use Chiron\Http\Exception\Client\MethodNotAllowedHttpException;
 use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Stream;
-use Chiron\Alto\Router;
-use Chiron\Alto\RouteResult;
+use Chiron\Routing\Router;
+use Chiron\Routing\Route;
+use Chiron\Routing\RouteResult;
 use Chiron\Routing\RouteCollector;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+use FastRoute\Dispatcher as FastRoute;
+use \FastRoute\RouteCollector as FastRouteCollector;
+
 class RoutingMiddleware implements MiddlewareInterface
 {
     // TODO : ajouter une phpdoc avec le type de cette variable (\RouterInterface)
     private $router;
 
+    private $routes = [];
+
     // TODO : ajouter un RouterInterface comme type hinting pour la paramétre $router
     public function __construct(Router $router)
     {
         $this->router = $router;
+        /*
+        $this->router = new FastRouteCollector(
+            new \FastRoute\RouteParser\Std, new \FastRoute\DataGenerator\GroupCountBased
+        );*/
     }
 
     /**
@@ -39,10 +49,11 @@ class RoutingMiddleware implements MiddlewareInterface
     {
         // TODO : il faudrait peut etre récupérer la réponse via un $handle->handle() pour récupérer les headers de la réponse + le charset et version 1.1/1.0 pour le passer dans les exceptions (notfound+methodnotallowed) car on va recréer une nouvelle response !!!! donc si ca se trouve les headers custom genre X-Powered ou CORS vont être perdus lorsqu'on va afficher les message custom pour l'exception 404 par exemple !!!!
 
-        $matched = $this->getMatchedRoute($request);
+        //$result = $this->getDispatchResult($request);
+        $result = $this->router->match($request);
 
-        if ($matched->isMethodFailure()) {
-            $allowedMethods = $matched->getAllowedMethods();
+        if ($result->isMethodFailure()) {
+            $allowedMethods = $result->getAllowedMethods();
             // The OPTIONS request should send back a response with some headers like "Allow" header.
             // TODO : vérifier le comportement avec CORS.
             if ($request->getMethod() === 'OPTIONS') {
@@ -52,7 +63,7 @@ class RoutingMiddleware implements MiddlewareInterface
             }
 
             throw new MethodNotAllowedHttpException($allowedMethods);
-        } elseif ($matched->isFailure()) {
+        } elseif ($result->isFailure()) {
             throw new NotFoundHttpException();
         }
 
@@ -61,11 +72,12 @@ class RoutingMiddleware implements MiddlewareInterface
         //$request = $request->withAttribute('routeInfo', [$request->getMethod(), (string) $request->getUri()]);
 
         // Inject individual matched parameters.
-        foreach ($matched->getMatchedParams() as $param => $value) {
+        foreach ($result->getMatchedParams() as $param => $value) {
             $request = $request->withAttribute($param, $value);
         }
         // Inject the actual route result in the request
-        $request = $request->withAttribute(RouteResult::class, $matched);
+        $request = $request->withAttribute(RouteResult::class, $result);
+
         // Execute the next handler
         $response = $handler->handle($request);
         // As per RFC, HEAD request can't have a body.
@@ -75,19 +87,5 @@ class RoutingMiddleware implements MiddlewareInterface
         }
 
         return $response;
-    }
-
-    private function getMatchedRoute(ServerRequestInterface $request): RouteResult
-    {
-        $routeCollector = $request->getAttribute(RouteCollector::class, []);
-        // add routes (if any specified directly via the application object)
-        if (! empty($routeCollector)) {
-            // add routes (if any specified directly on router object)
-            foreach ($routeCollector->getRoutes() as $route) {
-                $this->router->addRoute($route->getUrl(), $route->getHandler());
-            }
-        }
-
-        return $this->router->match($request);
     }
 }
