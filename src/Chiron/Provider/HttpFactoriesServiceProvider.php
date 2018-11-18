@@ -15,11 +15,15 @@ declare(strict_types=1);
 namespace Chiron\Provider;
 
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
+use Chiron\Http\Factory\RequestFactory;
+use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Factory\StreamFactory;
 use Chiron\Http\Factory\UploadedFileFactory;
 use Chiron\Http\Factory\UriFactory;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\RequestFactoryInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
@@ -38,6 +42,14 @@ class HttpFactoriesServiceProvider
     public function register(ContainerInterface $container)
     {
         // *** register factories ***
+        $container[RequestFactoryInterface::class] = function ($c) {
+            return new RequestFactory();
+        };
+
+        $container[ResponseFactoryInterface::class] = function ($c) {
+            return new ResponseFactory();
+        };
+
         $container[ServerRequestFactoryInterface::class] = function ($c) {
             return new ServerRequestFactory();
         };
@@ -55,6 +67,14 @@ class HttpFactoriesServiceProvider
         };
 
         // *** register alias ***
+        $container[RequestFactory::class] = function ($c) {
+            return $c->get(RequestFactoryInterface::class);
+        };
+
+        $container[ResponseFactory::class] = function ($c) {
+            return $c->get(ResponseFactoryInterface::class);
+        };
+
         $container[ServerRequestFactory::class] = function ($c) {
             return $c->get(ServerRequestFactoryInterface::class);
         };

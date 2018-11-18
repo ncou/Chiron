@@ -8,13 +8,13 @@ use Chiron\Http\Psr\Response;
 use Chiron\Routing\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use InvalidArgumentException;
 
 /**
- * Route callback strategy with route parameters as individual arguments.
+ * Route callback strategy with route parameters as individual arguments and the response is encoded in json.
  */
-// TODO : à renommer en JsonStrategy
-class JsonInvocationStrategy extends AbstractStrategy
+class JsonStrategy extends AbstractStrategy
 {
     /**
      * Default flags for json_encode.
@@ -32,11 +32,13 @@ class JsonInvocationStrategy extends AbstractStrategy
 
     /** CallableResolverInterface */
     private $resolver;
+    /** ResponseFactoryInterface */
+    private $responseFactory;
 
-    // TODO : passer en paramétre un PSR17 Factory pour créer l'objet PSR7 Response
-    public function __construct(CallableResolverInterface $resolver)
+    public function __construct(ResponseFactoryInterface $responseFactory, CallableResolverInterface $resolver)
     {
         $this->resolver = $resolver;
+        $this->responseFactory = $responseFactory;
     }
 
     public function invokeRouteCallable(Route $route, ServerRequestInterface $request): ResponseInterface
@@ -52,12 +54,14 @@ class JsonInvocationStrategy extends AbstractStrategy
 
         $response = $this->call($callable, $parameters);
 
-        $json = $this->jsonEncode($response);
+        // TODO : lever une exception si le retour rencoyé par le controller n'est pas : JsonSerializableInterface ou ArrayObject ou is_array
+        if (! $response instanceof ResponseInterface) {
+            $json = $this->jsonEncode($response);
 
-        //$response = $this->responseFactory->createResponse(200);
-        $response = new Response(200);
-        $response = $response->withHeader('Content-Type', 'application/json');
-        $response->getBody()->write($json);
+            $response = $this->responseFactory->createResponse(200);
+            $response = $response->withHeader('Content-Type', 'application/json');
+            $response->getBody()->write($json);
+        }
 
         return $response;
     }
@@ -108,4 +112,36 @@ class JsonInvocationStrategy extends AbstractStrategy
 
         return $this;
     }
+
+    /**
+     * Determine if the given content should be turned into JSON.
+     *
+     * @param  mixed  $content
+     * @return bool
+     */
+    /*
+    protected function shouldBeJson($content)
+    {
+        return $content instanceof ArrayObject ||
+               $content instanceof JsonSerializable ||
+               is_array($content);
+    }*/
+
+    /**
+     * Check if the response can be converted to JSON
+     *
+     * Arrays can always be converted, objects can be converted if they're not a response already
+     *
+     * @param mixed $response
+     *
+     * @return bool
+     */
+    /*
+    protected function isJsonEncodable($response) : bool
+    {
+        if ($response instanceof ResponseInterface) {
+            return false;
+        }
+        return (is_array($response) || is_object($response));
+    }*/
 }

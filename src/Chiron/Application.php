@@ -69,14 +69,16 @@ use Chiron\Routing\Route;
 use Chiron\Routing\RouteGroup;
 use Chiron\Routing\Router;
 use Chiron\Routing\Strategy\CallableResolver;
-use Chiron\Routing\Strategy\RouteInvocationStrategy;
-use Chiron\Routing\Strategy\JsonInvocationStrategy;
+use Chiron\Routing\Strategy\ApplicationStrategy;
+use Chiron\Routing\Strategy\JsonStrategy;
 use Closure;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Chiron\Http\Factory\ResponseFactory;
 
 class Application extends Router
 {
@@ -334,7 +336,16 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
         $this->requestHandler = new RequestHandlerStack($this->container);
 
-        // Register Middlewares services
+        // TODO : mettre les servicesProvider dans un tableau et faire une boucle pour enregistrer chaque classe. Et mettre cela dans une méthode nommée bootServices()
+        // Register ServerRequest creator services
+        $serverRequestCreatorService = new ServerRequestCreatorServiceProvider();
+        $serverRequestCreatorService->register($this->container);
+
+        // Register HTTP Factories services
+        $httpFactoriesService = new HttpFactoriesServiceProvider();
+        $httpFactoriesService->register($this->container);
+
+        // Register Application services
         $applicationServices = new ApplicationServiceProvider();
         $applicationServices->register($this->container);
 
@@ -345,14 +356,6 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         // Register Error Handler services
         $errorHandlerService = new ErrorHandlerServiceProvider();
         $errorHandlerService->register($this->container);
-
-        // Register HTTP Factories services
-        $httpFactoriesService = new HttpFactoriesServiceProvider();
-        $httpFactoriesService->register($this->container);
-
-        // Register ServerRequest creator services
-        $serverRequestCreatorService = new ServerRequestCreatorServiceProvider();
-        $serverRequestCreatorService->register($this->container);
 
         $this->container->set(self::class, $this);
 
@@ -387,7 +390,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
         $router->setBasePath($this->container->config['settings.basePath'] ?? '/');
 
-        $router->setDefaultStrategy(new RouteInvocationStrategy(new CallableResolver($this->container)));
+        $router->setDefaultStrategy(new ApplicationStrategy(new ResponseFactory(), new CallableResolver($this->container)));
 
         // initialise the Router constructor
         //parent::__construct($this->basePath, $this->container);
@@ -540,7 +543,10 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $response = $response->withProtocolVersion($httpVersion);
         */
 
-        $emptyResponse = new FixedResponseMiddleware(new EmptyResponse());
+        $responseFactory = $this->container->get(ResponseFactoryInterface::class);
+        $emptyResponse = $responseFactory->createResponse(204);
+
+        $emptyResponse = new FixedResponseMiddleware($emptyResponse);
 
         // add an empty response as default response if no route found and no 404 handler is added.
         array_push($this->middlewares, $emptyResponse);

@@ -10,8 +10,7 @@ use Psr\Container\ContainerInterface;
 use RuntimeException;
 
 /**
- * This class resolves a string of the format 'class@method' into a closure
- * that can be dispatched.
+ * This class resolves a string of the format 'class@method' into a callable that can be invoked.
  */
 final class CallableResolver implements CallableResolverInterface
 {
@@ -23,6 +22,7 @@ final class CallableResolver implements CallableResolverInterface
     /**
      * @param ContainerInterface|null $container
      */
+    // TODO : virer ce constructeur et faire étendre cette classe du Trait "ContainerAware" et "ContainerAwareInterface"
     public function __construct(ContainerInterface $container = null)
     {
         $this->container = $container;

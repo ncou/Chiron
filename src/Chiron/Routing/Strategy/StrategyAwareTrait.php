@@ -7,9 +7,17 @@ namespace Chiron\Routing\Strategy;
 trait StrategyAwareTrait
 {
     /**
-     * @var \League\Route\Strategy\StrategyInterface
+     * @var StrategyInterface
      */
     protected $strategy;
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStrategy(): ?StrategyInterface
+    {
+        return $this->strategy;
+    }
 
     /**
      * {@inheritdoc}
@@ -19,13 +27,5 @@ trait StrategyAwareTrait
         $this->strategy = $strategy;
 
         return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStrategy(): ?StrategyInterface
-    {
-        return $this->strategy;
     }
 }

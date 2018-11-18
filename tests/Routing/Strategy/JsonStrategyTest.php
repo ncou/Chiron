@@ -13,7 +13,7 @@ use Chiron\Http\Psr\Uri;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Chiron\Routing\Route;
-use Chiron\Routing\Strategy\JsonInvocationStrategy;
+use Chiron\Routing\Strategy\JsonStrategy;
 use Chiron\Routing\Strategy\CallableResolver;
 use JsonSerializable;
 use stdClass;
@@ -21,11 +21,11 @@ use ArrayObject;
 
 // TODO : classe à finir de compléter !!!!!!!!!!
 
-class JsonInvocationStrategyTest extends TestCase
+class JsonStrategyTest extends TestCase
 {
     public function testJsonStrategyInitialisation()
     {
-        $strategy = new JsonInvocationStrategy(new CallableResolver());
+        $strategy = new JsonStrategy(new CallableResolver());
 
         $data = ['foo' => 'bar'];
         $callback =  function (ServerRequestInterface $request) use ($data) {
@@ -39,7 +39,7 @@ class JsonInvocationStrategyTest extends TestCase
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame('application/json', $response->getHeaderLine('content-type'));
-        $this->assertEquals(json_encode($data, JsonInvocationStrategy::DEFAULT_JSON_FLAGS), (string) $response->getBody());
+        $this->assertEquals(json_encode($data, JsonStrategy::DEFAULT_JSON_FLAGS), (string) $response->getBody());
 
         $this->assertEquals(79, $strategy->getEncodingOptions());
     }
@@ -54,7 +54,7 @@ class JsonInvocationStrategyTest extends TestCase
      */
     public function testInvalidArgumentExceptionOnJsonError($data)
     {
-        $strategy = new JsonInvocationStrategy(new CallableResolver());
+        $strategy = new JsonStrategy(new CallableResolver());
 
         $callback =  function (ServerRequestInterface $request) use ($data) {
             return $data;
@@ -72,7 +72,7 @@ class JsonInvocationStrategyTest extends TestCase
      */
     public function testGracefullyHandledSomeJsonErrorsWithPartialOutputOnError($data)
     {
-        $strategy = new JsonInvocationStrategy(new CallableResolver());
+        $strategy = new JsonStrategy(new CallableResolver());
         $strategy->setEncodingOptions($strategy->getEncodingOptions() | JSON_PARTIAL_OUTPUT_ON_ERROR);
 
         $callback =  function (ServerRequestInterface $request) use ($data) {
@@ -115,7 +115,7 @@ class JsonInvocationStrategyTest extends TestCase
      */
     public function testSetAndRetrieveData($data): void
     {
-        $strategy = new JsonInvocationStrategy(new CallableResolver());
+        $strategy = new JsonStrategy(new CallableResolver());
 
         $callback =  function (ServerRequestInterface $request) use ($data) {
             return $data;
@@ -127,7 +127,7 @@ class JsonInvocationStrategyTest extends TestCase
         $response = $strategy->invokeRouteCallable($route, $request);
 
         $this->assertInstanceOf(Response::class, $response);
-        $this->assertEquals(json_encode($data, JsonInvocationStrategy::DEFAULT_JSON_FLAGS), (string) $response->getBody());
+        $this->assertEquals(json_encode($data, JsonStrategy::DEFAULT_JSON_FLAGS), (string) $response->getBody());
     }
 
     public function setAndRetrieveDataProvider(): array

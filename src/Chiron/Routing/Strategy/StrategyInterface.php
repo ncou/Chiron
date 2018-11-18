@@ -13,7 +13,7 @@ interface StrategyInterface
     /**
      * Invoke the route callable based on the strategy.
      *
-     * @param \League\Route\Route                      $route
+     * @param Route                      $route
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface
