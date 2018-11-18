@@ -13,6 +13,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * Route callback strategy with route parameters as individual arguments.
  */
+// TODO : à renommer en ApplicationStrategy
 class RouteInvocationStrategy extends AbstractStrategy
 {
     /** CallableResolverInterface */
@@ -25,10 +26,15 @@ class RouteInvocationStrategy extends AbstractStrategy
 
     public function invokeRouteCallable(Route $route, ServerRequestInterface $request): ResponseInterface
     {
-        $callable = $this->resolver->resolve($route->getHandler());
-        $parameters = $this->getParametersFromCallable($callable);
-        $arguments = $this->bindAttributesWithParameters($parameters, $request);
+        $params = $route->getVars();
+        // Inject individual matched parameters.
+        foreach ($params as $param => $value) {
+            $request = $request->withAttribute($param, $value);
+        }
 
-        return call_user_func_array($callable, $arguments);
+        $callable = $this->resolver->resolve($route->getHandler());
+        $parameters = $this->bindParameters($request, $callable, $params);
+
+        return $this->call($callable, $parameters);
     }
 }

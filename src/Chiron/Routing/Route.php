@@ -10,6 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use InvalidArgumentException;
 
 class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, MiddlewareAwareInterface, MiddlewareInterface
 {
@@ -23,18 +24,16 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     /** @var array */
     private $defaults = [];
 
-    /** @var array */
-    private $schemes = [];
 
-    /** @var string */
+    /** @var string|null */
     private $name;
 
     /**
-     * The route pattern (The URL pattern (e.g. "article/[:year]/[i:category]")).
+     * The route path pattern (The URL pattern (e.g. "article/[:year]/[i:category]")).
      *
      * @var string
      */
-    private $url;
+    private $path;
 
     /**
      * Controller/method assigned to be executed when route is matched.
@@ -50,7 +49,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      */
     private $methods = [];
 
-    /** @var RouteGroup */
+    /** @var null|RouteGroup */
     private $group;
 
     /**
@@ -61,22 +60,19 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     private $identifier;
 
     /**
-     * @param $url string
-     * @param $handler mixed
+     * @var array
      */
-    // TODO : passer en paramétre aussi les middlewares, un truc comme __construct(...., $middlewares = [])
-    public function __construct(string $url, $handler, int $index)
+    private $vars = [];
+
+    /**
+     * @param string $url
+     * @param mixed $handler
+     */
+    public function __construct(string $path, $handler, int $index)
     {
-        $this->url = $url;
+        $this->path = $path;
         $this->handler = $handler;
         $this->identifier = 'route_' . $index;
-    }
-
-    public function process(
-        ServerRequestInterface $request,
-        RequestHandlerInterface $requestHandler
-    ): ResponseInterface {
-        return $this->getStrategy()->invokeRouteCallable($this, $request);
     }
 
     /**
@@ -96,7 +92,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @return Route
      */
-    public function setParentGroup(RouteGroup $group)//: Route
+    public function setParentGroup(RouteGroup $group): self
     {
         $this->group = $group;
 
@@ -113,10 +109,9 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
         return $this->identifier;
     }
 
-    // TODO ; renommer en getPath()
-    public function getUrl(): string
+    public function getPath(): string
     {
-        return $this->url;
+        return $this->path;
     }
 
     // return : mixed
@@ -125,12 +120,8 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
         return $this->handler;
     }
 
-    public function value($variable, $default)
-    {
-        $this->setDefault($variable, $default);
 
-        return $this;
-    }
+
 
     /**
      * Returns the defaults.
@@ -214,6 +205,18 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
         //$this->compiled = null;
         return $this;
     }
+
+    public function value($variable, $default)
+    {
+        $this->setDefault($variable, $default);
+
+        return $this;
+    }
+
+
+
+
+
 
     // TODO : avoir la possibilité de passer un tableau ? si on détecte que c'est un is_array dans le getargs() on appel la méthode addReqirements() pour un tableau, sinon on appel setRequirement()
     public function assert($key, $regex)
@@ -325,104 +328,67 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
         return $regex;
     }
 
-    //https://github.com/silexphp/Silex/blob/master/src/Silex/Route.php#L138
+
+
+
+
+
+
+
+
+
 
     /**
-     * Sets the requirement of HTTP (no HTTPS) on this Route.
+     * Get the route name
      *
-     * @return Route $this The current Route instance
+     * @return string|null
      */
-    public function requireHttp()
+    public function getName(): ?string
     {
-        $this->setSchemes('http');
-
-        return $this;
+        return $this->name;
     }
 
     /**
-     * Sets the requirement of HTTPS on this Route.
+     * Set the route name
      *
-     * @return Route $this The current Route instance
-     */
-    public function requireHttps()
-    {
-        $this->setSchemes('https');
-
-        return $this;
-    }
-
-    //https://github.com/symfony/routing/blob/master/Route.php
-
-    /**
-     * Returns the lowercased schemes this route is restricted to.
-     * So an empty array means that any scheme is allowed.
-     *
-     * @return string[] The schemes
-     */
-    public function getSchemes()
-    {
-        return $this->schemes;
-    }
-
-    /**
-     * Sets the schemes (e.g. 'https') this route is restricted to.
-     * So an empty array means that any scheme is allowed.
-     *
-     * This method implements a fluent interface.
-     *
-     * @param string|string[] $schemes The scheme or an array of schemes
+     * @param string $name
      *
      * @return $this
      */
-    public function setSchemes($schemes)
+    public function setName(string $name): self
     {
-        $this->schemes = array_map('strtolower', (array) $schemes);
-        //$this->compiled = null;
-        return $this;
-    }
-
-    /**
-     * Checks if a scheme requirement has been set.
-     *
-     * @param string $scheme
-     *
-     * @return bool true if the scheme requirement exists, otherwise false
-     */
-    public function hasScheme($scheme)
-    {
-        return in_array(strtolower($scheme), $this->schemes, true);
-    }
-
-    public function name(string $name)
-    {
-        //TODO : mettre en place une vérif pour éviter qu'on ait pas des doublons de noms pour les routes. Eventuellement faire ce controle côté router !!!!
-        /*
-                if (!is_string($name)) {
-                    throw new InvalidArgumentException('Route name must be a string');
-                }
-        */
-        /*
-                if (isset($this->name)) {
-                    throw new \Exception("Can not redeclare route '{$this->name}'");
-                }
-        */
         $this->name = $name;
 
         return $this;
     }
 
-    public function getName()
+    /**
+     * Alia function for "setName()".
+     *
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function name(string $name): self
     {
-        return $this->name;
-        //return $this->name?: $this->generateName();
+        return $this->setName($name);
     }
 
-    public function method(string $method, string ...$methods)
-    {
-        array_unshift($methods, $method);
-        $this->setAllowedMethods($methods);
 
-        return $this;
+
+
+
+
+
+
+    /**
+     * Get supported HTTP method(s).
+     *
+     * @return array
+     */
+    public function getAllowedMethods(): array
+    {
+        return array_unique($this->methods);
     }
 
     /**
@@ -432,29 +398,97 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @return self
      */
-    public function setAllowedMethods(array $methods)
+    public function setAllowedMethods(array $methods) : Route
     {
-        // Allow null, otherwise expect an array or a string
-        /*
-//https://github.com/klein/klein.php/blob/master/src/Klein/Route.php#L172
-        if (null !== $method && !is_array($method) && !is_string($method)) {
-            throw new InvalidArgumentException('Expected an array or string. Got a '. gettype($method));
-        }
-*/
-        // TODO : ajouter une vérification concernant la méthode ajoutée en la validant avec un regex : https://github.com/zendframework/zend-expressive-router/blob/master/src/Route.php#L170
-        $this->methods = array_map('strtoupper', $methods);
+        $this->methods = $this->validateHttpMethods($methods);
 
         return $this;
     }
 
     /**
-     * Get supported HTTP method(s).
+     * Alia function for "setAllowedMethods()".
+     */
+    public function method(string $method, string ...$methods): Route
+    {
+        array_unshift($methods, $method);
+        return $this->setAllowedMethods($methods);
+    }
+
+    /**
+     * Validate the provided HTTP method names.
+     *
+     * Validates, and then normalizes to upper case.
+     *
+     * @param string[] An array of HTTP method names.
+     * @return string[]
+     * @throws Exception\InvalidArgumentException for any invalid method names.
+     */
+    private function validateHttpMethods(array $methods) : array
+    {
+        if (empty($methods)) {
+            throw new InvalidArgumentException(
+                'HTTP methods argument was empty; must contain at least one method'
+            );
+        }
+        if (false === array_reduce($methods, function ($valid, $method) {
+            if (false === $valid) {
+                return false;
+            }
+            if (! is_string($method)) {
+                return false;
+            }
+            if (! preg_match('/^[!#$%&\'*+.^_`\|~0-9a-z-]+$/i', $method)) {
+                return false;
+            }
+            return $valid;
+        }, true)) {
+            throw new InvalidArgumentException('One or more HTTP methods were invalid');
+        }
+        return array_map('strtoupper', $methods);
+    }
+
+    /**
+     * Indicate whether the specified method is allowed by the route.
+     *
+     * @param string $method HTTP method to test.
+     */
+    /*
+    public function allowsMethod(string $method) : bool
+    {
+        $method = strtoupper($method);
+        if ($this->methods === self::HTTP_METHOD_ANY
+            || in_array($method, $this->methods, true)
+        ) {
+            return true;
+        }
+        return false;
+    }*/
+
+
+
+    /**
+     * Return variables to be passed to route callable
      *
      * @return array
      */
-    public function getAllowedMethods(): array
+    public function getVars() : array
     {
-        //return array_unique($this->methods);
-        return $this->methods;
+        return $this->vars;
+    }
+    /**
+     * Set variables to be passed to route callable
+     *
+     * @param array $vars
+     *
+     * @return $this
+     */
+    public function setVars(array $vars) : self
+    {
+        $this->vars = $vars;
+        return $this;
+    }
+
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
+        return $this->getStrategy()->invokeRouteCallable($this, $request);
     }
 }

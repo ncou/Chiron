@@ -14,11 +14,6 @@ trait RouteConditionHandlerTrait
     /**
      * @var string|null
      */
-    //protected $name;
-
-    /**
-     * @var string|null
-     */
     protected $scheme;
 
     /**
@@ -47,20 +42,10 @@ trait RouteConditionHandlerTrait
     /**
      * {@inheritdoc}
      */
-    /*
-    public function getName() : ?string
+    public function host(string $host): RouteConditionHandlerInterface
     {
-        return $this->name;
-    }*/
-    /**
-     * {@inheritdoc}
-     */
-    /*
-    public function setName(string $name) : RouteConditionHandlerInterface
-    {
-        $this->name = $name;
-        return $this;
-    }*/
+        return $this->setHost($host);
+    }
 
     /**
      * {@inheritdoc}
@@ -75,10 +60,36 @@ trait RouteConditionHandlerTrait
      */
     public function setScheme(string $scheme): RouteConditionHandlerInterface
     {
-        $this->scheme = $scheme;
+        $this->scheme = strtolower($scheme);
 
         return $this;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function scheme(string $scheme): RouteConditionHandlerInterface
+    {
+        return $this->setScheme($scheme);
+    }
+
+
+    /**
+     * {@inheritdoc}
+     */
+    public function requireHttp(): RouteConditionHandlerInterface
+    {
+        return $this->setScheme('http');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function requireHttps(): RouteConditionHandlerInterface
+    {
+        return $this->setScheme('https');
+    }
+
 
     /**
      * {@inheritdoc}
@@ -96,5 +107,13 @@ trait RouteConditionHandlerTrait
         $this->port = $port;
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function port(int $port): RouteConditionHandlerInterface
+    {
+        return $this->setPort($port);
     }
 }

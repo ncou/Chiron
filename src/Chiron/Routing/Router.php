@@ -13,6 +13,9 @@ use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+
+//https://github.com/zendframework/zend-expressive-fastroute/blob/master/src/FastRouteRouter.php
+
 /**
  * Aggregate routes for the router.
  *
@@ -226,7 +229,7 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
                 $route->setStrategy($this->getStrategy());
             }
 
-            $this->addRoute($route->getAllowedMethods(), $this->parseRoutePath($route->getUrl()), $route->getIdentifier());
+            $this->addRoute($route->getAllowedMethods(), $this->parseRoutePath($route->getPath()), $route->getIdentifier());
         }
     }
 
@@ -327,7 +330,7 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
      * Build the path for a named route excluding the base path.
      *
      * @param string $name        Route name
-     * @param array  $data        Named argument replacement data
+     * @param array  $substitutions        Named argument replacement data
      * @param array  $queryParams Optional query string parameters
      *
      * @throws InvalidArgumentException If named route does not exist
@@ -335,10 +338,12 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
      *
      * @return string
      */
-    public function relativePathFor(string $name, array $data = [], array $queryParams = []): string
+    // TODO : renommer cette fonction en "generateUri()", et renommer le paramétre "$data" en "$substitutions" et éventuellement virer la partie $queryParams ???? non ????
+    // TODO : ajouter la gestion des segments en plus des query params ???? https://github.com/ellipsephp/url-generator/blob/master/src/UrlGenerator.php#L42
+    public function relativePathFor(string $name, array $substitutions = [], array $queryParams = []): string
     {
         $route = $this->getNamedRoute($name);
-        $pattern = $route->getUrl();
+        $pattern = $route->getPath();
         $routeDatas = $this->parser->parse($pattern);
         // $routeDatas is an array of all possible routes that can be made. There is
         // one routedata for each optional parameter plus one for no optional parameters.
@@ -355,7 +360,7 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
                     continue;
                 }
                 // This segment has a parameter: first element is the name
-                if (! array_key_exists($item[0], $data)) {
+                if (! array_key_exists($item[0], $substitutions)) {
                     // we don't have a data element for this segment: cancel
                     // testing this routeData item, so that we can try a less
                     // specific routeData item.
@@ -364,7 +369,7 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
 
                     break;
                 }
-                $segments[] = $data[$item[0]];
+                $segments[] = $substitutions[$item[0]];
             }
             if (! empty($segments)) {
                 // we found all the parameters for this route data, no need to check
@@ -372,10 +377,13 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
                 break;
             }
         }
+
         if (empty($segments)) {
             throw new InvalidArgumentException('Missing data for URL segment: ' . $segmentName);
         }
+
         $url = implode('', $segments);
+
         if ($queryParams) {
             $url .= '?' . http_build_query($queryParams);
         }
@@ -398,10 +406,59 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
     public function pathFor(string $name, array $data = [], array $queryParams = []): string
     {
         $url = $this->relativePathFor($name, $data, $queryParams);
+
         if ($this->basePath) {
             $url = $this->basePath . $url;
         }
 
         return $url;
     }
+
+
+
+
+
+
+
+
+
+    /**
+     * Determine if the route is duplicated in the current list.
+     *
+     * Checks if a route with the same name or path exists already in the list;
+     * if so, and it responds to any of the $methods indicated, raises
+     * a DuplicateRouteException indicating a duplicate route.
+     *
+     * @throws Exception\DuplicateRouteException on duplicate route detection.
+     */
+    //https://github.com/zendframework/zend-expressive-router/blob/master/src/RouteCollector.php#L149
+    /*
+    private function checkForDuplicateRoute(string $path, array $methods = null) : void
+    {
+        if (null === $methods) {
+            $methods = Route::HTTP_METHOD_ANY;
+        }
+        $matches = array_filter($this->routes, function (Route $route) use ($path, $methods) {
+            if ($path !== $route->getPath()) {
+                return false;
+            }
+            if ($methods === Route::HTTP_METHOD_ANY) {
+                return true;
+            }
+            return array_reduce($methods, function ($carry, $method) use ($route) {
+                return ($carry || $route->allowsMethod($method));
+            }, false);
+        });
+        if (! empty($matches)) {
+            $match = reset($matches);
+            $allowedMethods = $match->getAllowedMethods() ?: ['(any)'];
+            $name = $match->getName();
+            throw new Exception\DuplicateRouteException(sprintf(
+                'Duplicate route detected; path "%s" answering to methods [%s]%s',
+                $match->getPath(),
+                implode(',', $allowedMethods),
+                $name ? sprintf(', with name "%s"', $name) : ''
+            ));
+        }
+    }*/
 }

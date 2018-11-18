@@ -2,23 +2,38 @@
 
 declare(strict_types=1);
 
-// https://github.com/symfony/http-kernel/blob/3.3/Tests/Controller/ControllerResolverTest.php
-
 namespace Chiron\Routing\Strategy;
 
 use Chiron\Http\Psr\Response;
 use Chiron\Routing\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use InvalidArgumentException;
 
 /**
  * Route callback strategy with route parameters as individual arguments.
  */
+// TODO : à renommer en JsonStrategy
 class JsonInvocationStrategy extends AbstractStrategy
 {
+    /**
+     * Default flags for json_encode.
+     * Encode <, >, ', &, and " characters in the JSON, making it also safe to be embedded into HTML.
+     * Doesn't encode the slash /.
+     *
+     * JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES
+     */
+    public const DEFAULT_JSON_FLAGS = 79;
+
+    /**
+     * @var int
+     */
+    private $encodingOptions = self::DEFAULT_JSON_FLAGS;
+
     /** CallableResolverInterface */
     private $resolver;
 
+    // TODO : passer en paramétre un PSR17 Factory pour créer l'objet PSR7 Response
     public function __construct(CallableResolverInterface $resolver)
     {
         $this->resolver = $resolver;
@@ -26,60 +41,71 @@ class JsonInvocationStrategy extends AbstractStrategy
 
     public function invokeRouteCallable(Route $route, ServerRequestInterface $request): ResponseInterface
     {
-        $callable = $this->resolver->resolve($route->getHandler());
-        $parameters = $this->getParametersFromCallable($callable);
-        $arguments = $this->bindAttributesWithParameters($parameters, $request);
-
-        $response = call_user_func_array($callable, $arguments);
-
-        if ($this->isJsonEncodable($response)) {
-            $json = json_encode($response); // json_encode($data, $encodingOptions)); // TODO : lui passer des options pour le json encode
-
-            // TODO : améliorer la gestion des exceptions :
-            //https://github.com/knpuniversity/twig/blob/master/start/vendor/symfony/http-foundation/Symfony/Component/HttpFoundation/JsonResponse.php#L86
-            //https://github.com/zendframework/zend-diactoros/blob/master/src/Response/JsonResponse.php#L144
-            //https://github.com/illuminate/http/blob/master/JsonResponse.php#L64
-            //https://api.drupal.org/api/drupal/vendor%21symfony%21http-foundation%21JsonResponse.php/8.4.x
-            //http://php.net/manual/fr/function.json-encode.php#117615
-            //https://github.com/symfony/http-foundation/blob/master/JsonResponse.php#L143
-
-            //https://github.com/sergant210/modHelpers/blob/master/core/components/modhelpers/classes/JsonResponse.php#L57
-            //https://github.com/sergant210/modHelpers/blob/master/core/components/modhelpers/classes/ResponseTrait.php#L19
-            //https://github.com/sergant210/modHelpers/blob/master/core/components/modhelpers/classes/Response.php#L50
-
-            // Encode <, >, ', &, and " for RFC4627-compliant JSON, which may also be embedded into HTML.
-            //$this->data = json_encode($data, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
-
-            // Ensure that the json encoding passed successfully
-            if ($json === false) {
-                throw new \RuntimeException(json_last_error_msg(), json_last_error());
-            }
-
-            //$response = $this->responseFactory->createResponse(200);
-            $response = new Response(200);
-            $response = $response->withHeader('Content-Type', 'application/json');
-            $response->getBody()->write($json);
+        $params = $route->getVars();
+        // Inject individual matched parameters.
+        foreach ($params as $param => $value) {
+            $request = $request->withAttribute($param, $value);
         }
+
+        $callable = $this->resolver->resolve($route->getHandler());
+        $parameters = $this->bindParameters($request, $callable, $params);
+
+        $response = $this->call($callable, $parameters);
+
+        $json = $this->jsonEncode($response);
+
+        //$response = $this->responseFactory->createResponse(200);
+        $response = new Response(200);
+        $response = $response->withHeader('Content-Type', 'application/json');
+        $response->getBody()->write($json);
 
         return $response;
     }
 
     /**
-     * Check if the response can be converted to JSON.
+     * Encode the provided data to JSON.
      *
-     * Arrays can always be converted, objects can be converted if they're not a response already
+     * @param mixed $data
      *
-     * @param mixed $response
+     * @throws InvalidArgumentException if unable to encode the $data to JSON.
      *
-     * @return bool
+     * @return string
      */
-    // TODO : regarder ici : https://github.com/sergant210/modHelpers/blob/master/core/components/modhelpers/classes/Response.php#L50
-    private function isJsonEncodable($response): bool
+    public function jsonEncode($data): string
     {
-        if ($response instanceof ResponseInterface) {
-            return false;
+        // TODO : attendre la version PHP 7.3 pour utiliser le flag JSON_THROW_ON_ERROR => https://wiki.php.net/rfc/json_throw_on_error
+        $json = json_encode($data, $this->encodingOptions);
+
+        if ($json === false) {
+            throw new InvalidArgumentException(
+                sprintf('Unable to encode data to JSON: %s', json_last_error_msg()),
+                json_last_error());
         }
 
-        return is_array($response) || is_object($response);
+        return $json;
+    }
+
+    /**
+     * Returns options used while encoding data to JSON.
+     *
+     * @return int
+     */
+    public function getEncodingOptions(): int
+    {
+        return $this->encodingOptions;
+    }
+
+    /**
+     * Sets options used while encoding data to JSON.
+     *
+     * @param int $encodingOptions
+     *
+     * @return $this
+     */
+    public function setEncodingOptions(int $encodingOptions): self
+    {
+        $this->encodingOptions = $encodingOptions;
+
+        return $this;
     }
 }

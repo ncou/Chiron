@@ -61,11 +61,7 @@ class Dispatcher extends GroupCountBasedDispatcher
         $route = $this->routes[$identifier];
         $params = $result[2];
 
-        /*
-        $options = $route->getOptions();
-        if (! empty($options['defaults'])) {
-            $params = array_merge($options['defaults'], $params);
-        }*/
+        $params = array_map('urldecode', $params);
 
         return RouteResult::fromRoute($route, $params);
     }

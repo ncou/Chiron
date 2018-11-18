@@ -8,79 +8,77 @@ namespace Chiron\Routing\Strategy;
 
 use Chiron\Routing\Route;
 use Psr\Http\Message\ServerRequestInterface;
+use InvalidArgumentException;
 
 /**
  * Route callback strategy with route parameters as individual arguments.
  */
 abstract class AbstractStrategy implements StrategyInterface
 {
-    // TODO : éviter de passer le nom du controller via une variable globale de classe
-    // used to pass the controller name from method to another.
-    private $controllerName;
-
-    // Retrieve the parameter for the callable by Reflexion + store the controller name to use it later if we need to throw an exception and display the controller name
-    protected function getParametersFromCallable(callable $controller): array
+    /**
+     * Bind the matched parameters from the request with the callable parameters.
+     *
+     * @param ServerRequestInterface  $request
+     * @param callable $controller      the callable to be executed
+     * @param array $matched      the parameters extracted from the uri
+     *
+     * @return array The
+     */
+    protected function bindParameters(ServerRequestInterface $request, callable $controller, array $matched): array
     {
         if (is_array($controller)) {
             $reflector = new \ReflectionMethod($controller[0], $controller[1]);
-            $this->controllerName = sprintf('%s::%s()', get_class($controller[0]), $controller[1]);
+            $controllerName = sprintf('%s::%s()', get_class($controller[0]), $controller[1]);
         } elseif (is_object($controller) && ! $controller instanceof \Closure) {
             $reflector = (new \ReflectionObject($controller))->getMethod('__invoke');
-            $this->controllerName = get_class($controller);
+            $controllerName = get_class($controller);
         } else {
-            $this->controllerName = ($controller instanceof \Closure) ? get_class($controller) : $controller;
+            $controllerName = ($controller instanceof \Closure) ? get_class($controller) : $controller;
             $reflector = new \ReflectionFunction($controller);
         }
 
-        return $reflector->getParameters();
-    }
+        $parameters = $reflector->getParameters();
 
-    //TODO : regarder ici : https://github.com/swoft-cloud/swoft-framework/blob/v0.2.6/src/Router/Http/HandlerAdapter.php#162
-    protected function bindAttributesWithParameters(array $parameters, ServerRequestInterface $request): array
-    {
-        $attributes = $request->getAttributes();
-        $arguments = [];
-
+        $bindParams = [];
         foreach ($parameters as $param) {
             // @notice \ReflectionType::getName() is not supported in PHP 7.0, that is why we use __toString()
             $paramType = $param->hasType() ? $param->getType()->__toString() : '';
 
-            if (array_key_exists($param->getName(), $attributes)) {
-                $arguments[] = $this->transformToScalar($attributes[$param->getName()], $paramType);
+            if (array_key_exists($param->getName(), $matched)) {
+                $bindParams[] = $this->transformToScalar($matched[$param->getName()], $paramType);
             } elseif ($param->getClass() && $param->getClass()->isInstance($request)) {
                 //} elseif (ServerRequestInterface::class == $param->getType() || is_subclass_of($param->getType(), ServerRequestInterface::class)) {
                 //} elseif (ServerRequestInterface::class == $paramType || is_subclass_of($paramType, ServerRequestInterface::class)) {
-                $arguments[] = $request;
+                $bindParams[] = $request;
             } elseif ($param->isDefaultValueAvailable()) {
-                $arguments[] = $param->getDefaultValue();
+                $bindParams[] = $param->getDefaultValue();
             //} elseif ($param->hasType() && $param->allowsNull()) {
-            //    $arguments[] = null;
+            //    $result[] = null;
             } elseif (empty($paramType) && count($parameters) === 1) {
                 // handle special case when there is only 1 parameter and no typehintting.
                 // We suppose the user want the request => probably a closure without the typehint "ServerRequestInterface" :(
-                $arguments[] = $request;
+                $bindParams[] = $request;
             } else {
                 // can't find the value, or the default value for the parameter => throw an error
-                throw new \InvalidArgumentException(sprintf(
+                throw new InvalidArgumentException(sprintf(
                     'Controller "%s" requires that you provide a value for the "$%s" argument (because there is no default value or because there is a non optional argument after this one).',
-                    $this->controllerName,
+                    $controllerName,
                     $param->getName()
                 ));
             }
         }
 
-        return $arguments;
+        return $bindParams;
     }
 
     /**
-     * Transform parameter to scalar.
+     * Transform parameter to scalar. We don't transform the string type.
      *
-     * @param mixed  $parameter the value of param
+     * @param string  $parameter the value of param
      * @param string $type      the tpe of param
      *
      * @return int|string|bool|float
      */
-    // TODO : regarder ici comment c'est fait !!!! : https://github.com/juliangut/slim-routing/blob/master/src/Transformer/AbstractTransformer.php#L49
     private function transformToScalar(string $parameter, string $type)
     {
         switch ($type) {
@@ -100,5 +98,18 @@ abstract class AbstractStrategy implements StrategyInterface
         }
 
         return $parameter;
+    }
+
+    /**
+     * Wrapper around the call_user_func_array function to execute the callable.
+     *
+     * @param callable  $callback
+     * @param array $params
+     *
+     * @return mixed
+     */
+    protected function call(callable $callback, array $params)
+    {
+        return call_user_func_array($callback, $params);
     }
 }

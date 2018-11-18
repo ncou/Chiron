@@ -71,10 +71,12 @@ class RoutingMiddleware implements MiddlewareInterface
 
         // TODO : bout de code permettant d'injecter les attributs dans la session, à déplacer dans la classe de strategie pour l'invocation des routes !!!!!
         // Inject individual matched parameters.
+        /*
         foreach ($result->getMatchedParams() as $param => $value) {
             $request = $request->withAttribute($param, $value);
             //$request = $request->withAttribute($param, urldecode($value)); // TODO : regarder si un urldecode est nécessaire.
-        }
+        }*/
+
         // Inject the actual route result in the request
         $request = $request->withAttribute(RouteResult::class, $result);
 

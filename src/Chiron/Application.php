@@ -70,6 +70,7 @@ use Chiron\Routing\RouteGroup;
 use Chiron\Routing\Router;
 use Chiron\Routing\Strategy\CallableResolver;
 use Chiron\Routing\Strategy\RouteInvocationStrategy;
+use Chiron\Routing\Strategy\JsonInvocationStrategy;
 use Closure;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;

@@ -74,7 +74,6 @@ class RouteResult
      *
      * @param array $params parameters associated with the matched route, if any
      */
-    //TODO : à virer !!!
     public static function fromRoute(Route $route, array $params = []): self
     {
         $result = new self();
