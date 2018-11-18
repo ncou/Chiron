@@ -15,6 +15,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Chiron\Routing\Route;
 use Chiron\Routing\Strategy\JsonStrategy;
 use Chiron\Routing\Strategy\CallableResolver;
+use Chiron\Http\Factory\ResponseFactory;
 use JsonSerializable;
 use stdClass;
 use ArrayObject;
@@ -25,7 +26,7 @@ class JsonStrategyTest extends TestCase
 {
     public function testJsonStrategyInitialisation()
     {
-        $strategy = new JsonStrategy(new CallableResolver());
+        $strategy = new JsonStrategy(new ResponseFactory(), new CallableResolver());
 
         $data = ['foo' => 'bar'];
         $callback =  function (ServerRequestInterface $request) use ($data) {
@@ -54,7 +55,7 @@ class JsonStrategyTest extends TestCase
      */
     public function testInvalidArgumentExceptionOnJsonError($data)
     {
-        $strategy = new JsonStrategy(new CallableResolver());
+        $strategy = new JsonStrategy(new ResponseFactory(), new CallableResolver());
 
         $callback =  function (ServerRequestInterface $request) use ($data) {
             return $data;
@@ -72,7 +73,7 @@ class JsonStrategyTest extends TestCase
      */
     public function testGracefullyHandledSomeJsonErrorsWithPartialOutputOnError($data)
     {
-        $strategy = new JsonStrategy(new CallableResolver());
+        $strategy = new JsonStrategy(new ResponseFactory(), new CallableResolver());
         $strategy->setEncodingOptions($strategy->getEncodingOptions() | JSON_PARTIAL_OUTPUT_ON_ERROR);
 
         $callback =  function (ServerRequestInterface $request) use ($data) {
@@ -115,7 +116,7 @@ class JsonStrategyTest extends TestCase
      */
     public function testSetAndRetrieveData($data): void
     {
-        $strategy = new JsonStrategy(new CallableResolver());
+        $strategy = new JsonStrategy(new ResponseFactory(), new CallableResolver());
 
         $callback =  function (ServerRequestInterface $request) use ($data) {
             return $data;
