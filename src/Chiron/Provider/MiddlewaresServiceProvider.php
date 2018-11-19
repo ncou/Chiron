@@ -14,7 +14,7 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Chiron\Handler\Stack\RequestHandlerStack;
+use Chiron\Pipe\Pipeline;
 use Chiron\Http\Middleware\BodyParserMiddleware;
 use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
 use Chiron\Http\Middleware\CheckMaintenanceMiddleware;
@@ -48,7 +48,7 @@ class MiddlewaresServiceProvider
         };
 
         $container[DispatcherMiddleware::class] = function ($c) {
-            return new DispatcherMiddleware(new RequestHandlerStack($c));
+            return new DispatcherMiddleware(new Pipeline($c));
         };
 
         $container[ContentTypeByDefaultMiddleware::class] = function ($c) {

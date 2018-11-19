@@ -53,9 +53,9 @@ if (! extension_loaded('mbstring')) {
 
 use Chiron\Config\Config;
 use Chiron\Container\Container;
-use Chiron\Handler\Stack\Decorator\FixedResponseHandler;
-use Chiron\Handler\Stack\Decorator\FixedResponseMiddleware;
-use Chiron\Handler\Stack\RequestHandlerStack;
+use Chiron\Pipe\Decorator\FixedResponseHandler;
+use Chiron\Pipe\Decorator\FixedResponseMiddleware;
+use Chiron\Pipe\Pipeline;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Response\EmptyResponse;
 use Chiron\Http\ResponseEmitter;
@@ -108,7 +108,7 @@ class Application extends Router
      */
     //private $router;
 
-    private $requestHandler;
+    private $pipeline;
 
     /**
      * Load a configuration file into the application.
@@ -334,7 +334,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
         //$emptyResponse = new FixedResponseHandler(new EmptyResponse());
 
-        $this->requestHandler = new RequestHandlerStack($this->container);
+        $this->pipeline = new Pipeline($this->container);
 
         // TODO : mettre les servicesProvider dans un tableau et faire une boucle pour enregistrer chaque classe. Et mettre cela dans une méthode nommée bootServices()
         // Register ServerRequest creator services
@@ -551,7 +551,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         // add an empty response as default response if no route found and no 404 handler is added.
         array_push($this->middlewares, $emptyResponse);
 
-        $response = $this->requestHandler->pipe($this->middlewares)->handle($request);
+        $response = $this->pipeline->pipe($this->middlewares)->handle($request);
 
         return $response;
 

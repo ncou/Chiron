@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Tests\Middleware;
 
 use Chiron\Application;
-use Chiron\Handler\Stack\Decorator\CallableMiddleware;
+use Chiron\Pipe\Decorator\CallableMiddleware;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Http\Psr\Response;

@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\Handler\Stack\RequestHandlerStack;
+use Chiron\Pipe\Pipeline;
 use Chiron\Routing\Route;
 use Chiron\Routing\RouteResult;
 use Psr\Http\Message\ResponseInterface;
@@ -22,9 +22,10 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class DispatcherMiddleware implements MiddlewareInterface
 {
+    /** Pipeline */
     private $pipeline;
 
-    public function __construct(RequestHandlerStack $pipeline)
+    public function __construct(Pipeline $pipeline)
     {
         $this->pipeline = $pipeline;
     }
@@ -53,7 +54,7 @@ class DispatcherMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    // TODO : essayer de faire disparaitre cette méthode en utilisant directement la méthode ->seed du requesthandlerstack pour ajouter les middlewares directement dans la stack.
+    // TODO : essayer de faire disparaitre cette méthode en utilisant directement la méthode ->pipe du Pipeline pour ajouter les middlewares directement dans la stack.
     private function gatherMiddlewares(Route $route): array
     {
         $middlewares = $route->getMiddlewareStack();
