@@ -26,66 +26,67 @@ use Chiron\Http\Middleware\EmitterMiddleware;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
 use Chiron\Http\Middleware\OriginalRequestMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
-use Chiron\Routing\Router;
+use Chiron\Routing\RouterInterface;
 use Psr\Container\ContainerInterface;
+use Chiron\KernelInterface;
 
 /**
  * Chiron system services provider.
  *
  * Registers system services for Chiron, such as config manager, middleware router and dispatcher...
  */
-class MiddlewaresServiceProvider
+class MiddlewaresServiceProvider extends ServiceProvider
 {
     /**
      * Register Chiron system services.
      *
      * @param ContainerInterface $container A DI container implementing ArrayAccess and container-interop.
      */
-    public function register(ContainerInterface $container)
+    public function register(KernelInterface $kernel): void
     {
-        $container[RoutingMiddleware::class] = function ($c) {
-            return new RoutingMiddleware($c[Router::class]);
+        $kernel[RoutingMiddleware::class] = function ($c) {
+            return new RoutingMiddleware($c[RouterInterface::class]);
         };
 
-        $container[DispatcherMiddleware::class] = function ($c) {
+        $kernel[DispatcherMiddleware::class] = function ($c) {
             return new DispatcherMiddleware(new Pipeline($c));
         };
 
-        $container[ContentTypeByDefaultMiddleware::class] = function ($c) {
+        $kernel[ContentTypeByDefaultMiddleware::class] = function ($c) {
             return new ContentTypeByDefaultMiddleware();
         };
-        $container[OriginalRequestMiddleware::class] = function ($c) {
+        $kernel[OriginalRequestMiddleware::class] = function ($c) {
             return new OriginalRequestMiddleware();
         };
 
-        $container[CharsetByDefaultMiddleware::class] = function ($c) {
+        $kernel[CharsetByDefaultMiddleware::class] = function ($c) {
             return new CharsetByDefaultMiddleware();
         };
 
-        $container[BodyParserMiddleware::class] = function ($c) {
+        $kernel[BodyParserMiddleware::class] = function ($c) {
             return new BodyParserMiddleware();
         };
 
         /*
-                $container[EmitterMiddleware::class] = function ($c) {
+                $kernel[EmitterMiddleware::class] = function ($c) {
                     return new EmitterMiddleware();
                 };
         */
 
-        $container[CheckMaintenanceMiddleware::class] = function ($c) {
+        $kernel[CheckMaintenanceMiddleware::class] = function ($c) {
             return new CheckMaintenanceMiddleware();
         };
 
-        $container[MethodOverrideMiddleware::class] = function ($c) {
+        $kernel[MethodOverrideMiddleware::class] = function ($c) {
             return new MethodOverrideMiddleware();
         };
 
-        $container[ContentLengthMiddleware::class] = function ($c) {
+        $kernel[ContentLengthMiddleware::class] = function ($c) {
             return new ContentLengthMiddleware();
         };
 
         /*
-           $container['callableResolver'] = function ($container) {
+           $kernel['callableResolver'] = function ($container) {
                return new CallableResolver($container);
            };
         */

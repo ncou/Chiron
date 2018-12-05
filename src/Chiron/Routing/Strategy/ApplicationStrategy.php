@@ -48,6 +48,7 @@ class ApplicationStrategy extends AbstractStrategy
                 throw new LogicException('Your controller should return a string or a ResponseInterface instance.');
             }
 
+            // TODO : créer une méthode createResponse dans la classe abstraite avec comme signature : create($content = null, $status = 200, array $headers = [])
             $response = $this->responseFactory->createResponse(200);
             $response = $response->withHeader('Content-Type', 'text/html');
             $response->getBody()->write($content);

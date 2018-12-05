@@ -125,6 +125,22 @@ trait RouteCollectionTrait
     }
 
     /**
+     * Add TRACE route.
+     *
+     * @see https://tools.ietf.org/html/rfc7231#section-4.3.9
+     * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.9
+     *
+     * @param string          $pattern The route URI pattern
+     * @param callable|string $handler The route callback routine
+     *
+     * @return \Chiron\Routing\Route
+     */
+    public function trace(string $pattern, $handler): Route
+    {
+        return $this->map($pattern, $handler)->method('TRACE');
+    }
+
+    /**
      * Add PATCH route.
      *
      * PATCH was added to HTTP/1.1 in RFC5789
@@ -152,6 +168,6 @@ trait RouteCollectionTrait
      */
     public function any(string $pattern, $handler): Route
     {
-        return $this->map($pattern, $handler)->setAllowedMethods(['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT']);
+        return $this->map($pattern, $handler)->setAllowedMethods(['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'TRACE']);
     }
 }

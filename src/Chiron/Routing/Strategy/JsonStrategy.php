@@ -58,6 +58,7 @@ class JsonStrategy extends AbstractStrategy
         if (! $response instanceof ResponseInterface) {
             $json = $this->jsonEncode($response);
 
+            // TODO : créer une méthode createResponse dans la classe abstraite avec comme signature : create($content = null, $status = 200, array $headers = [])
             $response = $this->responseFactory->createResponse(200);
             $response = $response->withHeader('Content-Type', 'application/json');
             $response->getBody()->write($json);

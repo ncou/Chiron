@@ -28,66 +28,67 @@ use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
+use Chiron\KernelInterface;
 
 /**
  * Chiron http factories services provider.
  */
-class HttpFactoriesServiceProvider
+class HttpFactoriesServiceProvider extends ServiceProvider
 {
     /**
      * Register Chiron system services.
      *
      * @param ContainerInterface $container A DI container implementing ArrayAccess and container-interop.
      */
-    public function register(ContainerInterface $container)
+    public function register(KernelInterface $kernel): void
     {
         // *** register factories ***
-        $container[RequestFactoryInterface::class] = function ($c) {
+        $kernel[RequestFactoryInterface::class] = function ($c) {
             return new RequestFactory();
         };
 
-        $container[ResponseFactoryInterface::class] = function ($c) {
+        $kernel[ResponseFactoryInterface::class] = function ($c) {
             return new ResponseFactory();
         };
 
-        $container[ServerRequestFactoryInterface::class] = function ($c) {
+        $kernel[ServerRequestFactoryInterface::class] = function ($c) {
             return new ServerRequestFactory();
         };
 
-        $container[UriFactoryInterface::class] = function ($c) {
+        $kernel[UriFactoryInterface::class] = function ($c) {
             return new UriFactory();
         };
 
-        $container[UploadedFileFactoryInterface::class] = function ($c) {
+        $kernel[UploadedFileFactoryInterface::class] = function ($c) {
             return new UploadedFileFactory();
         };
 
-        $container[StreamFactoryInterface::class] = function ($c) {
+        $kernel[StreamFactoryInterface::class] = function ($c) {
             return new StreamFactory();
         };
 
         // *** register alias ***
-        $container[RequestFactory::class] = function ($c) {
+        $kernel[RequestFactory::class] = function ($c) {
             return $c->get(RequestFactoryInterface::class);
         };
 
-        $container[ResponseFactory::class] = function ($c) {
+        $kernel[ResponseFactory::class] = function ($c) {
             return $c->get(ResponseFactoryInterface::class);
         };
 
-        $container[ServerRequestFactory::class] = function ($c) {
+        $kernel[ServerRequestFactory::class] = function ($c) {
             return $c->get(ServerRequestFactoryInterface::class);
         };
 
-        $container[UriFactory::class] = function ($c) {
+        $kernel[UriFactory::class] = function ($c) {
             return $c->get(UriFactoryInterface::class);
         };
 
-        $container[UploadedFileFactory::class] = function ($c) {
+        $kernel[UploadedFileFactory::class] = function ($c) {
             return $c->get(UploadedFileFactoryInterface::class);
         };
 
-        $container[StreamFactory::class] = function ($c) {
+        $kernel[StreamFactory::class] = function ($c) {
             return $c->get(StreamFactoryInterface::class);
         };
     }

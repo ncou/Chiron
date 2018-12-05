@@ -33,39 +33,40 @@ use Chiron\Views\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
+use Chiron\KernelInterface;
 
 /**
  * Chiron error handler services provider.
  */
-class ErrorHandlerServiceProvider
+class ErrorHandlerServiceProvider extends ServiceProvider
 {
     /**
      * Register Chiron system services.
      *
      * @param ContainerInterface $container A DI container implementing ArrayAccess and container-interop.
      */
-    public function register(ContainerInterface $container)
+    public function register(KernelInterface $kernel): void
     {
-        $container[ExceptionInfo::class] = function ($c) {
+        $kernel[ExceptionInfo::class] = function ($c) {
             return new ExceptionInfo(__DIR__ . '/../../../resources/lang/en/errors.json');
         };
 
-        $container[ExceptionInfo::class] = function ($c) {
+        $kernel[ExceptionInfo::class] = function ($c) {
             return new ExceptionInfo(__DIR__ . '/../../../resources/lang/en/errors.json');
         };
 
-        $container[HtmlFormatter::class] = function ($c) {
+        $kernel[HtmlFormatter::class] = function ($c) {
             $path = __DIR__ . '/../../../resources/error.html';
 
             return new HtmlFormatter($c[ExceptionInfo::class], realpath($path));
         };
 
-        $container[LogReporter::class] = function ($c) {
+        $kernel[LogReporter::class] = function ($c) {
             return new LogReporter($c[LoggerInterface::class]);
         };
 
-        $container[ExceptionHandler::class] = function ($c) {
-            $exceptionHandler = new ExceptionHandler($c['debug']);
+        $kernel[ExceptionHandler::class] = function ($c) {
+            $exceptionHandler = new ExceptionHandler($c->config->app['debug']);
 
             $exceptionHandler->addReporter($c[LogReporter::class]);
 
@@ -88,8 +89,8 @@ class ErrorHandlerServiceProvider
             return $exceptionHandler;
         };
 
-        $container[HttpExceptionHandler::class] = function ($c) {
-            $exceptionHandler = new HttpExceptionHandler($c['debug']);
+        $kernel[HttpExceptionHandler::class] = function ($c) {
+            $exceptionHandler = new HttpExceptionHandler($c->config->app['debug']);
 
             $exceptionHandler->addReporter($c[LogReporter::class]);
 
@@ -132,7 +133,7 @@ class ErrorHandlerServiceProvider
         }
         */
 
-        $container[ErrorHandlerMiddleware::class] = function ($c) {
+        $kernel[ErrorHandlerMiddleware::class] = function ($c) {
             $exceptionManager = new ExceptionManager();
 
             //$exceptionManager->bindExceptionHandler(Throwable::class, new \Chiron\Exception\WhoopsHandler());

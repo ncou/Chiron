@@ -36,11 +36,11 @@ use Psr\Http\Message\ServerRequestInterface;
  * attaching via one of the exposed methods, and will raise an exception when a
  * collision occurs.
  */
-class Router implements RouteCollectionInterface, StrategyAwareInterface, MiddlewareAwareInterface
+class Router implements RouterInterface, StrategyAwareInterface //, RouterCollectionInterface, MiddlewareAwareInterface
 {
-    use MiddlewareAwareTrait;
-    use RouteCollectionTrait;
-    use StrategyAwareTrait; // vérifier pourquoi on utilise un StrategyAware, normalement on devrait utiliser uniquement le det/setDefaultStrategy
+    //use MiddlewareAwareTrait;
+    //use RouteCollectionTrait;
+    use StrategyAwareTrait;
 
     /** @var FastRoute\RouteParser */
     private $parser;
@@ -81,10 +81,6 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
      */
     private $routeCounter = 0;
 
-    /** StrategyInterface */
-    // TODO : à virer et utiliser plutot le StrategyAwareTrait
-    private $defaultStrategy;
-
     /**
      * Constructor.
      *
@@ -102,7 +98,7 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
      * Set the base path.
      * Useful if you are running your application from a subdirectory.
      */
-    public function setBasePath(string $basePath)
+    public function setBasePath(string $basePath): void
     {
         $this->basePath = rtrim($basePath, '/');
         //$this->basePath = $basePath;
@@ -112,7 +108,7 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
      * Get the router base path.
      * Useful if you are running your application from a subdirectory.
      */
-    public function getBasePath()
+    public function getBasePath(): string
     {
         return $this->basePath;
     }
@@ -176,29 +172,12 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
 
     public function match(ServerRequestInterface $request): RouteResult
     {
-        // TODO : à améliorer !!!!
-        if (is_null($this->getStrategy())) {
-            $this->setStrategy($this->getDefaultStrategy());
-        }
-
         $this->prepareRoutes($request);
 
         // process routes
         $dispatcher = new Dispatcher($this->routes, $this->generator->getData());
 
         return $dispatcher->dispatchRequest($request);
-    }
-
-    public function getDefaultStrategy(): StrategyInterface
-    {
-        return $this->defaultStrategy;
-    }
-
-    public function setDefaultStrategy(StrategyInterface $strategy): self
-    {
-        $this->defaultStrategy = $strategy;
-
-        return $this;
     }
 
     /**
@@ -224,8 +203,13 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
             if (! is_null($route->getPort()) && $route->getPort() !== $request->getUri()->getPort()) {
                 continue;
             }
-            // add a route strategy if no one is defined
+
+            // add a route strategy if no one is defined. Use the default router strategy.
             if (is_null($route->getStrategy())) {
+                // Throw an exception if there is not a default strategy defined.
+                if(is_null($this->getStrategy())) {
+                    throw new RuntimeException('A defaut strategy should be defined in the Router is there is no specific strategy defined for the Route.');
+                }
                 $route->setStrategy($this->getStrategy());
             }
 
@@ -321,9 +305,32 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
      *
      * @return string
      */
-    protected function parseRoutePath(string $path): string
+    private function parseRoutePath(string $path): string
     {
         return preg_replace(array_keys($this->patternMatchers), array_values($this->patternMatchers), $path);
+    }
+
+    /**
+     * Build the path for a named route including the base path.
+     *
+     * @param string $name        Route name
+     * @param array  $data        Named argument replacement data
+     * @param array  $queryParams Optional query string parameters
+     *
+     * @throws InvalidArgumentException If named route does not exist
+     * @throws InvalidArgumentException If required data not provided
+     *
+     * @return string
+     */
+    public function pathFor(string $name, array $data = [], array $queryParams = []): string
+    {
+        $url = $this->relativePathFor($name, $data, $queryParams);
+
+        if ($this->basePath) {
+            $url = $this->basePath . $url;
+        }
+
+        return $url;
     }
 
     /**
@@ -386,29 +393,6 @@ class Router implements RouteCollectionInterface, StrategyAwareInterface, Middle
 
         if ($queryParams) {
             $url .= '?' . http_build_query($queryParams);
-        }
-
-        return $url;
-    }
-
-    /**
-     * Build the path for a named route including the base path.
-     *
-     * @param string $name        Route name
-     * @param array  $data        Named argument replacement data
-     * @param array  $queryParams Optional query string parameters
-     *
-     * @throws InvalidArgumentException If named route does not exist
-     * @throws InvalidArgumentException If required data not provided
-     *
-     * @return string
-     */
-    public function pathFor(string $name, array $data = [], array $queryParams = []): string
-    {
-        $url = $this->relativePathFor($name, $data, $queryParams);
-
-        if ($this->basePath) {
-            $url = $this->basePath . $url;
         }
 
         return $url;

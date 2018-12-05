@@ -14,7 +14,7 @@ use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\Stream;
 use Chiron\Routing\Route;
-use Chiron\Routing\Router;
+use Chiron\Routing\RouterInterface;
 use Chiron\Routing\RouteResult;
 use FastRoute\RouteCollector as FastRouteCollector;
 use Psr\Http\Message\ResponseInterface;
@@ -30,7 +30,7 @@ class RoutingMiddleware implements MiddlewareInterface
     private $routes = [];
 
     // TODO : ajouter un RouterInterface comme type hinting pour la paramétre $router
-    public function __construct(Router $router)
+    public function __construct(RouterInterface $router)
     {
         $this->router = $router;
         /*

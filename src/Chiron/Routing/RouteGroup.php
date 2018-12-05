@@ -20,9 +20,9 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
     protected $callback;
 
     /**
-     * @var \League\Route\RouteCollectionInterface
+     * @var \RouterInterface
      */
-    protected $collection;
+    protected $router;
 
     /**
      * @var string
@@ -34,12 +34,12 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
      *
      * @param string                   $prefix
      * @param callable                 $callback
-     * @param RouteCollectionInterface $collection
+     * @param RouterInterface $router
      */
-    public function __construct(string $prefix, callable $callback, RouteCollectionInterface $collection)
+    public function __construct(string $prefix, callable $callback, RouterInterface $router)
     {
         $this->callback = $callback;
-        $this->collection = $collection;
+        $this->router = $router;
         $this->prefix = sprintf('/%s', ltrim($prefix, '/'));
     }
 
@@ -60,7 +60,7 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
     {
         $path = ($path === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($path, '/'));
 
-        $route = $this->collection->map($path, $handler);
+        $route = $this->router->map($path, $handler);
 
         $route->setParentGroup($this);
 
@@ -85,7 +85,7 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
     {
         $prefix = ($prefix === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($prefix, '/'));
 
-        return $this->collection->group($prefix, $group);
+        return $this->router->group($prefix, $group);
     }
 
     /**

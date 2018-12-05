@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+// originalRequest : https://github.com/zendframework/zend-expressive/blob/c6db5b1a7524414eee0637bb50b8eed32fd67794/src/Middleware/WhoopsErrorResponseGenerator.php
+
 // Gérer le cas ou il y a une erreur en interne dans le handler :
 //https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php#L138
 

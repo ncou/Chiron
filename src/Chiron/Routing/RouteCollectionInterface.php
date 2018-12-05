@@ -7,16 +7,6 @@ namespace Chiron\Routing;
 interface RouteCollectionInterface
 {
     /**
-     * Group a bunch of routes.
-     *
-     * @param string   $prefix
-     * @param callable $group
-     *
-     * @return \Chiron\Routing\RouteGroup
-     */
-    public function group(string $prefix, callable $group): RouteGroup;
-
-    /**
      * Add a route to the map.
      *
      * @param string          $path
@@ -24,7 +14,7 @@ interface RouteCollectionInterface
      *
      * @return \Chiron\Routing\Route
      */
-    public function map(string $path, $handler): Route;
+    //public function map(string $path, $handler): Route;
 
     /**
      * Add GET route.
@@ -105,6 +95,19 @@ interface RouteCollectionInterface
      * @return \Chiron\Routing\Route
      */
     public function options(string $pattern, $handler): Route;
+
+    /**
+     * Add TRACE route.
+     *
+     * @see https://tools.ietf.org/html/rfc7231#section-4.3.9
+     * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.9
+     *
+     * @param string          $pattern The route URI pattern
+     * @param callable|string $handler The route callback routine
+     *
+     * @return \Chiron\Routing\Route
+     */
+    public function trace(string $pattern, $handler): Route;
 
     /**
      * Add PATCH route.
