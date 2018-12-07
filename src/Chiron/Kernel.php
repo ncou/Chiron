@@ -5,16 +5,23 @@ declare(strict_types=1);
 namespace Chiron;
 
 use Chiron\Container\Container;
-use Chiron\Config\Config;
-use Chiron\Provider\ApplicationServiceProvider;
+use Chiron\Config\ConfigInterface;
+use Chiron\Provider\LoggerServiceProvider;
+use Chiron\Provider\RouterServiceProvider;
 use Chiron\Provider\ErrorHandlerServiceProvider;
 use Chiron\Provider\HttpFactoriesServiceProvider;
 use Chiron\Provider\MiddlewaresServiceProvider;
 use Chiron\Provider\ServerRequestCreatorServiceProvider;
 use Chiron\Provider\ServiceProviderInterface;
 use Chiron\Provider\ConfigServiceProvider;
+use Chiron\Routing\RouterInterface;
+use InvalidArgumentException;
+use Psr\Log\LoggerInterface;
 
 // TODO : gérer les alias dans le container => https://github.com/laravel/framework/blob/e0dbd6ab143286d81bedf2b34f8820f3d49ea15f/src/Illuminate/Foundation/Application.php#L1076
+// TODO : gestion du "call()" qui retrouve automatiquement les paramétres de la fonction par rapport à ce qu'il y a dans le container :
+//https://github.com/Wandu/Framework/blob/master/src/Wandu/DI/Container.php#L279
+//https://github.com/illuminate/container/blob/master/Container.php#L569    +   https://github.com/laravel/framework/blob/e0dbd6ab143286d81bedf2b34f8820f3d49ea15f/src/Illuminate/Foundation/Application.php#L795
 
 class Kernel extends Container implements KernelInterface
 {
@@ -29,7 +36,7 @@ class Kernel extends Container implements KernelInterface
      *
      * @var bool
      */
-    protected $booted = false;
+    protected $isBooted = false;
 
     /**
      * All of the registered service providers.
@@ -48,9 +55,25 @@ class Kernel extends Container implements KernelInterface
     }
 
     /**
+     * Register all of the base service providers.
+     *
+     * @return void
+     */
+    protected function registerBaseServiceProviders()
+    {
+        $this->register(new ConfigServiceProvider());
+        $this->register(new ServerRequestCreatorServiceProvider());
+        $this->register(new HttpFactoriesServiceProvider());
+        $this->register(new LoggerServiceProvider());
+        $this->register(new RouterServiceProvider());
+        $this->register(new MiddlewaresServiceProvider());
+        $this->register(new ErrorHandlerServiceProvider());
+    }
+
+    /**
      * Set the environment.
      *
-     * @param string $env
+     * @param Config $config
      * @return \Clarity\Kernel\Kernel
      */
     public function setEnvironment(string $env): KernelInterface
@@ -60,9 +83,9 @@ class Kernel extends Container implements KernelInterface
         return $this;
     }
     /**
-     * Get the environment.
+     * Get the config object.
      *
-     * @return string Current environment
+     * @return Config Current configuration
      */
     public function getEnvironment(): string
     {
@@ -75,7 +98,7 @@ class Kernel extends Container implements KernelInterface
      * @param Config $config
      * @return \Clarity\Kernel\Kernel
      */
-    public function setConfig(Config $config): KernelInterface
+    public function setConfig(ConfigInterface $config): KernelInterface
     {
         $this->set('config', $config);
 
@@ -86,73 +109,100 @@ class Kernel extends Container implements KernelInterface
      *
      * @return Config Current configuration
      */
-    public function getConfig(): Config
+    public function getConfig(): ConfigInterface
     {
         return $this->get('config');
     }
-
     /**
-     * Register all of the base service providers.
+     * Set the environment.
      *
-     * @return void
+     * @param Config $config
+     * @return \Clarity\Kernel\Kernel
      */
-    protected function registerBaseServiceProviders()
+    public function setLogger(LoggerInterface $logger): KernelInterface
     {
-        $this->register(new ConfigServiceProvider());
-        $this->register(new ServerRequestCreatorServiceProvider());
-        $this->register(new HttpFactoriesServiceProvider());
-        $this->register(new ApplicationServiceProvider());
-        $this->register(new MiddlewaresServiceProvider());
-        $this->register(new ErrorHandlerServiceProvider());
+        $this->set('logger', $logger);
+
+        return $this;
+    }
+    /**
+     * Get the config object.
+     *
+     * @return Config Current configuration
+     */
+    public function getLogger(): LoggerInterface
+    {
+        return $this->get('logger');
+    }
+    /**
+     * Get the config object.
+     *
+     * @return RouterInterface
+     */
+    public function getRouter(): RouterInterface
+    {
+        return $this->get('router');
     }
 
     /**
      * Register a service provider with the application.
      *
-     * @param  \Illuminate\Support\ServiceProvider|string  $provider
-     * @param  bool   $force
-     * @return \Illuminate\Support\ServiceProvider
+     * @param  ServiceProviderInterface|string  $provider
+     * @return KernelInterface
      */
     // TODO : virer le paramétre force et faire un return void
-    public function register($provider, $force = false)
+    public function register($provider): KernelInterface
     {
-        //TODO : faire une vérif que $provider est une string ou une instance de Chiron\Provider\ServiceProviderInterface, sinon throw an exception
+        $this->resolveProvider($provider);
 
-        if (($registered = $this->getProvider($provider)) && ! $force) {
-            return $registered;
-        }
-        // If the given "provider" is a string, we will resolve it, passing in the
-        // application instance automatically for the developer. This is simply
-        // a more convenient way of specifying your service provider classes.
-        if (is_string($provider)) {
-            $provider = $this->resolveProvider($provider);
-        }
-        if (method_exists($provider, 'register')) {
-            $provider->register($this);
-        }
+        // don't process the service if it's already registered
+        if (! $this->isProviderRegistered($provider)) {
+            $this->registerProvider($provider);
 
-        $this->markAsRegistered($provider);
-        // If the application has already booted, we will call this boot method on
-        // the provider class so it has an opportunity to do its boot logic and
-        // will be ready for any usage by this developer's application logic.
-        if ($this->booted) {
-            $this->bootProvider($provider);
-        }
-        return $provider;
-    }
-
-/*
-    public function boot()
-    {
-        if (!$this->isBooted) {
-            foreach ($this->providers as $provider) {
-                $provider->boot($this);
+            // If the application has already booted, we will call this boot method on
+            // the provider class so it has an opportunity to do its boot logic and
+            // will be ready for any usage by this developer's application logic.
+            if ($this->isBooted) {
+                $this->bootProvider($provider);
             }
-            $this->isBooted = true;
         }
         return $this;
     }
-*/
+
+    /**
+     * Register a service provider with the application.
+     *
+     * @param  ServiceProviderInterface|string  $provider
+     * @return ServiceProviderInterface
+     */
+    protected function resolveProvider($provider): ServiceProviderInterface
+    {
+        // If the given "provider" is a string, we will resolve it.
+        // This is simply a more convenient way of specifying your service provider classes.
+        if (is_string($provider) && class_exists($provider)) {
+            $provider = new $provider();
+        }
+
+        // TODO : voir si on garder ce throw car de toute facon le typehint va lever une exception.
+        if (! $provider instanceof ServiceProviderInterface) {
+            throw new InvalidArgumentException(sprintf('The provider must be an instance of "%s" or a valid class name.', ServiceProviderInterface::class));
+        }
+
+        return $provider;
+    }
+
+    protected function registerProvider(ServiceProviderInterface $provider): void
+    {
+        $provider->register($this);
+        // store the registered service
+        $this->serviceProviders[get_class($provider)] = $provider;
+    }
+
+    protected function isProviderRegistered(ServiceProviderInterface $provider): bool
+    {
+        // is service already present in the array ? if it's the case, it's already registered.
+        return array_key_exists(get_class($provider), $this->serviceProviders);
+    }
 
     /**
      * Boot the application's service providers.
@@ -162,12 +212,11 @@ class Kernel extends Container implements KernelInterface
     // TODO : faire un return $this pour cette fonction ????
     public function boot(): KernelInterface
     {
-        if (! $this->booted) {
-            array_walk($this->serviceProviders, function ($p) {
-                $this->bootProvider($p);
-            });
-
-            $this->booted = true;
+        if (! $this->isBooted) {
+            foreach ($this->serviceProviders as $provider) {
+                $this->bootProvider($provider);
+            }
+            $this->isBooted = true;
         }
 
         return $this;
@@ -178,60 +227,9 @@ class Kernel extends Container implements KernelInterface
      * @param  \Illuminate\Support\ServiceProvider  $provider
      * @return mixed
      */
-    // TODO : forcer le type de retour en void
-    protected function bootProvider(ServiceProviderInterface $provider)
+    protected function bootProvider(ServiceProviderInterface $provider): void
     {
-        if (method_exists($provider, 'boot')) {
-            //return $this->call([$provider, 'boot']);
-            $provider->boot($this);
-        }
-    }
-
-
-    /**
-     * Get the registered service provider instance if it exists.
-     *
-     * @param  \Illuminate\Support\ServiceProvider|string  $provider
-     * @return \Illuminate\Support\ServiceProvider|null
-     */
-    public function getProvider($provider): ?ServiceProviderInterface
-    {
-        return array_values($this->getProviders($provider))[0] ?? null;
-    }
-    /**
-     * Get the registered service provider instances if any exist.
-     *
-     * @param  \Illuminate\Support\ServiceProvider|string  $provider
-     * @return array
-     */
-    public function getProviders($provider)
-    {
-        $name = is_string($provider) ? $provider : get_class($provider);
-
-        return array_filter($this->serviceProviders, function ($value) use ($name) {
-            return $value instanceof $name;
-        }, ARRAY_FILTER_USE_BOTH);
-    }
-    /**
-     * Mark the given provider as registered.
-     *
-     * @param  \Illuminate\Support\ServiceProvider  $provider
-     * @return void
-     */
-    protected function markAsRegistered($provider)
-    {
-        $this->serviceProviders[] = $provider;
-    }
-
-    /**
-     * Resolve a service provider instance from the class name.
-     *
-     * @param  string  $provider
-     * @return \Chiron\Provider\ServiceProviderInterface
-     */
-    public function resolveProvider($provider): ServiceProviderInterface
-    {
-        return new $provider($this);
+        $provider->boot($this);
     }
 
     /**
@@ -257,4 +255,47 @@ class Kernel extends Container implements KernelInterface
     {
         return static::$instance = $kernel;
     }
+
+    /**
+     * @return \Wandu\DI\ContainerInterface
+     */
+    /*
+    public function setAsGlobal()
+    {
+        $instance = static::$instance;
+        static::$instance = $this;
+        return $instance;
+    }*/
+
+
+    /**
+     * Magic method to get or set services using setters/getters
+     *
+     * @param string $method
+     * @param array|null $arguments
+     * @return mixed
+     * @throws DiException
+     */
+    /*
+    public function __call($method, $arguments = null)
+    {
+        if (strpos($method, 'get') === 0) {
+            $serviceName = substr($method, 3);
+            $possibleService = lcfirst($serviceName);
+            if (isset($this->_services[$possibleService]) === true) {
+                if (empty($arguments) === false) {
+                    return $this->get($possibleService, $arguments);
+                }
+                return $this->get($possibleService);
+            }
+        }
+        if (strpos($method, 'set') === 0) {
+            if (isset($arguments[0]) === true) {
+                $serviceName = substr($method, 3);
+                $this->set(lcfirst($serviceName), $arguments[0]);
+                return null;
+            }
+        }
+        throw new DiException('Call to undefined method or service \''.$method."'");
+    }*/
 }

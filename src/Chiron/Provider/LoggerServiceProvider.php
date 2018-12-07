@@ -30,7 +30,7 @@ use Chiron\KernelInterface;
  *
  * Registers system services for Chiron, such as config manager, middleware router and dispatcher...
  */
-class ApplicationServiceProvider extends ServiceProvider
+class LoggerServiceProvider extends ServiceProvider
 {
     /**
      * Register Chiron system services.
@@ -41,16 +41,7 @@ class ApplicationServiceProvider extends ServiceProvider
     {
         // TODO : initialiser un logger ici ???? et éventuellement créer une propriété pour changer le formater dans la restitution de la log. cf nanologger et la liste des todo pour mettre un formater custom à passer en paramétre du constructeur !!!!
 
-        $kernel[RouterInterface::class] = function ($c) {
-            $router = new Router();
-
-            $router->setBasePath($c->config['app.settings.basePath'] ?? '/');
-
-            $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new CallableResolver($c)));
-
-            return $router;
-        };
-
+        // register router object
         $kernel[LoggerInterface::class] = function ($c) {
             return new NullLogger();
             //$logger = new NullLogger();
@@ -58,6 +49,11 @@ class ApplicationServiceProvider extends ServiceProvider
 
             // TODO : rajouter le composant logger dans le fichier composer.json et ensuite décommenter cette ligne !!!!
             //$app->setLogger(new Logger(Chiron\ROOT_DIR.Chiron\DS.Chiron\LOG_DIR_NAME.Chiron\DS.'CHIRON.log'));
+        };
+
+        // add alias
+        $kernel['logger'] = function ($c) {
+            return $c->get(LoggerInterface::class);
         };
     }
 }

@@ -36,10 +36,10 @@ use Psr\Http\Message\ServerRequestInterface;
  * attaching via one of the exposed methods, and will raise an exception when a
  * collision occurs.
  */
-class Router implements RouterInterface, StrategyAwareInterface //, RouterCollectionInterface, MiddlewareAwareInterface
+class Router implements RouterInterface, StrategyAwareInterface, RouteCollectionInterface //, MiddlewareAwareInterface
 {
     //use MiddlewareAwareTrait;
-    //use RouteCollectionTrait;
+    use RouteCollectionTrait;
     use StrategyAwareTrait;
 
     /** @var FastRoute\RouteParser */

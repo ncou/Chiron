@@ -5,55 +5,39 @@ declare(strict_types=1);
 namespace Chiron;
 
 use Chiron\Container\Container;
-use Chiron\Config\Config;
+use Psr\Container\ContainerInterface;
+use Chiron\Config\ConfigInterface;
 use Chiron\Provider\ApplicationServiceProvider;
 use Chiron\Provider\ErrorHandlerServiceProvider;
 use Chiron\Provider\HttpFactoriesServiceProvider;
 use Chiron\Provider\MiddlewaresServiceProvider;
 use Chiron\Provider\ServerRequestCreatorServiceProvider;
 
-interface KernelInterface
+interface KernelInterface extends ContainerInterface
 {
 
     /**
      * Set the environment.
      *
-     * @param string $env
-     * @return \Clarity\Kernel\Kernel
-     */
-    public function setEnvironment(string $env): KernelInterface;
-
-    /**
-     * Get the environment.
-     *
-     * @return string Current environment
-     */
-    public function getEnvironment(): string;
-
-
-    /**
-     * Set the environment.
-     *
      * @param Config $config
-     * @return \Clarity\Kernel\Kernel
+     * @return KernelInterface
      */
-    public function setConfig(Config $config): KernelInterface;
+    public function setConfig(ConfigInterface $config): KernelInterface;
 
     /**
      * Get the config object.
      *
      * @return Config Current configuration
      */
-    public function getConfig(): Config;
+    public function getConfig(): ConfigInterface;
 
     /**
      * Register a service provider with the application.
      *
-     * @param  \Illuminate\Support\ServiceProvider|string  $provider
-     * @param  bool   $force
-     * @return \Illuminate\Support\ServiceProvider
+     * @param  ServiceProviderInterface|string  $provider
+     * @return KernelInterface
      */
-    public function register($provider, $force = false);
+    public function register($provider): KernelInterface;
 
 
     /**
