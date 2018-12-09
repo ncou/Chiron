@@ -8,7 +8,7 @@ use Chiron\Http\Middleware\ReferralSpamMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class ReferralSpamMiddlewareTest extends TestCase
@@ -38,7 +38,7 @@ class ReferralSpamMiddlewareTest extends TestCase
             return new Response();
         };
 
-        $response = $middleware->process($request, new HandlerProxy2($handler));
+        $response = $middleware->process($request, new RequestHandlerCallable($handler));
 
         if ($allowed) {
             $this->assertEquals(200, $response->getStatusCode());
@@ -60,7 +60,7 @@ class ReferralSpamMiddlewareTest extends TestCase
             return new Response();
         };
 
-        $response = $middleware->process($request, new HandlerProxy2($handler));
+        $response = $middleware->process($request, new RequestHandlerCallable($handler));
 
         if ($allowed) {
             $this->assertEquals(200, $response->getStatusCode());

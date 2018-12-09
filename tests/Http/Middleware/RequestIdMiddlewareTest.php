@@ -8,7 +8,7 @@ use Chiron\Http\Middleware\RequestIdMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class RequestIdMiddlewareTest extends TestCase
@@ -41,7 +41,7 @@ class RequestIdMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $response = $this->middleware->process($request, new HandlerProxy2($handler));
+        $response = $this->middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals(
             $response->getHeaderLine('X-Request-Id'),
@@ -63,7 +63,7 @@ class RequestIdMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $response = $this->middleware->process($request, new HandlerProxy2($handler));
+        $response = $this->middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertEquals(
             '09226165-364a-461a-bf5c-e859d70d907e',
             $response->getHeaderLine('X-Request-Id'),

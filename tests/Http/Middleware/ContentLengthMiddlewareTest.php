@@ -8,7 +8,7 @@ use Chiron\Http\Middleware\ContentLengthMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class ContentLengthMiddlewareTest extends TestCase
@@ -30,7 +30,7 @@ class ContentLengthMiddlewareTest extends TestCase
             return new Response(); // it's a response with an empty body (so the size = 0)
         };
         $middleware = $this->middleware;
-        $result = $middleware->process($this->request, new HandlerProxy2($handler));
+        $result = $middleware->process($this->request, new RequestHandlerCallable($handler));
         //$this->assertNull($result->getHeaderLine('Content-Length'));
         //$this->assertFalse($result->hasHeader('Content-Length'));
         $this->assertEquals(0, $result->getHeaderLine('Content-Length'));
@@ -46,7 +46,7 @@ class ContentLengthMiddlewareTest extends TestCase
             return $response;
         };
         $middleware = $this->middleware;
-        $result = $middleware->process($this->request, new HandlerProxy2($handler));
+        $result = $middleware->process($this->request, new RequestHandlerCallable($handler));
         //$this->assertNull($result->getHeaderLine('Content-Length'));
         $this->assertFalse($result->hasHeader('Content-Length'));
         //$this->assertEquals(0, $result->getHeaderLine('Content-Length'));
@@ -63,7 +63,7 @@ class ContentLengthMiddlewareTest extends TestCase
             return $response;
         };
         $middleware = $this->middleware;
-        $result = $middleware->process($this->request, new HandlerProxy2($handler));
+        $result = $middleware->process($this->request, new RequestHandlerCallable($handler));
         $this->assertFalse($result->hasHeader('Content-Length'));
     }
 
@@ -79,7 +79,7 @@ class ContentLengthMiddlewareTest extends TestCase
             return $response;
         };
         $middleware = $this->middleware;
-        $result = $middleware->process($this->request, new HandlerProxy2($handler));
+        $result = $middleware->process($this->request, new RequestHandlerCallable($handler));
         $this->assertFalse($result->hasHeader('Content-Length'));
     }
 
@@ -92,7 +92,7 @@ class ContentLengthMiddlewareTest extends TestCase
             return $response;
         };
         $middleware = $this->middleware;
-        $result = $middleware->process($this->request, new HandlerProxy2($handler));
+        $result = $middleware->process($this->request, new RequestHandlerCallable($handler));
         $this->assertEquals(4, $result->getHeaderLine('Content-Length'));
     }
 }

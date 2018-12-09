@@ -1,6 +1,6 @@
 <?php
 
-//namespace Equip\Dispatch;
+declare(strict_types=1);
 
 namespace Chiron\Tests\Utils;
 
@@ -8,17 +8,17 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-class HandlerProxy
+class RequestHandlerCallable implements RequestHandlerInterface
 {
     /**
-     * @var RequestHandlerInterface
+     * @var callable
      */
     private $adaptee;
 
     /**
      * @param RequestHandlerInterface $adaptee
      */
-    public function __construct(RequestHandlerInterface $adaptee)
+    public function __construct(callable $adaptee)
     {
         $this->adaptee = $adaptee;
     }
@@ -30,8 +30,8 @@ class HandlerProxy
      *
      * @return ResponseInterface
      */
-    public function __invoke(ServerRequestInterface $request)
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->adaptee->handle($request);
+        return call_user_func($this->adaptee, $request);
     }
 }

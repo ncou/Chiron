@@ -12,7 +12,7 @@ use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class BodyParserMiddlewareTest extends TestCase
@@ -44,7 +44,7 @@ class BodyParserMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals(['foo' => 'bar'], $parsedBody);
     }
@@ -61,7 +61,7 @@ class BodyParserMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals(['foo' => 'bar'], $parsedBody);
     }
@@ -78,7 +78,7 @@ class BodyParserMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertNull($parsedBody);
     }
@@ -95,7 +95,7 @@ class BodyParserMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertNull($parsedBody);
     }
@@ -112,7 +112,7 @@ class BodyParserMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals(['foo' => 'bar'], $parsedBody);
     }
@@ -129,7 +129,7 @@ class BodyParserMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals('Josh', $parsedBody->name);
     }
@@ -146,7 +146,7 @@ class BodyParserMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals('Josh', $parsedBody->name);
     }
@@ -163,7 +163,7 @@ class BodyParserMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals('Josh', $parsedBody->name);
     }
@@ -183,7 +183,7 @@ class BodyParserMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals(null, $parsedBody);
     }
@@ -203,7 +203,7 @@ class BodyParserMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals(null, $parsedBody);
     }

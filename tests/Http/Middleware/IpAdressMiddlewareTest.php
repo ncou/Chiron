@@ -8,7 +8,7 @@ use Chiron\Http\Middleware\IpAddressMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class IpAdressMiddlewareTest extends TestCase
@@ -25,7 +25,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('192.168.1.1', $ipAddress);
     }
 
@@ -41,7 +41,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertNull($ipAddress);
     }
 
@@ -59,7 +59,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('192.168.1.3', $ipAddress);
     }
 
@@ -77,7 +77,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('192.168.0.1', $ipAddress);
     }
 
@@ -95,7 +95,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('192.168.1.3', $ipAddress);
     }
 
@@ -113,7 +113,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('001:DB8::21f:5bff:febf:ce22:8a2e', $ipAddress);
     }
 
@@ -131,7 +131,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('001:DB8::21f:5bff:febf:ce22:8a2e', $ipAddress);
     }
 
@@ -149,7 +149,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('125.125.125.125', $ipAddress);
     }
 
@@ -167,7 +167,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('125.125.125.125', $ipAddress);
     }
 
@@ -185,7 +185,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('::1', $ipAddress);
     }
 
@@ -203,7 +203,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('192.168.1.1', $ipAddress);
     }
 
@@ -221,7 +221,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('192.168.1.3', $ipAddress);
     }
 
@@ -239,7 +239,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('192.168.0.2', $ipAddress);
     }
 
@@ -257,7 +257,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('192.0.2.43', $ipAddress);
     }
 
@@ -275,7 +275,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('192.0.2.60', $ipAddress);
     }
 
@@ -293,7 +293,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('2001:db8:cafe::17', $ipAddress);
     }
 
@@ -311,7 +311,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('125.125.125.125', $ipAddress);
     }
 
@@ -329,7 +329,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('::1', $ipAddress);
     }
 
@@ -350,7 +350,7 @@ class IpAdressMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('192.168.1.3', $ipAddress);
     }
 }

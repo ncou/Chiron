@@ -8,7 +8,7 @@ use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class CharsetByDefaultMiddlewareTest extends TestCase
@@ -21,7 +21,7 @@ class CharsetByDefaultMiddlewareTest extends TestCase
             return new Response();
         };
         $middleware = new CharsetByDefaultMiddleware();
-        $response = $middleware->process($request, new HandlerProxy2($handler));
+        $response = $middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertFalse($response->hasHeader('Content-Type'));
     }
@@ -36,7 +36,7 @@ class CharsetByDefaultMiddlewareTest extends TestCase
             return $response;
         };
         $middleware = new CharsetByDefaultMiddleware('iso-8859-1');
-        $response = $middleware->process($request, new HandlerProxy2($handler));
+        $response = $middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals('text/plain; boundary=something; charset=iso-8859-1', $response->getHeaderLine('Content-Type'));
     }
@@ -51,7 +51,7 @@ class CharsetByDefaultMiddlewareTest extends TestCase
             return $response;
         };
         $middleware = new CharsetByDefaultMiddleware('iso-8859-1');
-        $response = $middleware->process($request, new HandlerProxy2($handler));
+        $response = $middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals('application/pdf', $response->getHeaderLine('Content-Type'));
     }
@@ -66,7 +66,7 @@ class CharsetByDefaultMiddlewareTest extends TestCase
             return $response;
         };
         $middleware = new CharsetByDefaultMiddleware('iso-8859-1');
-        $response = $middleware->process($request, new HandlerProxy2($handler));
+        $response = $middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals('application/json; charset=iso-8859-1', $response->getHeaderLine('Content-Type'));
     }
@@ -81,7 +81,7 @@ class CharsetByDefaultMiddlewareTest extends TestCase
             return $response;
         };
         $middleware = new CharsetByDefaultMiddleware('iso-8859-1');
-        $response = $middleware->process($request, new HandlerProxy2($handler));
+        $response = $middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals('application/json; boundary=something; charset=iso-8859-1', $response->getHeaderLine('Content-Type'));
     }

@@ -8,7 +8,7 @@ use Chiron\Http\Middleware\RedirectHttpsMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class RedirectHttpsMiddlewareTest extends TestCase
@@ -33,7 +33,7 @@ class RedirectHttpsMiddlewareTest extends TestCase
             return (new Response())->write('SUCCESS');
         };
         $middleware = $this->middleware;
-        $result = $middleware->process($request, new HandlerProxy2($handler));
+        $result = $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertEquals('SUCCESS', (string) $result->getBody());
     }
 
@@ -46,7 +46,7 @@ class RedirectHttpsMiddlewareTest extends TestCase
             return (new Response())->write('SUCCESS');
         };
         $middleware = $this->middleware;
-        $result = $middleware->process($request, new HandlerProxy2($handler));
+        $result = $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertEquals('SUCCESS', (string) $result->getBody());
     }
 
@@ -59,7 +59,7 @@ class RedirectHttpsMiddlewareTest extends TestCase
             throw new \Exception('Should not make it here');
         };
         $middleware = $this->middleware;
-        $result = $middleware->process($request, new HandlerProxy2($handler));
+        $result = $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertEquals(301, $result->getStatusCode());
         $this->assertEquals('https://domain.com', $result->getHeaderLine('Location'));
     }
@@ -73,7 +73,7 @@ class RedirectHttpsMiddlewareTest extends TestCase
             throw new \Exception('Should not make it here');
         };
         $middleware = new RedirectHttpsMiddleware(307);
-        $result = $middleware->process($request, new HandlerProxy2($handler));
+        $result = $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertEquals(307, $result->getStatusCode());
         $this->assertEquals('https://domain.com', $result->getHeaderLine('Location'));
     }
@@ -87,7 +87,7 @@ class RedirectHttpsMiddlewareTest extends TestCase
             return (new Response())->write('SUCCESS');
         };
         $middleware = new RedirectHttpsMiddleware(301, ['http://domain.com']);
-        $result = $middleware->process($request, new HandlerProxy2($handler));
+        $result = $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertEquals('SUCCESS', (string) $result->getBody());
     }
 
@@ -100,7 +100,7 @@ class RedirectHttpsMiddlewareTest extends TestCase
             return (new Response())->write('SUCCESS');
         };
         $middleware = new RedirectHttpsMiddleware(301, ['http://domain.com/*']);
-        $result = $middleware->process($request, new HandlerProxy2($handler));
+        $result = $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertEquals('SUCCESS', (string) $result->getBody());
     }
 }

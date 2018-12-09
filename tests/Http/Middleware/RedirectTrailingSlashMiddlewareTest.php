@@ -8,7 +8,7 @@ use Chiron\Http\Middleware\RedirectTrailingSlashMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class RedirectTrailingSlashMiddlewareTest extends TestCase
@@ -37,7 +37,7 @@ class RedirectTrailingSlashMiddlewareTest extends TestCase
             return new Response();
         };
 
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals($result, $path);
     }
@@ -68,7 +68,7 @@ class RedirectTrailingSlashMiddlewareTest extends TestCase
             return new Response();
         };
 
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals($result, $path);
     }
@@ -82,7 +82,7 @@ class RedirectTrailingSlashMiddlewareTest extends TestCase
             return new Response();
         };
 
-        $response = $middleware->process($request, new HandlerProxy2($handler));
+        $response = $middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals(301, (string) $response->getStatusCode());
         $this->assertEquals('/foo/bar', $response->getHeaderLine('Location'));

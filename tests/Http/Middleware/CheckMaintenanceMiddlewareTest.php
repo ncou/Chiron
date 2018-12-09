@@ -9,7 +9,7 @@ use Chiron\Http\Middleware\CheckMaintenanceMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class CheckMaintenanceMiddlewareTest extends TestCase
@@ -42,7 +42,7 @@ class CheckMaintenanceMiddlewareTest extends TestCase
         };
         $middleware = $this->middleware;
 
-        $result = $middleware->process($this->request, new HandlerProxy2($handler));
+        $result = $middleware->process($this->request, new RequestHandlerCallable($handler));
         $this->assertEquals(200, $result->getStatusCode());
     }
 
@@ -55,7 +55,7 @@ class CheckMaintenanceMiddlewareTest extends TestCase
         $middleware->isDownForMaintenance(true);
 
         try {
-            $middleware->process($this->request, new HandlerProxy2($handler));
+            $middleware->process($this->request, new RequestHandlerCallable($handler));
         } catch (ServiceUnavailableHttpException $e) {
             $this->assertEquals(503, $e->getStatusCode());
             $this->assertFalse(isset($e->getHeaders()['Retry-After']));
@@ -77,7 +77,7 @@ class CheckMaintenanceMiddlewareTest extends TestCase
         $middleware->retryAfter($duration);
 
         try {
-            $middleware->process($this->request, new HandlerProxy2($handler));
+            $middleware->process($this->request, new RequestHandlerCallable($handler));
         } catch (ServiceUnavailableHttpException $e) {
             $this->assertEquals(503, $e->getStatusCode());
             $this->assertTrue(isset($e->getHeaders()['Retry-After']));

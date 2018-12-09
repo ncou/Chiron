@@ -8,7 +8,7 @@ use Chiron\Http\Middleware\MethodOverrideMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class MethodOverrideMiddlewareTest extends TestCase
@@ -33,7 +33,7 @@ class MethodOverrideMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
     }
 
     public function testGETMethodOverrideWithCaseSensitive()
@@ -46,7 +46,7 @@ class MethodOverrideMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
     }
 
     public function testPOSTMethodOverride()
@@ -59,7 +59,7 @@ class MethodOverrideMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
     }
 
     public function testPOSTMethodOverrideCaseSensitive()
@@ -72,7 +72,7 @@ class MethodOverrideMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
     }
 
     public function testHeaderMethodOverride()
@@ -85,7 +85,7 @@ class MethodOverrideMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
     }
 
     public function testHeaderMethodOverrideCaseSensitive()
@@ -98,6 +98,6 @@ class MethodOverrideMiddlewareTest extends TestCase
 
             return new Response();
         };
-        $this->middleware->process($request, new HandlerProxy2($handler));
+        $this->middleware->process($request, new RequestHandlerCallable($handler));
     }
 }

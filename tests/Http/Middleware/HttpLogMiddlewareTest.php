@@ -9,7 +9,7 @@ use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
 use Chiron\Logger;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LogLevel;
 
@@ -49,7 +49,7 @@ class HttpLogMiddlewareTest extends TestCase
             'log_response' => true,
             'details'      => false,
         ]);
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         //$log = $this->root->getChild('http_log.log')->getContent();
         $log = file_get_contents('http_log1.log');
         $this->assertNotFalse(strpos($log, 'Request: GET /'));
@@ -68,7 +68,7 @@ class HttpLogMiddlewareTest extends TestCase
             'log_response' => true,
             'details'      => true,
         ]);
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         //$log = $this->root->getChild('http_log.log')->getContent();
         $log = file_get_contents('http_log2.log');
         $this->assertNotFalse(strpos($log, 'Request: GET / HTTP/1.1'));

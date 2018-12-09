@@ -8,7 +8,7 @@ use Chiron\Http\Middleware\SecurityHeadersMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class SecurityHeadersMiddlewareTest extends TestCase
@@ -32,7 +32,7 @@ class SecurityHeadersMiddlewareTest extends TestCase
             return new Response();
         };
         $middleware = new SecurityHeadersMiddleware($config);
-        $response = $middleware->process($this->request, new HandlerProxy2($handler));
+        $response = $middleware->process($this->request, new RequestHandlerCallable($handler));
         $headers = $response->getHeaders();
 
         $this->assertArrayHasKey('X-Frame-Options', $headers);
@@ -49,7 +49,7 @@ class SecurityHeadersMiddlewareTest extends TestCase
             return new Response();
         };
         $middleware = new SecurityHeadersMiddleware($config);
-        $response = $middleware->process($this->request, new HandlerProxy2($handler));
+        $response = $middleware->process($this->request, new RequestHandlerCallable($handler));
 
         $this->assertEquals(
             'max-age=63072000; includeSubDomains; preload',
@@ -67,7 +67,7 @@ class SecurityHeadersMiddlewareTest extends TestCase
             return new Response();
         };
         $middleware = new SecurityHeadersMiddleware($config);
-        $response = $middleware->process($this->request, new HandlerProxy2($handler));
+        $response = $middleware->process($this->request, new RequestHandlerCallable($handler));
 
         $this->assertEquals(
             'max-age=63072000, enforce',
@@ -86,7 +86,7 @@ class SecurityHeadersMiddlewareTest extends TestCase
             return new Response();
         };
         $middleware = new SecurityHeadersMiddleware($config);
-        $response = $middleware->process($this->request, new HandlerProxy2($handler));
+        $response = $middleware->process($this->request, new RequestHandlerCallable($handler));
 
         $this->assertEquals(
             'max-age=63072000, enforce, report-uri="www.example.com"',
@@ -107,7 +107,7 @@ class SecurityHeadersMiddlewareTest extends TestCase
             return new Response();
         };
         $middleware = new SecurityHeadersMiddleware($config);
-        $response = $middleware->process($this->request, new HandlerProxy2($handler));
+        $response = $middleware->process($this->request, new RequestHandlerCallable($handler));
 
         $this->assertArrayHasKey('Public-Key-Pins', $response->getHeaders());
         $this->assertEquals(
@@ -128,7 +128,7 @@ class SecurityHeadersMiddlewareTest extends TestCase
             return new Response();
         };
         $middleware = new SecurityHeadersMiddleware($config);
-        $response = $middleware->process($this->request, new HandlerProxy2($handler));
+        $response = $middleware->process($this->request, new RequestHandlerCallable($handler));
 
         $this->assertEquals(
             'pin-sha256="foobar"; max-age=63072000; includeSubDomains; report-uri="www.example.com"',

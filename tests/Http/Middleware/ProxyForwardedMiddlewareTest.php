@@ -8,7 +8,7 @@ use Chiron\Http\Middleware\ProxyForwardedMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class ProxyForwardedMiddlewareTest extends TestCase
@@ -32,7 +32,7 @@ class ProxyForwardedMiddlewareTest extends TestCase
             return new Response();
         };
 
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('https', $scheme);
         $this->assertSame('example.com', $host);
         $this->assertSame(1234, $port);
@@ -58,7 +58,7 @@ class ProxyForwardedMiddlewareTest extends TestCase
             return new Response();
         };
 
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('https', $scheme);
         $this->assertSame('example.com', $host);
         $this->assertSame(1234, $port);
@@ -84,7 +84,7 @@ class ProxyForwardedMiddlewareTest extends TestCase
             return new Response();
         };
 
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('https', $scheme);
         $this->assertSame('example.com', $host);
         $this->assertSame(1000, $port);
@@ -108,7 +108,7 @@ class ProxyForwardedMiddlewareTest extends TestCase
             return new Response();
         };
 
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('http', $scheme);
         $this->assertSame('foo.com', $host);
         $this->assertSame(null, $port);
@@ -132,7 +132,7 @@ class ProxyForwardedMiddlewareTest extends TestCase
             return new Response();
         };
 
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals('foo.com', $host);
         $this->assertLessThan(0.02, microtime(true) - $start);
@@ -155,7 +155,7 @@ class ProxyForwardedMiddlewareTest extends TestCase
             return new Response();
         };
 
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
 
         if ($isValid) {
             $this->assertSame($expectedHost ?: $newHost, $host);

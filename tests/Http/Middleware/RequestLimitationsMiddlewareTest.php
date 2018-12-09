@@ -8,7 +8,7 @@ use Chiron\Http\Middleware\RequestLimitationsMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 
@@ -35,7 +35,7 @@ class RequestLimitationsMiddlewareTest extends TestCase
         };
 
         $middleware = new RequestLimitationsMiddleware();
-        $response = $middleware->process($request, new HandlerProxy2($handler));
+        $response = $middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertInstanceOf(ResponseInterface::class, $response);
     }
@@ -53,7 +53,7 @@ class RequestLimitationsMiddlewareTest extends TestCase
         };
 
         $middleware = new RequestLimitationsMiddleware();
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
     }
 
     /**
@@ -73,7 +73,7 @@ class RequestLimitationsMiddlewareTest extends TestCase
         }
 
         $middleware = new RequestLimitationsMiddleware();
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
     }
 
     /**
@@ -93,7 +93,7 @@ class RequestLimitationsMiddlewareTest extends TestCase
         }
 
         $middleware = new RequestLimitationsMiddleware();
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
     }
 
     /**
@@ -111,7 +111,7 @@ class RequestLimitationsMiddlewareTest extends TestCase
         $request = $request->withHeader('X-Very-Long-Header-Value', [str_pad('', $this->maxHeaderValue, '*')]);
 
         $middleware = new RequestLimitationsMiddleware();
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
     }
 
     /**
@@ -129,6 +129,6 @@ class RequestLimitationsMiddlewareTest extends TestCase
         $request = $request->withHeader(str_pad('X-Very-Long-Header-Name', $this->maxHeaderName + 1, '*'), ['TEST']);
 
         $middleware = new RequestLimitationsMiddleware();
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
     }
 }

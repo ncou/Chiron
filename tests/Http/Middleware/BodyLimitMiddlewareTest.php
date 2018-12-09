@@ -8,7 +8,7 @@ use Chiron\Http\Middleware\BodyLimitMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class BodyLimitMiddlewareTest extends TestCase
@@ -23,7 +23,7 @@ class BodyLimitMiddlewareTest extends TestCase
             return new Response(200);
         };
         $middleware = new BodyLimitMiddleware();
-        $response = $middleware->process($request, new HandlerProxy2($handler));
+        $response = $middleware->process($request, new RequestHandlerCallable($handler));
 
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -41,7 +41,7 @@ class BodyLimitMiddlewareTest extends TestCase
             return new Response(200);
         };
         $middleware = new BodyLimitMiddleware();
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
     }
 
     /**
@@ -57,6 +57,6 @@ class BodyLimitMiddlewareTest extends TestCase
             return new Response(200);
         };
         $middleware = new BodyLimitMiddleware();
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
     }
 }

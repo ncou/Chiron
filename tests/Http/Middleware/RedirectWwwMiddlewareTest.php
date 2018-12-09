@@ -8,7 +8,7 @@ use Chiron\Http\Middleware\RedirectWwwMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class RedirectWwwMiddlewareTest extends TestCase
@@ -50,7 +50,7 @@ class RedirectWwwMiddlewareTest extends TestCase
             return new Response(200);
         };
         $middleware = new RedirectWwwMiddleware($addWww);
-        $response = $middleware->process($request, new HandlerProxy2($handler));
+        $response = $middleware->process($request, new RequestHandlerCallable($handler));
 
         if ($uri === $result) {
             $this->assertEquals(200, $response->getStatusCode());

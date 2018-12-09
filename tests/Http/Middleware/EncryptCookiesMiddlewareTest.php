@@ -10,7 +10,7 @@ use Chiron\Http\Middleware\EncryptCookiesMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class EncryptCookiesMiddlewareTest extends TestCase
@@ -51,7 +51,7 @@ class EncryptCookiesMiddlewareTest extends TestCase
             return $response->withHeader('called', 'yes');
         };
         $middleware = $this->middleware;
-        $response = $middleware->process($request, new HandlerProxy2($handler));
+        $response = $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertSame('yes', $response->getHeaderLine('called'), 'Inner middleware not invoked');
     }
 
@@ -69,7 +69,7 @@ class EncryptCookiesMiddlewareTest extends TestCase
                 ->withAddedHeader('Set-Cookie', 'ninja=shuriken');
         };
         $middleware = $this->middleware;
-        $response = $middleware->process($request, new HandlerProxy2($handler));
+        $response = $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertNotContains('ninja=shuriken', $response->getHeaderLine('Set-Cookie'));
         $this->assertContains('plain=in%20clear', $response->getHeaderLine('Set-Cookie'));
         $cookies = CookiesManager::parseSetCookieHeader($response->getHeader('Set-Cookie'));
@@ -96,7 +96,7 @@ class EncryptCookiesMiddlewareTest extends TestCase
             return new Response();
         };
         $middleware = $this->middleware;
-        $response = $middleware->process($request, new HandlerProxy2($handler));
+        $response = $middleware->process($request, new RequestHandlerCallable($handler));
     }
 
     /*
@@ -115,7 +115,7 @@ class EncryptCookiesMiddlewareTest extends TestCase
                 ->withCookie('ninja', 'shuriken');
         };
         $middleware = $this->middleware;
-        $response = $middleware->process($request, new HandlerProxy2($handler));
+        $response = $middleware->process($request, new RequestHandlerCallable($handler));
         $this->assertNotSame('shuriken', $response->getCookieParam('ninja'));
         $this->assertEquals(
             'shuriken',

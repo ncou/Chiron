@@ -5,10 +5,10 @@ declare(strict_types=1);
 // TODO : utiliser cette classe pour ajouter des tests : https://github.com/zendframework/zend-diactoros/blob/master/test/Response/SapiStreamEmitterTest.php
 // https://github.com/cakephp/cakephp/blob/master/tests/TestCase/Http/ResponseEmitterTest.php
 
-namespace Chiron\Tests\Http;
+namespace Chiron\Tests\Http\Emitter;
 
 use Chiron\Http\Psr\Response;
-use Chiron\Http\ResponseEmitter;
+use Chiron\Http\Emitter\ResponseEmitter;
 use Chiron\Tests\Utils\CallbackStream;
 use Chiron\Tests\Utils\HeaderStack;
 use PHPUnit\Framework\TestCase;

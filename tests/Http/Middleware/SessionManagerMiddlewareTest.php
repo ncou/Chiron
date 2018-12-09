@@ -9,7 +9,7 @@ use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
 use Chiron\Http\Session\SessionManager;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 
 class SessionManagerMiddlewareTest extends TestCase
@@ -37,7 +37,7 @@ class SessionManagerMiddlewareTest extends TestCase
 
         $this->assertEquals(PHP_SESSION_NONE, session_status());
 
-        $middleware->process($request, new HandlerProxy2($handler));
+        $middleware->process($request, new RequestHandlerCallable($handler));
 
         $expected = [
             'lifetime' => 1800,

@@ -13,7 +13,7 @@ use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
 use Chiron\Routing\Router;
-use Chiron\Tests\Utils\HandlerProxy2;
+use Chiron\Tests\Utils\RequestHandlerCallable;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -45,7 +45,7 @@ class RoutingMiddlewareTest extends TestCase
 
     public function testRouteFound()
     {
-        $pipeline = new Pipeline(new HandlerProxy2($this->empty));
+        $pipeline = new Pipeline(new RequestHandlerCallable($this->empty));
         $request = new ServerRequest('GET', new Uri('/foo'));
 
         $handler = function ($request) {
@@ -56,7 +56,7 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->map('/foo', new HandlerProxy2($handler))->method('GET');
+        $router->map('/foo', new RequestHandlerCallable($handler))->method('GET');
 
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
@@ -64,7 +64,7 @@ class RoutingMiddlewareTest extends TestCase
         $pipeline->prepend($middlewareRouting);
         $pipeline->prepend($middlewareDispatcher);
 
-        //$response = $middleware->process($request, new HandlerProxy2($this->empty));
+        //$response = $middleware->process($request, new RequestHandlerCallable($this->empty));
         $response = $pipeline->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -74,7 +74,7 @@ class RoutingMiddlewareTest extends TestCase
 
     public function testRouteFoundWithAttributes()
     {
-        $pipeline = new Pipeline(new HandlerProxy2($this->empty));
+        $pipeline = new Pipeline(new RequestHandlerCallable($this->empty));
         $request = new ServerRequest('GET', new Uri('/foo/123456/'));
 
         $handler = function ($request) {
@@ -86,7 +86,7 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->map('/foo/[i:id]/', new HandlerProxy2($handler))->method('GET');
+        $router->map('/foo/[i:id]/', new RequestHandlerCallable($handler))->method('GET');
 
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
@@ -94,7 +94,7 @@ class RoutingMiddlewareTest extends TestCase
         $pipeline->prepend($middlewareRouting);
         $pipeline->prepend($middlewareDispatcher);
 
-        //$response = $middleware->process($request, new HandlerProxy2($this->empty));
+        //$response = $middleware->process($request, new RequestHandlerCallable($this->empty));
         $response = $pipeline->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -103,7 +103,7 @@ class RoutingMiddlewareTest extends TestCase
 
     public function testRouteFoundWithoutBodyFromHEADMethod()
     {
-        $pipeline = new Pipeline(new HandlerProxy2($this->empty));
+        $pipeline = new Pipeline(new RequestHandlerCallable($this->empty));
         $request = new ServerRequest('HEAD', new Uri('/foo'));
 
         $handler = function ($request) {
@@ -114,7 +114,7 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->map('/foo', new HandlerProxy2($handler))->method('GET');
+        $router->map('/foo', new RequestHandlerCallable($handler))->method('GET');
 
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
@@ -122,7 +122,7 @@ class RoutingMiddlewareTest extends TestCase
         $pipeline->prepend($middlewareRouting);
         $pipeline->prepend($middlewareDispatcher);
 
-        //$response = $middleware->process($request, new HandlerProxy2($this->empty));
+        //$response = $middleware->process($request, new RequestHandlerCallable($this->empty));
         $response = $pipeline->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -132,7 +132,7 @@ class RoutingMiddlewareTest extends TestCase
 
     public function testRouteFoundWithoutBodyFromHEADMethodWithCustomHandler()
     {
-        $pipeline = new Pipeline(new HandlerProxy2($this->empty));
+        $pipeline = new Pipeline(new RequestHandlerCallable($this->empty));
         $request = new ServerRequest('HEAD', new Uri('/foo'));
 
         $handler = function ($request) {
@@ -149,8 +149,8 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->map('/foo', new HandlerProxy2($handler))->method('GET');
-        $router->map('/foo', new HandlerProxy2($handlerCustom))->method('HEAD');
+        $router->map('/foo', new RequestHandlerCallable($handler))->method('GET');
+        $router->map('/foo', new RequestHandlerCallable($handlerCustom))->method('HEAD');
 
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
@@ -158,7 +158,7 @@ class RoutingMiddlewareTest extends TestCase
         $pipeline->prepend($middlewareRouting);
         $pipeline->prepend($middlewareDispatcher);
 
-        //$response = $middleware->process($request, new HandlerProxy2($this->empty));
+        //$response = $middleware->process($request, new RequestHandlerCallable($this->empty));
         $response = $pipeline->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -168,7 +168,7 @@ class RoutingMiddlewareTest extends TestCase
 
     public function testRouteFoundWithAllowHeaderForOPTIONSMethod()
     {
-        $pipeline = new Pipeline(new HandlerProxy2($this->empty));
+        $pipeline = new Pipeline(new RequestHandlerCallable($this->empty));
         $request = new ServerRequest('OPTIONS', new Uri('/foo'));
 
         $handler = function ($request) {
@@ -179,7 +179,7 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->map('/foo', new HandlerProxy2($handler))->method('GET');
+        $router->map('/foo', new RequestHandlerCallable($handler))->method('GET');
 
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
@@ -187,7 +187,7 @@ class RoutingMiddlewareTest extends TestCase
         $pipeline->prepend($middlewareRouting);
         $pipeline->prepend($middlewareDispatcher);
 
-        //$response = $middleware->process($request, new HandlerProxy2($this->empty));
+        //$response = $middleware->process($request, new RequestHandlerCallable($this->empty));
         $response = $pipeline->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -199,7 +199,7 @@ class RoutingMiddlewareTest extends TestCase
 
     public function testRouteFoundWithCustomHandlerForOPTIONSMethod()
     {
-        $pipeline = new Pipeline(new HandlerProxy2($this->empty));
+        $pipeline = new Pipeline(new RequestHandlerCallable($this->empty));
         $request = new ServerRequest('OPTIONS', new Uri('/foo'));
 
         $handler = function ($request) {
@@ -217,8 +217,8 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->map('/foo', new HandlerProxy2($handler))->method('GET');
-        $router->map('/foo', new HandlerProxy2($handlerCustom))->method('OPTIONS');
+        $router->map('/foo', new RequestHandlerCallable($handler))->method('GET');
+        $router->map('/foo', new RequestHandlerCallable($handlerCustom))->method('OPTIONS');
 
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
@@ -226,7 +226,7 @@ class RoutingMiddlewareTest extends TestCase
         $pipeline->prepend($middlewareRouting);
         $pipeline->prepend($middlewareDispatcher);
 
-        //$response = $middleware->process($request, new HandlerProxy2($this->empty));
+        //$response = $middleware->process($request, new RequestHandlerCallable($this->empty));
         $response = $pipeline->handle($request);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -239,7 +239,7 @@ class RoutingMiddlewareTest extends TestCase
      */
     public function testRouteNotFound()
     {
-        $pipeline = new Pipeline(new HandlerProxy2($this->empty));
+        $pipeline = new Pipeline(new RequestHandlerCallable($this->empty));
         $request = new ServerRequest('GET', new Uri('/foobar'));
 
         $handler = function ($request) {
@@ -250,7 +250,7 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->map('/foo', new HandlerProxy2($handler))->method('GET');
+        $router->map('/foo', new RequestHandlerCallable($handler))->method('GET');
 
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
@@ -266,7 +266,7 @@ class RoutingMiddlewareTest extends TestCase
      */
     public function testRouteMethodNotAllowed()
     {
-        $pipeline = new Pipeline(new HandlerProxy2($this->empty));
+        $pipeline = new Pipeline(new RequestHandlerCallable($this->empty));
         $request = new ServerRequest('PUT', new Uri('/foo'));
 
         $handler = function ($request) {
@@ -277,7 +277,7 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->map('/foo', new HandlerProxy2($handler))->method('POST');
+        $router->map('/foo', new RequestHandlerCallable($handler))->method('POST');
 
         $middlewareRouting = new RoutingMiddleware($router);
         $middlewareDispatcher = new DispatcherMiddleware();
