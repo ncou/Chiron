@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Http;
+namespace Chiron\Http\Emitter;
 
 use Chiron\Http\Psr\Stream;
 use Psr\Http\Message\ResponseInterface;
