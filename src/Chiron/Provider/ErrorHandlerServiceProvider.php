@@ -24,7 +24,7 @@ use Chiron\Exception\Formatter\ViewFormatter;
 use Chiron\Exception\Formatter\WhoopsFormatter;
 use Chiron\Exception\Formatter\XmlFormatter;
 use Chiron\Exception\HttpExceptionHandler;
-use Chiron\Exception\Reporter\LogReporter;
+use Chiron\Exception\Reporter\LoggerReporter;
 use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Exception\HttpException;
 use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
@@ -61,14 +61,15 @@ class ErrorHandlerServiceProvider extends ServiceProvider
             return new HtmlFormatter($c[ExceptionInfo::class], realpath($path));
         };
 
-        $kernel[LogReporter::class] = function ($c) {
-            return new LogReporter($c[LoggerInterface::class]);
+        $kernel[LoggerReporter::class] = function ($c) {
+            //return new LoggerReporter($c[LoggerInterface::class]);
+            return new LoggerReporter($c['logger']);
         };
 
         $kernel[ExceptionHandler::class] = function ($c) {
             $exceptionHandler = new ExceptionHandler($c->config->app['debug']);
 
-            $exceptionHandler->addReporter($c[LogReporter::class]);
+            $exceptionHandler->addReporter($c[LoggerReporter::class]);
 
             $exceptionHandler->addFormatter(new WhoopsFormatter());
 
@@ -92,7 +93,7 @@ class ErrorHandlerServiceProvider extends ServiceProvider
         $kernel[HttpExceptionHandler::class] = function ($c) {
             $exceptionHandler = new HttpExceptionHandler($c->config->app['debug']);
 
-            $exceptionHandler->addReporter($c[LogReporter::class]);
+            $exceptionHandler->addReporter($c[LoggerReporter::class]);
 
             $exceptionHandler->addFormatter(new WhoopsFormatter());
 
