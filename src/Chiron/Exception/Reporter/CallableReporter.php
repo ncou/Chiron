@@ -30,7 +30,6 @@ class CallableReporter implements ReporterInterface
      * @param \Throwable                               $e
      * @param \Psr\Http\Message\ServerRequestInterface $request
      */
-    // TODO : créer une classe "LogReporter" et ReporterInterface pour externaliser le code et permettre de mettre plusieurs reporters
     public function report(Throwable $e): void
     {
         return call_user_func($this->callable, $e);
