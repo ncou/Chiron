@@ -36,9 +36,9 @@ use Psr\Http\Message\ServerRequestInterface;
  * attaching via one of the exposed methods, and will raise an exception when a
  * collision occurs.
  */
-class Router implements RouterInterface, StrategyAwareInterface, RouteCollectionInterface //, MiddlewareAwareInterface
+class Router implements RouterInterface, StrategyAwareInterface, RouteCollectionInterface, MiddlewareAwareInterface
 {
-    //use MiddlewareAwareTrait;
+    use MiddlewareAwareTrait;
     use RouteCollectionTrait;
     use StrategyAwareTrait;
 
@@ -223,13 +223,13 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      * The syntax used in the $route string depends on the used route parser.
      *
      * @param string|string[] $httpMethod
-     * @param string          $route
+     * @param string          $routePath
      * @param mixed           $handler
      */
-    private function addRoute($httpMethod, string $route, $handler): void
+    private function addRoute($httpMethod, string $routePath, $handler): void
     {
-        $route = $this->basePath . $route;
-        $routeDatas = $this->parser->parse($route);
+        $routePath = $this->basePath . $routePath;
+        $routeDatas = $this->parser->parse($routePath);
         foreach ((array) $httpMethod as $method) {
             foreach ($routeDatas as $routeData) {
                 $this->generator->addRoute($method, $routeData, $handler);

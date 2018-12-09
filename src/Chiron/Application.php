@@ -20,8 +20,6 @@ declare(strict_types=1);
 
 // TODO : fichiers de configuration : prendre exemple ici : https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/config/default.php    https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Core.php#L50
 
-// TODO : ajouter un logger en paramétre, et si ce n'est pas une instance de LoggerInterface on initialise un NullLogger : https://github.com/phapi/log/blob/master/src/Phapi/Di/Validator/Log.php#L64
-
 namespace Chiron;
 
 // TODO : gérer les exceptions avec la remontée de decorator : https://github.com/thephpleague/route/blob/master/src/Strategy/JsonStrategy.php#L60
@@ -58,7 +56,7 @@ use Chiron\Pipe\Decorator\FixedResponseMiddleware;
 use Chiron\Pipe\Pipeline;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Response\EmptyResponse;
-use Chiron\Http\ResponseEmitter;
+use Chiron\Http\Emitter\ResponseEmitter;
 use Chiron\Http\ServerRequestCreator;
 use Chiron\Provider\ApplicationServiceProvider;
 use Chiron\Provider\ErrorHandlerServiceProvider;
@@ -86,9 +84,9 @@ use Psr\Log\LoggerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Chiron\Http\Factory\ResponseFactory;
 
-class Application implements MiddlewareAwareInterface
+class Application //implements MiddlewareAwareInterface
 {
-    use MiddlewareAwareTrait;
+    //use MiddlewareAwareTrait;
 
     private const VERSION = '1.0.0-alpha';
 
@@ -257,17 +255,18 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
      * Run App
      ******************************************************************************/
 
-    public function run(): ResponseInterface
+    public function run(): void
     {
-        $response = $this->handle();
+        $requestCreator = $this->kernel->get(ServerRequestCreator::class);
+        $request = $requestCreator->fromGlobals();
+
+        $response = $this->handle($request);
 
         $this->emit($response);
-
-        return $response;
     }
 
     // TODO : renommer cette fonction en "handleRequest()"
-    public function handle(ServerRequestInterface $request = null): ResponseInterface
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         //die(var_dump($this->getRouter()->getRoutes()));
         //die(var_dump($this->getRouter()->relativePathFor('test111', ['id' => '0123456'])));
@@ -287,22 +286,16 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $response = $response->withProtocolVersion($httpVersion);
         */
 
-        if (is_null($request)){
-            //$request = (new \Chiron\Http\Factory\ServerRequestFactory())->createServerRequestFromArray($_SERVER);
-            $requestCreator = $this->kernel->get(ServerRequestCreator::class);
-            $request = $requestCreator->fromGlobals();
-        }
-
-
         $responseFactory = $this->kernel->get(ResponseFactoryInterface::class);
         $emptyResponse = $responseFactory->createResponse(204);
 
         $emptyResponse = new FixedResponseMiddleware($emptyResponse);
 
         // add an empty response as default response if no route found and no 404 handler is added.
-        array_push($this->middlewares, $emptyResponse);
+        //array_push($this->middlewares, $emptyResponse);
+        $this->router->middleware($emptyResponse);
 
-        $response = $this->pipeline->pipe($this->middlewares)->handle($request);
+        $response = $this->pipeline->pipe($this->router->getMiddlewareStack())->handle($request);
 
         return $response;
 
@@ -327,9 +320,9 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 */
     }
 
-    public function emit(ResponseInterface $response): void
+    public function emit(ResponseInterface $response): bool
     {
-        $this->emitter->emit($response);
+        return $this->emitter->emit($response);
     }
 
     /**
@@ -340,7 +333,15 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     public function register($provider):self
     {
         $this->kernel->register($provider);
-        return $his;
+
+        return $this;
+    }
+
+    public function middleware($middleware): self
+    {
+        $this->router->middleware($middleware);
+
+        return $this;
     }
 
 

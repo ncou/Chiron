@@ -17,9 +17,9 @@ interface KernelInterface extends ContainerInterface
 {
 
     /**
-     * Set the environment.
+     * Set the config object.
      *
-     * @param Config $config
+     * @param ConfigInterface $config
      * @return KernelInterface
      */
     public function setConfig(ConfigInterface $config): KernelInterface;
@@ -27,9 +27,23 @@ interface KernelInterface extends ContainerInterface
     /**
      * Get the config object.
      *
-     * @return Config Current configuration
+     * @return ConfigInterface
      */
     public function getConfig(): ConfigInterface;
+
+    /**
+     * Set the environment.
+     *
+     * @param string $env
+     * @return KernelInterface
+     */
+    public function setEnvironment(string $env): KernelInterface;
+    /**
+     * Get the environment value.
+     *
+     * @return string
+     */
+    public function getEnvironment(): string;
 
     /**
      * Register a service provider with the application.

@@ -16,7 +16,7 @@
         "chiron/crypt-engine": "^0.1",
         "chiron/container": "^1.0",
         "chiron/template": "^1.1",
-        "chiron/pipeline": "^1.0",
+        "chiron/pipeline": "^1.1",
         "chiron/config": "^1.0"
     },
     "require-dev": {

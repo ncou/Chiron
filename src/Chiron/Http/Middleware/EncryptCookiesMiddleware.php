@@ -65,6 +65,7 @@ class EncryptCookiesMiddleware implements MiddlewareInterface
     private function withDecryptedCookies(ServerRequestInterface $request): ServerRequestInterface
     {
         $cookies = $request->getCookieParams();
+
         $decrypted = [];
         foreach ($cookies as $name => $value) {
             $decrypted[$name] = in_array($name, $this->bypassed) ? $value : $this->decrypt($value);

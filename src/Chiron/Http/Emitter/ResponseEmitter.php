@@ -38,7 +38,7 @@ use Psr\Http\Message\ServerRequestInterface;
 // TODO : s'inpirer de cette classe : https://github.com/zendframework/zend-diactoros/blob/master/src/Response/SapiEmitterTrait.php
 // TODO : regarder dans la classe SAPIEMitter et ici comment c'est fait : https://github.com/http-interop/response-sender/blob/master/src/functions.php
 
-class ResponseEmitter //implements EmitterInterface
+class ResponseEmitter implements EmitterInterface
 {
     /** @var int max buffer size (8Kb) */
     private $maxBufferLength = 8 * 1024;
@@ -48,7 +48,7 @@ class ResponseEmitter //implements EmitterInterface
      *
      * @param ResponseInterface $response
      */
-    public function emit(ResponseInterface $response): void
+    public function emit(ResponseInterface $response): bool
     {
         // Emit response (Headers + Status + Body)
         $this->emitHeaders($response);
@@ -61,6 +61,8 @@ class ResponseEmitter //implements EmitterInterface
         }
 
         $this->closeConnexion();
+
+        return true;
     }
 
     public function setMaxBufferLength(int $length): self
