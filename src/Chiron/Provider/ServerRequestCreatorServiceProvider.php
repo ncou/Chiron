@@ -8,14 +8,10 @@
  * @license   https://github.com/ncou/Chiron/blob/master/licenses/LICENSE.md (MIT License)
  */
 
-//https://github.com/userfrosting/UserFrosting/blob/master/app/system/ServicesProvider.php
-//https://github.com/slimphp/Slim/blob/3.x/Slim/DefaultServicesProvider.php
-
 declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-//use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Factory\StreamFactory;
 use Chiron\Http\Factory\UploadedFileFactory;
@@ -36,11 +32,13 @@ class ServerRequestCreatorServiceProvider extends ServiceProvider
      */
     public function register(KernelInterface $kernel): void
     {
-        $kernel[ServerRequestCreator::class] = function ($c) {
-            return new ServerRequestCreator($c[ServerRequestFactory::class],
+        $kernel['request'] = function ($c) {
+            $requestCreator = new ServerRequestCreator($c[ServerRequestFactory::class],
                 $c[UriFactory::class],
                 $c[UploadedFileFactory::class],
                 $c[StreamFactory::class]);
+
+            return $requestCreator->fromGlobals();
         };
     }
 }

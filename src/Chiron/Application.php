@@ -84,28 +84,12 @@ use Psr\Log\LoggerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Chiron\Http\Factory\ResponseFactory;
 
-class Application //implements MiddlewareAwareInterface
+class Application
 {
-    //use MiddlewareAwareTrait;
-
     private const VERSION = '1.0.0-alpha';
 
     /* @var ResponseEmitter */
     private $emitter;
-
-    /**
-     * The logger instance.
-     *
-     * @var LoggerInterface
-     */
-    //private $logger;
-
-    /**
-     * Dependency injection container.
-     *
-     * @var ContainerInterface
-     */
-    //private $container;
 
     /**
      * The router instance.
@@ -143,9 +127,13 @@ class Application //implements MiddlewareAwareInterface
      *
      * @param array $values the parameters or objects
      */
-    // TODO : lui passer un container en paramétre ?????
+    // TODO : permettre de passer en paramétre un kernel null.
     public function __construct(KernelInterface $kernel)
     {
+        /*
+        if (is_null($kernel)) {
+            $kernel = new Kernel();
+        }*/
         $this->kernel = $kernel->boot();
         $this->pipeline = new Pipeline($this->kernel);
         $this->emitter = new ResponseEmitter();
@@ -257,8 +245,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
     public function run(): void
     {
-        $requestCreator = $this->kernel->get(ServerRequestCreator::class);
-        $request = $requestCreator->fromGlobals();
+        $request = $this->kernel->get('request');
 
         $response = $this->handle($request);
 
@@ -373,7 +360,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
      *
      * @return string
      */
-    public function getVersion(): string
+    public function version(): string
     {
         return self::VERSION;
     }

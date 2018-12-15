@@ -37,6 +37,7 @@ class ConfigServiceProvider extends ServiceProvider
     {
         $settings['app']['settings']['basePath'] = '/';
         $settings['app']['debug'] = false;
+
         $config = new Config($settings);
         // register config object
         $kernel->set(Config::class, $config);

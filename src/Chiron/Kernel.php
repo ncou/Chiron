@@ -31,6 +31,8 @@ class Kernel extends Container implements KernelInterface
      * @var static
      */
     protected static $instance;
+    //public static $instance;
+
     /**
      * Indicates if the kernel has "booted".
      *
@@ -45,14 +47,39 @@ class Kernel extends Container implements KernelInterface
      */
     protected $serviceProviders = [];
 
-
-// TODO : ajouter la possibiilité de passer directement un objet Config dans le constructeur, si il est null on initialise un nouveau config.
+    // TODO : ajouter la possibiilité de passer directement un objet Config dans le constructeur, si il est null on initialise un nouveau config.
     public function __construct()
     {
         static::setInstance($this);
 
+/*
+        $this->set(Kernel::class, $this);
+        $this->set(KernelInterface::class, $this);
+        $this->set('kernel', $this);
+*/
+
         $this->registerBaseServiceProviders();
     }
+
+/*
+    public function __clone()
+    {
+        $this->set(Kernel::class, $this);
+        $this->set(KernelInterface::class, $this);
+        $this->set('kernel', $this);
+    }
+    */
+
+    /**
+     * @return KernelInterface
+     */
+    /*
+    public function setAsGlobal() : KernelInterface
+    {
+        $instance = static::$instance;
+        static::$instance = $this;
+        return $instance;
+    }*/
 
     /**
      * Register all of the base service providers.
@@ -144,6 +171,32 @@ class Kernel extends Container implements KernelInterface
         return $this->get('router');
     }
 
+    public function setDebug(bool $debug): KernelInterface
+    {
+        $settings['app']['debug'] = $debug;
+        $this->getConfig()->merge($settings);
+
+        return $this;
+    }
+
+    public function getDebug(): bool
+    {
+        return $this->getConfig()->get('app.debug');
+    }
+
+    public function setBasePath(string $basePath): KernelInterface
+    {
+        $settings['app']['settings']['basePath'] = $basePath;
+        $this->getConfig()->merge($settings);
+
+        return $this;
+    }
+
+    public function getBasePath(): string
+    {
+        return $this->getConfig()->get('app.settings.basePath');
+    }
+
     /**
      * Register a service provider with the application.
      *
@@ -185,7 +238,10 @@ class Kernel extends Container implements KernelInterface
 
         // TODO : voir si on garder ce throw car de toute facon le typehint va lever une exception.
         if (! $provider instanceof ServiceProviderInterface) {
-            throw new InvalidArgumentException(sprintf('The provider must be an instance of "%s" or a valid class name.', ServiceProviderInterface::class));
+            throw new InvalidArgumentException(
+                sprintf('The provider must be an instance of "%s" or a valid class name.',
+                    ServiceProviderInterface::class)
+            );
         }
 
         return $provider;

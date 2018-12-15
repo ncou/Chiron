@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Tests\Middleware;
 
 use Chiron\Application;
+use Chiron\Kernel;
 use Chiron\Pipe\Decorator\CallableMiddleware;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
@@ -24,7 +25,7 @@ class ApplicationMiddlewareTest extends TestCase
     {
         $request = new ServerRequest('GET', new Uri('/foo'));
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $response = $app->handle($request);
 
         $this->assertEquals(204, $response->getStatusCode());
@@ -40,7 +41,7 @@ class ApplicationMiddlewareTest extends TestCase
         };
         $middleware = new CallableMiddleware($callable);
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $app->middleware($middleware);
 
         $response = $app->handle($request);
@@ -57,7 +58,7 @@ class ApplicationMiddlewareTest extends TestCase
             return (new Response())->write('MIDDLEWARE');
         };
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $app->middleware($callable);
 
         $response = $app->handle($request);
@@ -74,7 +75,7 @@ class ApplicationMiddlewareTest extends TestCase
     {
         $request = new ServerRequest('GET', new Uri('/foo'));
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $app->middleware('MiddlewareNotPresentInTheContainer');
 
         $response = $app->handle($request);
@@ -92,8 +93,8 @@ class ApplicationMiddlewareTest extends TestCase
             return new CallableMiddleware($callable);
         };
 
-        $app = new Application();
-        $app->getContainer()->set('MiddlewareCallableInContainer', $entry);
+        $app = new Application(new Kernel());
+        $app->kernel->set('MiddlewareCallableInContainer', $entry);
 
         $app->middleware('MiddlewareCallableInContainer');
 
@@ -115,8 +116,8 @@ class ApplicationMiddlewareTest extends TestCase
             return $callable;
         };
 
-        $app = new Application();
-        $app->getContainer()->set('MiddlewareCallableInContainer', $entry);
+        $app = new Application(new Kernel());
+        $app->kernel->set('MiddlewareCallableInContainer', $entry);
 
         $app->middleware('MiddlewareCallableInContainer');
 
@@ -134,7 +135,7 @@ class ApplicationMiddlewareTest extends TestCase
     {
         $request = new ServerRequest('GET', new Uri('/foo'));
 
-        $app = new Application();
+        $app = new Application(new Kernel());
 
         $app->middleware(123456);
 
@@ -153,8 +154,8 @@ class ApplicationMiddlewareTest extends TestCase
             return 123456;
         };
 
-        $app = new Application();
-        $app->getContainer()->set('BadMiddlewareType', $badEntry);
+        $app = new Application(new Kernel());
+        $app->kernel->set('BadMiddlewareType', $badEntry);
 
         $app->middleware('BadMiddlewareType');
 
@@ -179,7 +180,7 @@ class ApplicationMiddlewareTest extends TestCase
         };
         $middleware2 = new CallableMiddleware($callable2);
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $app->middleware([$middleware1, $middleware2]);
 
         $response = $app->handle($request);
@@ -204,7 +205,7 @@ class ApplicationMiddlewareTest extends TestCase
             return $response->write('MIDDLEWARE_2_');
         };
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $app->middleware([$callable1, $callable2]);
 
         $response = $app->handle($request);
@@ -239,9 +240,9 @@ class ApplicationMiddlewareTest extends TestCase
             return new CallableMiddleware($callable2);
         };
 
-        $app = new Application();
-        $app->getContainer()->set('ENTRY_1', $entry1);
-        $app->getContainer()->set('ENTRY_2', $entry2);
+        $app = new Application(new Kernel());
+        $app->kernel->set('ENTRY_1', $entry1);
+        $app->kernel->set('ENTRY_2', $entry2);
 
         $app->middleware(['ENTRY_1', 'ENTRY_2']);
 
@@ -277,9 +278,9 @@ class ApplicationMiddlewareTest extends TestCase
             return $callable2;
         };
 
-        $app = new Application();
-        $app->getContainer()->set('ENTRY_1', $entry1);
-        $app->getContainer()->set('ENTRY_2', $entry2);
+        $app = new Application(new Kernel());
+        $app->kernel->set('ENTRY_1', $entry1);
+        $app->kernel->set('ENTRY_2', $entry2);
 
         $app->middleware(['ENTRY_1', 'ENTRY_2']);
 
@@ -303,9 +304,9 @@ class ApplicationMiddlewareTest extends TestCase
             return $response->write('SUCCESS');
         };
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $route = $app->get('/foo', $routeCallback);
+        $route = $app->router->get('/foo', $routeCallback);
 
         $response = $app->handle($request);
 
@@ -323,9 +324,9 @@ class ApplicationMiddlewareTest extends TestCase
             return $response->write('SUCCESS');
         };
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $route = $app->get('/foo', $routeCallback);
+        $route = $app->router->get('/foo', $routeCallback);
 
         $callable = function ($request, $handler) {
             $response = $handler->handle($request);
@@ -355,7 +356,7 @@ class ApplicationMiddlewareTest extends TestCase
             return $response->write('SUCCESS');
         };
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
         $group = $app->group('/foo', function ($group) use ($routeCallback) {
             $group->get('/bar', $routeCallback);
@@ -377,7 +378,7 @@ class ApplicationMiddlewareTest extends TestCase
             return $response->write('SUCCESS');
         };
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
         $group = $app->group('/foo', function ($group) use ($routeCallback) {
             $group->get('/bar', $routeCallback);
@@ -407,7 +408,7 @@ class ApplicationMiddlewareTest extends TestCase
             return $response->write('SUCCESS');
         };
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
         $group = $app->group('/foo', function ($group) use ($routeCallback) {
             $callable1 = function ($request, $handler) {

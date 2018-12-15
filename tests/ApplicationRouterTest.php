@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Chiron\Tests\Middleware;
 
 use Chiron\Application;
+use Chiron\Kernel;
+use Chiron\Routing\Route;
 use PHPUnit\Framework\TestCase;
 
 class ApplicationRouterTest extends TestCase
@@ -18,9 +20,9 @@ class ApplicationRouterTest extends TestCase
         $callable = function ($req, $res) {
             // Do something
         };
-        $app = new Application();
-        $route = $app->get($path, $callable);
-        $this->assertInstanceOf('\Chiron\Routing\Route', $route);
+        $app = new Application(new Kernel());
+        $route = $app->router->get($path, $callable);
+        $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('GET', 'methods', $route);
     }
 
@@ -30,9 +32,9 @@ class ApplicationRouterTest extends TestCase
         $callable = function ($req, $res) {
             // Do something
         };
-        $app = new Application();
-        $route = $app->post($path, $callable);
-        $this->assertInstanceOf('\Chiron\Routing\Route', $route);
+        $app = new Application(new Kernel());
+        $route = $app->router->post($path, $callable);
+        $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('POST', 'methods', $route);
     }
 
@@ -42,9 +44,9 @@ class ApplicationRouterTest extends TestCase
         $callable = function ($req, $res) {
             // Do something
         };
-        $app = new Application();
-        $route = $app->put($path, $callable);
-        $this->assertInstanceOf('\Chiron\Routing\Route', $route);
+        $app = new Application(new Kernel());
+        $route = $app->router->put($path, $callable);
+        $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('PUT', 'methods', $route);
     }
 
@@ -54,9 +56,9 @@ class ApplicationRouterTest extends TestCase
         $callable = function ($req, $res) {
             // Do something
         };
-        $app = new Application();
-        $route = $app->patch($path, $callable);
-        $this->assertInstanceOf('\Chiron\Routing\Route', $route);
+        $app = new Application(new Kernel());
+        $route = $app->router->patch($path, $callable);
+        $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('PATCH', 'methods', $route);
     }
 
@@ -66,9 +68,9 @@ class ApplicationRouterTest extends TestCase
         $callable = function ($req, $res) {
             // Do something
         };
-        $app = new Application();
-        $route = $app->delete($path, $callable);
-        $this->assertInstanceOf('\Chiron\Routing\Route', $route);
+        $app = new Application(new Kernel());
+        $route = $app->router->delete($path, $callable);
+        $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('DELETE', 'methods', $route);
     }
 
@@ -78,9 +80,9 @@ class ApplicationRouterTest extends TestCase
         $callable = function ($req, $res) {
             // Do something
         };
-        $app = new Application();
-        $route = $app->options($path, $callable);
-        $this->assertInstanceOf('\Chiron\Routing\Route', $route);
+        $app = new Application(new Kernel());
+        $route = $app->router->options($path, $callable);
+        $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('OPTIONS', 'methods', $route);
     }
 
@@ -90,9 +92,9 @@ class ApplicationRouterTest extends TestCase
         $callable = function ($req, $res) {
             // Do something
         };
-        $app = new Application();
-        $route = $app->head($path, $callable);
-        $this->assertInstanceOf('\Chiron\Routing\Route', $route);
+        $app = new Application(new Kernel());
+        $route = $app->router->head($path, $callable);
+        $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('HEAD', 'methods', $route);
     }
 
@@ -102,9 +104,9 @@ class ApplicationRouterTest extends TestCase
         $callable = function ($req, $res) {
             // Do something
         };
-        $app = new Application();
-        $route = $app->any($path, $callable);
-        $this->assertInstanceOf('\Chiron\Routing\Route', $route);
+        $app = new Application(new Kernel());
+        $route = $app->router->any($path, $callable);
+        $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('GET', 'methods', $route);
         $this->assertAttributeContains('POST', 'methods', $route);
         $this->assertAttributeContains('PUT', 'methods', $route);
@@ -119,9 +121,9 @@ class ApplicationRouterTest extends TestCase
         $callable = function ($req, $res) {
             // Do something
         };
-        $app = new Application();
-        $route = $app->map($path, $callable)->method('GET', 'POST');
-        $this->assertInstanceOf('\Chiron\Routing\Route', $route);
+        $app = new Application(new Kernel());
+        $route = $app->router->map($path, $callable)->method('GET', 'POST');
+        $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('GET', 'methods', $route);
         $this->assertAttributeContains('POST', 'methods', $route);
     }

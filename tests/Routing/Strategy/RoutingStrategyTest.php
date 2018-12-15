@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Tests\Routing\Strategy;
 
 use Chiron\Application;
+use Chiron\Kernel;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Http\Psr\Response;
@@ -27,9 +28,9 @@ class RoutingStrategyTest extends TestCase
             return $response->write('SUCCESS');
         };
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $route = $app->get('/foo', $routeCallback);
+        $route = $app->router->get('/foo', $routeCallback);
 
         $response = $app->handle($request);
 
@@ -47,9 +48,9 @@ class RoutingStrategyTest extends TestCase
             return $response->write('SUCCESS');
         };
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $route = $app->get('/foo', $routeCallback);
+        $route = $app->router->get('/foo', $routeCallback);
 
         $response = $app->handle($request);
 
@@ -71,9 +72,9 @@ class RoutingStrategyTest extends TestCase
             return $response->write('SUCCESS');
         };
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $route = $app->get('/foo', $routeCallback);
+        $route = $app->router->get('/foo', $routeCallback);
 
         $response = $app->handle($request);
     }
@@ -88,9 +89,9 @@ class RoutingStrategyTest extends TestCase
             return $response->write($id . $name . ($isRegistered ? 'true' : 'false') . $floatNumber);
         };
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $route = $app->get('/foo/[:id]/[:name]/[:isRegistered]/[:floatNumber]', $routeCallback);
+        $route = $app->router->get('/foo/[:id]/[:name]/[:isRegistered]/[:floatNumber]', $routeCallback);
 
         $response = $app->handle($request);
 
@@ -107,9 +108,9 @@ class RoutingStrategyTest extends TestCase
             return $response->write($id . $name . ($isRegistered ? 'true' : 'false') . $floatNumber);
         };
 
-        $app = new Application();
+        $app = new Application(new Kernel());
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $route = $app->get('/foo/[:id]?/[:name]?/[:isRegistered]?/[:floatNumber]?', $routeCallback);
+        $route = $app->router->get('/foo/[:id]?/[:name]?/[:isRegistered]?/[:floatNumber]?', $routeCallback);
 
         $response = $app->handle($request);
 

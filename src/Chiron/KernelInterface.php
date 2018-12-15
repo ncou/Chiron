@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron;
 
+use ArrayAccess;
 use Chiron\Container\Container;
 use Psr\Container\ContainerInterface;
 use Chiron\Config\ConfigInterface;
@@ -13,9 +14,10 @@ use Chiron\Provider\HttpFactoriesServiceProvider;
 use Chiron\Provider\MiddlewaresServiceProvider;
 use Chiron\Provider\ServerRequestCreatorServiceProvider;
 
-interface KernelInterface extends ContainerInterface
+// TODO : finir d'ajouter toutes les méthodes du kernel (getInstance/setInstance...etc)
+// TODO : vérifier si on a vraiment besoin de l'interface ArrayAccess
+interface KernelInterface extends ContainerInterface, ArrayAccess
 {
-
     /**
      * Set the config object.
      *
@@ -52,7 +54,6 @@ interface KernelInterface extends ContainerInterface
      * @return KernelInterface
      */
     public function register($provider): KernelInterface;
-
 
     /**
      * Boot the application's service providers.
