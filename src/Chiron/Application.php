@@ -71,7 +71,6 @@ use Chiron\Routing\RouteCollectionTrait;
 use Chiron\Routing\MiddlewareAwareTrait;
 use Chiron\Routing\RouteCollectionInterface;
 use Chiron\Routing\MiddlewareAwareInterface;
-use Chiron\Routing\Strategy\StrategyAwareInterface;
 use Chiron\Routing\Resolver\CallableResolver;
 use Chiron\Routing\Strategy\ApplicationStrategy;
 use Chiron\Routing\Strategy\JsonStrategy;

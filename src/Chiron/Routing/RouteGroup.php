@@ -4,8 +4,17 @@ declare(strict_types=1);
 
 namespace Chiron\Routing;
 
-use Chiron\Routing\Strategy\StrategyAwareInterface;
-use Chiron\Routing\Strategy\StrategyAwareTrait;
+use Chiron\Routing\Traits\StrategyAwareInterface;
+use Chiron\Routing\Traits\StrategyAwareTrait;
+
+use Chiron\Routing\Traits\MiddlewareAwareInterface;
+use Chiron\Routing\Traits\MiddlewareAwareTrait;
+
+use Chiron\Routing\Traits\RouteCollectionInterface;
+use Chiron\Routing\Traits\RouteCollectionTrait;
+
+use Chiron\Routing\Traits\RouteConditionHandlerInterface;
+use Chiron\Routing\Traits\RouteConditionHandlerTrait;
 
 class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, RouteConditionHandlerInterface, StrategyAwareInterface
 {

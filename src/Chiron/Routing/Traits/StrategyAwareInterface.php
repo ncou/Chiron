@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Routing\Strategy;
+namespace Chiron\Routing\Traits;
+
+use Chiron\Routing\Strategy\StrategyInterface;
 
 interface StrategyAwareInterface
 {

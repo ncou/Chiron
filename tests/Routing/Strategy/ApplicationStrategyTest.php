@@ -16,7 +16,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 // TODO : classe à finir de compléter !!!!!!!!!!
 
-class RoutingStrategyTest extends TestCase
+class ApplicationStrategyTest extends TestCase
 {
     public function testRouteStrategyWithoutRequestTypeHintting()
     {

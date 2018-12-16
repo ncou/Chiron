@@ -55,7 +55,7 @@ class JsonStrategy extends AbstractStrategy
 
         $response = $this->call($callable, $parameters);
 
-        // TODO : lever une exception si le retour rencoyé par le controller n'est pas : JsonSerializableInterface ou ArrayObject ou is_array
+        // TODO : lever une exception si le retour renvoyé par le controller n'est pas : JsonSerializableInterface ou ArrayObject ou is_array
         if (! $response instanceof ResponseInterface) {
             $json = $this->jsonEncode($response);
 

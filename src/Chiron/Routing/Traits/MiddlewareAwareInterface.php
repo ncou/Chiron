@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 //https://github.com/thephpleague/route/blob/master/src/Middleware/MiddlewareAwareTrait.php
 
-namespace Chiron\Routing;
+namespace Chiron\Routing\Traits;
 
 use Psr\Http\Server\MiddlewareInterface;
 
