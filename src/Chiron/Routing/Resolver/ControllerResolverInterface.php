@@ -7,7 +7,7 @@ namespace Chiron\Routing\Resolver;
 /**
  * Resolve a callable.
  */
-interface CallableResolverInterface
+interface ControllerResolverInterface
 {
     /**
      * Invoke the resolved callable.

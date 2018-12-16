@@ -20,15 +20,13 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Chiron\Routing\Route;
 use Chiron\Routing\Strategy\JsonStrategy;
-use Chiron\Routing\Resolver\CallableResolver;
+use Chiron\Routing\Resolver\ControllerResolver;
 use Chiron\Http\Factory\ResponseFactory;
 use JsonSerializable;
 use stdClass;
 use ArrayObject;
 
-// TODO : class à finir de compléter => https://github.com/slimphp/Slim/blob/4.x/tests/CallableResolverTest.php
-
-class CallableResolverTest extends TestCase
+class ControllerResolverTest extends TestCase
 {
     /**
      * @var Container
@@ -51,7 +49,7 @@ class CallableResolverTest extends TestCase
             static $called_count = 0;
             return $called_count++;
         };
-        $resolver = new CallableResolver(); // No container injected
+        $resolver = new ControllerResolver(); // No container injected
         $callable = $resolver->resolve($test);
         $callable();
         $this->assertEquals(1, $callable());
@@ -66,7 +64,7 @@ class CallableResolverTest extends TestCase
             return $called_count++;
         };
         // @codingStandardsIgnoreEnd
-        $resolver = new CallableResolver(); // No container injected
+        $resolver = new ControllerResolver(); // No container injected
         $callable = $resolver->resolve(__NAMESPACE__ . '\testCallable');
         $callable();
         $this->assertEquals(1, $callable());
@@ -74,7 +72,7 @@ class CallableResolverTest extends TestCase
     public function testObjMethodArray()
     {
         $obj = new CallableTest();
-        $resolver = new CallableResolver(); // No container injected
+        $resolver = new ControllerResolver(); // No container injected
         $callable = $resolver->resolve([$obj, 'toCall']);
         $callable();
         $this->assertEquals(1, CallableTest::$CalledCount);
@@ -82,7 +80,7 @@ class CallableResolverTest extends TestCase
 
     public function testMethodArrayStatic()
     {
-        $resolver = new CallableResolver(); // No container injected
+        $resolver = new ControllerResolver(); // No container injected
         $callable = $resolver->resolve([StaticCallableTest::class, 'toStaticCall']);
         $callable();
         $this->assertEquals(1, StaticCallableTest::$CalledCount);
@@ -90,28 +88,23 @@ class CallableResolverTest extends TestCase
 
     public function testMethodStringStatic()
     {
-        $resolver = new CallableResolver(); // No container injected
+        $resolver = new ControllerResolver(); // No container injected
         $callable = $resolver->resolve('Chiron\Tests\Routing\Resolver\Fixtures\StaticCallableTest::toStaticCall');
         $callable();
         $this->assertEquals(1, StaticCallableTest::$CalledCount);
     }
 
-
-
     public function testMethodStringStaticWithInstanciate()
     {
-        $resolver = new CallableResolver(); // No container injected
+        $resolver = new ControllerResolver(); // No container injected
         $callable = $resolver->resolve('Chiron\Tests\Routing\Resolver\Fixtures\StaticCallableTest@toStaticCall');
         $callable();
         $this->assertEquals(1, StaticCallableTest::$CalledCount);
     }
 
-
-
-
     public function testChironCallable()
     {
-        $resolver = new CallableResolver(); // No container injected
+        $resolver = new ControllerResolver(); // No container injected
         $callable = $resolver->resolve('Chiron\Tests\Routing\Resolver\Fixtures\CallableTest@toCall');
         $callable();
         $this->assertEquals(1, CallableTest::$CalledCount);
@@ -120,10 +113,23 @@ class CallableResolverTest extends TestCase
     public function testContainer()
     {
         $this->container['callable_service'] = new CallableTest();
-        $resolver = new CallableResolver($this->container);
+        $resolver = new ControllerResolver($this->container);
         $callable = $resolver->resolve('callable_service@toCall');
         $callable();
         $this->assertEquals(1, CallableTest::$CalledCount);
+    }
+
+    public function testChironMagicStaticCallable()
+    {
+        $resolver = new ControllerResolver(); // No container injected
+
+        $callable = $resolver->resolve('Chiron\Tests\Routing\Resolver\Fixtures\CallCallableTest@magicMethod');
+        $callable();
+        $this->assertEquals(1, CallCallableTest::$CalledCount);
+
+        $callable = $resolver->resolve('Chiron\Tests\Routing\Resolver\Fixtures\CallCallableTest@toStaticCall');
+        $callable();
+        $this->assertEquals(2, CallCallableTest::$CalledCount);
     }
 
     public function testResolutionToAnInvokableClassInContainer()
@@ -131,14 +137,14 @@ class CallableResolverTest extends TestCase
         $this->container['an_invokable'] = function ($c) {
             return new InvokableTest();
         };
-        $resolver = new CallableResolver($this->container);
+        $resolver = new ControllerResolver($this->container);
         $callable = $resolver->resolve('an_invokable');
         $callable();
         $this->assertEquals(1, InvokableTest::$CalledCount);
     }
     public function testResolutionToAnInvokableClass()
     {
-        $resolver = new CallableResolver(); // No container injected
+        $resolver = new ControllerResolver(); // No container injected
         $callable = $resolver->resolve('Chiron\Tests\Routing\Resolver\Fixtures\InvokableTest');
         $callable();
         $this->assertEquals(1, InvokableTest::$CalledCount);
@@ -147,7 +153,7 @@ class CallableResolverTest extends TestCase
     public function testResolutionToAPsrRequestHandlerClass()
     {
         $request = new ServerRequest('GET', new Uri('/'));
-        $resolver = new CallableResolver(); // No container injected
+        $resolver = new ControllerResolver(); // No container injected
         $callable = $resolver->resolve(RequestHandlerTest::class);
         $callable($request);
         $this->assertEquals("1", RequestHandlerTest::$CalledCount);
@@ -160,7 +166,7 @@ class CallableResolverTest extends TestCase
         $this->container['a_requesthandler'] = function ($c) {
             return new RequestHandlerTest();
         };
-        $resolver = new CallableResolver($this->container); // No container injected
+        $resolver = new ControllerResolver($this->container); // No container injected
         $callable = $resolver->resolve('a_requesthandler');
         $callable($request);
         $this->assertEquals("1", RequestHandlerTest::$CalledCount);
@@ -188,7 +194,7 @@ class CallableResolverTest extends TestCase
     public function testMethodNotFoundThrowException()
     {
         $this->container['callable_service'] = new CallableTest();
-        $resolver = new CallableResolver($this->container);
+        $resolver = new ControllerResolver($this->container);
         $resolver->resolve('callable_service@noFound');
     }
     /**
@@ -197,7 +203,7 @@ class CallableResolverTest extends TestCase
      */
     public function testFunctionNotFoundThrowException()
     {
-        $resolver = new CallableResolver($this->container);
+        $resolver = new ControllerResolver($this->container);
         $resolver->resolve('noFound');
     }
     /**
@@ -206,7 +212,7 @@ class CallableResolverTest extends TestCase
      */
     public function testClassNotFoundThrowException()
     {
-        $resolver = new CallableResolver($this->container);
+        $resolver = new ControllerResolver($this->container);
         $resolver->resolve('Unknown@notFound');
     }
 
@@ -216,7 +222,7 @@ class CallableResolverTest extends TestCase
      */
     public function testCallableClassNotFoundThrowException()
     {
-        $resolver = new CallableResolver($this->container);
+        $resolver = new ControllerResolver($this->container);
         $resolver->resolve(['Unknown', 'notFound']);
     }
 
@@ -226,7 +232,7 @@ class CallableResolverTest extends TestCase
      */
     public function testNullThrowException()
     {
-        $resolver = new CallableResolver();
+        $resolver = new ControllerResolver();
         $callable = $resolver->resolve(null);
     }
 
@@ -236,7 +242,7 @@ class CallableResolverTest extends TestCase
      */
     public function testScalarThrowException()
     {
-        $resolver = new CallableResolver();
+        $resolver = new ControllerResolver();
         $callable = $resolver->resolve(123);
     }
 }
