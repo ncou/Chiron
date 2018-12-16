@@ -7,11 +7,10 @@ namespace Chiron\Tests\Routing\Resolver\Fixtures;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Slim\Tests\Providers\PSR7ObjectProvider;
 use Chiron\Http\Psr\Response;
 
 /**
- * Mock object for Slim\Tests\CallableResolverTest
+ * Mock object ControllerResolverTest
  */
 class RequestHandlerTest implements RequestHandlerInterface
 {

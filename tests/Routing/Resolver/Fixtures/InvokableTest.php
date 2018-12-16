@@ -7,7 +7,7 @@ namespace Chiron\Tests\Routing\Resolver\Fixtures;
 use Slim\Tests\Providers\PSR7ObjectProvider;
 
 /**
- * Mock object for CallableResolverTest
+ * Mock object for ControllerResolverTest
  */
 class InvokableTest
 {

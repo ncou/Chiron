@@ -86,8 +86,8 @@ class MiddlewaresServiceProvider extends ServiceProvider
         };
 
         /*
-           $kernel['callableResolver'] = function ($container) {
-               return new CallableResolver($container);
+           $kernel['controllerResolver'] = function ($container) {
+               return new ControllerResolver($container);
            };
         */
 

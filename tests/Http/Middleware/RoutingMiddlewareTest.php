@@ -19,7 +19,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Chiron\Routing\Strategy\ApplicationStrategy;
 use Chiron\Http\Factory\ResponseFactory;
-use Chiron\Routing\Resolver\CallableResolver;
+use Chiron\Routing\Resolver\ControllerResolver;
 
 class RoutingMiddlewareTest extends TestCase
 {
@@ -43,7 +43,7 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new CallableResolver()));
+        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new ControllerResolver()));
         $router->map('/foo', $handler)->method('GET');
 
         $middlewareRouting = new RoutingMiddleware($router);
@@ -74,7 +74,7 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new CallableResolver()));
+        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new ControllerResolver()));
         $router->map('/foo/{id}/', $handler)->method('GET');
 
         $middlewareRouting = new RoutingMiddleware($router);
@@ -103,7 +103,7 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new CallableResolver()));
+        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new ControllerResolver()));
         $router->map('/foo', $handler)->method('GET');
 
         $middlewareRouting = new RoutingMiddleware($router);
@@ -139,7 +139,7 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new CallableResolver()));
+        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new ControllerResolver()));
         $router->map('/foo', $handler)->method('GET');
         $router->map('/foo', $handlerCustom)->method('HEAD');
 
@@ -170,7 +170,7 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new CallableResolver()));
+        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new ControllerResolver()));
         $router->map('/foo', $handler)->method('GET');
 
         $middlewareRouting = new RoutingMiddleware($router);
@@ -209,7 +209,7 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new CallableResolver()));
+        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new ControllerResolver()));
         $router->map('/foo', $handler)->method('GET');
         $router->map('/foo', $handlerCustom)->method('OPTIONS');
 
@@ -240,7 +240,7 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new CallableResolver()));
+        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new ControllerResolver()));
         $router->map('/foo', $handler)->method('GET');
 
         $middlewareDispatcher = new DispatcherMiddleware(new Pipeline());
@@ -270,7 +270,7 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new CallableResolver()));
+        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new ControllerResolver()));
         $router->map('/foo', $handler)->method('GET');
 
         $middlewareRouting = new RoutingMiddleware($router);
@@ -299,7 +299,7 @@ class RoutingMiddlewareTest extends TestCase
         };
 
         $router = new Router();
-        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new CallableResolver()));
+        $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new ControllerResolver()));
         $router->map('/foo', $handler)->method('POST');
 
         $middlewareRouting = new RoutingMiddleware($router);

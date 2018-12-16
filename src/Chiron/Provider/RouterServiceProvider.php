@@ -21,7 +21,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Chiron\Http\Factory\ResponseFactory;
-use Chiron\Routing\Resolver\CallableResolver;
+use Chiron\Routing\Resolver\ControllerResolver;
 use Chiron\Routing\Strategy\ApplicationStrategy;
 use Chiron\KernelInterface;
 
@@ -45,7 +45,7 @@ class RouterServiceProvider extends ServiceProvider
 
             $router->setBasePath($c->config['app.settings.basePath'] ?? '/');
 
-            $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new CallableResolver($c)));
+            $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new ControllerResolver($c)));
 
             return $router;
         };

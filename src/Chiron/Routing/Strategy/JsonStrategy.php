@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Routing\Strategy;
 
-use Chiron\Routing\Resolver\CallableResolverInterface;
+use Chiron\Routing\Resolver\ControllerResolverInterface;
 use Chiron\Http\Psr\Response;
 use Chiron\Routing\Route;
 use Psr\Http\Message\ResponseInterface;
@@ -31,12 +31,12 @@ class JsonStrategy extends AbstractStrategy
      */
     private $encodingOptions = self::DEFAULT_JSON_FLAGS;
 
-    /** CallableResolverInterface */
+    /** ControllerResolverInterface */
     private $resolver;
     /** ResponseFactoryInterface */
     private $responseFactory;
 
-    public function __construct(ResponseFactoryInterface $responseFactory, CallableResolverInterface $resolver)
+    public function __construct(ResponseFactoryInterface $responseFactory, ControllerResolverInterface $resolver)
     {
         $this->resolver = $resolver;
         $this->responseFactory = $responseFactory;

@@ -18,7 +18,6 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Chiron\Http\Factory\ResponseFactory;
-use Chiron\Routing\Resolver\CallableResolver;
 use Chiron\Routing\Strategy\ApplicationStrategy;
 use Chiron\KernelInterface;
 use Chiron\Config\Config;
