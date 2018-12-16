@@ -14,7 +14,7 @@ interface MiddlewareAwareInterface
      * Add a middleware to the stack.
      *
      * @param string|callable|MiddlewareInterface or an array of such arguments $middlewares
-     * @param bool $addOnTop Used to prepend a middleware, by default we add the middleware at the end of the stack
+     * @param bool                                                              $addOnTop    Used to prepend a middleware, by default we add the middleware at the end of the stack
      *
      * @return static
      */

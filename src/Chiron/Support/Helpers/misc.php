@@ -1,13 +1,13 @@
 <?php
 
 if (! function_exists('env')) {
-
     /**
      * This handles the the global environment variables, it acts as getenv()
      * that handles the .env file in the root folder of a project.
      *
-     * @param string $key The constant variable name
+     * @param string            $key     The constant variable name
      * @param string|bool|mixed $default The default value if it is empty
+     *
      * @return mixed The value based on requested variable
      */
     function env($key, $default = null)

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Chiron\Tests\Routing\Strategy;
 
 use Chiron\Application;
-use Chiron\Kernel;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
+use Chiron\Kernel;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 

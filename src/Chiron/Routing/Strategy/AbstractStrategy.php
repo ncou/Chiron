@@ -9,8 +9,8 @@ declare(strict_types=1);
 namespace Chiron\Routing\Strategy;
 
 use Chiron\Routing\Route;
-use Psr\Http\Message\ServerRequestInterface;
 use InvalidArgumentException;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Route callback strategy with route parameters as individual arguments.
@@ -20,9 +20,9 @@ abstract class AbstractStrategy implements StrategyInterface
     /**
      * Bind the matched parameters from the request with the callable parameters.
      *
-     * @param ServerRequestInterface  $request
-     * @param callable $controller      the callable to be executed
-     * @param array $matched      the parameters extracted from the uri
+     * @param ServerRequestInterface $request
+     * @param callable               $controller the callable to be executed
+     * @param array                  $matched    the parameters extracted from the uri
      *
      * @return array The
      */
@@ -76,7 +76,7 @@ abstract class AbstractStrategy implements StrategyInterface
     /**
      * Transform parameter to scalar. We don't transform the string type.
      *
-     * @param string  $parameter the value of param
+     * @param string $parameter the value of param
      * @param string $type      the tpe of param
      *
      * @return int|string|bool|float
@@ -105,8 +105,8 @@ abstract class AbstractStrategy implements StrategyInterface
     /**
      * Wrapper around the call_user_func_array function to execute the callable.
      *
-     * @param callable  $callback
-     * @param array $params
+     * @param callable $callback
+     * @param array    $params
      *
      * @return mixed
      */

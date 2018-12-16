@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Routing\Traits;
 
-use Chiron\Routing\RouteGroup;
 use Chiron\Routing\Route;
 
 interface RouteCollectionInterface

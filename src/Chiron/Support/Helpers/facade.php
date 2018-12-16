@@ -5,10 +5,10 @@
  *
  * @copyright 2015-2016 Daison Carino <daison12006013@gmail.com>
  * @license   http://www.opensource.org/licenses/mit-license.php MIT
- * @link      http://docs.phalconslayer.com
+ *
+ * @see      http://docs.phalconslayer.com
  */
 if (! function_exists('application')) {
-
     /**
      * This returns the service provider 'application'.
      *
@@ -21,7 +21,6 @@ if (! function_exists('application')) {
 }
 
 if (! function_exists('auth')) {
-
     /**
      * This returns the service provider 'auth'.
      *
@@ -34,13 +33,13 @@ if (! function_exists('auth')) {
 }
 
 if (! function_exists('cache')) {
-
     /**
      * This returns the service provider 'cache'.
      *
      * @param string|mixed $option If string passed, it will automatically
-     * interpret as ->get(...), if array the index 0 will be the key and value
-     * will be index 1
+     *                             interpret as ->get(...), if array the index 0 will be the key and value
+     *                             will be index 1
+     *
      * @return Phalcon\Cache\Backend
      */
     function cache($option = null)
@@ -66,14 +65,14 @@ if (! function_exists('cache')) {
 }
 
 if (! function_exists('config')) {
-
     /**
      * This returns the service provider 'config'.
      *
-     * @param string|mixed $option If string passed, it will automatically
-     *      interpret as ->get(...), if array it will merge/replace based on
-     *      [$override = true]
-     * @param bool $override If true, it will automatically replace/override a config value.
+     * @param string|mixed $option   If string passed, it will automatically
+     *                               interpret as ->get(...), if array it will merge/replace based on
+     *                               [$override = true]
+     * @param bool         $override If true, it will automatically replace/override a config value.
+     *
      * @return mixed
      */
     // TODO : attention, il faut modifier la documentation + le typehint pour le retour car on peut retourner un booléen.
@@ -81,15 +80,15 @@ if (! function_exists('config')) {
     {
         $config = di()->get('config');
 
-        # here, if the $option is null
-        # we should directly pass the di 'config'
+        // here, if the $option is null
+        // we should directly pass the di 'config'
         if ($option === null) {
             return $config;
         }
 
-        # here, if the option is array
-        # it should interpreted as updating the di 'config'
-        # current structure
+        // here, if the option is array
+        // it should interpreted as updating the di 'config'
+        // current structure
         if (is_array($option)) {
             $config->merge($option, $override);
 
@@ -101,7 +100,6 @@ if (! function_exists('config')) {
 }
 
 if (! function_exists('db')) {
-
     /**
      * This returns the service provider 'db'.
      *
@@ -114,7 +112,6 @@ if (! function_exists('db')) {
 }
 
 if (! function_exists('dispatcher')) {
-
     /**
      * This returns the service provider 'dispatcher'.
      *
@@ -127,7 +124,6 @@ if (! function_exists('dispatcher')) {
 }
 
 if (! function_exists('filter')) {
-
     /**
      * This returns the service provider 'filter'.
      *
@@ -140,7 +136,6 @@ if (! function_exists('filter')) {
 }
 
 if (! function_exists('flash')) {
-
     /**
      * This returns the service provider 'flash'.
      *
@@ -153,20 +148,20 @@ if (! function_exists('flash')) {
 }
 
 if (! function_exists('flysystem')) {
-
     /**
      * This returns the service provider 'flysystem',
      * If you passed a value in argument 1, it will call ->get($path) instead.
      *
      * @param string $path The path to be referenced
+     *
      * @return League\Flysystem\Filesystem
      */
     function flysystem($path = null)
     {
         $flysystem = di()->get('flysystem');
 
-        # here, if there is assigned path
-        # it is the path to access the requested file
+        // here, if there is assigned path
+        // it is the path to access the requested file
         if ($path !== null) {
             return $flysystem->get($path);
         }
@@ -176,21 +171,21 @@ if (! function_exists('flysystem')) {
 }
 
 if (! function_exists('flysystem_manager')) {
-
     /**
      * This returns the service provider 'flsystem_manager',
      * If you passed a value in argument 1, it will create a local adapter
      * based on the provided path.
      *
      * @param string $path The local path to be referenced
+     *
      * @return League\Flysystem\MountManager
      */
     function flysystem_manager($path = null)
     {
-        # here, if there is assigned path
-        # we should directly create an instance
-        # based on the $path provided
-        # whilist the adapter is 'local'
+        // here, if there is assigned path
+        // we should directly create an instance
+        // based on the $path provided
+        // whilist the adapter is 'local'
         if ($path !== null) {
             return new League\Flysystem\Filesystem(
                 new League\Flysystem\Adapter\Local($path, 0)
@@ -202,7 +197,6 @@ if (! function_exists('flysystem_manager')) {
 }
 
 if (! function_exists('lang')) {
-
     /**
      * This returns the service provider 'lang'.
      *
@@ -215,7 +209,6 @@ if (! function_exists('lang')) {
 }
 
 if (! function_exists('logger')) {
-
     /**
      * This returns the service provider 'log'.
      *
@@ -228,7 +221,6 @@ if (! function_exists('logger')) {
 }
 
 if (! function_exists('queue')) {
-
     /**
      * This returns the service provider 'queue'.
      *
@@ -250,11 +242,11 @@ if (! function_exists('queue')) {
 }
 
 if (! function_exists('redirect')) {
-
     /**
      * This returns the service provider 'redirect'.
      *
      * @param string $to To be interpreted as uri, where 'to' redirect
+     *
      * @return Clarity\Support\Redirect\Redirect|mixed
      */
     function redirect($to = null)
@@ -269,7 +261,6 @@ if (! function_exists('redirect')) {
 }
 
 if (! function_exists('request')) {
-
     /**
      * This returns the service provider 'request'.
      *
@@ -282,7 +273,6 @@ if (! function_exists('request')) {
 }
 
 if (! function_exists('response')) {
-
     /**
      * This returns the service provider 'response'.
      *
@@ -295,14 +285,14 @@ if (! function_exists('response')) {
 }
 
 if (! function_exists('route')) {
-
     /**
      * This returns the service provider 'route', if you passed a value on first argument
      * it will call the url() helper instead and will call ->route($name, $params, $raw).
      *
-     * @param string $name The route name
-     * @param mixed $params A uri parameters for this route
-     * @param mixed $raw A raw parameters for your route
+     * @param string $name   The route name
+     * @param mixed  $params A uri parameters for this route
+     * @param mixed  $raw    A raw parameters for your route
+     *
      * @return Clarity\Support\Phalcon\Mvc\Router|string
      */
     function route($name = null, $params = [], $raw = [])
@@ -316,7 +306,6 @@ if (! function_exists('route')) {
 }
 
 if (! function_exists('security')) {
-
     /**
      * This returns the service provider 'security'.
      *
@@ -329,7 +318,6 @@ if (! function_exists('security')) {
 }
 
 if (! function_exists('session')) {
-
     /**
      * This returns the service provider 'session'.
      *
@@ -342,7 +330,6 @@ if (! function_exists('session')) {
 }
 
 if (! function_exists('tag')) {
-
     /**
      * This returns the service provider 'tag'.
      *
@@ -355,13 +342,13 @@ if (! function_exists('tag')) {
 }
 
 if (! function_exists('url')) {
-
     /**
      * This returns the service provider 'url', if $href filled with uri,
      * it should automatically call the ->get($href, $params = []);.
      *
-     * @param string $href The uri/url to use
-     * @param mixed $params The parameters to append
+     * @param string $href   The uri/url to use
+     * @param mixed  $params The parameters to append
+     *
      * @return Clarity\Support\Phalcon\Mvc\URL|string
      */
     function url($href = null, $params = [])
@@ -377,14 +364,14 @@ if (! function_exists('url')) {
 }
 
 if (! function_exists('view')) {
-
     /**
      * This returns the service provider 'view',
      * If a value passed in argument 1, it will call the view instance along
      * ->make(<argument 1>, $params = [] | <argument 2>).
      *
      * @param string $path
-     * @param mixed $params
+     * @param mixed  $params
+     *
      * @return Clarity\Support\Phalcon\Mvc\View|string
      */
     function view($path = null, $params = [])

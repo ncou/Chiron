@@ -4,22 +4,18 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Middleware;
 
-use Chiron\Pipe\Pipeline;
-use Chiron\Pipe\Decorator\FixedResponseMiddleware;
+use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Routing\Router;
-use Chiron\Tests\Utils\RequestHandlerCallable;
-use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Routing\Strategy\ApplicationStrategy;
-use Chiron\Http\Factory\ResponseFactory;
+use Chiron\Pipe\Decorator\FixedResponseMiddleware;
+use Chiron\Pipe\Pipeline;
 use Chiron\Routing\Resolver\ControllerResolver;
+use Chiron\Routing\Router;
+use Chiron\Routing\Strategy\ApplicationStrategy;
+use PHPUnit\Framework\TestCase;
 
 class RoutingMiddlewareTest extends TestCase
 {
@@ -274,7 +270,7 @@ class RoutingMiddlewareTest extends TestCase
         $router->map('/foo', $handler)->method('GET');
 
         $middlewareRouting = new RoutingMiddleware($router);
-        $middlewareDispatcher = new DispatcherMiddleware(new Pipeline);
+        $middlewareDispatcher = new DispatcherMiddleware(new Pipeline());
 
         $pipeline->pipe($middlewareRouting);
         $pipeline->pipe($middlewareDispatcher);

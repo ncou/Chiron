@@ -28,7 +28,6 @@ interface RouterInterface
      */
     public function map(string $path, $handler): Route;
 
-
     public function match(ServerRequestInterface $request): RouteResult;
 
     /**

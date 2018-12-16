@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Chiron;
 
-use Chiron\Container\Container;
 use Chiron\Config\ConfigInterface;
-use Chiron\Provider\LoggerServiceProvider;
-use Chiron\Provider\RouterServiceProvider;
+use Chiron\Container\Container;
+use Chiron\Provider\ConfigServiceProvider;
 use Chiron\Provider\ErrorHandlerServiceProvider;
 use Chiron\Provider\HttpFactoriesServiceProvider;
+use Chiron\Provider\LoggerServiceProvider;
 use Chiron\Provider\MiddlewaresServiceProvider;
+use Chiron\Provider\RouterServiceProvider;
 use Chiron\Provider\ServerRequestCreatorServiceProvider;
 use Chiron\Provider\ServiceProviderInterface;
-use Chiron\Provider\ConfigServiceProvider;
 use Chiron\Routing\RouterInterface;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
@@ -31,6 +31,7 @@ class Kernel extends Container implements KernelInterface
      * @var static
      */
     protected static $instance;
+
     //public static $instance;
 
     /**
@@ -52,23 +53,23 @@ class Kernel extends Container implements KernelInterface
     {
         static::setInstance($this);
 
-/*
-        $this->set(Kernel::class, $this);
-        $this->set(KernelInterface::class, $this);
-        $this->set('kernel', $this);
-*/
+        /*
+                $this->set(Kernel::class, $this);
+                $this->set(KernelInterface::class, $this);
+                $this->set('kernel', $this);
+        */
 
         $this->registerBaseServiceProviders();
     }
 
-/*
-    public function __clone()
-    {
-        $this->set(Kernel::class, $this);
-        $this->set(KernelInterface::class, $this);
-        $this->set('kernel', $this);
-    }
-    */
+    /*
+        public function __clone()
+        {
+            $this->set(Kernel::class, $this);
+            $this->set(KernelInterface::class, $this);
+            $this->set('kernel', $this);
+        }
+        */
 
     /**
      * @return KernelInterface
@@ -83,8 +84,6 @@ class Kernel extends Container implements KernelInterface
 
     /**
      * Register all of the base service providers.
-     *
-     * @return void
      */
     protected function registerBaseServiceProviders()
     {
@@ -101,6 +100,7 @@ class Kernel extends Container implements KernelInterface
      * Set the environment.
      *
      * @param Config $config
+     *
      * @return \Clarity\Kernel\Kernel
      */
     public function setEnvironment(string $env): KernelInterface
@@ -109,6 +109,7 @@ class Kernel extends Container implements KernelInterface
 
         return $this;
     }
+
     /**
      * Get the config object.
      *
@@ -123,6 +124,7 @@ class Kernel extends Container implements KernelInterface
      * Set the environment.
      *
      * @param Config $config
+     *
      * @return \Clarity\Kernel\Kernel
      */
     public function setConfig(ConfigInterface $config): KernelInterface
@@ -131,6 +133,7 @@ class Kernel extends Container implements KernelInterface
 
         return $this;
     }
+
     /**
      * Get the config object.
      *
@@ -140,10 +143,12 @@ class Kernel extends Container implements KernelInterface
     {
         return $this->get('config');
     }
+
     /**
      * Set the environment.
      *
      * @param Config $config
+     *
      * @return \Clarity\Kernel\Kernel
      */
     public function setLogger(LoggerInterface $logger): KernelInterface
@@ -152,6 +157,7 @@ class Kernel extends Container implements KernelInterface
 
         return $this;
     }
+
     /**
      * Get the config object.
      *
@@ -161,6 +167,7 @@ class Kernel extends Container implements KernelInterface
     {
         return $this->get('logger');
     }
+
     /**
      * Get the config object.
      *
@@ -200,7 +207,8 @@ class Kernel extends Container implements KernelInterface
     /**
      * Register a service provider with the application.
      *
-     * @param  ServiceProviderInterface|string  $provider
+     * @param ServiceProviderInterface|string $provider
+     *
      * @return KernelInterface
      */
     // TODO : virer le paramétre force et faire un return void
@@ -219,13 +227,15 @@ class Kernel extends Container implements KernelInterface
                 $this->bootProvider($provider);
             }
         }
+
         return $this;
     }
 
     /**
      * Register a service provider with the application.
      *
-     * @param  ServiceProviderInterface|string  $provider
+     * @param ServiceProviderInterface|string $provider
+     *
      * @return ServiceProviderInterface
      */
     protected function resolveProvider($provider): ServiceProviderInterface
@@ -262,8 +272,6 @@ class Kernel extends Container implements KernelInterface
 
     /**
      * Boot the application's service providers.
-     *
-     * @return void
      */
     // TODO : faire un return $this pour cette fonction ????
     public function boot(): KernelInterface
@@ -277,10 +285,12 @@ class Kernel extends Container implements KernelInterface
 
         return $this;
     }
+
     /**
      * Boot the given service provider.
      *
-     * @param  \Illuminate\Support\ServiceProvider  $provider
+     * @param \Illuminate\Support\ServiceProvider $provider
+     *
      * @return mixed
      */
     protected function bootProvider(ServiceProviderInterface $provider): void
@@ -293,18 +303,20 @@ class Kernel extends Container implements KernelInterface
      *
      * @return static
      */
-    public static function getInstance() : KernelInterface
+    public static function getInstance(): KernelInterface
     {
         if (is_null(static::$instance)) {
-            static::$instance = new static;
+            static::$instance = new static();
         }
+
         return static::$instance;
     }
 
     /**
      * Set the shared instance of the container.
      *
-     * @param  \Chiron\Container\Container|null  $container
+     * @param \Chiron\Container\Container|null $container
+     *
      * @return \Chiron\Container\Container|static
      */
     public static function setInstance(KernelInterface $kernel = null)
@@ -312,7 +324,7 @@ class Kernel extends Container implements KernelInterface
         return static::$instance = $kernel;
     }
 
-    /**
+    /*
      * @return \Wandu\DI\ContainerInterface
      */
     /*
@@ -323,8 +335,7 @@ class Kernel extends Container implements KernelInterface
         return $instance;
     }*/
 
-
-    /**
+    /*
      * Magic method to get or set services using setters/getters
      *
      * @param string $method

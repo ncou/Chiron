@@ -51,37 +51,17 @@ if (! extension_loaded('mbstring')) {
 
 use Chiron\Config\Config;
 use Chiron\Container\Container;
-use Chiron\Pipe\Decorator\FixedResponseHandler;
+use Chiron\Http\Emitter\ResponseEmitter;
+use Chiron\Http\Psr\Response;
 use Chiron\Pipe\Decorator\FixedResponseMiddleware;
 use Chiron\Pipe\Pipeline;
-use Chiron\Http\Psr\Response;
-use Chiron\Http\Response\EmptyResponse;
-use Chiron\Http\Emitter\ResponseEmitter;
-use Chiron\Http\ServerRequestCreator;
-use Chiron\Provider\ApplicationServiceProvider;
-use Chiron\Provider\ErrorHandlerServiceProvider;
-use Chiron\Provider\HttpFactoriesServiceProvider;
-use Chiron\Provider\MiddlewaresServiceProvider;
-use Chiron\Provider\ServerRequestCreatorServiceProvider;
 use Chiron\Routing\Route;
-use Chiron\Routing\RouteGroup;
 use Chiron\Routing\Router;
 use Chiron\Routing\RouterInterface;
-use Chiron\Routing\RouteCollectionTrait;
-use Chiron\Routing\MiddlewareAwareTrait;
-use Chiron\Routing\RouteCollectionInterface;
-use Chiron\Routing\MiddlewareAwareInterface;
-use Chiron\Routing\Resolver\ControllerResolver;
-use Chiron\Routing\Strategy\ApplicationStrategy;
 use Chiron\Routing\Strategy\JsonStrategy;
-use Closure;
-use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
-use Chiron\Http\Factory\ResponseFactory;
 
 class Application
 {
@@ -101,7 +81,7 @@ class Application
 
     /**
      * The kernel (container).
-     * Visibility is public for easier access "$app->kernel->register(xxx)"
+     * Visibility is public for easier access "$app->kernel->register(xxx)".
      *
      * @var KernelInterface
      */
@@ -109,7 +89,7 @@ class Application
 
     /**
      * The Router instance.
-     * Visibility is public for easier access "$app->router->any('xxx')"
+     * Visibility is public for easier access "$app->router->any('xxx')".
      *
      * @var \Chiron\Routing\Router
      */
@@ -159,7 +139,6 @@ class Application
     }
 */
 
-
     //*****************************************************
 
     /**
@@ -199,8 +178,6 @@ $app->pipe(\Zend\Expressive\Helper\UrlHelperMiddleware::class);
 $app->pipeDispatchMiddleware();
 $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 */
-
-
 
     //! Prohibit cloning
     // TODO : vérifier l'utilité de cette fonction
@@ -314,9 +291,9 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     /**
      * Register a service provider with the application.
      *
-     * @param  ServiceProviderInterface|string  $provider
+     * @param ServiceProviderInterface|string $provider
      */
-    public function register($provider):self
+    public function register($provider): self
     {
         $this->kernel->register($provider);
 
@@ -330,11 +307,11 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         return $this;
     }
 
-
     /**
      * Get or check the current application environment.
      *
      * @param  mixed
+     *
      * @return bool|string
      */
     // TODO : utiliser plutot cette méthode : https://github.com/solid-layer/framework/blob/59f39fac2094598918731b107ba0b9298bab6394/src/Clarity/Kernel/Kernel.php#L64
@@ -363,6 +340,4 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
     {
         return self::VERSION;
     }
-
-
 }

@@ -73,7 +73,6 @@ trait RouteConditionHandlerTrait
         return $this->setScheme($scheme);
     }
 
-
     /**
      * {@inheritdoc}
      */
@@ -89,7 +88,6 @@ trait RouteConditionHandlerTrait
     {
         return $this->setScheme('https');
     }
-
 
     /**
      * {@inheritdoc}

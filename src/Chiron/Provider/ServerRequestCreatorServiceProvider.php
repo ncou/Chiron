@@ -17,8 +17,8 @@ use Chiron\Http\Factory\StreamFactory;
 use Chiron\Http\Factory\UploadedFileFactory;
 use Chiron\Http\Factory\UriFactory;
 use Chiron\Http\ServerRequestCreator;
-use Psr\Container\ContainerInterface;
 use Chiron\KernelInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Chiron server request creator services provider.

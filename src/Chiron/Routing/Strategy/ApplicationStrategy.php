@@ -7,13 +7,11 @@ declare(strict_types=1);
 namespace Chiron\Routing\Strategy;
 
 use Chiron\Routing\Resolver\ControllerResolverInterface;
-use Chiron\Http\Psr\Response;
 use Chiron\Routing\Route;
+use LogicException;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
-use InvalidArgumentException;
-use LogicException;
 
 /**
  * Route callback strategy with route parameters as individual arguments.
@@ -22,6 +20,7 @@ class ApplicationStrategy extends AbstractStrategy
 {
     /** ControllerResolverInterface */
     private $resolver;
+
     /** ResponseFactoryInterface */
     private $responseFactory;
 
@@ -45,7 +44,7 @@ class ApplicationStrategy extends AbstractStrategy
         $content = $this->call($callable, $parameters);
 
         if (! $content instanceof ResponseInterface) {
-            if (! is_string($content)){
+            if (! is_string($content)) {
                 throw new LogicException('Your controller should return a string or a ResponseInterface instance.');
             }
 
@@ -53,6 +52,7 @@ class ApplicationStrategy extends AbstractStrategy
             $response = $this->responseFactory->createResponse(200);
             $response = $response->withHeader('Content-Type', 'text/html');
             $response->getBody()->write($content);
+
             return $response;
         }
 

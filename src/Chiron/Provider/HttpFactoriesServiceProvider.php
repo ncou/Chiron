@@ -21,6 +21,7 @@ use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Factory\StreamFactory;
 use Chiron\Http\Factory\UploadedFileFactory;
 use Chiron\Http\Factory\UriFactory;
+use Chiron\KernelInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -28,7 +29,6 @@ use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
-use Chiron\KernelInterface;
 
 /**
  * Chiron http factories services provider.

@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace Chiron\Routing;
 
+use Chiron\Routing\Traits\MiddlewareAwareInterface;
+use Chiron\Routing\Traits\MiddlewareAwareTrait;
+use Chiron\Routing\Traits\RouteConditionHandlerInterface;
+use Chiron\Routing\Traits\RouteConditionHandlerTrait;
 use Chiron\Routing\Traits\StrategyAwareInterface;
 use Chiron\Routing\Traits\StrategyAwareTrait;
-use Chiron\Routing\Traits\MiddlewareAwareTrait;
-use Chiron\Routing\Traits\MiddlewareAwareInterface;
-use Chiron\Routing\Traits\RouteConditionHandlerTrait;
-use Chiron\Routing\Traits\RouteConditionHandlerInterface;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use InvalidArgumentException;
 
 class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, MiddlewareAwareInterface, MiddlewareInterface
 {
@@ -27,7 +27,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
 
     /** @var array */
     private $defaults = [];
-
 
     /** @var string|null */
     private $name;
@@ -70,7 +69,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
 
     /**
      * @param string $url
-     * @param mixed $handler
+     * @param mixed  $handler
      */
     public function __construct(string $path, $handler, int $index)
     {
@@ -123,9 +122,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     {
         return $this->handler;
     }
-
-
-
 
     /**
      * Returns the defaults.
@@ -216,11 +212,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
 
         return $this;
     }
-
-
-
-
-
 
     // TODO : avoir la possibilité de passer un tableau ? si on détecte que c'est un is_array dans le getargs() on appel la méthode addReqirements() pour un tableau, sinon on appel setRequirement()
     public function assert($key, $regex)
@@ -332,18 +323,8 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
         return $regex;
     }
 
-
-
-
-
-
-
-
-
-
-
     /**
-     * Get the route name
+     * Get the route name.
      *
      * @return string|null
      */
@@ -353,7 +334,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     }
 
     /**
-     * Set the route name
+     * Set the route name.
      *
      * @param string $name
      *
@@ -378,13 +359,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
         return $this->setName($name);
     }
 
-
-
-
-
-
-
-
     /**
      * Get supported HTTP method(s).
      *
@@ -402,7 +376,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @return self
      */
-    public function setAllowedMethods(array $methods) : Route
+    public function setAllowedMethods(array $methods): Route
     {
         $this->methods = $this->validateHttpMethods($methods);
 
@@ -415,6 +389,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     public function method(string $method, string ...$methods): Route
     {
         array_unshift($methods, $method);
+
         return $this->setAllowedMethods($methods);
     }
 
@@ -424,10 +399,12 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      * Validates, and then normalizes to upper case.
      *
      * @param string[] An array of HTTP method names.
-     * @return string[]
+     *
      * @throws Exception\InvalidArgumentException for any invalid method names.
+     *
+     * @return string[]
      */
-    private function validateHttpMethods(array $methods) : array
+    private function validateHttpMethods(array $methods): array
     {
         if (empty($methods)) {
             throw new InvalidArgumentException(
@@ -444,10 +421,12 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
             if (! preg_match('/^[!#$%&\'*+.^_`\|~0-9a-z-]+$/i', $method)) {
                 return false;
             }
+
             return $valid;
         }, true)) {
             throw new InvalidArgumentException('One or more HTTP methods were invalid');
         }
+
         return array_map('strtoupper', $methods);
     }
 
@@ -468,31 +447,32 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
         return false;
     }*/
 
-
-
     /**
-     * Return variables to be passed to route callable
+     * Return variables to be passed to route callable.
      *
      * @return array
      */
-    public function getVars() : array
+    public function getVars(): array
     {
         return $this->vars;
     }
+
     /**
-     * Set variables to be passed to route callable
+     * Set variables to be passed to route callable.
      *
      * @param array $vars
      *
      * @return $this
      */
-    public function setVars(array $vars) : self
+    public function setVars(array $vars): self
     {
         $this->vars = $vars;
+
         return $this;
     }
 
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    {
         return $this->getStrategy()->invokeRouteCallable($this, $request);
     }
 }
