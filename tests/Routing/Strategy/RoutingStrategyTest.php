@@ -91,7 +91,7 @@ class RoutingStrategyTest extends TestCase
 
         $app = new Application(new Kernel());
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $route = $app->router->get('/foo/[:id]/[:name]/[:isRegistered]/[:floatNumber]', $routeCallback);
+        $route = $app->router->get('/foo/{id}/{name}/{isRegistered}/{floatNumber}', $routeCallback);
 
         $response = $app->handle($request);
 
@@ -110,7 +110,7 @@ class RoutingStrategyTest extends TestCase
 
         $app = new Application(new Kernel());
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $route = $app->router->get('/foo/[:id]?/[:name]?/[:isRegistered]?/[:floatNumber]?', $routeCallback);
+        $route = $app->router->get('/foo/[{id}/{name}/{isRegistered}/{floatNumber}]', $routeCallback);
 
         $response = $app->handle($request);
 

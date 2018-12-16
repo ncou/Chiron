@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 namespace Chiron\Routing\Strategy;
 
+use Chiron\Routing\Resolver\CallableResolverInterface;
 use Chiron\Http\Psr\Response;
 use Chiron\Routing\Route;
 use Psr\Http\Message\ResponseInterface;

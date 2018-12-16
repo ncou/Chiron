@@ -13,11 +13,13 @@ interface MiddlewareAwareInterface
     /**
      * Add a middleware to the stack.
      *
-     * @param string|callable|MiddlewareInterface $middleware
+     * @param string|callable|MiddlewareInterface or an array of such arguments $middlewares
+     * @param bool $addOnTop Used to prepend a middleware, by default we add the middleware at the end of the stack
      *
      * @return static
      */
-    public function middleware($middleware): MiddlewareAwareInterface;
+    //public function middleware($middleware): MiddlewareAwareInterface;
+    public function middleware($middlewares, bool $addOnTop = false): MiddlewareAwareInterface;
 
     /**
      * Add multiple middleware to the stack.
@@ -26,7 +28,7 @@ interface MiddlewareAwareInterface
      *
      * @return static
      */
-    public function middlewares(array $middlewares): MiddlewareAwareInterface;
+    //public function middlewares(array $middlewares): MiddlewareAwareInterface;
 
     /**
      * Prepend a middleware to the stack.
@@ -35,7 +37,7 @@ interface MiddlewareAwareInterface
      *
      * @return static
      */
-    public function prependMiddleware($middleware): MiddlewareAwareInterface;
+    //public function prependMiddleware($middleware): MiddlewareAwareInterface;
 
     /**
      * Shift a middleware from beginning of stack.

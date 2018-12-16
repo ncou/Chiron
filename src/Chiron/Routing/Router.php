@@ -10,6 +10,7 @@ use Chiron\Routing\Strategy\StrategyInterface;
 use FastRoute\DataGenerator;
 use FastRoute\RouteParser;
 use InvalidArgumentException;
+use RuntimeException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

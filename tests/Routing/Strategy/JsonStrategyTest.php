@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Chiron\Routing\Route;
 use Chiron\Routing\Strategy\JsonStrategy;
-use Chiron\Routing\Strategy\CallableResolver;
+use Chiron\Routing\Resolver\CallableResolver;
 use Chiron\Http\Factory\ResponseFactory;
 use JsonSerializable;
 use stdClass;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Routing\Strategy;
+namespace Chiron\Routing\Resolver;
 
 use Closure;
 use InvalidArgumentException;
