@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Chiron\Provider;
 
 use Chiron\Container\Container;
-use Chiron\Config\Config;
 use Chiron\KernelInterface;
 
 /**

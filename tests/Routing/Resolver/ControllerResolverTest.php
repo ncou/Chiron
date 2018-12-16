@@ -4,27 +4,16 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Routing\Resolver;
 
-use Chiron\Tests\Routing\Resolver\Fixtures\CallCallableTest;
-use Chiron\Tests\Routing\Resolver\Fixtures\CallableTest;
-use Chiron\Tests\Routing\Resolver\Fixtures\StaticCallableTest;
-use Chiron\Tests\Routing\Resolver\Fixtures\InvokableTest;
-use Chiron\Tests\Routing\Resolver\Fixtures\RequestHandlerTest;
 use Chiron\Container\Container;
-use Chiron\Application;
-use Chiron\Http\Middleware\DispatcherMiddleware;
-use Chiron\Http\Middleware\RoutingMiddleware;
-use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ServerRequestInterface;
-use Chiron\Routing\Route;
-use Chiron\Routing\Strategy\JsonStrategy;
 use Chiron\Routing\Resolver\ControllerResolver;
-use Chiron\Http\Factory\ResponseFactory;
-use JsonSerializable;
-use stdClass;
-use ArrayObject;
+use Chiron\Tests\Routing\Resolver\Fixtures\CallableTest;
+use Chiron\Tests\Routing\Resolver\Fixtures\CallCallableTest;
+use Chiron\Tests\Routing\Resolver\Fixtures\InvokableTest;
+use Chiron\Tests\Routing\Resolver\Fixtures\RequestHandlerTest;
+use Chiron\Tests\Routing\Resolver\Fixtures\StaticCallableTest;
+use PHPUnit\Framework\TestCase;
 
 class ControllerResolverTest extends TestCase
 {
@@ -33,7 +22,7 @@ class ControllerResolverTest extends TestCase
      */
     private $container;
 
-    public function setUp()
+    protected function setUp()
     {
         CallableTest::$CalledCount = 0;
         StaticCallableTest::$CalledCount = 0;
@@ -42,11 +31,11 @@ class ControllerResolverTest extends TestCase
         $this->container = new Container();
     }
 
-
     public function testClosure()
     {
         $test = function () {
             static $called_count = 0;
+
             return $called_count++;
         };
         $resolver = new ControllerResolver(); // No container injected
@@ -61,14 +50,16 @@ class ControllerResolverTest extends TestCase
         function testCallable()
         {
             static $called_count = 0;
+
             return $called_count++;
-        };
+        }
         // @codingStandardsIgnoreEnd
         $resolver = new ControllerResolver(); // No container injected
         $callable = $resolver->resolve(__NAMESPACE__ . '\testCallable');
         $callable();
         $this->assertEquals(1, $callable());
     }
+
     public function testObjMethodArray()
     {
         $obj = new CallableTest();
@@ -142,6 +133,7 @@ class ControllerResolverTest extends TestCase
         $callable();
         $this->assertEquals(1, InvokableTest::$CalledCount);
     }
+
     public function testResolutionToAnInvokableClass()
     {
         $resolver = new ControllerResolver(); // No container injected
@@ -156,7 +148,7 @@ class ControllerResolverTest extends TestCase
         $resolver = new ControllerResolver(); // No container injected
         $callable = $resolver->resolve(RequestHandlerTest::class);
         $callable($request);
-        $this->assertEquals("1", RequestHandlerTest::$CalledCount);
+        $this->assertEquals('1', RequestHandlerTest::$CalledCount);
     }
 
     public function testResolutionToAPsrRequestHandlerContainer()
@@ -169,23 +161,8 @@ class ControllerResolverTest extends TestCase
         $resolver = new ControllerResolver($this->container); // No container injected
         $callable = $resolver->resolve('a_requesthandler');
         $callable($request);
-        $this->assertEquals("1", RequestHandlerTest::$CalledCount);
+        $this->assertEquals('1', RequestHandlerTest::$CalledCount);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * @expectedException \InvalidArgumentException
@@ -197,6 +174,7 @@ class ControllerResolverTest extends TestCase
         $resolver = new ControllerResolver($this->container);
         $resolver->resolve('callable_service@noFound');
     }
+
     /**
      * @expectedException \RuntimeException
      * @expectedExceptionMessage Callable "noFound" does not exist
@@ -206,6 +184,7 @@ class ControllerResolverTest extends TestCase
         $resolver = new ControllerResolver($this->container);
         $resolver->resolve('noFound');
     }
+
     /**
      * @expectedException \RuntimeException
      * @expectedExceptionMessage Callable "Unknown" does not exist

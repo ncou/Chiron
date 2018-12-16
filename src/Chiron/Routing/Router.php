@@ -4,23 +4,18 @@ declare(strict_types=1);
 
 namespace Chiron\Routing;
 
-use Chiron\Routing\Traits\StrategyAwareInterface;
-use Chiron\Routing\Traits\StrategyAwareTrait;
-
-use Chiron\Routing\Traits\RouteCollectionTrait;
-use Chiron\Routing\Traits\RouteCollectionInterface;
-
 use Chiron\Routing\Traits\MiddlewareAwareInterface;
 use Chiron\Routing\Traits\MiddlewareAwareTrait;
-
-use Chiron\Routing\Strategy\StrategyInterface;
+use Chiron\Routing\Traits\RouteCollectionInterface;
+use Chiron\Routing\Traits\RouteCollectionTrait;
+use Chiron\Routing\Traits\StrategyAwareInterface;
+use Chiron\Routing\Traits\StrategyAwareTrait;
 use FastRoute\DataGenerator;
 use FastRoute\RouteParser;
 use InvalidArgumentException;
-use RuntimeException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
+use RuntimeException;
 
 //https://github.com/zendframework/zend-expressive-fastroute/blob/master/src/FastRouteRouter.php
 
@@ -215,7 +210,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
             // add a route strategy if no one is defined. Use the default router strategy.
             if (is_null($route->getStrategy())) {
                 // Throw an exception if there is not a default strategy defined.
-                if(is_null($this->getStrategy())) {
+                if (is_null($this->getStrategy())) {
                     throw new RuntimeException('A defaut strategy should be defined in the Router is there is no specific strategy defined for the Route.');
                 }
                 $route->setStrategy($this->getStrategy());
@@ -344,9 +339,9 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     /**
      * Build the path for a named route excluding the base path.
      *
-     * @param string $name        Route name
-     * @param array  $substitutions        Named argument replacement data
-     * @param array  $queryParams Optional query string parameters
+     * @param string $name          Route name
+     * @param array  $substitutions Named argument replacement data
+     * @param array  $queryParams   Optional query string parameters
      *
      * @throws InvalidArgumentException If named route does not exist
      * @throws InvalidArgumentException If required data not provided
@@ -406,15 +401,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
         return $url;
     }
 
-
-
-
-
-
-
-
-
-    /**
+    /*
      * Determine if the route is duplicated in the current list.
      *
      * Checks if a route with the same name or path exists already in the list;

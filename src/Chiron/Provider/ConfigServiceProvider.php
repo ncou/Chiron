@@ -12,15 +12,9 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Chiron\Routing\Router;
-use Chiron\Routing\RouterInterface;
-use Psr\Container\ContainerInterface;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
-use Chiron\Http\Factory\ResponseFactory;
-use Chiron\Routing\Strategy\ApplicationStrategy;
-use Chiron\KernelInterface;
 use Chiron\Config\Config;
+use Chiron\KernelInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * Config service provider.

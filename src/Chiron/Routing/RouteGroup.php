@@ -4,17 +4,14 @@ declare(strict_types=1);
 
 namespace Chiron\Routing;
 
-use Chiron\Routing\Traits\StrategyAwareInterface;
-use Chiron\Routing\Traits\StrategyAwareTrait;
-
 use Chiron\Routing\Traits\MiddlewareAwareInterface;
 use Chiron\Routing\Traits\MiddlewareAwareTrait;
-
 use Chiron\Routing\Traits\RouteCollectionInterface;
 use Chiron\Routing\Traits\RouteCollectionTrait;
-
 use Chiron\Routing\Traits\RouteConditionHandlerInterface;
 use Chiron\Routing\Traits\RouteConditionHandlerTrait;
+use Chiron\Routing\Traits\StrategyAwareInterface;
+use Chiron\Routing\Traits\StrategyAwareTrait;
 
 class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, RouteConditionHandlerInterface, StrategyAwareInterface
 {
@@ -41,8 +38,8 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
     /**
      * Constructor.
      *
-     * @param string                   $prefix
-     * @param callable                 $callback
+     * @param string          $prefix
+     * @param callable        $callback
      * @param RouterInterface $router
      */
     public function __construct(string $prefix, callable $callback, RouterInterface $router)

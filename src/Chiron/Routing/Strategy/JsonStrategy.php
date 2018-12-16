@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Chiron\Routing\Strategy;
 
-use Chiron\Routing\Resolver\ControllerResolverInterface;
 use Chiron\Http\Psr\Response;
+use Chiron\Routing\Resolver\ControllerResolverInterface;
 use Chiron\Routing\Route;
+use InvalidArgumentException;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
-use InvalidArgumentException;
 
 /**
  * Route callback strategy with route parameters as individual arguments and the response is encoded in json.
@@ -33,6 +33,7 @@ class JsonStrategy extends AbstractStrategy
 
     /** ControllerResolverInterface */
     private $resolver;
+
     /** ResponseFactoryInterface */
     private $responseFactory;
 
@@ -115,7 +116,7 @@ class JsonStrategy extends AbstractStrategy
         return $this;
     }
 
-    /**
+    /*
      * Determine if the given content should be turned into JSON.
      *
      * @param  mixed  $content
@@ -129,7 +130,7 @@ class JsonStrategy extends AbstractStrategy
                is_array($content);
     }*/
 
-    /**
+    /*
      * Check if the response can be converted to JSON
      *
      * Arrays can always be converted, objects can be converted if they're not a response already

@@ -4,21 +4,19 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Routing\Strategy;
 
+use ArrayObject;
 use Chiron\Application;
-use Chiron\Http\Middleware\DispatcherMiddleware;
-use Chiron\Http\Middleware\RoutingMiddleware;
+use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ServerRequestInterface;
+use Chiron\Routing\Resolver\ControllerResolver;
 use Chiron\Routing\Route;
 use Chiron\Routing\Strategy\JsonStrategy;
-use Chiron\Routing\Resolver\ControllerResolver;
-use Chiron\Http\Factory\ResponseFactory;
 use JsonSerializable;
+use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
-use ArrayObject;
 
 // TODO : classe à finir de compléter !!!!!!!!!!
 
@@ -29,7 +27,7 @@ class JsonStrategyTest extends TestCase
         $strategy = new JsonStrategy(new ResponseFactory(), new ControllerResolver());
 
         $data = ['foo' => 'bar'];
-        $callback =  function (ServerRequestInterface $request) use ($data) {
+        $callback = function (ServerRequestInterface $request) use ($data) {
             return $data;
         };
 
@@ -45,7 +43,6 @@ class JsonStrategyTest extends TestCase
         $this->assertEquals(79, $strategy->getEncodingOptions());
     }
 
-
     /**
      * @param mixed $data
      *
@@ -57,7 +54,7 @@ class JsonStrategyTest extends TestCase
     {
         $strategy = new JsonStrategy(new ResponseFactory(), new ControllerResolver());
 
-        $callback =  function (ServerRequestInterface $request) use ($data) {
+        $callback = function (ServerRequestInterface $request) use ($data) {
             return $data;
         };
 
@@ -66,6 +63,7 @@ class JsonStrategyTest extends TestCase
 
         $response = $strategy->invokeRouteCallable($route, $request);
     }
+
     /**
      * @param mixed $data
      *
@@ -76,7 +74,7 @@ class JsonStrategyTest extends TestCase
         $strategy = new JsonStrategy(new ResponseFactory(), new ControllerResolver());
         $strategy->setEncodingOptions($strategy->getEncodingOptions() | JSON_PARTIAL_OUTPUT_ON_ERROR);
 
-        $callback =  function (ServerRequestInterface $request) use ($data) {
+        $callback = function (ServerRequestInterface $request) use ($data) {
             return $data;
         };
 
@@ -87,6 +85,7 @@ class JsonStrategyTest extends TestCase
 
         $this->assertInstanceOf(Response::class, $response);
     }
+
     /**
      * @return array
      */
@@ -95,19 +94,19 @@ class JsonStrategyTest extends TestCase
         // Resources can't be encoded
         $resource = tmpfile();
         // Recursion can't be encoded
-        $recursiveObject = new stdClass;
-        $objectB = new stdClass;
+        $recursiveObject = new stdClass();
+        $objectB = new stdClass();
         $recursiveObject->b = $objectB;
         $objectB->a = $recursiveObject;
         // NAN or INF can't be encoded
         $nan = NAN;
+
         return [
             [$resource],
             [$recursiveObject],
             [$nan],
         ];
     }
-
 
     /**
      * @dataProvider setAndRetrieveDataProvider
@@ -118,7 +117,7 @@ class JsonStrategyTest extends TestCase
     {
         $strategy = new JsonStrategy(new ResponseFactory(), new ControllerResolver());
 
-        $callback =  function (ServerRequestInterface $request) use ($data) {
+        $callback = function (ServerRequestInterface $request) use ($data) {
             return $data;
         };
 
@@ -134,14 +133,12 @@ class JsonStrategyTest extends TestCase
     public function setAndRetrieveDataProvider(): array
     {
         return [
-            'JsonSerializable data' => [new JsonSerializableObject],
-            'Array data' => [['foo' => 'bar']],
-            'ArrayObject data' => [new ArrayObject(['foo' => 'bar'])],
+            'JsonSerializable data' => [new JsonSerializableObject()],
+            'Array data'            => [['foo' => 'bar']],
+            'ArrayObject data'      => [new ArrayObject(['foo' => 'bar'])],
         ];
     }
-
 }
-
 
 class JsonSerializableObject implements JsonSerializable
 {

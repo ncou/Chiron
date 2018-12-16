@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Tests\Routing\Resolver\Fixtures;
 
 /**
- * Mock object for ControllerResolverTest
+ * Mock object for ControllerResolverTest.
  */
 class CallableTest
 {

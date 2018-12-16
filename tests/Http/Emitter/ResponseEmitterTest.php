@@ -7,8 +7,8 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Emitter;
 
-use Chiron\Http\Psr\Response;
 use Chiron\Http\Emitter\ResponseEmitter;
+use Chiron\Http\Psr\Response;
 use Chiron\Tests\Utils\CallbackStream;
 use Chiron\Tests\Utils\HeaderStack;
 use PHPUnit\Framework\TestCase;

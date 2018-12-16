@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace Chiron\Tests\Middleware;
 
 use Chiron\Application;
-use Chiron\Kernel;
-use Chiron\Pipe\Decorator\CallableMiddleware;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
+use Chiron\Kernel;
+use Chiron\Pipe\Decorator\CallableMiddleware;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
-use Chiron\Pipe\Decorator\FixedResponseMiddleware;
 
 class ApplicationMiddlewareTest extends TestCase
 {

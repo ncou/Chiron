@@ -36,7 +36,7 @@ final class ControllerResolver implements ControllerResolverInterface
      *
      * @param callable|string $toResolve
      *
-     * @throws \RuntimeException if the callable does not exist
+     * @throws \RuntimeException         if the callable does not exist
      * @throws \InvalidArgumentException if the callable is not resolvable
      *
      * @return callable

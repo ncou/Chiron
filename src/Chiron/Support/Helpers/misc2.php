@@ -1,7 +1,6 @@
 <?php
 
 if (! function_exists('csrf_field')) {
-
     /**
      * This generates a csrf field for html forms.
      *
@@ -17,11 +16,11 @@ if (! function_exists('csrf_field')) {
 }
 
 if (! function_exists('processing_time')) {
-
     /**
      * This calculates the processing time based on the starting time.
      *
      * @param int $starting_time The microtime it starts
+     *
      * @return string
      */
     function processing_time($starting_time = 0)
@@ -31,11 +30,11 @@ if (! function_exists('processing_time')) {
 }
 
 if (! function_exists('iterate_require')) {
-
     /**
      * This iterates and require a php files, useful along folder_files().
      *
      * @param mixed $files
+     *
      * @return mixed
      */
     function iterate_require(array $files)
@@ -53,7 +52,6 @@ if (! function_exists('iterate_require')) {
 }
 
 if (! function_exists('stubify')) {
-
     /**
      * This changes a stub format content.
      *
@@ -62,7 +60,7 @@ if (! function_exists('stubify')) {
     function stubify($content, $params)
     {
         foreach ($params as $key => $value) {
-            $content = str_replace('{'.$key.'}', $value, $content);
+            $content = str_replace('{' . $key . '}', $value, $content);
         }
 
         return $content;
@@ -70,7 +68,6 @@ if (! function_exists('stubify')) {
 }
 
 if (! function_exists('path_to_namespace')) {
-
     /**
      * This converts a path into a namespace.
      *
@@ -92,7 +89,6 @@ if (! function_exists('path_to_namespace')) {
 }
 
 if (! function_exists('url_trimmer')) {
-
     /**
      * This trims a url that has multiple slashes and trimming slash at the end.
      *
@@ -105,7 +101,6 @@ if (! function_exists('url_trimmer')) {
 }
 
 if (! function_exists('logging_extension')) {
-
     /**
      * This returns an extension name based on the requested logging time.
      *
@@ -118,24 +113,28 @@ if (! function_exists('logging_extension')) {
         switch ($logging_time = config()->app->logging_time) {
             case 'hourly':
                 $ext = date('Y-m-d H-00-00');
+
             break;
 
             case 'daily':
                 $ext = date('Y-m-d 00-00-00');
+
             break;
 
             case 'monthly':
                 $ext = date('Y-m-0 00-00-00');
+
             break;
 
             case '':
             case null:
             case false:
                 return $ext;
+
             break;
 
             default:
-                throw new Exception('Logging time['.$logging_time.'] not found');
+                throw new Exception('Logging time[' . $logging_time . '] not found');
             break;
         }
 
@@ -155,34 +154,30 @@ if (! function_exists('is_cli')) {
     }
 }
 
-
-
-
-
 function dump()
 {
-  $args = func_get_args();
+    $args = func_get_args();
 
-  echo "\n<pre style=\"border:1px solid #ccc;padding:10px;margin:10px;font:14px courier;background:whitesmoke;display:block;border-radius:4px;\">\n";
+    echo "\n<pre style=\"border:1px solid #ccc;padding:10px;margin:10px;font:14px courier;background:whitesmoke;display:block;border-radius:4px;\">\n";
 
-  $trace = debug_backtrace(false);
-  $offset = (@$trace[2]['function'] === 'dump_d') ? 2 : 0;
+    $trace = debug_backtrace(false);
+    $offset = (@$trace[2]['function'] === 'dump_d') ? 2 : 0;
 
-  echo "<span style=\"color:red\">" . @$trace[1+$offset]['class'] . "</span>:" .
-       "<span style=\"color:blue;\">" . @$trace[1+$offset]['function'] . "</span>:" .
-       @$trace[0+$offset]['line'] . " " .
-       "<span style=\"color:green;\">" . @$trace[0+$offset]['file'] . "</span>\n";
+    echo '<span style="color:red">' . @$trace[1 + $offset]['class'] . '</span>:' .
+       '<span style="color:blue;">' . @$trace[1 + $offset]['function'] . '</span>:' .
+       @$trace[0 + $offset]['line'] . ' ' .
+       '<span style="color:green;">' . @$trace[0 + $offset]['file'] . "</span>\n";
 
-  if ( ! empty($args)) {
-    echo "\n";
-    call_user_func_array('var_dump', $args);
-  }
+    if (! empty($args)) {
+        echo "\n";
+        call_user_func_array('var_dump', $args);
+    }
 
-  echo "</pre>\n";
+    echo "</pre>\n";
 }
 
 function dump_d()
 {
-  call_user_func_array('dump', func_get_args());
-  die();
+    call_user_func_array('dump', func_get_args());
+    die();
 }

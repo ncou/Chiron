@@ -29,11 +29,11 @@ use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Exception\HttpException;
 use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
 use Chiron\Http\Middleware\ErrorHandlerMiddleware;
+use Chiron\KernelInterface;
 use Chiron\Views\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
-use Chiron\KernelInterface;
 
 /**
  * Chiron error handler services provider.
