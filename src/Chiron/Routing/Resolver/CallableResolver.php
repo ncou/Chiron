@@ -7,6 +7,7 @@ namespace Chiron\Routing\Resolver;
 use Closure;
 use InvalidArgumentException;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 use RuntimeException;
 
 /**
@@ -14,6 +15,7 @@ use RuntimeException;
  */
 final class CallableResolver implements CallableResolverInterface
 {
+    public const PATTERN = '~^([^@]+)@([^@]+)$~';
     /**
      * @var ContainerInterface
      */
@@ -50,11 +52,9 @@ final class CallableResolver implements CallableResolverInterface
         if (! is_callable($toResolve) && is_string($toResolve)) {
             $class = $toResolve;
             $method = '__invoke';
+
             // check for chiron callable as "class@method"
-            //$callablePattern = '!^([^\:]+)\:([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)$!'; // TODO : il est possible de simplifier cela avec l'expression : '^([^:]+):([^:]+)$'
-            //$callablePattern = '!^([^#]+)#([^#]+)$!';
-            $callablePattern = '^([^@]+)@([^@]+)$';
-            if (preg_match($callablePattern, $toResolve, $matches)) {
+            if (preg_match(static::PATTERN, $toResolve, $matches)) {
                 $class = $matches[1];
                 $method = $matches[2];
             }
@@ -63,9 +63,14 @@ final class CallableResolver implements CallableResolverInterface
                 $resolved = [$this->container->get($class), $method];
             } else {
                 if (! class_exists($class)) {
-                    throw new \RuntimeException(sprintf('Callable %s does not exist', $class));
+                    throw new \RuntimeException(sprintf('Callable "%s" does not exist', $class));
                 }
-                $resolved = [new $class($this->container), $method];
+                $resolved = [new $class(), $method];
+            }
+
+            // For a class that implements RequestHandlerInterface, we will call handle()
+            if ($resolved[0] instanceof RequestHandlerInterface) {
+                $resolved[1] = 'handle';
             }
         }
 
@@ -74,11 +79,6 @@ final class CallableResolver implements CallableResolverInterface
                 '(%s) is not resolvable.',
                 is_array($toResolve) || is_object($toResolve) || is_null($toResolve) ? json_encode($toResolve) : $toResolve
             ));
-        }
-        // TODO : vérifier l'utilité de ce bindTo !!!!!!! normalement ce n'est pas nécessaire car le container ajoute le $this lorsqu'on ajoute un service.
-        // TODO : attention ce bout de code doit surement écraser le bind qu'on fait dans la fonction Router->map() quand on bindTo la closure avec $app. Ici on va surement défaire ce bindTo pour en refaire un avec $container
-        if ($this->container instanceof ContainerInterface && $resolved instanceof Closure) {
-            $resolved = $resolved->bindTo($this->container);
         }
 
         return $resolved;

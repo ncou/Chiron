@@ -12,7 +12,7 @@
          >
     <testsuites>
         <testsuite name="Chiron Framework Tests">
-            <directory>tests/</directory>
+            <directory>tests/Routing/Resolver/</directory>
         </testsuite>
     </testsuites>
 
