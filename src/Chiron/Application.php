@@ -117,6 +117,9 @@ class Application
         $this->pipeline = new Pipeline($this->kernel);
         $this->emitter = new ResponseEmitter();
         $this->router = $this->kernel->getRouter();
+
+        // TODO : réfléchir à utiliser ce bout de code => https://github.com/cakephp/cakephp/blob/master/src/Core/Configure.php#L99
+        //ini_set('display_errors', $kernel['debug'] ? '1' : '0');
     }
 
     /**

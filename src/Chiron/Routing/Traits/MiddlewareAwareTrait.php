@@ -34,14 +34,14 @@ trait MiddlewareAwareTrait
      * @return $this (for chaining)
      */
     // TODO : gérer aussi les tableaux de middleware, ainsi que les tableaux de tableaux de middlewares
-    public function middleware($middlewares, bool $addOnTop = false): MiddlewareAwareInterface
+    public function middleware($middlewares, bool $addToFront = false): MiddlewareAwareInterface
     {
         if (! is_array($middlewares)) {
             $middlewares = [$middlewares];
         }
 
         foreach ($middlewares as $middleware) {
-            if ($addOnTop) {
+            if ($addToFront) {
                 //prepend Middleware
                 array_unshift($this->middlewares, $middleware);
             } else {
@@ -51,6 +51,11 @@ trait MiddlewareAwareTrait
         }
 
         return $this;
+    }
+
+    public function prependMiddleware($middlewares): MiddlewareAwareInterface
+    {
+        return $this->middleware($middlewares, true);
     }
 
     /**

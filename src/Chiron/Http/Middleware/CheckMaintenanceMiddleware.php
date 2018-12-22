@@ -72,7 +72,8 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
     {
         if ($retryAfter instanceof DateTimeInterface) {
             // TODO : à partir de la version 7.1.5 de PHP on peut utiliser la constante : \DateTime::RFC7231   qui est compliant avec la norme HTTP !!!!!!!!!!!
-            $retryAfter = $retryAfter->format('D, d M Y H:i:s \G\M\T'); //$retryAfter->format(\DateTime::RFC2822);  //'D, d M Y H:i:s e' // j'ai aussi vu un formatage en RFC1123 => gmdate(DATE_RFC1123, ...
+            //$retryAfter = $retryAfter->format('D, d M Y H:i:s \G\M\T'); //$retryAfter->format(\DateTime::RFC2822);  //'D, d M Y H:i:s e' // j'ai aussi vu un formatage en RFC1123 => gmdate(DATE_RFC1123, ...
+            $retryAfter = $retryAfter->format(DATE_RFC7231);
         }
 
         $this->retryAfter = $retryAfter;

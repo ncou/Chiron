@@ -92,9 +92,11 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
         set_error_handler($this->createErrorHandler());
 
         try {
+            $request = $request->withAttribute('__originalRequest', $request);
             $response = $handler->handle($request);
         } catch (Throwable $exception) {
             //https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php#L138
+            $request = $request->getAttribute('__originalRequest', false) ?: $request;
             $response = $this->exceptionManager->renderException($exception, $request);
         }
 
@@ -123,12 +125,9 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
          * @throws ErrorException if error is not within the error_reporting mask.
          */
         return function (int $severity, string $message, string $file, int $line): void {
-            if (! (error_reporting() & $severity)) {
-                // error_reporting does not include this error
-                return;
+            if (error_reporting() & $severity) {
+                throw new ErrorException($message, 0, $severity, $file, $line);
             }
-
-            throw new ErrorException($message, 0, $severity, $file, $line);
         };
     }
 }

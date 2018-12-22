@@ -1,3 +1,0 @@
-// extract from the mamoto list : https://github.com/matomo-org/referrer-spam-blacklist
-0n-line.tv
-xn--90acenikpebbdd4f6d.xn--p1ai
