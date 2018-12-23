@@ -10,6 +10,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 /**
  * This class resolves a ControllerName of the format 'class@method' into a callable that can be invoked.
  */
+// TODO : réfléchir si il ne faut pas plutot merger cette méthode dans la classe Kernel (qui est un container) pour faire un peu comme ici => https://github.com/middlewares/utils/blob/master/src/RequestHandlerContainer.php
+// ou aussi un peu dans ce style là => https://github.com/zendframework/zend-expressive/blob/master/src/MiddlewareContainer.php
 final class ControllerResolver implements ControllerResolverInterface
 {
     public const PATTERN = '~^([^@]+)@([^@]+)$~';
@@ -63,6 +65,7 @@ final class ControllerResolver implements ControllerResolverInterface
                     throw new \RuntimeException(sprintf('Callable "%s" does not exist', $class));
                 }
                 // do not instantiate the classe when you use the magic method for generic static methods.
+                // TODO : regarder si il est possible d'améliorer le code comme ca => https://github.com/middlewares/utils/blob/master/src/RequestHandlerContainer.php#L84
                 if (! method_exists($class, '__callStatic')) {
                     $class = new $class();
                 }

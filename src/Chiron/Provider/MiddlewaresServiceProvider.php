@@ -55,17 +55,18 @@ class MiddlewaresServiceProvider extends ServiceProvider
         $kernel[ContentTypeByDefaultMiddleware::class] = function ($c) {
             return new ContentTypeByDefaultMiddleware();
         };
+        /*
         $kernel[OriginalRequestMiddleware::class] = function ($c) {
             return new OriginalRequestMiddleware();
-        };
+        };*/
 
         $kernel[CharsetByDefaultMiddleware::class] = function ($c) {
             return new CharsetByDefaultMiddleware();
         };
-
+        /*
         $kernel[BodyParserMiddleware::class] = function ($c) {
             return new BodyParserMiddleware();
-        };
+        };*/
 
         /*
                 $kernel[EmitterMiddleware::class] = function ($c) {
