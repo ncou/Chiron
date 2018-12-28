@@ -1,1 +1,9 @@
-{"errors":[{"status":500,"title":"Internal Server Error","detail":"Gutted!"}]}
+{
+    "error": [
+        {
+            "status": 500,
+            "title": "Internal Server Error",
+            "detail": "Gutted!"
+        }
+    ]
+}

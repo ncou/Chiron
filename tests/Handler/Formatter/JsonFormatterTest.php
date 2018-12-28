@@ -43,7 +43,7 @@ class JsonFormatterTest extends TestCase
     {
         $formatter = new JsonFormatter($this->info);
         $this->assertFalse($formatter->isVerbose());
-        $this->assertTrue($formatter->canFormat(new InvalidArgumentException(), new HttpException(500), 500));
+        $this->assertTrue($formatter->canFormat(new InvalidArgumentException()));
         $this->assertSame('application/json', $formatter->contentType());
     }
 }

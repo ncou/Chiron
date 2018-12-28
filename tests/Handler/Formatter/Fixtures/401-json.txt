@@ -1,1 +1,9 @@
-{"errors":[{"status":401,"title":"Unauthorized","detail":"Grrrr!"}]}
+{
+    "error": [
+        {
+            "status": 401,
+            "title": "Unauthorized",
+            "detail": "Grrrr!"
+        }
+    ]
+}
