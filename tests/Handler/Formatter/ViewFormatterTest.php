@@ -26,11 +26,13 @@ class ViewFormatterTest extends TestCase
 
     public function testError()
     {
-        $viewRenderer = $this->createMock(TemplateRendererInterface::class);
-        $viewRenderer->expects($this->once())->method('render')->with('errors/502', ['code' => 502, 'name' => 'Bad Gateway', 'detail' => 'Oh noes!', 'summary' => 'Oh noes!'])->willReturn("Gutted.\n");
+        $exception = new HttpException(502, 'Oh noes!');
 
-        $displayer = new ViewFormatter($this->info, $viewRenderer);
-        $formatted = $displayer->format(new HttpException(502, 'Oh noes!'));
+        $viewRenderer = $this->createMock(TemplateRendererInterface::class);
+        $viewRenderer->expects($this->once())->method('render')->with('errors/502', ['code' => 502, 'name' => 'Bad Gateway', 'detail' => 'The server was acting as a gateway or proxy and received an invalid response from the upstream server.', 'exception' => $exception])->willReturn("Gutted.\n");
+
+        $formatter = new ViewFormatter($this->info, $viewRenderer);
+        $formatted = $formatter->format($exception);
         $this->assertSame("Gutted.\n", $formatted);
     }
     public function testPropertiesTrue_WithHttpException()
@@ -38,44 +40,44 @@ class ViewFormatterTest extends TestCase
         $viewRenderer = $this->createMock(TemplateRendererInterface::class);
         $viewRenderer->expects($this->once())->method('exists')->with('errors/500')->willReturn(true);
 
-        $displayer = new ViewFormatter($this->info, $viewRenderer);
+        $formatter = new ViewFormatter($this->info, $viewRenderer);
 
-        $this->assertFalse($displayer->isVerbose());
-        $this->assertTrue($displayer->canFormat(new HttpException(500)));
-        $this->assertSame('text/html', $displayer->contentType());
+        $this->assertFalse($formatter->isVerbose());
+        $this->assertTrue($formatter->canFormat(new HttpException(500)));
+        $this->assertSame('text/html', $formatter->contentType());
     }
     public function testPropertiesTrue_WithPhpException()
     {
         $viewRenderer = $this->createMock(TemplateRendererInterface::class);
         $viewRenderer->expects($this->once())->method('exists')->with('errors/500')->willReturn(true);
 
-        $displayer = new ViewFormatter($this->info, $viewRenderer);
+        $formatter = new ViewFormatter($this->info, $viewRenderer);
 
-        $this->assertFalse($displayer->isVerbose());
-        $this->assertTrue($displayer->canFormat(new InvalidArgumentException()));
-        $this->assertSame('text/html', $displayer->contentType());
+        $this->assertFalse($formatter->isVerbose());
+        $this->assertTrue($formatter->canFormat(new InvalidArgumentException()));
+        $this->assertSame('text/html', $formatter->contentType());
     }
     public function testPropertiesFalse__WithHttpException()
     {
         $viewRenderer = $this->createMock(TemplateRendererInterface::class);
         $viewRenderer->expects($this->once())->method('exists')->with('errors/500')->willReturn(false);
 
-        $displayer = new ViewFormatter($this->info, $viewRenderer);
+        $formatter = new ViewFormatter($this->info, $viewRenderer);
 
-        $this->assertFalse($displayer->isVerbose());
-        $this->assertFalse($displayer->canFormat(new HttpException(500)));
-        $this->assertSame('text/html', $displayer->contentType());
+        $this->assertFalse($formatter->isVerbose());
+        $this->assertFalse($formatter->canFormat(new HttpException(500)));
+        $this->assertSame('text/html', $formatter->contentType());
     }
     public function testPropertiesFalse_WithPhpException()
     {
         $viewRenderer = $this->createMock(TemplateRendererInterface::class);
         $viewRenderer->expects($this->once())->method('exists')->with('errors/500')->willReturn(false);
 
-        $displayer = new ViewFormatter($this->info, $viewRenderer);
+        $formatter = new ViewFormatter($this->info, $viewRenderer);
 
-        $this->assertFalse($displayer->isVerbose());
-        $this->assertFalse($displayer->canFormat(new InvalidArgumentException()));
-        $this->assertSame('text/html', $displayer->contentType());
+        $this->assertFalse($formatter->isVerbose());
+        $this->assertFalse($formatter->canFormat(new InvalidArgumentException()));
+        $this->assertSame('text/html', $formatter->contentType());
     }
 
 }

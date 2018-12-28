@@ -18,21 +18,21 @@ class WhoopsFormatterTest extends TestCase
 {
     public function testFormatServerError()
     {
-        $displayer = new WhoopsFormatter();
-        $formatted = $displayer->format(new HttpException(502, 'Oh noes!'));
+        $formatter = new WhoopsFormatter();
+        $formatted = $formatter->format(new HttpException(502, 'Oh noes!'));
         $this->assertInternalType('string', $formatted);
     }
     public function testFormatClientError()
     {
-        $displayer = new WhoopsFormatter();
-        $formatted = $displayer->format(new HttpException(404, 'Arghhhh!'));
+        $formatter = new WhoopsFormatter();
+        $formatted = $formatter->format(new HttpException(404, 'Arghhhh!'));
         $this->assertInternalType('string', $formatted);
     }
     public function testPropertiesGetter()
     {
-        $displayer = new WhoopsFormatter();
-        $this->assertTrue($displayer->isVerbose());
-        $this->assertTrue($displayer->canFormat(new InvalidArgumentException()));
-        $this->assertSame('text/html', $displayer->contentType());
+        $formatter = new WhoopsFormatter();
+        $this->assertTrue($formatter->isVerbose());
+        $this->assertTrue($formatter->canFormat(new InvalidArgumentException()));
+        $this->assertSame('text/html', $formatter->contentType());
     }
 }
