@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Tests\Exception;
+namespace Tests\Handler;
 
 use Chiron\Handler\Error\ExceptionHelper;
 use Chiron\Http\Exception\HttpExceptionInterface;
 use DOMDocument;
 use DomXPath;
 use PHPUnit\Framework\TestCase;
-use Chiron\Exception\Formatter\JsonFormatter;
-use Chiron\Exception\ExceptionInfo;
+use Chiron\Handler\Formatter\JsonFormatter;
+use Chiron\Handler\ExceptionInfo;
 use Chiron\Http\Exception\HttpException;
 use Chiron\Http\Exception\Client\BadRequestHttpException;
 use Chiron\Http\Exception\Client\PreconditionFailedHttpException;

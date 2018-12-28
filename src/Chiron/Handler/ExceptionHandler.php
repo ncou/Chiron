@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Exception;
+namespace Chiron\Handler;
 
-use Chiron\Exception\Formatter\FormatterInterface;
-use Chiron\Exception\Reporter\ReporterInterface;
+use Chiron\Handler\Formatter\FormatterInterface;
+use Chiron\Handler\Reporter\ReporterInterface;
 use Chiron\Http\Psr\Response;
 use Exception;
 use Psr\Http\Message\ResponseInterface;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Exception\Formatter;
+namespace Chiron\Handler\Formatter;
 
 use Throwable;
 

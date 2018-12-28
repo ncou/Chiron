@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Exception\Reporter;
+namespace Chiron\Handler\Reporter;
 
 use Throwable;
 

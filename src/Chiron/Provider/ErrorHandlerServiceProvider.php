@@ -15,16 +15,16 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Chiron\Exception\ExceptionHandler;
-use Chiron\Exception\ExceptionInfo;
-use Chiron\Exception\ExceptionManager;
-use Chiron\Exception\Formatter\HtmlFormatter;
-use Chiron\Exception\Formatter\JsonFormatter;
-use Chiron\Exception\Formatter\ViewFormatter;
-use Chiron\Exception\Formatter\WhoopsFormatter;
-use Chiron\Exception\Formatter\XmlFormatter;
-use Chiron\Exception\HttpExceptionHandler;
-use Chiron\Exception\Reporter\LoggerReporter;
+use Chiron\Handler\ExceptionHandler;
+use Chiron\Handler\ExceptionInfo;
+use Chiron\Handler\ExceptionManager;
+use Chiron\Handler\Formatter\HtmlFormatter;
+use Chiron\Handler\Formatter\JsonFormatter;
+use Chiron\Handler\Formatter\ViewFormatter;
+use Chiron\Handler\Formatter\WhoopsFormatter;
+use Chiron\Handler\Formatter\XmlFormatter;
+use Chiron\Handler\HttpExceptionHandler;
+use Chiron\Handler\Reporter\LoggerReporter;
 use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Exception\HttpException;
 use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;

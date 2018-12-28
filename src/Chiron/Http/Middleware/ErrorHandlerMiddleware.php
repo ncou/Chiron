@@ -40,7 +40,7 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\Exception\ExceptionManager;
+use Chiron\Handler\ExceptionManager;
 use ErrorException;
 use Exception;
 //use Psr\Container\ContainerInterface;

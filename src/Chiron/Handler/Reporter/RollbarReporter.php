@@ -2,34 +2,35 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Exception\Reporter;
+namespace Chiron\Handler\Reporter;
 
-use Bugsnag\Client;
+use Rollbar;
 use Throwable;
 
-class BugsnagReporter implements ReporterInterface
+class RollbarReporter implements ReporterInterface
 {
-    /** @var Client */
-    protected $client;
-
     /**
-     * BugsnagReporter constructor.
+     * RollbarReporter constructor.
      *
      * @param array $config
+     *
+     * @throws \InvalidArgumentException
      */
     public function __construct(array $config)
     {
-        $this->client = app(Client::class);
+        Rollbar::init($config);
     }
 
     /**
      * Report exception.
      *
      * @param Throwable $e
+     *
+     * @return string|void
      */
     public function report(Throwable $e): void
     {
-        $this->client->notifyException($e);
+        Rollbar::report_exception($e);
     }
 
     /**
@@ -41,7 +42,7 @@ class BugsnagReporter implements ReporterInterface
      */
     public function canReport(Throwable $e): bool
     {
-        // check if Bugsnag client is installed.
-        return class_exists(Client::class);
+        // check if Rollbar client is installed.
+        return class_exists(Rollbar::class);
     }
 }

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Exception\Formatter;
+namespace Chiron\Handler\Formatter;
 
-use Chiron\Exception\ExceptionInfo;
+use Chiron\Handler\ExceptionInfo;
 use Chiron\Http\Exception\HttpException;
 use Chiron\Views\TemplateRendererInterface;
 use Throwable;
@@ -14,7 +14,7 @@ class ViewFormatter implements FormatterInterface
     /**
      * The exception info instance.
      *
-     * @var \Chiron\Exception\ExceptionInfo
+     * @var \Chiron\Handler\ExceptionInfo
      */
     protected $info;
 
@@ -28,7 +28,7 @@ class ViewFormatter implements FormatterInterface
     /**
      * Create a new json displayer instance.
      *
-     * @param \Chiron\Exception\ExceptionInfo $info
+     * @param \Chiron\Handler\ExceptionInfo $info
      */
     public function __construct(ExceptionInfo $info, TemplateRendererInterface $renderer)
     {
