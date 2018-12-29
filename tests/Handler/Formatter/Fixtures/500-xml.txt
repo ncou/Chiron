@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
+  <status>500</status>
+  <title><![CDATA[Internal Server Error]]></title>
+  <detail><![CDATA[Gutted!]]></detail>

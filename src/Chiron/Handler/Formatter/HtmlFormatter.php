@@ -38,8 +38,7 @@ class HtmlFormatter implements FormatterInterface
 
     public function format(Throwable $e): string
     {
-        $code = $e instanceof HttpException ? $e->getStatusCode() : 500;
-        $info = $this->info->generate($e, $code);
+        $info = $this->info->generate($e);
 
         return $this->render($info);
     }
@@ -54,9 +53,7 @@ class HtmlFormatter implements FormatterInterface
     private function render(array $info)
     {
         $content = file_get_contents($this->path);
-        //$generator = $this->assets;
-        //$info['home_url'] = $generator('/');
-        //$info['favicon_url'] = $generator('favicon.ico');
+
         foreach ($info as $key => $val) {
             $content = str_replace("{{ $$key }}", $val, $content);
         }

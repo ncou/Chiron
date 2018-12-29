@@ -1,0 +1,4 @@
+<?xml version='1.0' encoding='utf-8'?>
+  <status>401</status>
+  <title><![CDATA[Unauthorized]]></title>
+  <detail><![CDATA[Grrrr!]]></detail>

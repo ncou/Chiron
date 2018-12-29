@@ -45,11 +45,12 @@ class ViewFormatter implements FormatterInterface
      */
     public function format(Throwable $e): string
     {
-        $code = $this->getStatusCodeFromException($e);
-        $info = $this->info->generate($e, $code);
+        $info = $this->info->generate($e);
+        $info = array_merge($info, ['exception' => $e]); // TODO : vérifier qu'on accéde bien aux informations ajoutées en attribut !!!!!!!!!!!!!
 
-        // TODO : vérifier qu'on accéde bien aux informations ajoutées en attribut !!!!!!!!!!!!!
-        return $this->renderer->render("errors/{$code}", array_merge($info, ['exception' => $e]));
+        $code = $info['code'];
+
+        return $this->renderer->render("errors/{$code}", $info);
     }
 
     /**
@@ -81,20 +82,8 @@ class ViewFormatter implements FormatterInterface
      */
     public function canFormat(Throwable $e): bool
     {
-        $code = $this->getStatusCodeFromException($e);
+        $code = $e instanceof HttpException ? $e->getStatusCode() : 500;
 
         return $this->renderer->exists("errors/{$code}");
-    }
-
-    /**
-     * Retrieve the http status code from the exception (500 by default for the PHP exceptions)
-     *
-     * @param \Throwable $e
-     *
-     * @return int
-     */
-    private function getStatusCodeFromException(Throwable $e): int
-    {
-        return ($e instanceof HttpException) ? $e->getStatusCode() : 500;
     }
 }

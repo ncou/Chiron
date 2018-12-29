@@ -30,37 +30,37 @@ class ExceptionInfoTest extends TestCase
 
     public function testExistingError()
     {
-        $info = $this->info->generate(new BadRequestHttpException('Made a mess.'), 400);
+        $info = $this->info->generate(new BadRequestHttpException('Made a mess.'));
         $expected = ['code' => 400, 'name' => 'Bad Request', 'detail' => 'Made a mess.'];
         $this->assertSame($expected, $info);
     }
     public function testShortError()
     {
-        $info = $this->info->generate(new PreconditionFailedHttpException(':('), 412);
+        $info = $this->info->generate(new PreconditionFailedHttpException(':('));
         $expected = ['code' => 412, 'name' => 'Precondition Failed', 'detail' => 'The server does not meet one of the preconditions that the requester put on the request.'];
         $this->assertSame($expected, $info);
     }
     public function testLongError()
     {
-        $info = $this->info->generate(new UnprocessableEntityHttpException('Made a mess a really really big mess this time. Everything has broken, and unicorns are crying.'), 422);
+        $info = $this->info->generate(new UnprocessableEntityHttpException('Made a mess a really really big mess this time. Everything has broken, and unicorns are crying.'));
         $expected = ['code' => 422, 'name' => 'Unprocessable Entity', 'detail' => 'Made a mess a really really big mess this time. Everything has broken, and unicorns are crying.'];
         $this->assertSame($expected, $info);
     }
     public function testBadError()
     {
-        $info = $this->info->generate(new Exception('Ooops.'),  666);
+        $info = $this->info->generate(new Exception('Ooops.', 666));
         $expected = [ 'code' => 500, 'name' => 'Internal Server Error', 'detail' => 'An error has occurred and this resource cannot be displayed.'];
         $this->assertSame($expected, $info);
     }
     public function testHiddenError()
     {
-        $info = $this->info->generate(new InvalidArgumentException('Made another mess.'), 503);
+        $info = $this->info->generate(new InvalidArgumentException('Made another mess.', 503));
         $expected = ['code' => 503, 'name' => 'Service Unavailable', 'detail' => 'The server is currently unavailable. It may be overloaded or down for maintenance.'];
         $this->assertSame($expected, $info);
     }
     public function testFallbackWhenNoPathForErrorFileIsUsed()
     {
-        $info = (new ExceptionInfo())->generate(new BadRequestHttpException(), 400);
+        $info = (new ExceptionInfo(''))->generate(new BadRequestHttpException());
         $expected = ['code' => 500, 'name' => 'Internal Server Error', 'detail' => 'An error has occurred and this resource cannot be displayed.'];
         $this->assertSame($expected, $info);
     }

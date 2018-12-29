@@ -44,6 +44,48 @@ class JsonFormatterTest extends TestCase
         $formatter = new JsonFormatter($this->info);
         $this->assertFalse($formatter->isVerbose());
         $this->assertTrue($formatter->canFormat(new InvalidArgumentException()));
-        $this->assertSame('application/json', $formatter->contentType());
+        $this->assertSame('application/problem+json', $formatter->contentType());
     }
+
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testThrowsOnInvalidEncoding()
+    {
+        $formatter = new JsonFormatter($this->info);
+        $reflMethod = new \ReflectionMethod($formatter, 'toJson');
+        $reflMethod->setAccessible(true);
+        // send an invalid unicode sequence as a object that can't be cleaned
+        $record = new \stdClass;
+        $record->message = "\xB1\x31";
+        $reflMethod->invoke($formatter, ['object' => $record]);
+    }
+
+    /**
+     * @param int    $code
+     * @param string $msg
+     * @dataProvider providesHandleJsonErrorFailure
+     */
+    public function testHandleJsonErrorFailure($code, $msg)
+    {
+        $formatter = new JsonFormatter($this->info);
+        $reflMethod = new \ReflectionMethod($formatter, 'throwEncodeError');
+        $reflMethod->setAccessible(true);
+
+        $this->expectException('RuntimeException');
+        $this->expectExceptionMessage($msg);
+
+        $reflMethod->invoke($formatter, $code, 'faked');
+    }
+    public function providesHandleJsonErrorFailure()
+    {
+        return [
+            'depth' => [JSON_ERROR_DEPTH, 'Maximum stack depth exceeded'],
+            'state' => [JSON_ERROR_STATE_MISMATCH, 'Underflow or the modes mismatch'],
+            'ctrl' => [JSON_ERROR_CTRL_CHAR, 'Unexpected control character found'],
+            'default' => [-1, 'Unknown error'],
+        ];
+    }
+
+
 }

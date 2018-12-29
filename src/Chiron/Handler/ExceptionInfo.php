@@ -40,8 +40,10 @@ class ExceptionInfo
      *
      * @return array
      */
-    public function generate(Throwable $exception, int $code)
+    public function generate(Throwable $exception)
     {
+        $code = $this->createStatusFromException($exception);
+
         $errors = $this->path ? json_decode(file_get_contents($this->path), true) : [500 => ['name' => 'Internal Server Error', 'message' => 'An error has occurred and this resource cannot be displayed.']];
 
         if (! isset($errors[$code])) {
@@ -75,5 +77,22 @@ class ExceptionInfo
         */
 
         return $info;
+    }
+
+    /**
+     * Create HTTP status from an exception.
+     *
+     * @param \Throwable $e
+     * @return int
+     */
+    private function createStatusFromException(Throwable $e): int
+    {
+        $status = $e instanceof HttpException ? $e->getStatusCode() : $e->getCode();
+
+        if (($status < 100) || ($status > 599)) {
+            $status = 500;
+        }
+
+        return $status;
     }
 }
