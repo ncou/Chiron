@@ -1,4 +1,7 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
+<problem xmlns="urn:ietf:rfc:7807">
   <status>401</status>
-  <title><![CDATA[Unauthorized]]></title>
-  <detail><![CDATA[Grrrr!]]></detail>
+  <title>Unauthorized</title>
+  <detail>Authentication is required and has failed or has not yet been provided.</detail>
+  <type>https://httpstatuses.com/401</type>
+</problem>

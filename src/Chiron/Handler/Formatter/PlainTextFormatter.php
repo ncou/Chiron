@@ -4,31 +4,30 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Formatter;
 
+use Chiron\Handler\ExceptionInfo;
+use Chiron\Http\Exception\HttpException;
 use Throwable;
 
 class PlainTextFormatter implements FormatterInterface
 {
-    public function formatException(Throwable $exception, bool $displayErrorDetails): string
-    {
-        return $this->render($exception, $displayErrorDetails);
-    }
+    // TODO : permettre de passer cette valeur en paramétre dans le constructeur de la classe.
+    private $includeStacktraces = false;
 
-    public function render(Throwable $exception, bool $displayErrorDetails): string
+    /**
+     * Render Plain-Text error.
+     *
+     * @param \Throwable $e
+     *
+     * @return string
+     */
+    public function format(Throwable $e): string
     {
-        if ($displayErrorDetails) {
-            return $this->formatExceptionBody($exception);
-        }
+        $text = $this->formatException($e);
 
-        return $exception->getMessage();
-    }
-
-    public function formatExceptionBody(Throwable $e): string
-    {
-        $text = 'Chiron Application Error:' . PHP_EOL;
-        $text .= $this->formatExceptionFragment($e);
-        while ($e = $e->getPrevious()) {
-            $text .= PHP_EOL . 'Previous Error:' . PHP_EOL;
-            $text .= $this->formatExceptionFragment($e);
+        if ($previous = $e->getPrevious()) {
+            do {
+                $text .= "\n[previous exception] " . $this->formatException($previous);
+            } while ($previous = $previous->getPrevious());
         }
 
         return $text;
@@ -39,26 +38,62 @@ class PlainTextFormatter implements FormatterInterface
      *
      * @return string
      */
-    // TODO : utiliser la méthode replaceRoot pour le champ "file"
-    public function formatExceptionFragment(Throwable $e): string
+    private function formatException(\Throwable $e): string
     {
-        $text = sprintf('Type: %s' . PHP_EOL, get_class($e));
-        if ($code = $e->getCode()) {
-            $text .= sprintf('Code: %s' . PHP_EOL, $code);
-        }
-        if ($message = $e->getMessage()) {
-            $text .= sprintf('Message: %s' . PHP_EOL, $message);
-        }
-        if ($file = $e->getFile()) {
-            $text .= sprintf('File: %s' . PHP_EOL, $file);
-        }
-        if ($line = $e->getLine()) {
-            $text .= sprintf('Line: %s' . PHP_EOL, $line);
-        }
-        if ($trace = $e->getTraceAsString()) {
-            $text .= sprintf('Trace: %s', $trace);
+        $str = '[object] (' . get_class($e) . '(code: ' . $e->getCode();
+
+        if ($e instanceof \SoapFault) {
+            if (isset($e->faultcode)) {
+                $str .= ' faultcode: ' . $e->faultcode;
+            }
+            if (isset($e->faultactor)) {
+                $str .= ' faultactor: ' . $e->faultactor;
+            }
+            if (isset($e->detail)) {
+                $str .= ' detail: ' . $e->detail;
+            }
         }
 
-        return $text;
+        $str .= '): ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine() . ')';
+
+        if ($this->includeStacktraces) {
+            $str .= "\n[stacktrace]\n" . $e->getTraceAsString() . "\n";
+        }
+
+        return $str;
     }
+
+    /**
+     * Get the supported content type.
+     *
+     * @return string
+     */
+    public function contentType(): string
+    {
+        return 'text/plain';
+    }
+
+    /**
+     * Do we provide verbose information about the exception?
+     *
+     * @return bool
+     */
+    public function isVerbose(): bool
+    {
+        // TODO : conditionner l'affichage de la stackstrace avec la valeur de ce booléen (qui représente le debug = true ou false).
+        return false;
+    }
+
+    /**
+     * Can we format the exception?
+     *
+     * @param \Throwable $e
+     *
+     * @return bool
+     */
+    public function canFormat(Throwable $e): bool
+    {
+        return true;
+    }
+
 }

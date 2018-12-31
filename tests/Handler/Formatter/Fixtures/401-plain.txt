@@ -1,0 +1,1 @@
+[object] (Chiron\Http\Exception\Client\UnauthorizedHttpException(code: 0): Grrrr! at D:\Program Files (x86)\EasyPHP-Devserver-17\eds-www\nano5\vendor\chiron\chiron\tests\Handler\Formatter\PlainTextFormatterTest.php:32)

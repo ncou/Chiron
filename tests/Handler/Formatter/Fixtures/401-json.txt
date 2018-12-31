@@ -1,9 +1,6 @@
 {
-    "error": [
-        {
-            "status": 401,
-            "title": "Unauthorized",
-            "detail": "Grrrr!"
-        }
-    ]
+    "status": 401,
+    "title": "Unauthorized",
+    "detail": "Authentication is required and has failed or has not yet been provided.",
+    "type": "https://httpstatuses.com/401"
 }

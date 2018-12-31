@@ -14,24 +14,19 @@ use Chiron\Handler\Formatter\ViewFormatter;
 use Chiron\Handler\ExceptionInfo;
 use Chiron\Http\Exception\HttpException;
 use Chiron\Views\TemplateRendererInterface;
+use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
+use Chiron\Http\Exception\Client\BadRequestHttpException;
 
 class ViewFormatterTest extends TestCase
 {
-    private $info;
-
-    protected function setUp()
-    {
-        $this->info = new ExceptionInfo(__DIR__.'/../../../resources/lang/en/errors.json');
-    }
-
     public function testError()
     {
-        $exception = new HttpException(502, 'Oh noes!');
+        $exception = new BadRequestHttpException();
 
         $viewRenderer = $this->createMock(TemplateRendererInterface::class);
-        $viewRenderer->expects($this->once())->method('render')->with('errors/502', ['code' => 502, 'name' => 'Bad Gateway', 'detail' => 'The server was acting as a gateway or proxy and received an invalid response from the upstream server.', 'exception' => $exception])->willReturn("Gutted.\n");
+        $viewRenderer->expects($this->once())->method('render')->with('errors/400', ['status' => 400, 'title' => 'Bad Request', 'detail' => 'The request cannot be fulfilled due to bad syntax.', 'type' => 'https://httpstatuses.com/400', 'exception' => $exception])->willReturn("Gutted.\n");
 
-        $formatter = new ViewFormatter($this->info, $viewRenderer);
+        $formatter = new ViewFormatter($viewRenderer);
         $formatted = $formatter->format($exception);
         $this->assertSame("Gutted.\n", $formatted);
     }
@@ -40,10 +35,10 @@ class ViewFormatterTest extends TestCase
         $viewRenderer = $this->createMock(TemplateRendererInterface::class);
         $viewRenderer->expects($this->once())->method('exists')->with('errors/500')->willReturn(true);
 
-        $formatter = new ViewFormatter($this->info, $viewRenderer);
+        $formatter = new ViewFormatter($viewRenderer);
 
         $this->assertFalse($formatter->isVerbose());
-        $this->assertTrue($formatter->canFormat(new HttpException(500)));
+        $this->assertTrue($formatter->canFormat(new InternalServerErrorHttpException()));
         $this->assertSame('text/html', $formatter->contentType());
     }
     public function testPropertiesTrue_WithPhpException()
@@ -51,7 +46,7 @@ class ViewFormatterTest extends TestCase
         $viewRenderer = $this->createMock(TemplateRendererInterface::class);
         $viewRenderer->expects($this->once())->method('exists')->with('errors/500')->willReturn(true);
 
-        $formatter = new ViewFormatter($this->info, $viewRenderer);
+        $formatter = new ViewFormatter($viewRenderer);
 
         $this->assertFalse($formatter->isVerbose());
         $this->assertTrue($formatter->canFormat(new InvalidArgumentException()));
@@ -62,10 +57,10 @@ class ViewFormatterTest extends TestCase
         $viewRenderer = $this->createMock(TemplateRendererInterface::class);
         $viewRenderer->expects($this->once())->method('exists')->with('errors/500')->willReturn(false);
 
-        $formatter = new ViewFormatter($this->info, $viewRenderer);
+        $formatter = new ViewFormatter($viewRenderer);
 
         $this->assertFalse($formatter->isVerbose());
-        $this->assertFalse($formatter->canFormat(new HttpException(500)));
+        $this->assertFalse($formatter->canFormat(new InternalServerErrorHttpException()));
         $this->assertSame('text/html', $formatter->contentType());
     }
     public function testPropertiesFalse_WithPhpException()
@@ -73,7 +68,7 @@ class ViewFormatterTest extends TestCase
         $viewRenderer = $this->createMock(TemplateRendererInterface::class);
         $viewRenderer->expects($this->once())->method('exists')->with('errors/500')->willReturn(false);
 
-        $formatter = new ViewFormatter($this->info, $viewRenderer);
+        $formatter = new ViewFormatter($viewRenderer);
 
         $this->assertFalse($formatter->isVerbose());
         $this->assertFalse($formatter->canFormat(new InvalidArgumentException()));

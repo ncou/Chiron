@@ -7,15 +7,12 @@ namespace Chiron\Handler\Formatter;
 use Chiron\Handler\ExceptionInfo;
 use Chiron\Http\Exception\HttpException;
 use Throwable;
+use InvalidArgumentException;
 
+// TODO : Constructeur => permettre de passer en paramétre le json flags ($jsonEncodeOptions) ????
+// TODO : Constructeur => passer en paramétre la valeur du isPretty == true par défaut
 class JsonFormatter implements FormatterInterface
 {
-    /**
-     * The exception info instance.
-     *
-     * @var \Chiron\Handler\ExceptionInfo
-     */
-    protected $info;
 
     /**
      * Pretty format the output xml ?
@@ -27,18 +24,6 @@ class JsonFormatter implements FormatterInterface
     protected $pretty = true;
 
     /**
-     * Create a new json displayer instance.
-     *
-     * @param \Chiron\Handler\ExceptionInfo $info
-     */
-    // TODO : permettre de passer en paramétre le json flags ($jsonEncodeOptions) ????
-    // TODO : passer en paramétre la valeur du isPretty == true par défaut
-    public function __construct(ExceptionInfo $info)
-    {
-        $this->info = $info;
-    }
-
-    /**
      * Render JSON error.
      *
      * @param \Throwable $e
@@ -47,14 +32,15 @@ class JsonFormatter implements FormatterInterface
      */
     public function format(Throwable $e): string
     {
-        $info = $this->info->generate($e);
+        // This class doesn't show debug information, so by default we hide the php exception behind a neutral http 500 error.
+        if (! $e instanceof HttpException) {
+            $e = new \Chiron\Http\Exception\Server\InternalServerErrorHttpException();
+        }
 
-        $error = ['status' => $info['code'], 'title' => $info['name'], 'detail' => $info['detail']];
-
-        return $this->toJson($error);
+        return $this->arrayToJson($e->toArray());
     }
 
-    private function toJson(array $data)
+    private function arrayToJson(array $data): string
     {
         $jsonEncodeOptions = JSON_UNESCAPED_SLASHES
             | JSON_UNESCAPED_UNICODE
@@ -67,7 +53,7 @@ class JsonFormatter implements FormatterInterface
         $json = json_encode($data, $jsonEncodeOptions);
 
         if ($json === false) {
-            $this->throwEncodeError(json_last_error(), $data);
+            throw new InvalidArgumentException('JSON encoding failed: ' . json_last_error_msg());
         }
 
         return $json;
@@ -103,33 +89,5 @@ class JsonFormatter implements FormatterInterface
     public function canFormat(Throwable $e): bool
     {
         return true;
-    }
-
-    /**
-     * Throws an exception according to a given code with a customized message
-     *
-     * @param  int               $code return code of json_last_error function
-     * @param  mixed             $data data that was meant to be encoded
-     * @throws \RuntimeException
-     */
-    private function throwEncodeError(int $code, $data)
-    {
-        switch ($code) {
-            case JSON_ERROR_DEPTH:
-                $msg = 'Maximum stack depth exceeded';
-                break;
-            case JSON_ERROR_STATE_MISMATCH:
-                $msg = 'Underflow or the modes mismatch';
-                break;
-            case JSON_ERROR_CTRL_CHAR:
-                $msg = 'Unexpected control character found';
-                break;
-            case JSON_ERROR_UTF8:
-                $msg = 'Malformed UTF-8 characters, possibly incorrectly encoded';
-                break;
-            default:
-                $msg = 'Unknown error';
-        }
-        throw new \RuntimeException('JSON encoding failed: '.$msg.'. Encoding: '.var_export($data, true));
     }
 }

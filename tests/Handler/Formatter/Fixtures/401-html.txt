@@ -6,7 +6,7 @@
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-      <title>Error 404</title>
+      <title>Error 401</title>
 
       <style type="text/css">
 
@@ -48,8 +48,8 @@
 
     <body>
       <div>
-        <h1>404 Not Found</h1>
-        <h2>The requested resource could not be found but may be available again in the future.</h2>
+        <h1>401 Unauthorized</h1>
+        <h2>Authentication is required and has failed or has not yet been provided.</h2>
       </div>
     </body>
 

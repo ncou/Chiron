@@ -13,19 +13,21 @@ use PHPUnit\Framework\TestCase;
 use Chiron\Handler\Formatter\WhoopsFormatter;
 use Chiron\Handler\ExceptionInfo;
 use Chiron\Http\Exception\HttpException;
+use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
+use Chiron\Http\Exception\Client\BadRequestHttpException;
 
 class WhoopsFormatterTest extends TestCase
 {
     public function testFormatServerError()
     {
         $formatter = new WhoopsFormatter();
-        $formatted = $formatter->format(new HttpException(502, 'Oh noes!'));
+        $formatted = $formatter->format(new InternalServerErrorHttpException());
         $this->assertInternalType('string', $formatted);
     }
     public function testFormatClientError()
     {
         $formatter = new WhoopsFormatter();
-        $formatted = $formatter->format(new HttpException(404, 'Arghhhh!'));
+        $formatted = $formatter->format(new BadRequestHttpException());
         $this->assertInternalType('string', $formatted);
     }
     public function testPropertiesGetter()

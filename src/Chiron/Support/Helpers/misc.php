@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * A RFC7231 Compliant date.
+ *
+ * http://tools.ietf.org/html/rfc7231#section-7.1.1.1
+ *
+ * Example: Sun, 06 Nov 1994 08:49:37 GMT
+ *
+ * This constant was introduced in PHP 7.0.19 and PHP 7.1.5 but needs to be defined for earlier PHP versions.
+ */
 if (!defined('DATE_RFC7231')) {
     // TODO : Remove once the minimal version of PHP is set to 7.1.5
     define('DATE_RFC7231', 'D, d M Y H:i:s \G\M\T');
@@ -153,6 +162,8 @@ if (!function_exists('pj')) {
     }
 }
 
+// TODO : déplacer cette fonction dans une classe du répertoire Helper du genre Str.php ou Text.php
+// https://github.com/Seldaek/monolog/blob/master/src/Monolog/Utils.php#L19
 if (!function_exists('namespaceSplit')) {
     /**
      * Split the namespace from the classname.

@@ -6,6 +6,7 @@ declare(strict_types=1);
 
 // Gérer le cas ou il y a une erreur en interne dans le handler :
 //https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php#L138
+//https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/ErrorHandler.php#L141
 
 // régle le niveau d'affichage des erreurs :
 //******************************************
@@ -102,6 +103,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
 
         restore_error_handler();
 
+        // TODO : faire un clear output avant d'envoyer la réponse ???? https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/ErrorHandler.php#L138
         return $response;
     }
 

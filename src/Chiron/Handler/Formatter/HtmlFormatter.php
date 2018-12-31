@@ -11,13 +11,6 @@ use Throwable;
 class HtmlFormatter implements FormatterInterface
 {
     /**
-     * The exception info instance.
-     *
-     * @var \Chiron\Handler\ExceptionInfo
-     */
-    protected $info;
-
-    /**
      * The html template file path.
      *
      * @var string
@@ -27,34 +20,35 @@ class HtmlFormatter implements FormatterInterface
     /**
      * Create a new html displayer instance.
      *
-     * @param \Chiron\Handler\ExceptionInfo $info
      * @param string                          $path
      */
-    public function __construct(ExceptionInfo $info, string $path)
+    public function __construct( string $path)
     {
-        $this->info = $info;
         $this->path = $path;
     }
 
     public function format(Throwable $e): string
     {
-        $info = $this->info->generate($e);
+        // This class doesn't show debug information, so by default we hide the php exception behind a neutral http 500 error.
+        if (! $e instanceof HttpException) {
+            $e = new \Chiron\Http\Exception\Server\InternalServerErrorHttpException();
+        }
 
-        return $this->render($info);
+        return $this->render($e->toArray());
     }
 
     /**
-     * Render the page with given info.
+     * Render the page with given data.
      *
-     * @param array $info
+     * @param array $data
      *
      * @return string
      */
-    private function render(array $info)
+    private function render(array $data)
     {
         $content = file_get_contents($this->path);
 
-        foreach ($info as $key => $val) {
+        foreach ($data as $key => $val) {
             $content = str_replace("{{ $$key }}", $val, $content);
         }
 

@@ -6,7 +6,7 @@
       <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-      <title>Error 502</title>
+      <title>Error 500</title>
 
       <style type="text/css">
 
@@ -48,8 +48,8 @@
 
     <body>
       <div>
-        <h1>502 Bad Gateway</h1>
-        <h2>The server was acting as a gateway or proxy and received an invalid response from the upstream server.</h2>
+        <h1>500 Internal Server Error</h1>
+        <h2>Gutted!</h2>
       </div>
     </body>
 

@@ -1,9 +1,6 @@
 {
-    "error": [
-        {
-            "status": 500,
-            "title": "Internal Server Error",
-            "detail": "Gutted!"
-        }
-    ]
+    "status": 500,
+    "title": "Internal Server Error",
+    "detail": "Gutted!",
+    "type": "https://httpstatuses.com/500"
 }

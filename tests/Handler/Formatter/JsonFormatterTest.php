@@ -13,78 +13,135 @@ use PHPUnit\Framework\TestCase;
 use Chiron\Handler\Formatter\JsonFormatter;
 use Chiron\Handler\ExceptionInfo;
 use Chiron\Http\Exception\HttpException;
+use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
+use Chiron\Http\Exception\Client\UnauthorizedHttpException;
 
 class JsonFormatterTest extends TestCase
 {
-    private $info;
-
-    protected function setUp()
-    {
-        $this->info = new ExceptionInfo(__DIR__.'/../../../resources/lang/en/errors.json');
-    }
-
     public function testFormatServerError()
     {
-        $formatter = new JsonFormatter($this->info);
-        $formated = $formatter->format(new HttpException(500, 'Gutted!'));
+        $formatter = new JsonFormatter();
+        $formated = $formatter->format(new InternalServerErrorHttpException('Gutted!'));
         $expected = file_get_contents(__DIR__.'/Fixtures/500-json.txt');
         $this->assertSame(trim($expected), $formated);
     }
 
     public function testFormatClientError()
     {
-        $formatter = new JsonFormatter($this->info);
-        $formated = $formatter->format(new HttpException(401, 'Grrrr!'));
+        $formatter = new JsonFormatter();
+        $formated = $formatter->format(new UnauthorizedHttpException('header'));
+
+
+
         $expected = file_get_contents(__DIR__.'/Fixtures/401-json.txt');
         $this->assertSame(trim($expected), $formated);
     }
 
     public function testPropertiesGetter()
     {
-        $formatter = new JsonFormatter($this->info);
+        $formatter = new JsonFormatter();
         $this->assertFalse($formatter->isVerbose());
         $this->assertTrue($formatter->canFormat(new InvalidArgumentException()));
         $this->assertSame('application/problem+json', $formatter->contentType());
     }
 
     /**
-     * @expectedException RuntimeException
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Maximum stack depth exceeded
      */
-    public function testThrowsOnInvalidEncoding()
+    public function testThrowsOnEncodingExcededMaximumDepth()
     {
-        $formatter = new JsonFormatter($this->info);
-        $reflMethod = new \ReflectionMethod($formatter, 'toJson');
-        $reflMethod->setAccessible(true);
-        // send an invalid unicode sequence as a object that can't be cleaned
-        $record = new \stdClass;
-        $record->message = "\xB1\x31";
-        $reflMethod->invoke($formatter, ['object' => $record]);
+        $formatter = new JsonFormatter();
+
+        $e = new InternalServerErrorHttpException();
+
+        $array = array();
+        for ($i=0; $i < 512; $i++) {
+            $array = array($array);
+        }
+
+        $e->addAdditionalData('PHP_JSON_ERROR_DEPTH', $array);
+
+        $formated = $formatter->format($e);
     }
 
     /**
-     * @param int    $code
-     * @param string $msg
-     * @dataProvider providesHandleJsonErrorFailure
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Malformed UTF-8 characters, possibly incorrectly encoded
      */
-    public function testHandleJsonErrorFailure($code, $msg)
+    public function testThrowsOnEncodingMalformedUTF8()
     {
-        $formatter = new JsonFormatter($this->info);
-        $reflMethod = new \ReflectionMethod($formatter, 'throwEncodeError');
-        $reflMethod->setAccessible(true);
+        $formatter = new JsonFormatter();
 
-        $this->expectException('RuntimeException');
-        $this->expectExceptionMessage($msg);
+        $e = new InternalServerErrorHttpException();
+        $e->addAdditionalData('JSON_ERROR_UTF8', "\x80");
 
-        $reflMethod->invoke($formatter, $code, 'faked');
+        $formated = $formatter->format($e);
     }
-    public function providesHandleJsonErrorFailure()
+
+
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Recursion detected
+     */
+    public function testThrowsOnEncodingRecursion()
     {
-        return [
-            'depth' => [JSON_ERROR_DEPTH, 'Maximum stack depth exceeded'],
-            'state' => [JSON_ERROR_STATE_MISMATCH, 'Underflow or the modes mismatch'],
-            'ctrl' => [JSON_ERROR_CTRL_CHAR, 'Unexpected control character found'],
-            'default' => [-1, 'Unknown error'],
-        ];
+        $formatter = new JsonFormatter();
+
+        $e = new InternalServerErrorHttpException();
+
+        $a = array();
+        $a[] = &$a;
+
+        $e->addAdditionalData('JSON_ERROR_RECURSION', $a);
+
+        $formated = $formatter->format($e);
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Inf and NaN cannot be JSON encoded
+     */
+    public function testThrowsOnEncodingINF()
+    {
+        $formatter = new JsonFormatter();
+
+        $e = new InternalServerErrorHttpException();
+        $e->addAdditionalData('JSON_ERROR_INF_OR_NAN', INF);
+
+        $formated = $formatter->format($e);
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Inf and NaN cannot be JSON encoded
+     */
+    public function testThrowsOnEncodingNAN()
+    {
+        $formatter = new JsonFormatter();
+
+        $e = new InternalServerErrorHttpException();
+        $e->addAdditionalData('JSON_ERROR_INF_OR_NAN', NAN);
+
+        $formated = $formatter->format($e);
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Type is not supported
+     */
+    public function testThrowsOnEncodingUnsupportedType()
+    {
+        $formatter = new JsonFormatter();
+
+        $e = new InternalServerErrorHttpException();
+
+        $resource = fopen(__FILE__, "r");
+
+        $e->addAdditionalData('JSON_ERROR_UNSUPPORTED_TYPE', $resource);
+
+        $formated = $formatter->format($e);
     }
 
 

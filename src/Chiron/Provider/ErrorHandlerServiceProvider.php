@@ -47,18 +47,10 @@ class ErrorHandlerServiceProvider extends ServiceProvider
      */
     public function register(KernelInterface $kernel): void
     {
-        $kernel[ExceptionInfo::class] = function ($c) {
-            return new ExceptionInfo(__DIR__ . '/../../../resources/lang/en/errors.json');
-        };
-
-        $kernel[ExceptionInfo::class] = function ($c) {
-            return new ExceptionInfo(__DIR__ . '/../../../resources/lang/en/errors.json');
-        };
-
         $kernel[HtmlFormatter::class] = function ($c) {
             $path = __DIR__ . '/../../../resources/error.html';
 
-            return new HtmlFormatter($c[ExceptionInfo::class], realpath($path));
+            return new HtmlFormatter(realpath($path));
         };
 
         $kernel[LoggerReporter::class] = function ($c) {
@@ -78,12 +70,12 @@ class ErrorHandlerServiceProvider extends ServiceProvider
                 $renderer = $c[TemplateRendererInterface::class];
                 //registerErrorViewPaths($renderer);
                 //$renderer->addPath(\Chiron\TEMPLATES_DIR . "/errors", 'errors');
-                $exceptionHandler->addFormatter(new ViewFormatter($c[ExceptionInfo::class], $renderer));
+                $exceptionHandler->addFormatter(new ViewFormatter($renderer));
             }
 
             $exceptionHandler->addFormatter($c[HtmlFormatter::class]);
-            $exceptionHandler->addFormatter(new JsonFormatter($c[ExceptionInfo::class]));
-            $exceptionHandler->addFormatter(new XmlFormatter($c[ExceptionInfo::class]));
+            $exceptionHandler->addFormatter(new JsonFormatter());
+            $exceptionHandler->addFormatter(new XmlFormatter());
 
             $exceptionHandler->setDefaultFormatter($c[HtmlFormatter::class]);
 
@@ -102,12 +94,12 @@ class ErrorHandlerServiceProvider extends ServiceProvider
                 $renderer = $c[TemplateRendererInterface::class];
                 //registerErrorViewPaths($renderer);
                 //$renderer->addPath(\Chiron\TEMPLATES_DIR . "/errors", 'errors');
-                $exceptionHandler->addFormatter(new ViewFormatter($c[ExceptionInfo::class], $renderer));
+                $exceptionHandler->addFormatter(new ViewFormatter($renderer));
             }
 
             $exceptionHandler->addFormatter($c[HtmlFormatter::class]);
-            $exceptionHandler->addFormatter(new JsonFormatter($c[ExceptionInfo::class]));
-            $exceptionHandler->addFormatter(new XmlFormatter($c[ExceptionInfo::class]));
+            $exceptionHandler->addFormatter(new JsonFormatter());
+            $exceptionHandler->addFormatter(new XmlFormatter());
 
             $exceptionHandler->setDefaultFormatter($c[HtmlFormatter::class]);
 

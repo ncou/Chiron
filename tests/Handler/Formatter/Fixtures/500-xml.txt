@@ -1,4 +1,7 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
+<problem xmlns="urn:ietf:rfc:7807">
   <status>500</status>
-  <title><![CDATA[Internal Server Error]]></title>
-  <detail><![CDATA[Gutted!]]></detail>
+  <title>Internal Server Error</title>
+  <detail>Gutted!</detail>
+  <type>https://httpstatuses.com/500</type>
+</problem>

@@ -10,35 +10,35 @@ use DOMDocument;
 use DomXPath;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Chiron\Handler\Formatter\XmlFormatter;
+use Chiron\Handler\Formatter\PlainTextFormatter;
 use Chiron\Handler\ExceptionInfo;
 use Chiron\Http\Exception\HttpException;
 use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
 use Chiron\Http\Exception\Client\UnauthorizedHttpException;
 
-class XmlFormatterTest extends TestCase
+class PlainTextFormatterTest extends TestCase
 {
     public function testFormatServerError()
     {
-        $formatter = new XmlFormatter();
+        $formatter = new PlainTextFormatter();
         $formated = $formatter->format(new InternalServerErrorHttpException('Gutted!'));
-        $expected = file_get_contents(__DIR__.'/Fixtures/500-xml.txt');
-        $this->assertSame(trim($expected), trim($formated));
+        $expected = file_get_contents(__DIR__.'/Fixtures/500-plain.txt');
+        $this->assertSame(trim($expected), $formated);
     }
 
     public function testFormatClientError()
     {
-        $formatter = new XmlFormatter();
-        $formated = $formatter->format(new UnauthorizedHttpException('Grrrr!'));
-        $expected = file_get_contents(__DIR__.'/Fixtures/401-xml.txt');
-        $this->assertSame(trim($expected), trim($formated));
+        $formatter = new PlainTextFormatter();
+        $formated = $formatter->format(new UnauthorizedHttpException('header', 'Grrrr!'));
+        $expected = file_get_contents(__DIR__.'/Fixtures/401-plain.txt');
+        $this->assertSame(trim($expected), $formated);
     }
 
     public function testPropertiesGetter()
     {
-        $formatter = new XmlFormatter();
+        $formatter = new PlainTextFormatter();
         $this->assertFalse($formatter->isVerbose());
         $this->assertTrue($formatter->canFormat(new InvalidArgumentException()));
-        $this->assertSame('application/xml', $formatter->contentType());
+        $this->assertSame('text/plain', $formatter->contentType());
     }
 }

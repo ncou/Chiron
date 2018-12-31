@@ -10,6 +10,9 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
 
+// TODO : améliorer la fonction de log en utilisant ce bout de code => https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php#L211
+// autre exemple ici : https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/BaseErrorHandler.php#L334
+// TODO : passer en paramétre de la méthode report la Request et logguer le $request->getRequestTarget() + $request->getHeaderLine('Referer') et voir même pour logger l'IP
 class LoggerReporter implements ReporterInterface
 {
     /**
@@ -82,6 +85,7 @@ class LoggerReporter implements ReporterInterface
      *
      * @return string
      */
+    // TODO : améliorer le code, on fait quoi si il y a aussi une exception dans Previous porté par la Throwable ???? elle ne sera pas logguée !!!!
     private function formatException(Throwable $e): string
     {
         return sprintf(

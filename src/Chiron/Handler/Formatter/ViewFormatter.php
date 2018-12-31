@@ -12,13 +12,6 @@ use Throwable;
 class ViewFormatter implements FormatterInterface
 {
     /**
-     * The exception info instance.
-     *
-     * @var \Chiron\Handler\ExceptionInfo
-     */
-    protected $info;
-
-    /**
      * The renderer instance.
      *
      * @var \Chiron\Views\TemplateRendererInterface
@@ -28,11 +21,10 @@ class ViewFormatter implements FormatterInterface
     /**
      * Create a new json displayer instance.
      *
-     * @param \Chiron\Handler\ExceptionInfo $info
+     * @param TemplateRendererInterface $renderer
      */
-    public function __construct(ExceptionInfo $info, TemplateRendererInterface $renderer)
+    public function __construct(TemplateRendererInterface $renderer)
     {
-        $this->info = $info;
         $this->renderer = $renderer;
     }
 
@@ -45,11 +37,19 @@ class ViewFormatter implements FormatterInterface
      */
     public function format(Throwable $e): string
     {
-        $info = $this->info->generate($e);
+        // This class doesn't show debug information, so by default we hide the php exception behind a neutral http 500 error.
+        if (! $e instanceof HttpException) {
+            $e = new \Chiron\Http\Exception\Server\InternalServerErrorHttpException();
+        }
+
+        $info = $e->toArray();
+        // TODO : ajouter plus d'information dans ce tableau qui va être passé à la vue pour pouvoir utiliser ces informations => https://github.com/cakephp/cakephp/blob/dc63c2f0d8a1e9d5f336ab81b587a54929d9e1cf/src/Error/ExceptionRenderer.php#L218
         $info = array_merge($info, ['exception' => $e]); // TODO : vérifier qu'on accéde bien aux informations ajoutées en attribut !!!!!!!!!!!!!
 
-        $code = $info['code'];
+        $code = $info['status'];
 
+        // TODO : gérer le cas des PDOException pour la BDD, avec un template spécial => https://github.com/cakephp/cakephp/blob/dc63c2f0d8a1e9d5f336ab81b587a54929d9e1cf/src/Error/ExceptionRenderer.php#L335
+        //https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Template/Error/pdo_error.ctp
         return $this->renderer->render("errors/{$code}", $info);
     }
 

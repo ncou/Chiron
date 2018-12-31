@@ -8,16 +8,12 @@ use Chiron\Handler\ExceptionInfo;
 use Chiron\Http\Exception\HttpException;
 use Throwable;
 
+//https://github.com/cakephp/cakephp/blob/56f2d2a69870031cd0527d63a2ddeb3fbe6f05d3/src/Utility/Xml.php
+
 class XmlFormatter implements FormatterInterface
 {
     // Allow the float to keep the zero (ex : 12.0 is converted to "12.0" instead of "12").
     private const XML_PRESERVE_ZERO_FRACTION = true;
-    /**
-     * The exception info instance.
-     *
-     * @var \Chiron\Handler\ExceptionInfo
-     */
-    protected $info;
 
     /**
      * The root DOM Document.
@@ -34,15 +30,6 @@ class XmlFormatter implements FormatterInterface
     // TODO : initialiser cette valeur via un parametre dans le constructeur.
     protected $pretty = true;
 
-    /**
-     * Create a new json displayer instance.
-     *
-     * @param \Chiron\Handler\ExceptionInfo $info
-     */
-    public function __construct(ExceptionInfo $info)
-    {
-        $this->info = $info;
-    }
 
     /**
      * Render XML error.
@@ -53,12 +40,18 @@ class XmlFormatter implements FormatterInterface
      */
     public function format(Throwable $e): string
     {
-        $info = $this->info->generate($e);
+        // This class doesn't show debug information, so by default we hide the php exception behind a neutral http 500 error.
+        if (! $e instanceof HttpException) {
+            $e = new \Chiron\Http\Exception\Server\InternalServerErrorHttpException();
+        }
+
 
 // TODO : c'est un test. A virer !!!!!
+        /*
         $info = array_merge($info, ['exception' => $e, " toto /is back<to>". chr(10) ."home baby" => "that 'is' <right>".chr(127), 'pretty' => true, 'ugly' => false, 'money' => 19.0, 'bonus' => 12, 'uri' => "<http:'//www.exémple.com/>", 'unicode' => "\xc3\xa9"]);
+*/
 
-        return $this->arrayToXml($info, true);
+        return $this->arrayToXml($e->toArray());
 
     }
 
@@ -69,7 +62,9 @@ class XmlFormatter implements FormatterInterface
      */
     public function contentType(): string
     {
-        return 'application/problem+xml';
+        return 'application/xml';
+        // TODO : regarder pourquoi cela ne fonctionne pas quand on utilise le mime typz => problem+xml car dans chrome le xml n'est pas affiché :(
+        //return 'application/problem+xml';
     }
 
     /**
@@ -94,12 +89,11 @@ class XmlFormatter implements FormatterInterface
         return true;
     }
 
-
-    private function arrayToXml(array $data)
+    private function arrayToXml(array $data): string
     {
         // Ensure any objects are flattened to arrays first
         // TODO : vérifier l'utilité de ce bout de code !!!!
-        $content = json_decode(json_encode($data, JSON_PRESERVE_ZERO_FRACTION), true);
+        $content = json_decode(json_encode($data, JSON_PRESERVE_ZERO_FRACTION), true); // JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION
 
         // ensure all keys are valid XML can be json_encoded
         $cleanedContent = $this->cleanKeysForXml($content);
@@ -155,7 +149,6 @@ class XmlFormatter implements FormatterInterface
     private static function convertToString($value): string
     {
         // float value
-        echo(var_dump($value).$value);
         if (is_float($value)) {
 
             $value = (string) $value;
