@@ -35,6 +35,8 @@ declare(strict_types=1);
 
 // TODO : regarder ici comment c'est fait : https://github.com/zendframework/zend-problem-details/blob/master/src/ProblemDetailsMiddleware.php
 
+// TODO : faire un clear output avant d'envoyer la réponse ???? https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/ErrorHandler.php#L138
+
 //-----------------
 //https://github.com/samsonasik/ErrorHeroModule/blob/master/src/HeroTrait.php#L22
 //https://github.com/samsonasik/ErrorHeroModule/blob/master/src/Middleware/Expressive.php#L59
@@ -42,6 +44,7 @@ declare(strict_types=1);
 namespace Chiron\Http\Middleware;
 
 use Chiron\Handler\ExceptionManager;
+use Chiron\Http\Psr\Response;
 use ErrorException;
 use Exception;
 //use Psr\Container\ContainerInterface;
@@ -54,6 +57,9 @@ use Throwable;
 
 class ErrorHandlerMiddleware implements MiddlewareInterface
 {
+
+    public const ORIGINAL_REQUEST = '__originalRequest__';
+
     /**
      * @var ExceptionManager
      */
@@ -90,21 +96,45 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
                     }
         */
 
+        $request = $request->withAttribute(self::ORIGINAL_REQUEST, $request);
+
         set_error_handler($this->createErrorHandler());
 
         try {
-            $request = $request->withAttribute('__originalRequest', $request);
             $response = $handler->handle($request);
         } catch (Throwable $exception) {
-            //https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php#L138
-            $request = $request->getAttribute('__originalRequest', false) ?: $request;
-            $response = $this->exceptionManager->renderException($exception, $request);
+            $response = $this->handleThrowable($exception, $request);
         }
 
         restore_error_handler();
 
-        // TODO : faire un clear output avant d'envoyer la réponse ???? https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/ErrorHandler.php#L138
         return $response;
+    }
+
+    private function handleThrowable(Throwable $exception, ServerRequestInterface $request): ResponseInterface
+    {
+        $request = $request->getAttribute(self::ORIGINAL_REQUEST, false) ?: $request;
+
+        try {
+            $response = $this->exceptionManager->renderException($exception, $request);
+        } catch (Throwable $exception) {
+            $response = $this->handleInternalError();
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param \Psr\Http\Message\ResponseInterface $response The response
+     *
+     */
+    private function handleInternalError(): ResponseInterface
+    {
+        // TODO : passer en paramétre de ce middleware un responseFactory. pour utiliser la méthode Psr $responseFactory->create(500);
+        $response = new Response();
+        $response->getBody()->write('An Internal Server Error Occurred');
+
+        return $response->withStatus(500);
     }
 
     /**
@@ -133,3 +163,4 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
         };
     }
 }
+

@@ -28,7 +28,7 @@ class WhoopsFormatter implements FormatterInterface
      *
      * @return \Whoops\Run
      */
-    private function whoops()
+    private function whoops(): Whoops
     {
         $whoops = new Whoops();
         $whoops->allowQuit(false);

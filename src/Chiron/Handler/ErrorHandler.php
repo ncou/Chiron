@@ -7,6 +7,7 @@ namespace Chiron\Handler;
 use Chiron\Handler\Formatter\FormatterInterface;
 use Chiron\Handler\Reporter\ReporterInterface;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Exception\HttpException;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -18,7 +19,7 @@ use Throwable;
 
 //https://github.com/yiisoft/yii2/blob/master/framework/base/ErrorHandler.php
 
-class ExceptionHandler implements HandlerInterface
+class ErrorHandler implements HandlerInterface
 {
     /**
      * List of reporters used to report the exception data.
@@ -42,20 +43,18 @@ class ExceptionHandler implements HandlerInterface
     private $defaultFormatter;
 
     /**
-     * Is debug mode enabled?
+     * The formatter should be verbose (show stacktrace) only in debug mode.
      *
      * @var bool
      */
-    private $debug;
+    private $shouldBeVerbose;
 
     /**
-     * Create a new ExceptionHandler instance.
-     *
-     * @param bool $debug
+     * @param bool $shouldBeVerbose
      */
-    public function __construct(bool $debug)
+    public function __construct(bool $shouldBeVerbose)
     {
-        $this->debug = $debug;
+        $this->shouldBeVerbose = $shouldBeVerbose;
     }
 
     /**
@@ -82,16 +81,50 @@ class ExceptionHandler implements HandlerInterface
 
         // TODO : attention il manque le choix de la version HTTP 1.1 ou 1.0 lorsqu'on initialise cette nouvelle response.
         // TODO : passer une ResponseFactory dans le constructeur de cette classe et utiliser la factory
-        $response = new Response(500);
+        $statusCode = $this->determineStatusCode($e, $request);
+        $response = new Response($statusCode);
 
         // TODO : attention il manque le charset dans ce Content-Type !!!!!
         $response = $response->withHeader('Content-Type', $formatter->contentType());
 
-        $body = $response->getBody();
-        $body->write($content);
-        $body->rewind();
+        $response->getBody()->write($content);
 
-        return $response->withBody($body);
+        if ($e instanceof HttpException) {
+            $response = $this->injectHeaders($response, $e->getHeaders());
+        }
+
+        return $response;
+    }
+
+    /**
+     * @param \Throwable             $e
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @return int
+     */
+    protected function determineStatusCode(Throwable $e, ServerRequestInterface $request): int
+    {
+        if ($request->getMethod() === 'OPTIONS') {
+            return 200;
+        }
+
+        if ($e instanceof HttpException) {
+            return $e->getStatusCode();
+        }
+
+        return 500;
+    }
+
+    /**
+     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param array $headers
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    private function injectHeaders(ResponseInterface $response, array $headers = []): ResponseInterface
+    {
+        foreach ($headers as $name => $value) {
+            $response = $response->withHeader($name, $value);
+        }
+        return $response;
     }
 
     /**
@@ -108,7 +141,7 @@ class ExceptionHandler implements HandlerInterface
 
         foreach ($filtered as $index => $formatter) {
             // *** isVerbose Filter ***
-            if (! $this->debug) {
+            if (! $this->shouldBeVerbose) {
                 if ($formatter->isVerbose()) {
                     unset($filtered[$index]);
 

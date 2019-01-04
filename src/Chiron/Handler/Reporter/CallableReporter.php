@@ -32,7 +32,7 @@ class CallableReporter implements ReporterInterface
      */
     public function report(Throwable $e): void
     {
-        return call_user_func($this->callable, $e);
+        call_user_func($this->callable, $e);
     }
 
     /**

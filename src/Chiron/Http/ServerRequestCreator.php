@@ -20,8 +20,6 @@ require_once __DIR__ . '/../../../../vendor/nyholm/psr7/src/Uri.php';
 
 //https://github.com/Hail-Team/framework/blob/fcd26224a6d175458df249b74bf03c88b5321840/src/Http/Helpers.php
 
-//namespace Viserio\Component\HttpFactory;
-
 use Chiron\Http\Psr\Stream;
 use Chiron\Http\Psr\UploadedFile;
 use Chiron\Http\Psr\Uri;
@@ -38,8 +36,9 @@ use Psr\Http\Message\UriInterface;
 
 //https://github.com/Nyholm/psr7-server/blob/master/src/ServerRequestCreator.php
 
-// basé sur : https://github.com/viserio/http-factory/blob/master/ServerRequestFactory.php
+// basé sur : https://github.com/viserio/http/blob/master/ServerRequestBuilder.php
 
+// TODO : renommer en ServerRequestBuilder
 class ServerRequestCreator
 {
     private $serverRequestFactory;

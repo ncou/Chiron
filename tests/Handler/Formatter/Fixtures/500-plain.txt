@@ -1,1 +1,4 @@
-[object] (Chiron\Http\Exception\Server\InternalServerErrorHttpException(code: 0): Gutted! at D:\Program Files (x86)\EasyPHP-Devserver-17\eds-www\nano5\vendor\chiron\chiron\tests\Handler\Formatter\PlainTextFormatterTest.php:24)
+error.status: 500
+error.title: Internal Server Error
+error.detail: Gutted!
+error.type: https://httpstatuses.com/500

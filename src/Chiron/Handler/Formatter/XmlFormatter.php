@@ -9,6 +9,7 @@ use Chiron\Http\Exception\HttpException;
 use Throwable;
 
 //https://github.com/cakephp/cakephp/blob/56f2d2a69870031cd0527d63a2ddeb3fbe6f05d3/src/Utility/Xml.php
+//https://github.com/symfony/serializer/blob/master/Encoder/XmlEncoder.php
 
 class XmlFormatter implements FormatterInterface
 {
@@ -189,4 +190,69 @@ class XmlFormatter implements FormatterInterface
         }
         return $return;
     }
+
+
+
+
+    /**
+     * Checks the name is a valid xml element name.
+     */
+/*
+    final protected function isElementNameValid(string $name): bool
+    {
+        return $name &&
+            false === strpos($name, ' ') &&
+            preg_match('#^[\pL_][\pL0-9._:-]*$#ui', $name);
+    }
+*/
+
+/*
+    final protected function appendText(\DOMNode $node, string $val): bool
+    {
+        $nodeText = $this->dom->createTextNode($val);
+        $node->appendChild($nodeText);
+        return true;
+    }
+    final protected function appendCData(\DOMNode $node, string $val): bool
+    {
+        $nodeText = $this->dom->createCDATASection($val);
+        $node->appendChild($nodeText);
+        return true;
+    }
+*/
+
+    /**
+     * Tests the value being passed and decide what sort of element to create.
+     *
+     * @param mixed $val
+     *
+     * @throws NotEncodableValueException
+     */
+    /*
+    private function selectNodeType(\DOMNode $node, $val): bool
+    {
+        if (\is_array($val)) {
+            return $this->buildXml($node, $val);
+        } elseif ($val instanceof \SimpleXMLElement) {
+            $child = $this->dom->importNode(dom_import_simplexml($val), true);
+            $node->appendChild($child);
+        } elseif ($val instanceof \Traversable) {
+            $this->buildXml($node, $val);
+        } elseif (\is_object($val)) {
+            return $this->selectNodeType($node, $this->serializer->normalize($val, $this->format, $this->context));
+        } elseif (is_numeric($val)) {
+            return $this->appendText($node, (string) $val);
+        } elseif (\is_string($val) && $this->needsCdataWrapping($val)) {
+            return $this->appendCData($node, $val);
+        } elseif (\is_string($val)) {
+            return $this->appendText($node, $val);
+        } elseif (\is_bool($val)) {
+            return $this->appendText($node, (int) $val);
+        } elseif ($val instanceof \DOMNode) {
+            $child = $this->dom->importNode($val, true);
+            $node->appendChild($child);
+        }
+        return true;
+    }*/
+
 }

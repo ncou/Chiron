@@ -44,13 +44,24 @@ class ViewFormatter implements FormatterInterface
 
         $info = $e->toArray();
         // TODO : ajouter plus d'information dans ce tableau qui va être passé à la vue pour pouvoir utiliser ces informations => https://github.com/cakephp/cakephp/blob/dc63c2f0d8a1e9d5f336ab81b587a54929d9e1cf/src/Error/ExceptionRenderer.php#L218
+        /*
+            Arguments à passer à la vue :
+
+            'response' => $response,
+            'request'  => $request,
+            'uri'      => (string) $request->getUri(),
+            'status'   => $response->getStatusCode(),
+            'reason'   => $response->getReasonPhrase(),
+            'layout'   => $this->layout,
+            'error' => $e,
+        ]*/
         $info = array_merge($info, ['exception' => $e]); // TODO : vérifier qu'on accéde bien aux informations ajoutées en attribut !!!!!!!!!!!!!
 
-        $code = $info['status'];
+        $statusCode = $info['status'];
 
         // TODO : gérer le cas des PDOException pour la BDD, avec un template spécial => https://github.com/cakephp/cakephp/blob/dc63c2f0d8a1e9d5f336ab81b587a54929d9e1cf/src/Error/ExceptionRenderer.php#L335
         //https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Template/Error/pdo_error.ctp
-        return $this->renderer->render("errors/{$code}", $info);
+        return $this->renderer->render("errors/{$statusCode}", $info);
     }
 
     /**
@@ -82,8 +93,8 @@ class ViewFormatter implements FormatterInterface
      */
     public function canFormat(Throwable $e): bool
     {
-        $code = $e instanceof HttpException ? $e->getStatusCode() : 500;
+        $statusCode = $e instanceof HttpException ? $e->getStatusCode() : 500;
 
-        return $this->renderer->exists("errors/{$code}");
+        return $this->renderer->exists("errors/{$statusCode}");
     }
 }

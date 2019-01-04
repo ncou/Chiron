@@ -10,9 +10,6 @@ use Throwable;
 
 class PlainTextFormatter implements FormatterInterface
 {
-    // TODO : permettre de passer cette valeur en paramétre dans le constructeur de la classe.
-    private $includeStacktraces = false;
-
     /**
      * Render Plain-Text error.
      *
@@ -22,45 +19,52 @@ class PlainTextFormatter implements FormatterInterface
      */
     public function format(Throwable $e): string
     {
-        $text = $this->formatException($e);
-
-        if ($previous = $e->getPrevious()) {
-            do {
-                $text .= "\n[previous exception] " . $this->formatException($previous);
-            } while ($previous = $previous->getPrevious());
+        // This class doesn't show debug information, so by default we hide the php exception behind a neutral http 500 error.
+        if (! $e instanceof HttpException) {
+            $e = new \Chiron\Http\Exception\Server\InternalServerErrorHttpException();
         }
 
-        return $text;
+        // TODO : A virer !!!! c'est un test pour voir si la sérialisation d'un tableau fonctionne.
+        //$e->addAdditionalData('info', ['toto' => true, 'empty' => null, 'numeric' => 12.01, 'infinity' => INF]);
+        //$e->addAdditionalData('exception', $e);
+
+        return $this->arrayToPlainText($e->toArray());
     }
 
     /**
-     * @param \Throwable $e
+     * @param array $array
+     * @param string $title
      *
      * @return string
      */
-    private function formatException(\Throwable $e): string
+    // TODO : améliorer cette méthode avec ce bout de code : https://github.com/cakephp/cakephp/blob/dc63c2f0d8a1e9d5f336ab81b587a54929d9e1cf/src/Error/Debugger.php#L508
+    public function arrayToPlainText(array $array, $title = null): string
     {
-        $str = '[object] (' . get_class($e) . '(code: ' . $e->getCode();
+        $root = 'error';
+        $text = '';
 
-        if ($e instanceof \SoapFault) {
-            if (isset($e->faultcode)) {
-                $str .= ' faultcode: ' . $e->faultcode;
-            }
-            if (isset($e->faultactor)) {
-                $str .= ' faultactor: ' . $e->faultactor;
-            }
-            if (isset($e->detail)) {
-                $str .= ' detail: ' . $e->detail;
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                if ($title !== null) {
+                    $key = $title.'.'.$key;
+                }
+                $text .= $this->arrayToPlainText($value, $key, false);
+            } else {
+                if (is_null($value)) {
+                    $value = 'NULL';
+                }
+                if (is_bool($value)) {
+                    $value = ($value) ? 'true' : 'false';
+                }
+                if ($title != '') {
+                    $text .= $root.'.'.$title.'.'.$key.': '.$value.PHP_EOL;
+                } else {
+                    $text .= $root.'.'.$key.': '.$value.PHP_EOL;
+                }
             }
         }
 
-        $str .= '): ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine() . ')';
-
-        if ($this->includeStacktraces) {
-            $str .= "\n[stacktrace]\n" . $e->getTraceAsString() . "\n";
-        }
-
-        return $str;
+        return trim($text);
     }
 
     /**

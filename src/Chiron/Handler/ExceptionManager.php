@@ -44,17 +44,17 @@ class ExceptionManager
     /**
      * Default HTTP status code handler.
      *
-     * @var ExceptionHandler
+     * @var ErrorHandler
      */
     //private $defaultHandler;
 
     /**
      * HttpExceptionManager constructor.
      *
-     * @param ExceptionHandler $defaultHandler
+     * @param ErrorHandler $defaultHandler
      */
     /*
-    public function __construct(ExceptionHandler $defaultHandler)
+    public function __construct(ErrorHandler $defaultHandler)
     {
         $this->setDefaultHandler($defaultHandler);
     }*/
@@ -68,20 +68,20 @@ class ExceptionManager
      * @return null|HandlerInterface
      */
     // TODO : passer cette méthode en private !!!!
-    public function getExceptionHandler(Throwable $exception): ?HandlerInterface
+    public function getErrorHandler(Throwable $exception): ?HandlerInterface
     {
-        $exceptionHandler = null;
+        $errorHandler = null;
 
         // search from the end of the array because we need to take the last added handler (LIFO style)
         foreach (array_reverse($this->handlers) as $exceptionType => $handler) {
             if (\is_a($exception, $exceptionType)) {
-                $exceptionHandler = $handler;
+                $errorHandler = $handler;
 
                 break;
             }
         }
 
-        return $exceptionHandler;
+        return $errorHandler;
     }
 
     /**
@@ -107,7 +107,8 @@ class ExceptionManager
     // TODO : il faudrait faire un test si on passe un seul attribut qui est un callable dans ce cas c'est qu'on ne précise pas le type d'exception rattaché au handler et donc qu'il s'agit du handler par défaut pour traiter toutes les exceptions. Dans ce cas la méthode setDefaultErrorHandler ne servirai plus à rien !!!
     // TODO : mettre le type du paramétre $handler à RequestHandlerInterface
     // TODO : https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Error/ExceptionHandlerManager.php#L85
-    public function bindExceptionHandler($exceptionTypes, HandlerInterface $handler)
+    // TODO : faire une méthode unbindHandler($name);
+    public function bindHandler($exceptionTypes, HandlerInterface $handler)
     {
         if (! is_array($exceptionTypes)) {
             $exceptionTypes = [$exceptionTypes];
@@ -131,17 +132,17 @@ class ExceptionManager
     // TODO : essayer de faire une réponse par défaut si il y a une exception dans une classe Reporter ou Formater ???? : https://github.com/yiisoft/yii2/blob/master/framework/base/ErrorHandler.php#L121
     public function renderException(Throwable $exception, ServerRequestInterface $request): ResponseInterface
     {
-        $exceptionHandler = $this->getExceptionHandler($exception);
+        $errorHandler = $this->getErrorHandler($exception);
 
         // re-throw the exception if there is no handler found to catch this type of exception
         // this case should only happen if the user have unregistered the default handler for exception instanceof == HttpException
-        if (empty($exceptionHandler)) {
+        if (empty($errorHandler)) {
             throw $exception;
         }
 
         // Log the exception and some request informations
-        $exceptionHandler->report($exception, $request);
+        $errorHandler->report($exception, $request);
         // generate the error response to use.
-        return $exceptionHandler->render($exception, $request);
+        return $errorHandler->render($exception, $request);
     }
 }

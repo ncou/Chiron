@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Chiron\Handler\ExceptionHandler;
+use Chiron\Handler\ErrorHandler;
 use Chiron\Handler\ExceptionInfo;
 use Chiron\Handler\ExceptionManager;
 use Chiron\Handler\Formatter\HtmlFormatter;
@@ -23,7 +23,7 @@ use Chiron\Handler\Formatter\JsonFormatter;
 use Chiron\Handler\Formatter\ViewFormatter;
 use Chiron\Handler\Formatter\WhoopsFormatter;
 use Chiron\Handler\Formatter\XmlFormatter;
-use Chiron\Handler\HttpExceptionHandler;
+use Chiron\Handler\Formatter\PlainTextFormatter;
 use Chiron\Handler\Reporter\LoggerReporter;
 use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Exception\HttpException;
@@ -58,52 +58,29 @@ class ErrorHandlerServiceProvider extends ServiceProvider
             return new LoggerReporter($c['logger']);
         };
 
-        $kernel[ExceptionHandler::class] = function ($c) {
-            $exceptionHandler = new ExceptionHandler($c->config->app['debug']);
+        $kernel[ErrorHandler::class] = function ($c) {
+            $errorHandler = new ErrorHandler($c->config->app['debug']);
 
-            $exceptionHandler->addReporter($c[LoggerReporter::class]);
+            $errorHandler->addReporter($c[LoggerReporter::class]);
 
-            $exceptionHandler->addFormatter(new WhoopsFormatter());
-
-            $hasRenderer = $c->has(TemplateRendererInterface::class);
-            if ($hasRenderer) {
-                $renderer = $c[TemplateRendererInterface::class];
-                //registerErrorViewPaths($renderer);
-                //$renderer->addPath(\Chiron\TEMPLATES_DIR . "/errors", 'errors');
-                $exceptionHandler->addFormatter(new ViewFormatter($renderer));
-            }
-
-            $exceptionHandler->addFormatter($c[HtmlFormatter::class]);
-            $exceptionHandler->addFormatter(new JsonFormatter());
-            $exceptionHandler->addFormatter(new XmlFormatter());
-
-            $exceptionHandler->setDefaultFormatter($c[HtmlFormatter::class]);
-
-            return $exceptionHandler;
-        };
-
-        $kernel[HttpExceptionHandler::class] = function ($c) {
-            $exceptionHandler = new HttpExceptionHandler($c->config->app['debug']);
-
-            $exceptionHandler->addReporter($c[LoggerReporter::class]);
-
-            $exceptionHandler->addFormatter(new WhoopsFormatter());
+            //$errorHandler->addFormatter(new WhoopsFormatter());
 
             $hasRenderer = $c->has(TemplateRendererInterface::class);
             if ($hasRenderer) {
                 $renderer = $c[TemplateRendererInterface::class];
                 //registerErrorViewPaths($renderer);
                 //$renderer->addPath(\Chiron\TEMPLATES_DIR . "/errors", 'errors');
-                $exceptionHandler->addFormatter(new ViewFormatter($renderer));
+                $errorHandler->addFormatter(new ViewFormatter($renderer));
             }
 
-            $exceptionHandler->addFormatter($c[HtmlFormatter::class]);
-            $exceptionHandler->addFormatter(new JsonFormatter());
-            $exceptionHandler->addFormatter(new XmlFormatter());
+            //$errorHandler->addFormatter($c[HtmlFormatter::class]);
+            //$errorHandler->addFormatter(new JsonFormatter());
+            //$errorHandler->addFormatter(new XmlFormatter());
+            $errorHandler->addFormatter(new PlainTextFormatter());
 
-            $exceptionHandler->setDefaultFormatter($c[HtmlFormatter::class]);
+            $errorHandler->setDefaultFormatter($c[HtmlFormatter::class]);
 
-            return $exceptionHandler;
+            return $errorHandler;
         };
 
         /*
@@ -129,13 +106,12 @@ class ErrorHandlerServiceProvider extends ServiceProvider
         $kernel[ErrorHandlerMiddleware::class] = function ($c) {
             $exceptionManager = new ExceptionManager();
 
-            //$exceptionManager->bindExceptionHandler(Throwable::class, new \Chiron\Exception\WhoopsHandler());
+            //$exceptionManager->bindHandler(Throwable::class, new \Chiron\Exception\WhoopsHandler());
 
-            $exceptionManager->bindExceptionHandler(Throwable::class, $c[ExceptionHandler::class]);
-            $exceptionManager->bindExceptionHandler(HttpException::class, $c[HttpExceptionHandler::class]);
+            $exceptionManager->bindHandler(Throwable::class, $c[ErrorHandler::class]);
 
-            //$exceptionManager->bindExceptionHandler(ServiceUnavailableHttpException::class, new \Chiron\Exception\MaintenanceHandler());
-            //$exceptionManager->bindExceptionHandler(NotFoundHttpException::class, new \Chiron\Exception\NotFoundHandler());
+            //$exceptionManager->bindHandler(ServiceUnavailableHttpException::class, new \Chiron\Exception\MaintenanceHandler());
+            //$exceptionManager->bindHandler(NotFoundHttpException::class, new \Chiron\Exception\NotFoundHandler());
 
             return new ErrorHandlerMiddleware($exceptionManager);
         };
