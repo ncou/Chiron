@@ -4,17 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Handler\Formatter;
 
-use Chiron\Handler\Error\ExceptionHelper;
-use Chiron\Http\Exception\HttpExceptionInterface;
-use DOMDocument;
-use DomXPath;
+use Chiron\Handler\Formatter\JsonFormatter;
+use Chiron\Http\Exception\Client\UnauthorizedHttpException;
+use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Chiron\Handler\Formatter\JsonFormatter;
-use Chiron\Handler\ExceptionInfo;
-use Chiron\Http\Exception\HttpException;
-use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
-use Chiron\Http\Exception\Client\UnauthorizedHttpException;
 
 class JsonFormatterTest extends TestCase
 {
@@ -22,7 +16,7 @@ class JsonFormatterTest extends TestCase
     {
         $formatter = new JsonFormatter();
         $formated = $formatter->format(new InternalServerErrorHttpException('Gutted!'));
-        $expected = file_get_contents(__DIR__.'/Fixtures/500-json.txt');
+        $expected = file_get_contents(__DIR__ . '/Fixtures/500-json.txt');
         $this->assertSame(trim($expected), $formated);
     }
 
@@ -31,9 +25,7 @@ class JsonFormatterTest extends TestCase
         $formatter = new JsonFormatter();
         $formated = $formatter->format(new UnauthorizedHttpException('header'));
 
-
-
-        $expected = file_get_contents(__DIR__.'/Fixtures/401-json.txt');
+        $expected = file_get_contents(__DIR__ . '/Fixtures/401-json.txt');
         $this->assertSame(trim($expected), $formated);
     }
 
@@ -55,9 +47,9 @@ class JsonFormatterTest extends TestCase
 
         $e = new InternalServerErrorHttpException();
 
-        $array = array();
-        for ($i=0; $i < 512; $i++) {
-            $array = array($array);
+        $array = [];
+        for ($i = 0; $i < 512; $i++) {
+            $array = [$array];
         }
 
         $e->addAdditionalData('PHP_JSON_ERROR_DEPTH', $array);
@@ -79,8 +71,6 @@ class JsonFormatterTest extends TestCase
         $formated = $formatter->format($e);
     }
 
-
-
     /**
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage Recursion detected
@@ -91,7 +81,7 @@ class JsonFormatterTest extends TestCase
 
         $e = new InternalServerErrorHttpException();
 
-        $a = array();
+        $a = [];
         $a[] = &$a;
 
         $e->addAdditionalData('JSON_ERROR_RECURSION', $a);
@@ -137,12 +127,10 @@ class JsonFormatterTest extends TestCase
 
         $e = new InternalServerErrorHttpException();
 
-        $resource = fopen(__FILE__, "r");
+        $resource = fopen(__FILE__, 'r');
 
         $e->addAdditionalData('JSON_ERROR_UNSUPPORTED_TYPE', $resource);
 
         $formated = $formatter->format($e);
     }
-
-
 }
