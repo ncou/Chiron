@@ -6,8 +6,8 @@ namespace Chiron\Handler;
 
 use Chiron\Handler\Formatter\FormatterInterface;
 use Chiron\Handler\Reporter\ReporterInterface;
-use Chiron\Http\Psr\Response;
 use Chiron\Http\Exception\HttpException;
+use Chiron\Http\Psr\Response;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -97,8 +97,9 @@ class ErrorHandler implements HandlerInterface
     }
 
     /**
-     * @param \Throwable             $e
+     * @param \Throwable                               $e
      * @param \Psr\Http\Message\ServerRequestInterface $request
+     *
      * @return int
      */
     protected function determineStatusCode(Throwable $e, ServerRequestInterface $request): int
@@ -116,7 +117,8 @@ class ErrorHandler implements HandlerInterface
 
     /**
      * @param \Psr\Http\Message\ResponseInterface $response
-     * @param array $headers
+     * @param array                               $headers
+     *
      * @return \Psr\Http\Message\ResponseInterface
      */
     private function injectHeaders(ResponseInterface $response, array $headers = []): ResponseInterface
@@ -124,6 +126,7 @@ class ErrorHandler implements HandlerInterface
         foreach ($headers as $name => $value) {
             $response = $response->withHeader($name, $value);
         }
+
         return $response;
     }
 

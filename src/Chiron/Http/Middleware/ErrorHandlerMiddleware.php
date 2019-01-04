@@ -57,7 +57,6 @@ use Throwable;
 
 class ErrorHandlerMiddleware implements MiddlewareInterface
 {
-
     public const ORIGINAL_REQUEST = '__originalRequest__';
 
     /**
@@ -126,7 +125,6 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
 
     /**
      * @param \Psr\Http\Message\ResponseInterface $response The response
-     *
      */
     private function handleInternalError(): ResponseInterface
     {
@@ -163,4 +161,3 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
         };
     }
 }
-

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Formatter;
 
-use Chiron\Handler\ExceptionInfo;
 use Chiron\Http\Exception\HttpException;
 use Throwable;
 
@@ -31,7 +30,6 @@ class XmlFormatter implements FormatterInterface
     // TODO : initialiser cette valeur via un parametre dans le constructeur.
     protected $pretty = true;
 
-
     /**
      * Render XML error.
      *
@@ -46,14 +44,12 @@ class XmlFormatter implements FormatterInterface
             $e = new \Chiron\Http\Exception\Server\InternalServerErrorHttpException();
         }
 
-
-// TODO : c'est un test. A virer !!!!!
+        // TODO : c'est un test. A virer !!!!!
         /*
         $info = array_merge($info, ['exception' => $e, " toto /is back<to>". chr(10) ."home baby" => "that 'is' <right>".chr(127), 'pretty' => true, 'ugly' => false, 'money' => 19.0, 'bonus' => 12, 'uri' => "<http:'//www.exémple.com/>", 'unicode' => "\xc3\xa9"]);
 */
 
         return $this->arrayToXml($e->toArray());
-
     }
 
     /**
@@ -112,14 +108,13 @@ class XmlFormatter implements FormatterInterface
         }
 
         return $this->document->saveXML();
-
     }
 
     /**
      * Parse individual element.
      *
      * @param DOMElement $element
-     * @param mixed $value
+     * @param mixed      $value
      */
     // TODO : renommer en appendXmlChildren
     private function convertElement(\DOMElement $element, $value)
@@ -127,6 +122,7 @@ class XmlFormatter implements FormatterInterface
         if (! is_array($value)) {
             $value = htmlspecialchars(static::convertToString($value));
             $element->nodeValue = $value;
+
             return;
         }
 
@@ -151,7 +147,6 @@ class XmlFormatter implements FormatterInterface
     {
         // float value
         if (is_float($value)) {
-
             $value = (string) $value;
             if (self::XML_PRESERVE_ZERO_FRACTION && strpos($value, '.') === false) {
                 $value .= '.0';
@@ -181,20 +176,18 @@ class XmlFormatter implements FormatterInterface
                 . '[\x{200C}-\x{200D}]|[\x{2070}-\x{218F}]|[\x{2C00}-\x{2FEF}]|[\x{3001}-\x{D7FF}]|[\x{F900}-\x{FDCF}]'
                 . '|[\x{FDF0}-\x{FFFD}]';
             $characterPattern = $startCharacterPattern . '|\-|\.|[0-9]|\xB7|[\x{300}-\x{36F}]|[\x{203F}-\x{2040}]';
-            $key = preg_replace('/(?!'.$characterPattern.')./u', '_', $key);
-            $key = preg_replace('/^(?!'.$startCharacterPattern.')./u', '_', $key);
+            $key = preg_replace('/(?!' . $characterPattern . ')./u', '_', $key);
+            $key = preg_replace('/^(?!' . $startCharacterPattern . ')./u', '_', $key);
             if (is_array($value)) {
                 $value = $this->cleanKeysForXml($value);
             }
             $return[$key] = $value;
         }
+
         return $return;
     }
 
-
-
-
-    /**
+    /*
      * Checks the name is a valid xml element name.
      */
 /*
@@ -221,7 +214,7 @@ class XmlFormatter implements FormatterInterface
     }
 */
 
-    /**
+    /*
      * Tests the value being passed and decide what sort of element to create.
      *
      * @param mixed $val
@@ -254,5 +247,4 @@ class XmlFormatter implements FormatterInterface
         }
         return true;
     }*/
-
 }

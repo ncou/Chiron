@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Formatter;
 
-use Chiron\Handler\ExceptionInfo;
 use Chiron\Http\Exception\HttpException;
 use Throwable;
 
@@ -32,7 +31,7 @@ class PlainTextFormatter implements FormatterInterface
     }
 
     /**
-     * @param array $array
+     * @param array  $array
      * @param string $title
      *
      * @return string
@@ -46,7 +45,7 @@ class PlainTextFormatter implements FormatterInterface
         foreach ($array as $key => $value) {
             if (is_array($value)) {
                 if ($title !== null) {
-                    $key = $title.'.'.$key;
+                    $key = $title . '.' . $key;
                 }
                 $text .= $this->arrayToPlainText($value, $key, false);
             } else {
@@ -57,9 +56,9 @@ class PlainTextFormatter implements FormatterInterface
                     $value = ($value) ? 'true' : 'false';
                 }
                 if ($title != '') {
-                    $text .= $root.'.'.$title.'.'.$key.': '.$value.PHP_EOL;
+                    $text .= $root . '.' . $title . '.' . $key . ': ' . $value . PHP_EOL;
                 } else {
-                    $text .= $root.'.'.$key.': '.$value.PHP_EOL;
+                    $text .= $root . '.' . $key . ': ' . $value . PHP_EOL;
                 }
             }
         }
@@ -99,5 +98,4 @@ class PlainTextFormatter implements FormatterInterface
     {
         return true;
     }
-
 }
