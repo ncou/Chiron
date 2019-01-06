@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Chiron\Handler\Reporter;
 
 use Exception;
-use Throwable;
 use Psr\Http\Message\ServerRequestInterface;
+use Throwable;
 
 class CallableReporter implements ReporterInterface
 {

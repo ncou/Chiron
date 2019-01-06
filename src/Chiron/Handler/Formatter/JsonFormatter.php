@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Chiron\Handler\Formatter;
 
 use Chiron\Http\Exception\HttpException;
+use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-use InvalidArgumentException;
 
 // TODO : Constructeur => permettre de passer en paramétre le json flags ($jsonEncodeOptions) ????
 // TODO : Constructeur => passer en paramétre la valeur du isPretty == true par défaut
