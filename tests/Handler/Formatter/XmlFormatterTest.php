@@ -7,10 +7,10 @@ namespace Tests\Handler\Formatter;
 use Chiron\Handler\Formatter\XmlFormatter;
 use Chiron\Http\Exception\Client\UnauthorizedHttpException;
 use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
-use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
+use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
 
 class XmlFormatterTest extends TestCase
 {

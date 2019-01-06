@@ -7,11 +7,11 @@ namespace Tests\Handler\Formatter;
 use Chiron\Handler\Formatter\ViewFormatter;
 use Chiron\Http\Exception\Client\BadRequestHttpException;
 use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Views\TemplateRendererInterface;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Chiron\Http\Psr\ServerRequest;
-use Chiron\Http\Psr\Uri;
 
 class ViewFormatterTest extends TestCase
 {

@@ -5,12 +5,9 @@ declare(strict_types=1);
 namespace Tests\Handler\Reporter;
 
 use Chiron\Handler\Reporter\LoggerReporter;
-use Chiron\Http\Exception\Client\UnauthorizedHttpException;
-use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
-use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
+use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
@@ -20,12 +17,14 @@ class LoggerReporterTest extends TestCase
      * @var LoggerReporter
      */
     protected $reporter;
+
     /**
      * @var Mockery\MockInterface
      */
     protected $logger;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->reporter = new LoggerReporter($this->logger);
     }
@@ -34,11 +33,11 @@ class LoggerReporterTest extends TestCase
     {
         $reporter = new LoggerReporter($this->logger);
 
-        $this->assertAttributeEquals(LogLevel::DEBUG, 'logLevelThreshold' , $reporter);
+        $this->assertAttributeEquals(LogLevel::DEBUG, 'logLevelThreshold', $reporter);
 
         $reporter->setLogLevelThreshold(LogLevel::ERROR);
 
-        $this->assertAttributeEquals(LogLevel::ERROR, 'logLevelThreshold' , $reporter);
+        $this->assertAttributeEquals(LogLevel::ERROR, 'logLevelThreshold', $reporter);
     }
 
     public function testLogLevelThresholdInvalid_Constructor()
@@ -54,14 +53,16 @@ class LoggerReporterTest extends TestCase
         $reporter->setLogLevelThreshold('foobar');
     }
 
-    public function testExceptionsAreLoggedCritical() {
+    public function testExceptionsAreLoggedCritical()
+    {
         $this->logger->expects($this->once())->method('log')->with(LogLevel::CRITICAL, $this->isType('string'));
 
         $request = new ServerRequest('GET', new Uri('/'));
-        $this->reporter->report($request, new \Exception);
+        $this->reporter->report($request, new \Exception());
     }
 
-    public function testErrorExceptionForCriticals() {
+    public function testErrorExceptionForCriticals()
+    {
         $this->logger->expects($this->exactly(2))->method('log')->with(LogLevel::CRITICAL, $this->isType('string'));
 
         $request = new ServerRequest('GET', new Uri('/'));
@@ -70,16 +71,18 @@ class LoggerReporterTest extends TestCase
         $this->reporter->report($request, new \ErrorException('foobar', 0, E_CORE_ERROR));
     }
 
-    public function testErrorExceptionForErrors() {
+    public function testErrorExceptionForErrors()
+    {
         $this->logger->expects($this->exactly(2))->method('log')->with(LogLevel::ERROR, $this->isType('string'));
 
         $request = new ServerRequest('GET', new Uri('/'));
 
         $this->reporter->report($request, new \ErrorException('foobar', 0, E_USER_ERROR));
         $this->reporter->report($request, new \ErrorException('foobar', 0, E_RECOVERABLE_ERROR));
-
     }
-    public function testErrorExceptionForWarnings() {
+
+    public function testErrorExceptionForWarnings()
+    {
         $this->logger->expects($this->exactly(4))->method('log')->with(LogLevel::WARNING, $this->isType('string'));
 
         $request = new ServerRequest('GET', new Uri('/'));
@@ -89,7 +92,9 @@ class LoggerReporterTest extends TestCase
         $this->reporter->report($request, new \ErrorException('foobar', 0, E_CORE_WARNING));
         $this->reporter->report($request, new \ErrorException('foobar', 0, E_COMPILE_WARNING));
     }
-    public function testErrorExceptionForNotices() {
+
+    public function testErrorExceptionForNotices()
+    {
         $this->logger->expects($this->exactly(5))->method('log')->with(LogLevel::NOTICE, $this->isType('string'));
 
         $request = new ServerRequest('GET', new Uri('/'));
@@ -100,7 +105,9 @@ class LoggerReporterTest extends TestCase
         $this->reporter->report($request, new \ErrorException('foobar', 0, E_DEPRECATED));
         $this->reporter->report($request, new \ErrorException('foobar', 0, E_USER_DEPRECATED));
     }
-    public function testErrorExceptionForAlert() {
+
+    public function testErrorExceptionForAlert()
+    {
         $this->logger->expects($this->exactly(2))->method('log')->with(LogLevel::ALERT, $this->isType('string'));
 
         $request = new ServerRequest('GET', new Uri('/'));
@@ -109,7 +116,8 @@ class LoggerReporterTest extends TestCase
         $this->reporter->report($request, new \ErrorException('foobar', 0, E_COMPILE_ERROR));
     }
 
-    public function testCanReport() {
+    public function testCanReport()
+    {
         $reporter = new LoggerReporter($this->logger, LogLevel::NOTICE);
 
         $e = new \ErrorException('foobar', 0, E_USER_NOTICE);
@@ -125,12 +133,13 @@ class LoggerReporterTest extends TestCase
         $this->assertTrue($reporter->canReport($e));
     }
 
-    public function testMessageFormat() {
+    public function testMessageFormat()
+    {
         $request = new ServerRequest('GET', new Uri('/foobar/'));
         $request = $request->withHeader('Referer', '/baz/');
 
         $ePrevious = new \ErrorException('bar', 0, E_USER_NOTICE);
-        $e = new \ErrorException('foo', 0, E_USER_NOTICE, __FILE__ ,  __LINE__, $ePrevious);
+        $e = new \ErrorException('foo', 0, E_USER_NOTICE, __FILE__, __LINE__, $ePrevious);
 
         $result = $this->invokeMethod($this->reporter, 'getMessage', [$request, $e]);
 
@@ -142,10 +151,12 @@ class LoggerReporterTest extends TestCase
 
     /**
      * Invokes a inaccessible method.
+     *
      * @param $object
      * @param string $method
-     * @param array $args
-     * @param bool $revoke whether to make method inaccessible after execution
+     * @param array  $args
+     * @param bool   $revoke whether to make method inaccessible after execution
+     *
      * @return mixed
      */
     private function invokeMethod($object, string $method, $args = [], bool $revoke = true)
@@ -157,6 +168,7 @@ class LoggerReporterTest extends TestCase
         if ($revoke) {
             $method->setAccessible(false);
         }
+
         return $result;
     }
 }
