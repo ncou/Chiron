@@ -9,13 +9,13 @@
  *
  * This constant was introduced in PHP 7.0.19 and PHP 7.1.5 but needs to be defined for earlier PHP versions.
  */
-if (!defined('DATE_RFC7231')) {
+if (! defined('DATE_RFC7231')) {
     // TODO : Remove once the minimal version of PHP is set to 7.1.5
     define('DATE_RFC7231', 'D, d M Y H:i:s \G\M\T');
 }
 
-if (!defined('DS')) {
-    /**
+if (! defined('DS')) {
+    /*
      * Define DS as short form of DIRECTORY_SEPARATOR.
      */
     define('DS', DIRECTORY_SEPARATOR);
@@ -71,19 +71,21 @@ if (! function_exists('is_cli')) {
     }
 }
 
-if (!function_exists('h')) {
+if (! function_exists('h')) {
     /**
      * Convenience method for htmlspecialchars.
      *
-     * @param mixed $text Text to wrap through htmlspecialchars. Also works with arrays, and objects.
-     *    Arrays will be mapped and have all their elements escaped. Objects will be string cast if they
-     *    implement a `__toString` method. Otherwise the class name will be used.
-     *    Other scalar types will be returned unchanged.
-     * @param bool $double Encode existing html entities.
+     * @param mixed       $text    Text to wrap through htmlspecialchars. Also works with arrays, and objects.
+     *                             Arrays will be mapped and have all their elements escaped. Objects will be string cast if they
+     *                             implement a `__toString` method. Otherwise the class name will be used.
+     *                             Other scalar types will be returned unchanged.
+     * @param bool        $double  Encode existing html entities.
      * @param string|null $charset Character set to use when escaping. Defaults to config value in `mb_internal_encoding()`
-     * or 'UTF-8'.
+     *                             or 'UTF-8'.
+     *
      * @return mixed Wrapped text.
-     * @link https://book.cakephp.org/3.0/en/core-libraries/global-constants-and-functions.html#h
+     *
+     * @see https://book.cakephp.org/3.0/en/core-libraries/global-constants-and-functions.html#h
      */
     function h($text, bool $double = true, string $charset = null)
     {
@@ -94,10 +96,11 @@ if (!function_exists('h')) {
             foreach ($text as $k => $t) {
                 $texts[$k] = h($t, $double, $charset);
             }
+
             return $texts;
         } elseif (is_object($text)) {
             if (method_exists($text, '__toString')) {
-                $text = (string)$text;
+                $text = (string) $text;
             } else {
                 $text = '(object)' . get_class($text);
             }
@@ -117,7 +120,7 @@ if (!function_exists('h')) {
     }
 }
 
-if (!function_exists('pr')) {
+if (! function_exists('pr')) {
     /**
      * print_r() convenience function.
      *
@@ -127,8 +130,10 @@ if (!function_exists('pr')) {
      * This function returns the same variable that was passed.
      *
      * @param mixed $var Variable to print out.
+     *
      * @return mixed the same $var that was passed to this function
-     * @link https://book.cakephp.org/3.0/en/core-libraries/global-constants-and-functions.html#pr
+     *
+     * @see https://book.cakephp.org/3.0/en/core-libraries/global-constants-and-functions.html#pr
      * @see debug()
      */
     function pr($var)
@@ -139,7 +144,7 @@ if (!function_exists('pr')) {
         return $var;
     }
 }
-if (!function_exists('pj')) {
+if (! function_exists('pj')) {
     /**
      * json pretty print convenience function.
      *
@@ -149,9 +154,11 @@ if (!function_exists('pj')) {
      * This function returns the same variable that was passed.
      *
      * @param mixed $var Variable to print out.
+     *
      * @return mixed the same $var that was passed to this function
+     *
      * @see pr()
-     * @link https://book.cakephp.org/3.0/en/core-libraries/global-constants-and-functions.html#pj
+     * @see https://book.cakephp.org/3.0/en/core-libraries/global-constants-and-functions.html#pj
      */
     function pj($var)
     {
@@ -164,13 +171,14 @@ if (!function_exists('pj')) {
 
 // TODO : déplacer cette fonction dans une classe du répertoire Helper du genre Str.php ou Text.php
 // https://github.com/Seldaek/monolog/blob/master/src/Monolog/Utils.php#L19
-if (!function_exists('namespaceSplit')) {
+if (! function_exists('namespaceSplit')) {
     /**
      * Split the namespace from the classname.
      *
      * Commonly used like `list($namespace, $className) = namespaceSplit($class);`.
      *
      * @param string $class The full class name, ie `Cake\Core\App`.
+     *
      * @return array Array with 2 indexes. 0 => namespace, 1 => classname.
      */
     function namespaceSplit(string $class): array
@@ -179,6 +187,7 @@ if (!function_exists('namespaceSplit')) {
         if ($pos === false) {
             return ['', $class];
         }
+
         return [substr($class, 0, $pos), substr($class, $pos + 1)];
     }
 }

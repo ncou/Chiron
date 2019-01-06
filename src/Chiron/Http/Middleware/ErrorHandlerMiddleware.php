@@ -252,7 +252,6 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
 
     /**
      * Handles exception thrown during exception processing in [[handleException()]].
-     *
      * @param ServerRequestInterface $request Request used for the log informations.
      * @param \Throwable $exception Exception that was thrown during main exception processing.
      * @param \Throwable $previousException Main exception processed in [[handleException()]].
@@ -309,4 +308,3 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
         };
     }
 }
-

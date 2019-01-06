@@ -81,7 +81,7 @@ class LoggerReporter implements ReporterInterface
      */
     public function setLogLevelThreshold(string $logLevelThreshold): void
     {
-        if (! isset($this->logLevels[$logLevelThreshold])) {
+        if (!array_key_exists($logLevelThreshold, $this->logLevels)) {
             throw new InvalidArgumentException('Invalid log level. Must be one of : ' . implode(', ', array_keys($this->logLevels)));
         }
 

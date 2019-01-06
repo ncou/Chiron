@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Formatter;
 
-use Chiron\Handler\ExceptionInfo;
 use Chiron\Http\Exception\HttpException;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
@@ -21,9 +20,9 @@ class HtmlFormatter implements FormatterInterface
     /**
      * Create a new html displayer instance.
      *
-     * @param string                          $path
+     * @param string $path
      */
-    public function __construct( string $path)
+    public function __construct(string $path)
     {
         $this->path = $path;
     }

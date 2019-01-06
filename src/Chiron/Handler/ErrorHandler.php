@@ -6,8 +6,8 @@ namespace Chiron\Handler;
 
 use Chiron\Handler\Formatter\FormatterInterface;
 use Chiron\Handler\Reporter\ReporterInterface;
-use Chiron\Http\Psr\Response;
 use Chiron\Http\Exception\HttpException;
+use Chiron\Http\Psr\Response;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

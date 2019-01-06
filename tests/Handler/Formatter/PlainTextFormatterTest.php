@@ -4,17 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Handler\Formatter;
 
-use Chiron\Handler\Error\ExceptionHelper;
-use Chiron\Http\Exception\HttpExceptionInterface;
-use DOMDocument;
-use DomXPath;
+use Chiron\Handler\Formatter\PlainTextFormatter;
+use Chiron\Http\Exception\Client\UnauthorizedHttpException;
+use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Chiron\Handler\Formatter\PlainTextFormatter;
-use Chiron\Handler\ExceptionInfo;
-use Chiron\Http\Exception\HttpException;
-use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
-use Chiron\Http\Exception\Client\UnauthorizedHttpException;
 
 class PlainTextFormatterTest extends TestCase
 {
@@ -22,7 +16,7 @@ class PlainTextFormatterTest extends TestCase
     {
         $formatter = new PlainTextFormatter();
         $formated = $formatter->format(new InternalServerErrorHttpException('Gutted!'));
-        $expected = file_get_contents(__DIR__.'/Fixtures/500-plain.txt');
+        $expected = file_get_contents(__DIR__ . '/Fixtures/500-plain.txt');
         $this->assertSame(trim($expected), $formated);
     }
 
@@ -30,7 +24,7 @@ class PlainTextFormatterTest extends TestCase
     {
         $formatter = new PlainTextFormatter();
         $formated = $formatter->format(new UnauthorizedHttpException('header', 'Grrrr!'));
-        $expected = file_get_contents(__DIR__.'/Fixtures/401-plain.txt');
+        $expected = file_get_contents(__DIR__ . '/Fixtures/401-plain.txt');
         $this->assertSame(trim($expected), $formated);
     }
 

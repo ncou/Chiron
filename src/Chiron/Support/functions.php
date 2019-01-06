@@ -2,7 +2,6 @@
 
 //https://github.com/ringcentral/psr7
 
-
 //https://github.com/Wandu/Framework/blob/master/src/Wandu/Http/functions.php
 //https://github.com/Wandu/Framework/blob/df04fdb44928201217e11fe211ddf9cc7c21ef6e/src/Wandu/Http/composer.json#L15
 
@@ -87,7 +86,6 @@ if ($retryAfter instanceof DateTimeInterface) {
     }
 */
 
-
 /**
  * A RFC7231 Compliant date.
  *
@@ -97,28 +95,31 @@ if ($retryAfter instanceof DateTimeInterface) {
  *
  * This constant was introduced in PHP 7.0.19 and PHP 7.1.5 but needs to be defined for earlier PHP versions.
  */
-if (!defined('DATE_RFC7231')) {
-  define('DATE_RFC7231', 'D, d M Y H:i:s \G\M\T');
+if (! defined('DATE_RFC7231')) {
+    define('DATE_RFC7231', 'D, d M Y H:i:s \G\M\T');
 }
-
 
 namespace Wandu\Http
 {
     use Wandu\Http\Factory\ResponseFactory;
+
     /**
      * @return \Wandu\Http\Factory\ResponseFactory
      */
     function response()
     {
-        if (!isset(ResponseFactory::$instance)) {
+        if (! isset(ResponseFactory::$instance)) {
             ResponseFactory::$instance = new ResponseFactory();
         }
+
         return ResponseFactory::$instance;
     }
     /**
      * @reference https://gist.github.com/Mulkave/65daabb82752f9b9a0dd
+     *
      * @param string $url
-     * @return array|boolean
+     *
+     * @return array|bool
      */
     function parseUrl($url)
     {
@@ -128,12 +129,14 @@ namespace Wandu\Http
         if ($parts === false) {
             return false;
         }
-        foreach($parts as $name => $value) {
+        foreach ($parts as $name => $value) {
             $parts[$name] = ($name === 'port') ? $value : urldecode($value);
         }
+
         return $parts;
     }
 }
+
 namespace Wandu\Http\Response
 {
     use Closure;
@@ -142,10 +145,12 @@ namespace Wandu\Http\Response
     use Traversable;
     use Wandu\Http\Exception\BadRequestException;
     use function Wandu\Http\response;
+
     /**
      * @param string $content
-     * @param int $status
-     * @param array $headers
+     * @param int    $status
+     * @param array  $headers
+     *
      * @return \Psr\Http\Message\ResponseInterface
      */
     function create($content = null, $status = 200, array $headers = [])
@@ -154,8 +159,9 @@ namespace Wandu\Http\Response
     }
     /**
      * @param \Closure $area
-     * @param int $status
-     * @param array $headers
+     * @param int      $status
+     * @param array    $headers
+     *
      * @return \Psr\Http\Message\ResponseInterface
      */
     function capture(Closure $area, $status = 200, array $headers = [])
@@ -163,9 +169,10 @@ namespace Wandu\Http\Response
         return response()->capture($area, $status, $headers);
     }
     /**
-     * @param  string|array  $data
-     * @param  int  $status
-     * @param  array  $headers
+     * @param string|array $data
+     * @param int          $status
+     * @param array        $headers
+     *
      * @return \Psr\Http\Message\ResponseInterface
      */
     function json($data = [], $status = 200, array $headers = [])
@@ -173,9 +180,10 @@ namespace Wandu\Http\Response
         return response()->json($data, $status, $headers);
     }
     /**
-     * @param  string  $file
-     * @param  string  $name
-     * @param  array  $headers
+     * @param string $file
+     * @param string $name
+     * @param array  $headers
+     *
      * @return \Psr\Http\Message\ResponseInterface
      */
     function download($file, $name = null, array $headers = [])
@@ -184,9 +192,10 @@ namespace Wandu\Http\Response
     }
     /**
      * @param string $path
-     * @param array $queries
-     * @param int $status
-     * @param array $headers
+     * @param array  $queries
+     * @param int    $status
+     * @param array  $headers
+     *
      * @return \Psr\Http\Message\ResponseInterface
      */
     function redirect($path, $queries = [], $status = 302, $headers = [])
@@ -198,26 +207,31 @@ namespace Wandu\Http\Response
         if (count($parsedQueries)) {
             $path .= '?' . implode('&', $parsedQueries);
         }
+
         return response()->redirect($path, $status, $headers);
     }
     /**
      * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return \Psr\Http\Message\ResponseInterface
+     *
      * @throws \Wandu\Http\Exception\BadRequestException
+     *
+     * @return \Psr\Http\Message\ResponseInterface
      */
     function back(ServerRequestInterface $request)
     {
         if ($request->hasHeader('referer')) {
             return redirect($request->getHeader('referer'));
         }
+
         throw new BadRequestException();
     }
     /**
      * @deprecated use iterator
      *
      * @param \Generator $generator
-     * @param int $status
-     * @param array $headers
+     * @param int        $status
+     * @param array      $headers
+     *
      * @return \Psr\Http\Message\ResponseInterface
      */
     function generator(Generator $generator, $status = 200, array $headers = [])
@@ -226,13 +240,13 @@ namespace Wandu\Http\Response
     }
     /**
      * @param \Traversable $iterator
-     * @param int $status
-     * @param array $headers
+     * @param int          $status
+     * @param array        $headers
+     *
      * @return \Psr\Http\Message\ResponseInterface
      */
     function iterator(Traversable $iterator, $status = 200, array $headers = [])
     {
         return response()->iterator($iterator, $status, $headers);
     }
-
 }
