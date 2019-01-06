@@ -42,7 +42,6 @@ declare(strict_types=1);
 //https://github.com/samsonasik/ErrorHeroModule/blob/master/src/HeroTrait.php#L22
 //https://github.com/samsonasik/ErrorHeroModule/blob/master/src/Middleware/Expressive.php#L59
 
-
 //********* EXCEPTION MANAGER ****************
 
 // WHOOPS + Template 404...etc
@@ -65,20 +64,20 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\Handler\ExceptionManager;
 use Chiron\Handler\ErrorHandlerInterface;
+use Chiron\Handler\ExceptionManager;
 use Chiron\Http\Psr\Response;
+use Chiron\Support\Http\Serializer;
 use ErrorException;
-use Exception;
 //use Psr\Container\ContainerInterface;
 
+use Exception;
+use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
-use InvalidArgumentException;
-use Chiron\Support\Http\Serializer;
 
 class ErrorHandlerMiddleware implements MiddlewareInterface
 {
@@ -123,9 +122,6 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
         $this->debug = $debug;
     }
 
-
-
-
     /**
      * Add HTTP exception handler.
      *
@@ -143,7 +139,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
      * The callable MUST return an instance of
      * \Psr\Http\Message\ResponseInterface.
      *
-     * @param string|array     $exceptionTypes
+     * @param string|array          $exceptionTypes
      * @param ErrorHandlerInterface $handler
      */
     // TODO : il faudrait faire un test si on passe un seul attribut qui est un callable dans ce cas c'est qu'on ne précise pas le type d'exception rattaché au handler et donc qu'il s'agit du handler par défaut pour traiter toutes les exceptions. Dans ce cas la méthode setDefaultErrorHandler ne servirai plus à rien !!!
@@ -165,7 +161,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @param string|array     $exceptionTypes
+     * @param string|array $exceptionTypes
      */
     // TODO : réfléchir si on garde cette méthode. Le mieux est de conditionner dans l'application le binding de Throwable avec un booléen dans le fichier de config.
     public function unbindHandler($exceptionTypes)
@@ -206,7 +202,6 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
 
         return $errorHandler;
     }
-
 
     /**
      * Process a server request and return a response.
@@ -252,9 +247,10 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
 
     /**
      * Handles exception thrown during exception processing in [[handleException()]].
-     * @param ServerRequestInterface $request Request used for the log informations.
-     * @param \Throwable $exception Exception that was thrown during main exception processing.
-     * @param \Throwable $previousException Main exception processed in [[handleException()]].
+     *
+     * @param ServerRequestInterface $request           Request used for the log informations.
+     * @param \Throwable             $exception         Exception that was thrown during main exception processing.
+     * @param \Throwable             $previousException Main exception processed in [[handleException()]].
      *
      * @return \Psr\Http\Message\ResponseInterface $response The response
      */
@@ -269,7 +265,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
         $msg .= (string) $previousException;
 
         if ($this->debug) {
-             $response->getBody()->write('<pre>' . h($msg) . '</pre>');
+            $response->getBody()->write('<pre>' . h($msg) . '</pre>');
         } else {
             $response->getBody()->write('An internal server error occurred.');
         }

@@ -200,7 +200,7 @@ class XmlFormatter implements FormatterInterface
     }
 */
 
-    /**
+    /*
      * Checks if a value contains any characters which would require CDATA wrapping.
      */
     /*

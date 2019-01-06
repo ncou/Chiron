@@ -9,9 +9,9 @@ use Chiron\Handler\Reporter\ReporterInterface;
 use Chiron\Http\Exception\HttpException;
 use Chiron\Http\Psr\Response;
 use Exception;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Throwable;
 
 //https://github.com/narrowspark/framework/blob/ccda2dca0c312dbea08814d1372c1802920ebcca/src/Viserio/Component/Exception/ErrorHandler.php
@@ -24,6 +24,7 @@ class ErrorHandler implements ErrorHandlerInterface
 {
     /** ResponseFactoryInterface */
     private $responseFactory;
+
     /**
      * List of reporters used to report the exception data.
      *
@@ -64,6 +65,7 @@ class ErrorHandler implements ErrorHandlerInterface
      * @var ServerRequestInterface
      */
     //private $request;
+
     /**
      * @var Throwable
      */
@@ -94,8 +96,9 @@ class ErrorHandler implements ErrorHandlerInterface
      */
     public function shouldReport(Throwable $e): bool
     {
-        return !$this->shouldntReport($e);
+        return ! $this->shouldntReport($e);
     }
+
     /**
      * Determine if the exception is in the do not report list.
      *
@@ -152,7 +155,7 @@ class ErrorHandler implements ErrorHandlerInterface
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param \Throwable                               $e
-     * @param bool $displayErrorDetails
+     * @param bool                                     $displayErrorDetails
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
@@ -279,8 +282,9 @@ class ErrorHandler implements ErrorHandlerInterface
     }
 
     /**
-     * @param \Throwable             $e
+     * @param \Throwable                               $e
      * @param \Psr\Http\Message\ServerRequestInterface $request
+     *
      * @return int
      */
     protected function determineStatusCode(Throwable $e, ServerRequestInterface $request): int
@@ -311,7 +315,8 @@ class ErrorHandler implements ErrorHandlerInterface
 
     /**
      * @param \Psr\Http\Message\ResponseInterface $response
-     * @param array $headers
+     * @param array                               $headers
+     *
      * @return \Psr\Http\Message\ResponseInterface
      */
     private function injectHeaders(ResponseInterface $response, array $headers = []): ResponseInterface
@@ -319,6 +324,7 @@ class ErrorHandler implements ErrorHandlerInterface
         foreach ($headers as $name => $value) {
             $response = $response->withHeader($name, $value);
         }
+
         return $response;
     }
 }

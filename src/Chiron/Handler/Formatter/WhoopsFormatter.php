@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Formatter;
 
+use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use Whoops\Handler\PrettyPageHandler;
-use Psr\Http\Message\ServerRequestInterface;
 use Whoops\Run as Whoops;
 
 // ajouter les informations sur la request de l'application !!!!
