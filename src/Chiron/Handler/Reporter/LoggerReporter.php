@@ -10,6 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
+use ErrorException;
 
 // TODO : améliorer la fonction de log en utilisant ce bout de code => https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php#L211
 // autre exemple ici : https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/BaseErrorHandler.php#L334
@@ -111,7 +112,7 @@ class LoggerReporter implements ReporterInterface
      */
     private function getLogLevel(Throwable $e): string
     {
-        if ($e instanceof ErrorException && \array_key_exists($e->getSeverity(), $this->levelMap)) {
+        if ($e instanceof ErrorException && array_key_exists($e->getSeverity(), $this->levelMap)) {
             return $this->levelMap[$e->getSeverity()];
         }
 
