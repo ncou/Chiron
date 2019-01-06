@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Handler\Formatter;
 
 use Throwable;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Interface for classes that parse the raw request body into a parameters array.
@@ -14,11 +15,12 @@ interface FormatterInterface
     /**
      * Format the exception as a string.
      *
+     * @param Psr\Http\Message\ServerRequestInterface $request
      * @param \Throwable $e
      *
      * @return string The formatted exception.
      */
-    public function format(Throwable $e): string;
+    public function format(ServerRequestInterface $request, Throwable $e): string;
 
     /**
      * Get the supported content type.

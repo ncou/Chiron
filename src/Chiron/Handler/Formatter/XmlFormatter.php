@@ -6,6 +6,7 @@ namespace Chiron\Handler\Formatter;
 
 use Chiron\Handler\ExceptionInfo;
 use Chiron\Http\Exception\HttpException;
+use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
 //https://github.com/cakephp/cakephp/blob/56f2d2a69870031cd0527d63a2ddeb3fbe6f05d3/src/Utility/Xml.php
@@ -39,7 +40,7 @@ class XmlFormatter implements FormatterInterface
      *
      * @return string
      */
-    public function format(Throwable $e): string
+    public function format(ServerRequestInterface $request, Throwable $e): string
     {
         // This class doesn't show debug information, so by default we hide the php exception behind a neutral http 500 error.
         if (! $e instanceof HttpException) {
@@ -107,7 +108,7 @@ class XmlFormatter implements FormatterInterface
         $this->convertElement($root, $cleanedContent);
 
         if ($this->pretty) {
-            $this->document->preserveWhiteSpace = false;
+            $this->document->preserveWhiteSpace = true;
             $this->document->formatOutput = true;
         }
 
@@ -205,6 +206,15 @@ class XmlFormatter implements FormatterInterface
             preg_match('#^[\pL_][\pL0-9._:-]*$#ui', $name);
     }
 */
+
+    /**
+     * Checks if a value contains any characters which would require CDATA wrapping.
+     */
+    /*
+    private function needsCdataWrapping(string $val): bool
+    {
+        return 0 < preg_match('/[<>&]/', $val);
+    }*/
 
 /*
     final protected function appendText(\DOMNode $node, string $val): bool

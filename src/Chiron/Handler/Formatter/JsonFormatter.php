@@ -6,6 +6,7 @@ namespace Chiron\Handler\Formatter;
 
 use Chiron\Handler\ExceptionInfo;
 use Chiron\Http\Exception\HttpException;
+use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use InvalidArgumentException;
 
@@ -30,7 +31,7 @@ class JsonFormatter implements FormatterInterface
      *
      * @return string
      */
-    public function format(Throwable $e): string
+    public function format(ServerRequestInterface $request, Throwable $e): string
     {
         // This class doesn't show debug information, so by default we hide the php exception behind a neutral http 500 error.
         if (! $e instanceof HttpException) {
@@ -66,7 +67,7 @@ class JsonFormatter implements FormatterInterface
      */
     public function contentType(): string
     {
-        return 'application/problem+json';
+        return 'application/json';
     }
 
     /**

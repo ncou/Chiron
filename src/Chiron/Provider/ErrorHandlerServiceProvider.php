@@ -33,6 +33,7 @@ use Chiron\KernelInterface;
 use Chiron\Views\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use Chiron\Http\Factory\ResponseFactory;
 use Throwable;
 
 /**
@@ -59,11 +60,12 @@ class ErrorHandlerServiceProvider extends ServiceProvider
         };
 
         $kernel[ErrorHandler::class] = function ($c) {
-            $errorHandler = new ErrorHandler($c->config->app['debug']);
+            // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
+            $errorHandler = new ErrorHandler(new ResponseFactory());
 
             $errorHandler->addReporter($c[LoggerReporter::class]);
 
-            //$errorHandler->addFormatter(new WhoopsFormatter());
+            $errorHandler->addFormatter(new WhoopsFormatter());
 
             $hasRenderer = $c->has(TemplateRendererInterface::class);
             if ($hasRenderer) {
@@ -73,12 +75,13 @@ class ErrorHandlerServiceProvider extends ServiceProvider
                 $errorHandler->addFormatter(new ViewFormatter($renderer));
             }
 
-            //$errorHandler->addFormatter($c[HtmlFormatter::class]);
-            //$errorHandler->addFormatter(new JsonFormatter());
-            //$errorHandler->addFormatter(new XmlFormatter());
+            $errorHandler->addFormatter($c[HtmlFormatter::class]);
+            $errorHandler->addFormatter(new JsonFormatter());
+            $errorHandler->addFormatter(new XmlFormatter());
             $errorHandler->addFormatter(new PlainTextFormatter());
 
-            $errorHandler->setDefaultFormatter($c[HtmlFormatter::class]);
+            //$errorHandler->setDefaultFormatter($c[HtmlFormatter::class]);
+            $errorHandler->setDefaultFormatter(new PlainTextFormatter());
 
             return $errorHandler;
         };
@@ -104,16 +107,16 @@ class ErrorHandlerServiceProvider extends ServiceProvider
         */
 
         $kernel[ErrorHandlerMiddleware::class] = function ($c) {
-            $exceptionManager = new ExceptionManager();
+            $middleware = new ErrorHandlerMiddleware($c->config->app['debug']);
 
-            //$exceptionManager->bindHandler(Throwable::class, new \Chiron\Exception\WhoopsHandler());
+            //$middleware->bindHandler(Throwable::class, new \Chiron\Exception\WhoopsHandler());
 
-            $exceptionManager->bindHandler(Throwable::class, $c[ErrorHandler::class]);
+            $middleware->bindHandler(Throwable::class, $c[ErrorHandler::class]);
 
-            //$exceptionManager->bindHandler(ServiceUnavailableHttpException::class, new \Chiron\Exception\MaintenanceHandler());
-            //$exceptionManager->bindHandler(NotFoundHttpException::class, new \Chiron\Exception\NotFoundHandler());
+            //$middleware->bindHandler(ServiceUnavailableHttpException::class, new \Chiron\Exception\MaintenanceHandler());
+            //$middleware->bindHandler(NotFoundHttpException::class, new \Chiron\Exception\NotFoundHandler());
 
-            return new ErrorHandlerMiddleware($exceptionManager);
+            return $middleware;
         };
     }
 }

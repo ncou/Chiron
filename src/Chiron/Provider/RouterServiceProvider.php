@@ -43,6 +43,8 @@ class RouterServiceProvider extends ServiceProvider
 
             $router->setBasePath($c->config['app.settings.basePath'] ?? '/');
 
+            // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
+            // TODO : aller chercher la controllerResolver directement dans le container plutot que de faire un new !!!! ca permettra de faire un override de cette classe si l'utilisateur souhaite redéfinir le resolver.
             $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new ControllerResolver($c)));
 
             return $router;

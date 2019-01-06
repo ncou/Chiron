@@ -7,8 +7,10 @@ namespace Chiron\Handler\Reporter;
 use Chiron\Http\Psr\Response;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LogLevel;
 use Throwable;
+use InvalidArgumentException;
 
 // TODO : améliorer la fonction de log en utilisant ce bout de code => https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php#L211
 // autre exemple ici : https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/BaseErrorHandler.php#L334
@@ -20,6 +22,8 @@ class LoggerReporter implements ReporterInterface
      *
      * @var array
      */
+    // TODO : permettre de customiser via une méthode cette map ????
+    //https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/BaseErrorHandler.php#L396
     private $levelMap = [
         E_ERROR             => LogLevel::CRITICAL,
         E_WARNING           => LogLevel::WARNING,
@@ -39,25 +43,61 @@ class LoggerReporter implements ReporterInterface
     ];
 
     /**
+     * Current minimum logging threshold
+     * @var string
+     */
+    private $logLevelThreshold;
+
+    /**
+     * Log Levels
+     * @var array
+     */
+    private $logLevels = [
+        LogLevel::EMERGENCY => 7,
+        LogLevel::ALERT     => 6,
+        LogLevel::CRITICAL  => 5,
+        LogLevel::ERROR     => 4,
+        LogLevel::WARNING   => 3,
+        LogLevel::NOTICE    => 2,
+        LogLevel::INFO      => 1,
+        LogLevel::DEBUG     => 0,
+    ];
+
+    /**
      * Create a new exception handler instance.
      *
      * @param \Psr\Log\LoggerInterface $logger
      */
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, string $logLevelThreshold = LogLevel::DEBUG)
     {
         $this->logger = $logger;
+        $this->setLogLevelThreshold($logLevelThreshold);
+    }
+
+     /**
+     * Sets the Log Level Threshold
+     *
+     * @param string $logLevelThreshold The log level threshold
+     */
+    public function setLogLevelThreshold(string $logLevelThreshold): void
+    {
+        if (! isset($this->logLevels[$logLevelThreshold])) {
+            throw new InvalidArgumentException('Invalid log level. Must be one of : ' . implode(', ', array_keys($this->logLevels)));
+        }
+
+        $this->logLevelThreshold = $logLevelThreshold;
     }
 
     /**
      * Report or log an exception.
      *
-     * @param \Throwable                               $e
      * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param \Throwable                               $e
      */
-    public function report(Throwable $e): void
+    public function report(ServerRequestInterface $request, Throwable $e): void
     {
         $level = $this->getLogLevel($e);
-        $this->logger->log($level, $this->formatException($e));
+        $this->logger->log($level, $this->getMessage($request, $e));
     }
 
     /**
@@ -68,7 +108,7 @@ class LoggerReporter implements ReporterInterface
      *
      * @return string
      */
-    public function getLogLevel(Throwable $e): string
+    private function getLogLevel(Throwable $e): string
     {
         if ($e instanceof ErrorException && \array_key_exists($e->getSeverity(), $this->levelMap)) {
             return $this->levelMap[$e->getSeverity()];
@@ -79,46 +119,51 @@ class LoggerReporter implements ReporterInterface
     }
 
     /**
-     * Create plain text response and return it as a string.
+     * Generate the error log message.
      *
-     * @param Throwable $e
+     * @param \Psr\Http\Message\ServerRequestInterface $request The current request.
+     * @param \Throwable $e The exception to log a message for.
      *
-     * @return string
+     * @return string Error message
      */
-    // TODO : améliorer le code, on fait quoi si il y a aussi une exception dans Previous porté par la Throwable ???? elle ne sera pas logguée !!!!
-    private function formatException(Throwable $e): string
+    private function getMessage(ServerRequestInterface $request, Throwable $e): string
     {
-        return sprintf(
-            "%s: %s in file %s on line %d\r\n%s",
-            get_class($e),
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine(),
-            $this->formatExceptionTraces($e->getTrace())
-        );
+        $message = $this->getMessageForError($e);
+        $message .= "\nRequest URL: " . $request->getRequestTarget();
+        $referer = $request->getHeaderLine('Referer');
+        if ($referer) {
+            $message .= "\nReferer URL: " . $referer;
+        }
+        $message .= "\n\n";
+
+        return $message;
     }
 
     /**
-     * @param array $traces
+     * Generate the message for the error
      *
-     * @return string
+     * @param \Throwable  $e The exception to log a message for.
+     * @param bool $isPrevious False for original exception, true for previous
+     *
+     * @return string Error message
      */
-    private function formatExceptionTraces(array $frames): string
+    private function getMessageForError(Throwable $e, bool $isPrevious = false): string
     {
-        $trace = '';
-        foreach ($frames as $i => $frame) {
-            $trace .= sprintf(
-                "    #%u %s%s%s() called at %s:%u\r\n",
-                count($frames) - $i - 1,
-                $frame['class'] ?? '',
-                isset($frame['class'], $frame['function']) ? $frame['type'] : '',
-                $frame['function'] ?? '',
-                $frame['file'] ?? '<#unknown>',
-                $frame['line'] ?? 0
-            );
+        $message = sprintf(
+            '%s[%s] %s',
+            $isPrevious ? "\nCaused by: " : '',
+            get_class($e),
+            $e->getMessage()
+        );
+
+        $message .= "\n" . $e->getTraceAsString();
+
+        $previous = $e->getPrevious();
+        if ($previous) {
+            $message .= $this->getMessageForError($previous, true);
         }
 
-        return $trace;
+        return $message;
     }
 
     /**
@@ -130,6 +175,8 @@ class LoggerReporter implements ReporterInterface
      */
     public function canReport(Throwable $e): bool
     {
-        return true;
+        $level = $this->getLogLevel($e);
+
+        return $this->logLevels[$level] >= $this->logLevels[$this->logLevelThreshold];
     }
 }

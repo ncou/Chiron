@@ -11,6 +11,7 @@ use Chiron\Http\Exception\HttpException;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Throwable;
 
 //https://github.com/narrowspark/framework/blob/ccda2dca0c312dbea08814d1372c1802920ebcca/src/Viserio/Component/Exception/ErrorHandler.php
@@ -19,8 +20,10 @@ use Throwable;
 
 //https://github.com/yiisoft/yii2/blob/master/framework/base/ErrorHandler.php
 
-class ErrorHandler implements HandlerInterface
+class ErrorHandler implements ErrorHandlerInterface
 {
+    /** ResponseFactoryInterface */
+    private $responseFactory;
     /**
      * List of reporters used to report the exception data.
      *
@@ -50,44 +53,123 @@ class ErrorHandler implements HandlerInterface
     private $shouldBeVerbose;
 
     /**
+     * @var string
+     */
+    //private $contentType;
+    /**
+     * @var string
+     */
+    //private $method;
+    /**
+     * @var ServerRequestInterface
+     */
+    //private $request;
+    /**
+     * @var Throwable
+     */
+    private $exception;
+
+    /**
+     * A list of the exception types (classname) that should not be reported.
+     *
+     * @var string[]
+     */
+    // TODO : refléchir comment alimenter cette liste !!!!
+    protected $dontReport = [];
+
+    /**
      * @param bool $shouldBeVerbose
      */
-    public function __construct(bool $shouldBeVerbose)
+    public function __construct(ResponseFactoryInterface $responseFactory)
     {
-        $this->shouldBeVerbose = $shouldBeVerbose;
+        $this->responseFactory = $responseFactory;
     }
 
     /**
-     * Report an exception.
+     * Determine if the exception should be reported.
      *
-     * @param \Throwable                               $e
-     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param \Throwable $e
+     *
+     * @return bool
      */
-    // TODO : vérifier si le $request est utilisé et nécessaire
-    public function report(Throwable $e, ServerRequestInterface $request): void
+    public function shouldReport(Throwable $e): bool
     {
-        foreach ($this->reporters as $reporter) {
-            if ($reporter->canReport($e)) {
-                $reporter->report($e);
-            }
+        return !$this->shouldntReport($e);
+    }
+    /**
+     * Determine if the exception is in the do not report list.
+     *
+     * @param \Throwable $e
+     *
+     * @return bool
+     */
+    protected function shouldntReport(Throwable $e): bool
+    {
+        foreach ($this->dontReport as $class) {
+            return $e instanceof $class;
         }
+
+        return false;
     }
 
-    public function render(Throwable $e, ServerRequestInterface $request): ResponseInterface
+    /**
+     * Add the reporter to the existing array of reporters.
+     *
+     * @param \Chiron\Exception\Reporter\ReporterInterface $reporter Reporter to use in this error handler
+     */
+    // TODO : permettre de passer un tableau à cette méthode.
+    // TODO : créer une méthode pour faire un remove du reporter.
+    public function addReporter(ReporterInterface $reporter): void
     {
+        array_push($this->reporters, $reporter);
+    }
+
+    /**
+     * Add the formatter to the existing array of formatters.
+     *
+     * @param \Chiron\Exception\Formatter\FormatterInterface $formatter Formatter to use in this error handler
+     */
+    // TODO : permettre de passer un tableau à cette méthode
+    // TODO : créer une méthode pour faire un remove du formatter.
+    public function addFormatter(FormatterInterface $formatter): void
+    {
+        array_push($this->formatters, $formatter);
+    }
+
+    /**
+     * set a default formatter in case none of the formatters match the filters.
+     *
+     * @param \Chiron\Exception\Formatter\FormatterInterface $formatter Formatter to use in this error handler
+     */
+    // TODO : faire une méthode getDefaultFormatter qui initialisera un new TextPlainFormatter() si l'utilisateur n'a pas défini de formatteur par défaut !!!!
+    public function setDefaultFormatter(FormatterInterface $formatter): void
+    {
+        $this->defaultFormatter = $formatter;
+    }
+
+    /**
+     * Handle the exception and return PSR7 response.
+     *
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param \Throwable                               $e
+     * @param bool $displayErrorDetails
+     *
+     * @return \Psr\Http\Message\ResponseInterface
+     */
+    // TODO : mettre l'exception et la request directement dans des varaibles de la classe pour éviter de devoir à chaque fois les passer en paramétre aux fonctions. Ca permettra de déplacer ce bout de code directement dans la méthode createResponse()
+    public function handle(ServerRequestInterface $request, Throwable $e, bool $displayErrorDetails): ResponseInterface
+    {
+        $this->shouldBeVerbose = $displayErrorDetails;
+
+        $this->report($request, $e);
+
         $formatter = $this->getFilteredFormatter($e, $request);
+        $body = $formatter->format($request, $e);
 
-        $content = $formatter->format($e);
-
-        // TODO : attention il manque le choix de la version HTTP 1.1 ou 1.0 lorsqu'on initialise cette nouvelle response.
-        // TODO : passer une ResponseFactory dans le constructeur de cette classe et utiliser la factory
         $statusCode = $this->determineStatusCode($e, $request);
-        $response = new Response($statusCode);
+        $contentType = $formatter->contentType();
 
-        // TODO : attention il manque le charset dans ce Content-Type !!!!!
-        $response = $response->withHeader('Content-Type', $formatter->contentType());
-
-        $response->getBody()->write($content);
+        $response = $this->createResponse($statusCode, $contentType, $body);
 
         if ($e instanceof HttpException) {
             $response = $this->injectHeaders($response, $e->getHeaders());
@@ -97,38 +179,28 @@ class ErrorHandler implements HandlerInterface
     }
 
     /**
-     * @param \Throwable             $e
+     * Execute all the reporters in the stack.
+     *
      * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @return int
-     */
-    protected function determineStatusCode(Throwable $e, ServerRequestInterface $request): int
-    {
-        if ($request->getMethod() === 'OPTIONS') {
-            return 200;
-        }
-
-        if ($e instanceof HttpException) {
-            return $e->getStatusCode();
-        }
-
-        return 500;
-    }
-
-    /**
-     * @param \Psr\Http\Message\ResponseInterface $response
-     * @param array $headers
+     * @param \Throwable                               $e
+     *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    private function injectHeaders(ResponseInterface $response, array $headers = []): ResponseInterface
+    private function report(ServerRequestInterface $request, Throwable $e): void
     {
-        foreach ($headers as $name => $value) {
-            $response = $response->withHeader($name, $value);
+        if ($this->shouldntReport($e)) {
+            return;
         }
-        return $response;
+
+        foreach ($this->reporters as $reporter) {
+            if ($reporter->canReport($e)) {
+                $reporter->report($request, $e);
+            }
+        }
     }
 
     /**
-     * Get the formatter instance.
+     * Get the filtered formatter instance.
      *
      * @param \Throwable             $e
      * @param ServerRequestInterface $request
@@ -164,7 +236,7 @@ class ErrorHandler implements HandlerInterface
 
         // use a default formatter if there is none present after applying the filters. Else use the first one present in the array.
         // TODO : attention on devrait lever une exception si il n'y a pas de default formatter de défini par l'utilisateur, ou alors à minima on fait un rethrow de l'exception.
-        return reset($filtered) ?? $this->defaultFormatter;
+        return reset($filtered) ?: $this->defaultFormatter;
     }
 
     /**
@@ -179,6 +251,7 @@ class ErrorHandler implements HandlerInterface
      *
      * @return bool
      */
+    // TODO : bout de code à déplacer dans une classe FormatNegociator ????
     private function isAcceptableContentType(ServerRequestInterface $request, string $contentType): bool
     {
         $acceptHeader = $request->getHeaderLine('Accept');
@@ -206,32 +279,46 @@ class ErrorHandler implements HandlerInterface
     }
 
     /**
-     * Add the reporter to the existing array of reporters.
-     *
-     * @param \Chiron\Exception\Reporter\ReporterInterface $reporter Reporter to use in this error handler
+     * @param \Throwable             $e
+     * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @return int
      */
-    public function addReporter(ReporterInterface $reporter): void
+    protected function determineStatusCode(Throwable $e, ServerRequestInterface $request): int
     {
-        array_push($this->reporters, $reporter);
+        if ($request->getMethod() === 'OPTIONS') {
+            return 200;
+        }
+
+        if ($e instanceof HttpException) {
+            return $e->getStatusCode();
+        }
+
+        return 500;
+    }
+
+    public function createResponse(int $statusCode, string $contentType, string $body): ResponseInterface
+    {
+        // TODO : attention il manque le choix de la version HTTP 1.1 ou 1.0 lorsqu'on initialise cette nouvelle response.
+        $response = $this->responseFactory->createResponse($statusCode);
+
+        // TODO : attention il manque le charset dans ce Content-Type !!!!!
+        $response = $response->withHeader('Content-Type', $contentType);
+
+        $response->getBody()->write($body);
+
+        return $response;
     }
 
     /**
-     * Add the formatter to the existing array of formatters.
-     *
-     * @param \Chiron\Exception\Formatter\FormatterInterface $formatter Formatter to use in this error handler
+     * @param \Psr\Http\Message\ResponseInterface $response
+     * @param array $headers
+     * @return \Psr\Http\Message\ResponseInterface
      */
-    public function addFormatter(FormatterInterface $formatter): void
+    private function injectHeaders(ResponseInterface $response, array $headers = []): ResponseInterface
     {
-        array_push($this->formatters, $formatter);
-    }
-
-    /**
-     * set a default formatter in case none of the formatters match the filters.
-     *
-     * @param \Chiron\Exception\Formatter\FormatterInterface $formatter Formatter to use in this error handler
-     */
-    public function setDefaultFormatter(FormatterInterface $formatter): void
-    {
-        $this->defaultFormatter = $formatter;
+        foreach ($headers as $name => $value) {
+            $response = $response->withHeader($name, $value);
+        }
+        return $response;
     }
 }

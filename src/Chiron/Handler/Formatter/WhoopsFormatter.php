@@ -6,6 +6,7 @@ namespace Chiron\Handler\Formatter;
 
 use Throwable;
 use Whoops\Handler\PrettyPageHandler;
+use Psr\Http\Message\ServerRequestInterface;
 use Whoops\Run as Whoops;
 
 // ajouter les informations sur la request de l'application !!!!
@@ -18,7 +19,7 @@ use Whoops\Run as Whoops;
 
 class WhoopsFormatter implements FormatterInterface
 {
-    public function format(Throwable $e): string
+    public function format(ServerRequestInterface $request, Throwable $e): string
     {
         return $this->whoops()->handleException($e);
     }

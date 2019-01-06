@@ -7,6 +7,7 @@ namespace Chiron\Handler\Formatter;
 use Chiron\Handler\ExceptionInfo;
 use Chiron\Http\Exception\HttpException;
 use Chiron\Views\TemplateRendererInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
 class ViewFormatter implements FormatterInterface
@@ -35,7 +36,7 @@ class ViewFormatter implements FormatterInterface
      *
      * @return string
      */
-    public function format(Throwable $e): string
+    public function format(ServerRequestInterface $request, Throwable $e): string
     {
         // This class doesn't show debug information, so by default we hide the php exception behind a neutral http 500 error.
         if (! $e instanceof HttpException) {
@@ -46,15 +47,22 @@ class ViewFormatter implements FormatterInterface
         // TODO : ajouter plus d'information dans ce tableau qui va être passé à la vue pour pouvoir utiliser ces informations => https://github.com/cakephp/cakephp/blob/dc63c2f0d8a1e9d5f336ab81b587a54929d9e1cf/src/Error/ExceptionRenderer.php#L218
         /*
             Arguments à passer à la vue :
-
-            'response' => $response,
-            'request'  => $request,
-            'uri'      => (string) $request->getUri(),
-            'status'   => $response->getStatusCode(),
-            'reason'   => $response->getReasonPhrase(),
-            'layout'   => $this->layout,
-            'error' => $e,
+            $templateData = [
+                'response' => $response,
+                'request'  => $request,
+                'uri'      => (string) $request->getUri(),
+                'status'   => $response->getStatusCode(),
+                'reason'   => $response->getReasonPhrase(),
+                'debug'   => $this->debug,
+            ];
+            if ($this->debug) {
+                $templateData['error'] = $e;
+            }
         ]*/
+
+
+
+
         $info = array_merge($info, ['exception' => $e]); // TODO : vérifier qu'on accéde bien aux informations ajoutées en attribut !!!!!!!!!!!!!
 
         $statusCode = $info['status'];
