@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Reporter;
 
-use Chiron\Http\Psr\Response;
 use Exception;
-use Psr\Log\LoggerInterface;
+use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
-use InvalidArgumentException;
 
 // TODO : améliorer la fonction de log en utilisant ce bout de code => https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php#L211
 // autre exemple ici : https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/BaseErrorHandler.php#L334
@@ -43,13 +42,15 @@ class LoggerReporter implements ReporterInterface
     ];
 
     /**
-     * Current minimum logging threshold
+     * Current minimum logging threshold.
+     *
      * @var string
      */
     private $logLevelThreshold;
 
     /**
-     * Log Levels
+     * Log Levels.
+     *
      * @var array
      */
     private $logLevels = [
@@ -74,14 +75,14 @@ class LoggerReporter implements ReporterInterface
         $this->setLogLevelThreshold($logLevelThreshold);
     }
 
-     /**
-     * Sets the Log Level Threshold
+    /**
+     * Sets the Log Level Threshold.
      *
      * @param string $logLevelThreshold The log level threshold
      */
     public function setLogLevelThreshold(string $logLevelThreshold): void
     {
-        if (!array_key_exists($logLevelThreshold, $this->logLevels)) {
+        if (! array_key_exists($logLevelThreshold, $this->logLevels)) {
             throw new InvalidArgumentException('Invalid log level. Must be one of : ' . implode(', ', array_keys($this->logLevels)));
         }
 
@@ -122,7 +123,7 @@ class LoggerReporter implements ReporterInterface
      * Generate the error log message.
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request The current request.
-     * @param \Throwable $e The exception to log a message for.
+     * @param \Throwable                               $e       The exception to log a message for.
      *
      * @return string Error message
      */
@@ -140,10 +141,10 @@ class LoggerReporter implements ReporterInterface
     }
 
     /**
-     * Generate the message for the error
+     * Generate the message for the error.
      *
-     * @param \Throwable  $e The exception to log a message for.
-     * @param bool $isPrevious False for original exception, true for previous
+     * @param \Throwable $e          The exception to log a message for.
+     * @param bool       $isPrevious False for original exception, true for previous
      *
      * @return string Error message
      */

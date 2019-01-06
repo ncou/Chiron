@@ -59,9 +59,6 @@ class ViewFormatter implements FormatterInterface
             }
         ]*/
 
-
-
-
         $info = array_merge($info, ['exception' => $e]); // TODO : vérifier qu'on accéde bien aux informations ajoutées en attribut !!!!!!!!!!!!!
 
         $statusCode = $info['status'];

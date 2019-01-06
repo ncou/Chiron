@@ -19,7 +19,7 @@ interface ErrorHandlerInterface
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param \Throwable                               $e
-     * @param bool $displayErrorDetails
+     * @param bool                                     $displayErrorDetails
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
