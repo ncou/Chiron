@@ -9,20 +9,26 @@ use Chiron\Http\Exception\Client\BadRequestHttpException;
 use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 
 class WhoopsFormatterTest extends TestCase
 {
     public function testFormatServerError()
     {
+        $request = new ServerRequest('GET', new Uri('/'));
+
         $formatter = new WhoopsFormatter();
-        $formatted = $formatter->format(new InternalServerErrorHttpException());
+        $formatted = $formatter->format($request, new InternalServerErrorHttpException());
         $this->assertInternalType('string', $formatted);
     }
 
     public function testFormatClientError()
     {
+        $request = new ServerRequest('GET', new Uri('/'));
+
         $formatter = new WhoopsFormatter();
-        $formatted = $formatter->format(new BadRequestHttpException());
+        $formatted = $formatter->format($request, new BadRequestHttpException());
         $this->assertInternalType('string', $formatted);
     }
 

@@ -10,6 +10,8 @@ use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
 use Chiron\Views\TemplateRendererInterface;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 
 class ViewFormatterTest extends TestCase
 {
@@ -20,8 +22,10 @@ class ViewFormatterTest extends TestCase
         $viewRenderer = $this->createMock(TemplateRendererInterface::class);
         $viewRenderer->expects($this->once())->method('render')->with('errors/400', ['status' => 400, 'title' => 'Bad Request', 'detail' => 'The request cannot be fulfilled due to bad syntax.', 'type' => 'https://httpstatuses.com/400', 'exception' => $exception])->willReturn("Gutted.\n");
 
+        $request = new ServerRequest('GET', new Uri('/'));
+
         $formatter = new ViewFormatter($viewRenderer);
-        $formatted = $formatter->format($exception);
+        $formatted = $formatter->format($request, $exception);
         $this->assertSame("Gutted.\n", $formatted);
     }
 

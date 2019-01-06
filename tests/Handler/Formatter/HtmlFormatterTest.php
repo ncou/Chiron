@@ -9,21 +9,27 @@ use Chiron\Http\Exception\Client\UnauthorizedHttpException;
 use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 
 class HtmlFormatterTest extends TestCase
 {
     public function testFormatServerError()
     {
+        $request = new ServerRequest('GET', new Uri('/'));
+
         $formatter = new HtmlFormatter(__DIR__ . '/../../../resources/error.html');
-        $formatted = $formatter->format(new InternalServerErrorHttpException('Gutted!'));
+        $formatted = $formatter->format($request, new InternalServerErrorHttpException('Gutted!'));
         $expected = file_get_contents(__DIR__ . '/Fixtures/500-html.txt');
         $this->assertSame($expected, $formatted);
     }
 
     public function testFormatClientError()
     {
+        $request = new ServerRequest('GET', new Uri('/'));
+
         $formatter = new HtmlFormatter(__DIR__ . '/../../../resources/error.html');
-        $formatted = $formatter->format(new UnauthorizedHttpException('header'));
+        $formatted = $formatter->format($request, new UnauthorizedHttpException('header'));
         $expected = file_get_contents(__DIR__ . '/Fixtures/401-html.txt');
         $this->assertSame($expected, $formatted);
     }

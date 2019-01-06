@@ -9,21 +9,27 @@ use Chiron\Http\Exception\Client\UnauthorizedHttpException;
 use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 
 class JsonFormatterTest extends TestCase
 {
     public function testFormatServerError()
     {
+        $request = new ServerRequest('GET', new Uri('/'));
+
         $formatter = new JsonFormatter();
-        $formated = $formatter->format(new InternalServerErrorHttpException('Gutted!'));
+        $formated = $formatter->format($request, new InternalServerErrorHttpException('Gutted!'));
         $expected = file_get_contents(__DIR__ . '/Fixtures/500-json.txt');
         $this->assertSame(trim($expected), $formated);
     }
 
     public function testFormatClientError()
     {
+        $request = new ServerRequest('GET', new Uri('/'));
+
         $formatter = new JsonFormatter();
-        $formated = $formatter->format(new UnauthorizedHttpException('header'));
+        $formated = $formatter->format($request, new UnauthorizedHttpException('header'));
 
         $expected = file_get_contents(__DIR__ . '/Fixtures/401-json.txt');
         $this->assertSame(trim($expected), $formated);
@@ -34,7 +40,7 @@ class JsonFormatterTest extends TestCase
         $formatter = new JsonFormatter();
         $this->assertFalse($formatter->isVerbose());
         $this->assertTrue($formatter->canFormat(new InvalidArgumentException()));
-        $this->assertSame('application/problem+json', $formatter->contentType());
+        $this->assertSame('application/json', $formatter->contentType());
     }
 
     /**
@@ -43,6 +49,8 @@ class JsonFormatterTest extends TestCase
      */
     public function testThrowsOnEncodingExcededMaximumDepth()
     {
+        $request = new ServerRequest('GET', new Uri('/'));
+
         $formatter = new JsonFormatter();
 
         $e = new InternalServerErrorHttpException();
@@ -54,7 +62,7 @@ class JsonFormatterTest extends TestCase
 
         $e->addAdditionalData('PHP_JSON_ERROR_DEPTH', $array);
 
-        $formated = $formatter->format($e);
+        $formated = $formatter->format($request, $e);
     }
 
     /**
@@ -63,12 +71,14 @@ class JsonFormatterTest extends TestCase
      */
     public function testThrowsOnEncodingMalformedUTF8()
     {
+        $request = new ServerRequest('GET', new Uri('/'));
+
         $formatter = new JsonFormatter();
 
         $e = new InternalServerErrorHttpException();
         $e->addAdditionalData('JSON_ERROR_UTF8', "\x80");
 
-        $formated = $formatter->format($e);
+        $formated = $formatter->format($request, $e);
     }
 
     /**
@@ -77,6 +87,8 @@ class JsonFormatterTest extends TestCase
      */
     public function testThrowsOnEncodingRecursion()
     {
+        $request = new ServerRequest('GET', new Uri('/'));
+
         $formatter = new JsonFormatter();
 
         $e = new InternalServerErrorHttpException();
@@ -86,7 +98,7 @@ class JsonFormatterTest extends TestCase
 
         $e->addAdditionalData('JSON_ERROR_RECURSION', $a);
 
-        $formated = $formatter->format($e);
+        $formated = $formatter->format($request, $e);
     }
 
     /**
@@ -95,12 +107,14 @@ class JsonFormatterTest extends TestCase
      */
     public function testThrowsOnEncodingINF()
     {
+        $request = new ServerRequest('GET', new Uri('/'));
+
         $formatter = new JsonFormatter();
 
         $e = new InternalServerErrorHttpException();
         $e->addAdditionalData('JSON_ERROR_INF_OR_NAN', INF);
 
-        $formated = $formatter->format($e);
+        $formated = $formatter->format($request, $e);
     }
 
     /**
@@ -109,12 +123,14 @@ class JsonFormatterTest extends TestCase
      */
     public function testThrowsOnEncodingNAN()
     {
+        $request = new ServerRequest('GET', new Uri('/'));
+
         $formatter = new JsonFormatter();
 
         $e = new InternalServerErrorHttpException();
         $e->addAdditionalData('JSON_ERROR_INF_OR_NAN', NAN);
 
-        $formated = $formatter->format($e);
+        $formated = $formatter->format($request, $e);
     }
 
     /**
@@ -123,6 +139,8 @@ class JsonFormatterTest extends TestCase
      */
     public function testThrowsOnEncodingUnsupportedType()
     {
+        $request = new ServerRequest('GET', new Uri('/'));
+
         $formatter = new JsonFormatter();
 
         $e = new InternalServerErrorHttpException();
@@ -131,6 +149,6 @@ class JsonFormatterTest extends TestCase
 
         $e->addAdditionalData('JSON_ERROR_UNSUPPORTED_TYPE', $resource);
 
-        $formated = $formatter->format($e);
+        $formated = $formatter->format($request, $e);
     }
 }
