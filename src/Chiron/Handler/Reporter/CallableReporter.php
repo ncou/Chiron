@@ -6,6 +6,7 @@ namespace Chiron\Handler\Reporter;
 
 use Exception;
 use Throwable;
+use Psr\Http\Message\ServerRequestInterface;
 
 class CallableReporter implements ReporterInterface
 {
@@ -27,12 +28,12 @@ class CallableReporter implements ReporterInterface
     /**
      * Report or log an exception.
      *
-     * @param \Throwable                               $e
      * @param \Psr\Http\Message\ServerRequestInterface $request
+     * @param \Throwable                               $e
      */
-    public function report(Throwable $e): void
+    public function report(ServerRequestInterface $request, Throwable $e): void
     {
-        call_user_func($this->callable, $e);
+        call_user_func_array($this->callable, [$request, $e]);
     }
 
     /**
