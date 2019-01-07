@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Handler;
 
+use Chiron\Handler\Formatter\PlainTextFormatter;
 use Chiron\Handler\Formatter\FormatterInterface;
 use Chiron\Handler\Reporter\ReporterInterface;
 use Chiron\Http\Exception\HttpException;
@@ -85,6 +86,7 @@ class ErrorHandler implements ErrorHandlerInterface
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
         $this->responseFactory = $responseFactory;
+        $this->defaultFormatter = new PlainTextFormatter();
     }
 
     /**
