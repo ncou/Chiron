@@ -153,10 +153,9 @@ class XmlFormatter implements FormatterInterface
 
         // float value
         if (is_float($value)) {
-
             if (is_infinite($value)) {
                 $value = 'INF';
-            } else if (is_nan($value)) {
+            } elseif (is_nan($value)) {
                 $value = 'NAN';
             } else {
                 $value = (string) $value;

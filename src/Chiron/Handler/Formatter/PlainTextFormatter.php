@@ -42,7 +42,7 @@ class PlainTextFormatter implements FormatterInterface
         foreach ($array as $key => $value) {
             if (is_array($value)) {
                 if ($title !== null) {
-                    $key = $title . '.' . $key ;
+                    $key = $title . '.' . $key;
                 }
                 $text .= $this->arrayToPlainText($value, $key);
             } else {

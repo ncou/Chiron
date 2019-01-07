@@ -22,13 +22,12 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Invoker
 {
-
     /**
      * Wrapper around the call_user_func_array function to execute the callable.
      *
      * @param ServerRequestInterface $request
-     * @param callable $callback
-     * @param array    $matched
+     * @param callable               $callback
+     * @param array                  $matched
      *
      * @return mixed
      */
@@ -38,8 +37,6 @@ class Invoker
 
         return call_user_func_array($callback, $parameters);
     }
-
-
 
     /**
      * Bind the matched parameters from the request with the callable parameters.

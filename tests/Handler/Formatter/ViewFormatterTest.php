@@ -10,9 +10,9 @@ use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
 use Chiron\Views\TemplateRendererInterface;
+use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Exception;
 
 class ViewFormatterTest extends TestCase
 {
