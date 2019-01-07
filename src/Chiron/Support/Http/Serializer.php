@@ -17,6 +17,8 @@ use Psr\Http\Message\ResponseInterface;
 
 //https://github.com/php-http/message/blob/master/src/Formatter/FullHttpMessageFormatter.php
 
+// TODO : virer le mot clé abstract.
+// TODO : renommer en MessageSerializer ou MessageFormatter et créer une méthode statique ::toString($request ou $response)
 abstract class Serializer
 {
     //private const CR  = "\r";

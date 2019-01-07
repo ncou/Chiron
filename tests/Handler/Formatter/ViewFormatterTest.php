@@ -12,21 +12,51 @@ use Chiron\Http\Psr\Uri;
 use Chiron\Views\TemplateRendererInterface;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Exception;
 
 class ViewFormatterTest extends TestCase
 {
-    public function testError()
+    public function testFormatServerError()
     {
-        $exception = new BadRequestHttpException();
+        $exception = new InternalServerErrorHttpException();
 
         $viewRenderer = $this->createMock(TemplateRendererInterface::class);
-        $viewRenderer->expects($this->once())->method('render')->with('errors/400', ['status' => 400, 'title' => 'Bad Request', 'detail' => 'The request cannot be fulfilled due to bad syntax.', 'type' => 'https://httpstatuses.com/400', 'exception' => $exception])->willReturn("Gutted.\n");
+        $viewRenderer->expects($this->once())->method('render')->with('errors/500', ['status' => 500, 'title' => 'Internal Server Error', 'detail' => 'An error has occurred and this resource cannot be displayed.', 'type' => 'https://httpstatuses.com/500', 'exception' => $exception])->willReturn('foobar');
 
         $request = new ServerRequest('GET', new Uri('/'));
 
         $formatter = new ViewFormatter($viewRenderer);
         $formatted = $formatter->format($request, $exception);
-        $this->assertSame("Gutted.\n", $formatted);
+        $this->assertSame('foobar', $formatted);
+    }
+
+    public function testFormatClientError()
+    {
+        $exception = new BadRequestHttpException();
+
+        $viewRenderer = $this->createMock(TemplateRendererInterface::class);
+        $viewRenderer->expects($this->once())->method('render')->with('errors/400', ['status' => 400, 'title' => 'Bad Request', 'detail' => 'The request cannot be fulfilled due to bad syntax.', 'type' => 'https://httpstatuses.com/400', 'exception' => $exception])->willReturn('foobar');
+
+        $request = new ServerRequest('GET', new Uri('/'));
+
+        $formatter = new ViewFormatter($viewRenderer);
+        $formatted = $formatter->format($request, $exception);
+        $this->assertSame('foobar', $formatted);
+    }
+
+    public function testPhpError()
+    {
+        $exception = new Exception('test');
+        $eConverted = new InternalServerErrorHttpException();
+
+        $viewRenderer = $this->createMock(TemplateRendererInterface::class);
+        $viewRenderer->expects($this->once())->method('render')->with('errors/500', ['status' => 500, 'title' => 'Internal Server Error', 'detail' => 'An error has occurred and this resource cannot be displayed.', 'type' => 'https://httpstatuses.com/500', 'exception' => $eConverted])->willReturn('foobar');
+
+        $request = new ServerRequest('GET', new Uri('/'));
+
+        $formatter = new ViewFormatter($viewRenderer);
+        $formatted = $formatter->format($request, $exception);
+        $this->assertSame('foobar', $formatted);
     }
 
     public function testPropertiesTrue_WithHttpException()

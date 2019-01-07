@@ -11,6 +11,7 @@ use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Exception;
 
 class PlainTextFormatterTest extends TestCase
 {
@@ -31,6 +32,16 @@ class PlainTextFormatterTest extends TestCase
         $formatter = new PlainTextFormatter();
         $formated = $formatter->format($request, new UnauthorizedHttpException('header', 'Grrrr!'));
         $expected = file_get_contents(__DIR__ . '/Fixtures/401-plain.txt');
+        $this->assertSame(trim($expected), $formated);
+    }
+
+    public function testFormatPhpError()
+    {
+        $request = new ServerRequest('GET', new Uri('/'));
+
+        $formatter = new PlainTextFormatter();
+        $formated = $formatter->format($request, new Exception('This message will not be displayed!'));
+        $expected = file_get_contents(__DIR__ . '/Fixtures/500-plain_v2.txt');
         $this->assertSame(trim($expected), $formated);
     }
 

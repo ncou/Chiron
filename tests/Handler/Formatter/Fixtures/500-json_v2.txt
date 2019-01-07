@@ -1,0 +1,6 @@
+{
+    "status": 500,
+    "title": "Internal Server Error",
+    "detail": "An error has occurred and this resource cannot be displayed.",
+    "type": "https://httpstatuses.com/500"
+}

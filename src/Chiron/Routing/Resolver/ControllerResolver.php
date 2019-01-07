@@ -66,6 +66,7 @@ final class ControllerResolver implements ControllerResolverInterface
                 }
                 // do not instantiate the classe when you use the magic method for generic static methods.
                 // TODO : regarder si il est possible d'améliorer le code comme ca => https://github.com/middlewares/utils/blob/master/src/RequestHandlerContainer.php#L84
+                // TODO : ou comme ici => https://github.com/PHP-DI/Invoker/blob/master/src/CallableResolver.php#L122
                 if (! method_exists($class, '__callStatic')) {
                     $class = new $class();
                 }

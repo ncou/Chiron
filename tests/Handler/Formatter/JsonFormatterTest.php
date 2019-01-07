@@ -11,6 +11,7 @@ use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Exception;
 
 class JsonFormatterTest extends TestCase
 {
@@ -32,6 +33,17 @@ class JsonFormatterTest extends TestCase
         $formated = $formatter->format($request, new UnauthorizedHttpException('header'));
 
         $expected = file_get_contents(__DIR__ . '/Fixtures/401-json.txt');
+        $this->assertSame(trim($expected), $formated);
+    }
+
+    public function testFormatPhpError()
+    {
+        $request = new ServerRequest('GET', new Uri('/'));
+
+        $formatter = new JsonFormatter();
+        $formated = $formatter->format($request, new Exception('This message will not be displayed!'));
+
+        $expected = file_get_contents(__DIR__ . '/Fixtures/500-json_v2.txt');
         $this->assertSame(trim($expected), $formated);
     }
 

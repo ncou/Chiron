@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problem xmlns="urn:ietf:rfc:7807">
+  <status>500</status>
+  <title>Internal Server Error</title>
+  <detail>An error has occurred and this resource cannot be displayed.</detail>
+  <type>https://httpstatuses.com/500</type>
+</problem>

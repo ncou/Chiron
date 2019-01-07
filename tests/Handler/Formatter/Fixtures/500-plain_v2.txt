@@ -1,0 +1,4 @@
+error.status: 500
+error.title: Internal Server Error
+error.detail: An error has occurred and this resource cannot be displayed.
+error.type: https://httpstatuses.com/500

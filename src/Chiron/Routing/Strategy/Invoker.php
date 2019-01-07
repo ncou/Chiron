@@ -6,6 +6,12 @@ declare(strict_types=1);
 
 //https://github.com/Wandu/Router/blob/master/Loader/PsrLoader.php
 
+// TODO : regarder ces deux classes mais ce n'est pas les mêmes attention (extends Object par exemple)
+//https://github.com/Raphhh/trex/blob/master/src/TRex/Reflection/CallableReflection.php
+//https://github.com/Raphhh/trex-reflection/blob/master/src/CallableReflection.php
+
+// TODO : améliorer la gestion du request => https://github.com/PHP-DI/Silex-Bridge/blob/master/src/Controller/ControllerResolver.php#L72
+
 namespace Chiron\Routing\Strategy;
 
 use InvalidArgumentException;

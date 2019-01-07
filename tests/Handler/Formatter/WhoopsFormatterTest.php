@@ -11,6 +11,7 @@ use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Exception;
 
 class WhoopsFormatterTest extends TestCase
 {
@@ -29,6 +30,15 @@ class WhoopsFormatterTest extends TestCase
 
         $formatter = new WhoopsFormatter();
         $formatted = $formatter->format($request, new BadRequestHttpException());
+        $this->assertInternalType('string', $formatted);
+    }
+
+    public function testFormatPhpError()
+    {
+        $request = new ServerRequest('GET', new Uri('/'));
+
+        $formatter = new WhoopsFormatter();
+        $formatted = $formatter->format($request, new Exception('foobar'));
         $this->assertInternalType('string', $formatted);
     }
 
