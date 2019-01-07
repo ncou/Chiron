@@ -91,7 +91,8 @@ class XmlFormatter implements FormatterInterface
     {
         // Ensure any objects are flattened to arrays first
         // TODO : vérifier l'utilité de ce bout de code !!!!
-        $content = json_decode(json_encode($data, JSON_PRESERVE_ZERO_FRACTION), true); // JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION
+        //$content = json_decode(json_encode($data, JSON_PRESERVE_ZERO_FRACTION), true); // JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION
+        $content = $data;
 
         // ensure all keys are valid XML can be json_encoded
         $cleanedContent = $this->cleanKeysForXml($content);
@@ -146,17 +147,32 @@ class XmlFormatter implements FormatterInterface
      */
     private static function convertToString($value): string
     {
+        if (is_object($value)) {
+            $value = json_encode($value);
+        }
+
         // float value
         if (is_float($value)) {
-            $value = (string) $value;
-            if (self::XML_PRESERVE_ZERO_FRACTION && strpos($value, '.') === false) {
-                $value .= '.0';
+
+            if (is_infinite($value)) {
+                $value = 'INF';
+            } else if (is_nan($value)) {
+                $value = 'NAN';
+            } else {
+                $value = (string) $value;
+                if (self::XML_PRESERVE_ZERO_FRACTION && strpos($value, '.') === false) {
+                    $value .= '.0';
+                }
             }
         }
 
         // bool value
         if (is_bool($value)) {
             $value = ($value === true) ? 'true' : 'false';
+        }
+
+        if (is_object($value)) {
+            $value = json_encode($value);
         }
 
         // int or string value.

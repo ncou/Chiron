@@ -3,10 +3,13 @@ error.title: Internal Server Error
 error.detail: Gutted!
 error.type: https://httpstatuses.com/500
 error.scalar.boolean: true
+error.scalar.empty: 
 error.scalar.null: null
 error.scalar.float: 12.01
+error.scalar.float_cant_keep_zero: 12
 error.scalar.int: 0
 error.scalar.infinity: INF
+error.scalar.NaN: NAN
 error.array.0: foo
 error.array.1: bar
 error.array.2.0: baz

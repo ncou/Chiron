@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<problem xmlns="urn:ietf:rfc:7807">
+  <status>500</status>
+  <title>Internal Server Error</title>
+  <detail>Gutted!</detail>
+  <type>https://httpstatuses.com/500</type>
+  <scalar>
+    <boolean>true</boolean>
+    <empty></empty>
+    <null></null>
+    <float>12.01</float>
+    <float_keep_zero>12.0</float_keep_zero>
+    <int>0</int>
+    <infinity>INF</infinity>
+    <NaN>NAN</NaN>
+  </scalar>
+  <array>
+    <_>
+      <_>baz</_>
+    </_>
+  </array>
+  <class>{}</class>
+</problem>

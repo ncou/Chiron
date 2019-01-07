@@ -52,4 +52,20 @@ class XmlFormatterTest extends TestCase
         $this->assertTrue($formatter->canFormat(new InvalidArgumentException()));
         $this->assertSame('application/xml', $formatter->contentType());
     }
+
+    public function testFormatServerErrorWithAdditionalData()
+    {
+        $request = new ServerRequest('GET', new Uri('/'));
+        $e = new InternalServerErrorHttpException('Gutted!');
+
+        $e->addAdditionalData('scalar', ['boolean' => true, 'empty' => '', 'null' => null, 'float' => 12.01, 'float_keep_zero' => 12.0, 'int' => 0, 'infinity' => INF, 'NaN' => NAN]);
+        $e->addAdditionalData('array', ['foo', 'bar', ['baz']]);
+        $e->addAdditionalData('class', new \stdClass());
+
+        $formatter = new XmlFormatter();
+        $formated = $formatter->format($request, $e);
+        $expected = file_get_contents(__DIR__ . '/Fixtures/500-xml_v3.txt');
+
+        $this->assertSame(trim($expected), trim($formated));
+    }
 }

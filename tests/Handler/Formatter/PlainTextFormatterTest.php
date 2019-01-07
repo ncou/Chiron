@@ -58,7 +58,7 @@ class PlainTextFormatterTest extends TestCase
         $request = new ServerRequest('GET', new Uri('/'));
         $e = new InternalServerErrorHttpException('Gutted!');
 
-        $e->addAdditionalData('scalar', ['boolean' => true, 'null' => null, 'float' => 12.01, 'int' => 0, 'infinity' => INF]);
+        $e->addAdditionalData('scalar', ['boolean' => true, 'empty' => '', 'null' => null, 'float' => 12.01, 'float_cant_keep_zero' => 12.0, 'int' => 0, 'infinity' => INF, 'NaN' => NAN]);
         $e->addAdditionalData('array', ['foo', 'bar', ['baz']]);
         $e->addAdditionalData('class', new \stdClass());
 
