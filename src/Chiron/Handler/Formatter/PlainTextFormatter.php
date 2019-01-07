@@ -44,7 +44,7 @@ class PlainTextFormatter implements FormatterInterface
                 if ($title !== null) {
                     $key = $title . '.' . $key ;
                 }
-                $text .= $this->arrayToPlainText($value, $key, false);
+                $text .= $this->arrayToPlainText($value, $key);
             } else {
                 if (is_null($value) || is_object($value)) {
                     $value = json_encode($value);
