@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Handler;
 
-use Chiron\Handler\Formatter\PlainTextFormatter;
 use Chiron\Handler\Formatter\FormatterInterface;
+use Chiron\Handler\Formatter\PlainTextFormatter;
 use Chiron\Handler\Reporter\ReporterInterface;
 use Chiron\Http\Exception\HttpException;
 use Chiron\Http\Psr\Response;
