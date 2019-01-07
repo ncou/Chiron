@@ -48,7 +48,7 @@ class JsonFormatter implements FormatterInterface
         if ($this->pretty) {
             $jsonEncodeOptions |= JSON_PRETTY_PRINT;
         }// else {
-            //$jsonEncodeOptions ^= JSON_PRETTY_PRINT;
+        //$jsonEncodeOptions ^= JSON_PRETTY_PRINT;
         //}
 
         $json = json_encode($data, $jsonEncodeOptions);

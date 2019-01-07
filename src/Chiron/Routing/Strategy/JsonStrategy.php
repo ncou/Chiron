@@ -120,16 +120,16 @@ class JsonStrategy implements StrategyInterface
         return $this;
     }
 
-/*
-    public function prettyPrint(bool $enable)
-    {
-        if ($enable) {
-            $this->jsonEncodeOptions |= JSON_PRETTY_PRINT;
-        } else {
-            $this->jsonEncodeOptions ^= JSON_PRETTY_PRINT;
+    /*
+        public function prettyPrint(bool $enable)
+        {
+            if ($enable) {
+                $this->jsonEncodeOptions |= JSON_PRETTY_PRINT;
+            } else {
+                $this->jsonEncodeOptions ^= JSON_PRETTY_PRINT;
+            }
         }
-    }
-*/
+    */
 
     /*
      * Determine if the given content should be turned into JSON.

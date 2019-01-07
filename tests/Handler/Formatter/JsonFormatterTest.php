@@ -9,9 +9,9 @@ use Chiron\Http\Exception\Client\UnauthorizedHttpException;
 use Chiron\Http\Exception\Server\InternalServerErrorHttpException;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
+use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
-use Exception;
 
 class JsonFormatterTest extends TestCase
 {
