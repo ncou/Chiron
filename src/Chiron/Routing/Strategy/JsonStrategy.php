@@ -15,7 +15,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * Route callback strategy with route parameters as individual arguments and the response is encoded in json.
  */
-class JsonStrategy extends AbstractStrategy
+class JsonStrategy implements StrategyInterface
 {
     /**
      * Default flags for json_encode.
@@ -37,10 +37,13 @@ class JsonStrategy extends AbstractStrategy
     /** ResponseFactoryInterface */
     private $responseFactory;
 
+    private $invoker;
+
     public function __construct(ResponseFactoryInterface $responseFactory, ControllerResolverInterface $resolver)
     {
         $this->resolver = $resolver;
         $this->responseFactory = $responseFactory;
+        $this->invoker = new Invoker();
     }
 
     public function invokeRouteCallable(Route $route, ServerRequestInterface $request): ResponseInterface
@@ -52,21 +55,22 @@ class JsonStrategy extends AbstractStrategy
         }
 
         $callable = $this->resolver->resolve($route->getHandler());
-        $parameters = $this->bindParameters($request, $callable, $params);
 
-        $response = $this->call($callable, $parameters);
+        $content = $this->invoker->call($request, $callable, $params);
 
         // TODO : lever une exception si le retour renvoyé par le controller n'est pas : JsonSerializableInterface ou ArrayObject ou is_array
-        if (! $response instanceof ResponseInterface) {
-            $json = $this->jsonEncode($response);
+        if (! $content instanceof ResponseInterface) {
+            $json = $this->jsonEncode($content);
 
             // TODO : créer une méthode createResponse dans la classe abstraite avec comme signature : create($content = null, $status = 200, array $headers = [])
             $response = $this->responseFactory->createResponse(200);
             $response = $response->withHeader('Content-Type', 'application/json');
             $response->getBody()->write($json);
+
+            return $response;
         }
 
-        return $response;
+        return $content;
     }
 
     /**
@@ -115,6 +119,17 @@ class JsonStrategy extends AbstractStrategy
 
         return $this;
     }
+
+/*
+    public function prettyPrint(bool $enable)
+    {
+        if ($enable) {
+            $this->jsonEncodeOptions |= JSON_PRETTY_PRINT;
+        } else {
+            $this->jsonEncodeOptions ^= JSON_PRETTY_PRINT;
+        }
+    }
+*/
 
     /*
      * Determine if the given content should be turned into JSON.

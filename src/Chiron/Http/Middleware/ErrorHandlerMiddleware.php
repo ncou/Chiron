@@ -287,6 +287,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
      */
     // TODO : améliorer avec le code suivant : https://github.com/laravel/framework/blob/master/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php#L57
     // https://github.com/yiisoft/yii2/blob/master/framework/base/ErrorHandler.php#L205
+    //https://github.com/samsonasik/ErrorHeroModule/blob/6af28a0520257caf9e8e66d5aa35819c2e4327cf/src/HeroTrait.php#L81
     private function createErrorHandler()
     {
         /*

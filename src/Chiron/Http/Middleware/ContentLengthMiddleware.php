@@ -39,7 +39,7 @@ class ContentLengthMiddleware implements MiddlewareInterface
 
         //throw new \Exception("Error Processing Request popopopo", 1);
 
-        throw (new \Chiron\Http\Exception\Client\BadRequestHttpException())->setHeaders(['TOTO' => 'TITI']);
+        //throw (new \Chiron\Http\Exception\Client\BadRequestHttpException())->setHeaders(['TOTO' => 'TITI']);
         //throw new \Chiron\Http\Exception\Client\BadRequestHttpException('Error in the parsing !');
 
         //throw new \Chiron\Http\Exception\Client\NotFoundHttpException();

@@ -8,15 +8,33 @@ declare(strict_types=1);
 
 namespace Chiron\Routing\Strategy;
 
-use Chiron\Routing\Route;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Route callback strategy with route parameters as individual arguments.
+ * Resolve the parameters using reflexion and execute the callback.
  */
-abstract class AbstractStrategy implements StrategyInterface
+class Invoker
 {
+
+    /**
+     * Wrapper around the call_user_func_array function to execute the callable.
+     *
+     * @param ServerRequestInterface $request
+     * @param callable $callback
+     * @param array    $matched
+     *
+     * @return mixed
+     */
+    public function call(ServerRequestInterface $request, callable $callback, array $matched)
+    {
+        $parameters = $this->bindParameters($request, $callback, $matched);
+
+        return call_user_func_array($callback, $parameters);
+    }
+
+
+
     /**
      * Bind the matched parameters from the request with the callable parameters.
      *
@@ -100,18 +118,5 @@ abstract class AbstractStrategy implements StrategyInterface
         }
 
         return $parameter;
-    }
-
-    /**
-     * Wrapper around the call_user_func_array function to execute the callable.
-     *
-     * @param callable $callback
-     * @param array    $params
-     *
-     * @return mixed
-     */
-    protected function call(callable $callback, array $params)
-    {
-        return call_user_func_array($callback, $params);
     }
 }

@@ -473,6 +473,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
         return $this;
     }
 
+    // TODO : il faudrait peut etre rendre le "RouteResult" comme un middleware et déplacer cette méthode dans le routeresult !!!! Ca éviterai aussi de faire porter les Vars par la classe Route.
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         return $this->getStrategy()->invokeRouteCallable($this, $request);

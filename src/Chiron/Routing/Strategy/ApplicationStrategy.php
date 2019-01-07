@@ -16,7 +16,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * Route callback strategy with route parameters as individual arguments.
  */
-class ApplicationStrategy extends AbstractStrategy
+class ApplicationStrategy implements StrategyInterface
 {
     /** ControllerResolverInterface */
     private $resolver;
@@ -24,10 +24,13 @@ class ApplicationStrategy extends AbstractStrategy
     /** ResponseFactoryInterface */
     private $responseFactory;
 
+    private $invoker;
+
     public function __construct(ResponseFactoryInterface $responseFactory, ControllerResolverInterface $resolver)
     {
         $this->resolver = $resolver;
         $this->responseFactory = $responseFactory;
+        $this->invoker = new Invoker();
     }
 
     public function invokeRouteCallable(Route $route, ServerRequestInterface $request): ResponseInterface
@@ -39,9 +42,8 @@ class ApplicationStrategy extends AbstractStrategy
         }
 
         $callable = $this->resolver->resolve($route->getHandler());
-        $parameters = $this->bindParameters($request, $callable, $params);
 
-        $content = $this->call($callable, $parameters);
+        $content = $this->invoker->call($request, $callable, $params);
 
         if (! $content instanceof ResponseInterface) {
             if (! is_string($content)) {
