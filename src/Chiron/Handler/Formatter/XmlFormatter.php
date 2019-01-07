@@ -147,11 +147,7 @@ class XmlFormatter implements FormatterInterface
      */
     private static function convertToString($value): string
     {
-        if (is_object($value)) {
-            $value = json_encode($value);
-        }
-
-        // float value
+        // float value (INF and NAN are float type)
         if (is_float($value)) {
             if (is_infinite($value)) {
                 $value = 'INF';
@@ -170,6 +166,7 @@ class XmlFormatter implements FormatterInterface
             $value = ($value === true) ? 'true' : 'false';
         }
 
+        // class value
         if (is_object($value)) {
             $value = json_encode($value);
         }
