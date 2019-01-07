@@ -52,4 +52,20 @@ class PlainTextFormatterTest extends TestCase
         $this->assertTrue($formatter->canFormat(new InvalidArgumentException()));
         $this->assertSame('text/plain', $formatter->contentType());
     }
+
+    public function testFormatServerErrorWithAdditionalData()
+    {
+        $request = new ServerRequest('GET', new Uri('/'));
+        $e = new InternalServerErrorHttpException('Gutted!');
+
+        $e->addAdditionalData('scalar', ['boolean' => true, 'null' => null, 'float' => 12.01, 'int' => 0, 'infinity' => INF]);
+        $e->addAdditionalData('array', ['foo', 'bar']);
+        $e->addAdditionalData('class', new \stdClass());
+
+        $formatter = new PlainTextFormatter();
+        $formated = $formatter->format($request, $e);
+        $expected = file_get_contents(__DIR__ . '/Fixtures/500-plain_v3.txt');
+
+        $this->assertSame(trim($expected), $formated);
+    }
 }

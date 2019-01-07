@@ -24,11 +24,7 @@ class PlainTextFormatter implements FormatterInterface
             $e = new \Chiron\Http\Exception\Server\InternalServerErrorHttpException();
         }
 
-        // TODO : A virer !!!! c'est un test pour voir si la sérialisation d'un tableau fonctionne.
-        //$e->addAdditionalData('info', ['toto' => true, 'empty' => null, 'numeric' => 12.01, 'infinity' => INF]);
-        //$e->addAdditionalData('exception', $e);
-
-        return $this->arrayToPlainText($e->toArray());
+        return trim($this->arrayToPlainText($e->toArray()));
     }
 
     /**
@@ -46,12 +42,12 @@ class PlainTextFormatter implements FormatterInterface
         foreach ($array as $key => $value) {
             if (is_array($value)) {
                 if ($title !== null) {
-                    $key = $title . '.' . $key;
+                    $key = $title . '.' . $key ;
                 }
                 $text .= $this->arrayToPlainText($value, $key, false);
             } else {
-                if (is_null($value)) {
-                    $value = 'NULL';
+                if (is_null($value) || is_object($value)) {
+                    $value = json_encode($value);
                 }
                 if (is_bool($value)) {
                     $value = ($value) ? 'true' : 'false';
@@ -64,7 +60,7 @@ class PlainTextFormatter implements FormatterInterface
             }
         }
 
-        return trim($text);
+        return $text;
     }
 
     /**

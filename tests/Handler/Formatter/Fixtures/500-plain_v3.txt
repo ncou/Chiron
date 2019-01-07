@@ -1,0 +1,12 @@
+error.status: 500
+error.title: Internal Server Error
+error.detail: Gutted!
+error.type: https://httpstatuses.com/500
+error.scalar.boolean: true
+error.scalar.null: null
+error.scalar.float: 12.01
+error.scalar.int: 0
+error.scalar.infinity: INF
+error.array.0: foo
+error.array.1: bar
+error.class: {}
