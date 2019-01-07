@@ -205,6 +205,25 @@ class ErrorHandlerMiddlewareTest extends TestCase
         $this->assertAttributeCount(6, 'handlers', $middleware);
     }
 
+    public function testUnbindHandler()
+    {
+        $middleware = $middleware = new ErrorHandlerMiddleware(true);
+        $this->assertAttributeCount(0, 'handlers', $middleware);
+
+        $errorHandler = new ErrorHandler(new ResponseFactory());
+        $middleware->bindHandler(Throwable::class, $errorHandler);
+        $this->assertAttributeCount(1, 'handlers', $middleware);
+
+        $middleware->unbindHandler(Throwable::class);
+        $this->assertAttributeCount(0, 'handlers', $middleware);
+
+        $middleware->bindHandler([Error::class, Exception::class], $errorHandler);
+        $this->assertAttributeCount(2, 'handlers', $middleware);
+
+        $middleware->unbindHandler([Error::class, Exception::class]);
+        $this->assertAttributeCount(0, 'handlers', $middleware);
+    }
+
     /**
      * @expectedException InvalidArgumentException
      */
