@@ -4,41 +4,36 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Middleware;
 
-use Chiron\Http\Psr\ServerRequest;
-use Chiron\Http\Psr\Uri;
 use Chiron\Handler\ErrorHandler;
+use Chiron\Http\Exception\Client\BadRequestHttpException;
+use Chiron\Http\Exception\HttpException;
 use Chiron\Http\Factory\ResponseFactory;
-use Chiron\Handler\Error\ExceptionManager;
 use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Http\Psr\Response;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\RequestHandlerCallable;
-use Chiron\Tests\Utils\ExceptionHandlerCallable;
+use Error;
+use Exception;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use RuntimeException;
-use InvalidArgumentException;
 use Throwable;
 use const E_USER_DEPRECATED;
 use function error_reporting;
 use function trigger_error;
-use Chiron\Http\Exception\HttpException;
-use Chiron\Http\Exception\Client\BadRequestHttpException;
-use Psr\Http\Message\ResponseFactoryInterface;
-use Error;
-use Exception;
 
 class ErrorHandlerMiddlewareTest extends TestCase
 {
     private $errorReporting;
 
     private $captureFile;
+
     private $errorLog;
 
     private $request;
-
 
     protected function setUp()
     {
@@ -73,6 +68,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
         $handler = function ($request) {
             $response = new Response();
             $response->getBody()->write('success');
+
             return $response;
         };
 
@@ -100,7 +96,6 @@ class ErrorHandlerMiddlewareTest extends TestCase
     public function testReturnsErrorResponseIfHandlerDoesNotReturnAResponse()
     {
         $handler = function ($request) {
-            return null;
         };
 
         $middleware = $this->createMiddleware();
@@ -109,7 +104,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
 
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
         $this->assertEquals(500, $response->getStatusCode());
-        $this->assertContains("error.status: 500", (string) $response->getBody());
+        $this->assertContains('error.status: 500', (string) $response->getBody());
     }
 
     public function testReturnsErrorResponseIfHandlerRaisesAnErrorInTheErrorMask()
@@ -126,7 +121,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
 
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
         $this->assertEquals(500, $response->getStatusCode());
-        $this->assertContains("error.status: 500", (string) $response->getBody());
+        $this->assertContains('error.status: 500', (string) $response->getBody());
     }
 
     public function testReturnsResponseFromHandlerWhenErrorRaisedIsNotInTheErrorMask()
@@ -162,7 +157,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
 
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
         $this->assertEquals(500, $response->getStatusCode());
-        $this->assertContains("error.status: 500", (string) $response->getBody());
+        $this->assertContains('error.status: 500', (string) $response->getBody());
     }
 
     public function testReturnsErrorResponseIfHandlerRaisesAnHttpException()
@@ -177,7 +172,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
 
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertContains("error.status: 400", (string) $response->getBody());
+        $this->assertContains('error.status: 400', (string) $response->getBody());
     }
 
     public function testTheSameHandlerIsBindedOnlyOnce()
@@ -240,7 +235,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
         $debug = true;
         $middleware = $middleware = new ErrorHandlerMiddleware($debug);
 
-        $factory =$this->prophesize(ResponseFactoryInterface::class);
+        $factory = $this->prophesize(ResponseFactoryInterface::class);
         $factory->createResponse(Argument::type('int'))
                 ->willThrow(new RuntimeException('Exception internal'));
 
@@ -267,7 +262,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
         $debug = false;
         $middleware = $middleware = new ErrorHandlerMiddleware($debug);
 
-        $factory =$this->prophesize(ResponseFactoryInterface::class);
+        $factory = $this->prophesize(ResponseFactoryInterface::class);
         $factory->createResponse(Argument::type('int'))
                 ->willThrow(new RuntimeException('Exception internal'));
 
@@ -281,11 +276,10 @@ class ErrorHandlerMiddlewareTest extends TestCase
 
         $response = $middleware->process($this->request, new RequestHandlerCallable($handler));
 
-        $this->assertEquals("An internal server error occurred.", (string) $response->getBody());
+        $this->assertEquals('An internal server error occurred.', (string) $response->getBody());
         $this->assertNotContains("\nRequest Details:", (string) $response->getBody());
 
         $contentOferrorLog = stream_get_contents($this->captureFile);
         $this->assertContains("\nRequest Details:", $contentOferrorLog);
     }
-
 }
