@@ -109,7 +109,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
 
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
         $this->assertEquals(500, $response->getStatusCode());
-        $this->assertContains("error.status: 500\r\n", (string) $response->getBody());
+        $this->assertContains("error.status: 500", (string) $response->getBody());
     }
 
     public function testReturnsErrorResponseIfHandlerRaisesAnErrorInTheErrorMask()
@@ -126,7 +126,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
 
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
         $this->assertEquals(500, $response->getStatusCode());
-        $this->assertContains("error.status: 500\r\n", (string) $response->getBody());
+        $this->assertContains("error.status: 500", (string) $response->getBody());
     }
 
     public function testReturnsResponseFromHandlerWhenErrorRaisedIsNotInTheErrorMask()
@@ -162,7 +162,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
 
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
         $this->assertEquals(500, $response->getStatusCode());
-        $this->assertContains("error.status: 500\r\n", (string) $response->getBody());
+        $this->assertContains("error.status: 500", (string) $response->getBody());
     }
 
     public function testReturnsErrorResponseIfHandlerRaisesAnHttpException()
@@ -177,7 +177,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
 
         $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
         $this->assertEquals(400, $response->getStatusCode());
-        $this->assertContains("error.status: 400\r\n", (string) $response->getBody());
+        $this->assertContains("error.status: 400", (string) $response->getBody());
     }
 
     public function testTheSameHandlerIsBindedOnlyOnce()
