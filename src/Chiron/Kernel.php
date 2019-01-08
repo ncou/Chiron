@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron;
 
+use Psr\Http\Message\ServerRequestInterface;
 use Chiron\Config\ConfigInterface;
 use Chiron\Container\Container;
 use Chiron\Provider\ConfigServiceProvider;
@@ -17,6 +18,8 @@ use Chiron\Provider\ServiceProviderInterface;
 use Chiron\Routing\RouterInterface;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
+
+//https://github.com/lambirou/babiphp/blob/master/system/Container/ReflectionContainer.php
 
 // TODO : gérer les alias dans le container => https://github.com/laravel/framework/blob/e0dbd6ab143286d81bedf2b34f8820f3d49ea15f/src/Illuminate/Foundation/Application.php#L1076
 // TODO : gestion du "call()" qui retrouve automatiquement les paramétres de la fonction par rapport à ce qu'il y a dans le container :
@@ -118,6 +121,11 @@ class Kernel extends Container implements KernelInterface
     public function getEnvironment(): string
     {
         return $this->get('environment');
+    }
+
+    public function getRequest(): ServerRequestInterface
+    {
+        return $this->get('request');
     }
 
     /**
@@ -273,7 +281,6 @@ class Kernel extends Container implements KernelInterface
     /**
      * Boot the application's service providers.
      */
-    // TODO : faire un return $this pour cette fonction ????
     public function boot(): KernelInterface
     {
         if (! $this->isBooted) {

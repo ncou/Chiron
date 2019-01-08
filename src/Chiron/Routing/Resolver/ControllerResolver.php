@@ -7,11 +7,27 @@ namespace Chiron\Routing\Resolver;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+
+// TODO : réfléchir si il ne faut pas plutot merger cette méthode dans la classe Kernel (qui est un container) pour faire un peu comme ici => https://github.com/middlewares/utils/blob/master/src/RequestHandlerContainer.php
+// ou aussi un peu dans ce style là => https://github.com/zendframework/zend-expressive/blob/master/src/MiddlewareContainer.php
+
+
+//https://github.com/isholao/callableresolver/blob/1.x/src/Resolver.php
+
+//https://github.com/catding/WHMCS-7.4.1-decoded/tree/0e6f2d2d6eca9355619a543dd2af1d2cda28fda2/whmcs/vendor/middlewares/utils/src/CallableResolver
+//https://github.com/rockefys/Api/tree/ace91d6b68275c0624e5823780da1745d63a57b0/src/SMD/CallableResolver
+
+//https://github.com/saylaco/objects/blob/0ddcf7b9196f237858b3afb5f1bdff98220f1347/src/Attribute/Property/ResolverPropertyType.php
+//https://github.com/saylaco/objects/blob/0ddcf7b9196f237858b3afb5f1bdff98220f1347/src/Attribute/Resolver/CallableResolver.php
+
+//https://github.com/vixxjy/whmcs/blob/92caef678d7268ed9a15e018b4639b62ef20642c/vendor/middlewares/utils/src/CallableResolver/ReflectionResolver.php
+
+//https://github.com/lambirou/babiphp/blob/master/system/Container/ReflectionContainer.php
+
+
 /**
  * This class resolves a ControllerName of the format 'class@method' into a callable that can be invoked.
  */
-// TODO : réfléchir si il ne faut pas plutot merger cette méthode dans la classe Kernel (qui est un container) pour faire un peu comme ici => https://github.com/middlewares/utils/blob/master/src/RequestHandlerContainer.php
-// ou aussi un peu dans ce style là => https://github.com/zendframework/zend-expressive/blob/master/src/MiddlewareContainer.php
 final class ControllerResolver implements ControllerResolverInterface
 {
     public const PATTERN = '~^([^@]+)@([^@]+)$~';

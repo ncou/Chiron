@@ -8,6 +8,8 @@ use Chiron\Http\Psr\Stream;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+//https://github.com/Wandu/Http/blob/master/Sender/ResponseSender.php
+
 //https://github.com/cakephp/cakephp/blob/master/src/Http/ResponseEmitter.php
 
 //https://github.com/yiisoft/yii2/blob/master/framework/web/Response.php#L411

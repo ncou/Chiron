@@ -12,13 +12,18 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Chiron\Http\Factory\ServerRequestFactory;
-use Chiron\Http\Factory\StreamFactory;
-use Chiron\Http\Factory\UploadedFileFactory;
-use Chiron\Http\Factory\UriFactory;
-use Chiron\Http\ServerRequestCreator;
+use Nyholm\Psr7Server\ServerRequestCreatorInterface;
+use Nyholm\Psr7Server\ServerRequestCreator;
 use Chiron\KernelInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ServerRequestFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UploadedFileFactoryInterface;
+use Psr\Http\Message\UploadedFileInterface;
+use Psr\Http\Message\UriFactoryInterface;
+use Psr\Http\Message\UriInterface;
 
 /**
  * Chiron server request creator services provider.
@@ -32,13 +37,23 @@ class ServerRequestCreatorServiceProvider extends ServiceProvider
      */
     public function register(KernelInterface $kernel): void
     {
-        $kernel['request'] = function ($c) {
-            $requestCreator = new ServerRequestCreator($c[ServerRequestFactory::class],
-                $c[UriFactory::class],
-                $c[UploadedFileFactory::class],
-                $c[StreamFactory::class]);
+        $kernel[ServerRequestCreatorInterface::class] = function ($c) {
+            $requestCreator = new ServerRequestCreator(
+                $c[ServerRequestFactoryInterface::class],
+                $c[UriFactoryInterface::class],
+                $c[UploadedFileFactoryInterface::class],
+                $c[StreamFactoryInterface::class]);
 
             return $requestCreator->fromGlobals();
+        };
+
+        // *** register alias ***
+        $kernel[ServerRequestCreator::class] = function ($c) {
+            return $c->get(ServerRequestCreatorInterface::class);
+        };
+
+        $kernel['request'] = function ($c) {
+            return $c->get(ServerRequestCreatorInterface::class);
         };
     }
 }

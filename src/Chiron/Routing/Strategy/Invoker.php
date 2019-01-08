@@ -9,6 +9,7 @@ declare(strict_types=1);
 // TODO : regarder ces deux classes mais ce n'est pas les mêmes attention (extends Object par exemple)
 //https://github.com/Raphhh/trex/blob/master/src/TRex/Reflection/CallableReflection.php
 //https://github.com/Raphhh/trex-reflection/blob/master/src/CallableReflection.php
+//https://github.com/Wandu/Reflection/blob/eca8daed402eb4706af6dd403879c88655f38b7d/src/ReflectionCallable.php
 
 // TODO : améliorer la gestion du request => https://github.com/PHP-DI/Silex-Bridge/blob/master/src/Controller/ControllerResolver.php#L72
 

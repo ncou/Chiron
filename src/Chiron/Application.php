@@ -224,7 +224,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
     public function run(): void
     {
-        $request = $this->kernel->get('request');
+        $request = $this->kernel->getRequest();
 
         $response = $this->handle($request);
 
