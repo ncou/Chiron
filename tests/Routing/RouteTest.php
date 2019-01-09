@@ -164,11 +164,22 @@ class RouteTest extends TestCase
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage One or more HTTP methods were invalid
      */
-    public function testMethodInvalidException()
+    public function testMethodInvalidStringException()
     {
         $route = new Route('/', 'foobar', 0);
 
-        $route->setAllowedMethods(['POST', '=', 'GET', 0]);
+        $route->setAllowedMethods(['POST', '=', 'GET']);
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage One or more HTTP methods were invalid
+     */
+    public function testMethodInvalidFormatException()
+    {
+        $route = new Route('/', 'foobar', 0);
+
+        $route->setAllowedMethods(['POST', 0, 'GET']);
     }
 
 }
