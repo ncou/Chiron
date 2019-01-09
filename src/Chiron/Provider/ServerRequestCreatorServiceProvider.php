@@ -12,18 +12,14 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Nyholm\Psr7Server\ServerRequestCreatorInterface;
-use Nyholm\Psr7Server\ServerRequestCreator;
 use Chiron\KernelInterface;
+use Nyholm\Psr7Server\ServerRequestCreator;
+use Nyholm\Psr7Server\ServerRequestCreatorInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
-use Psr\Http\Message\UploadedFileInterface;
 use Psr\Http\Message\UriFactoryInterface;
-use Psr\Http\Message\UriInterface;
 
 /**
  * Chiron server request creator services provider.

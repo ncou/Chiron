@@ -178,7 +178,8 @@ class XmlFormatter implements FormatterInterface
     /**
      * Ensure all keys in this associative array are valid XML tag names by replacing invalid
      * characters with an `_`.
-     * @link https://www.w3.org/TR/xml/#sec-common-syn
+     *
+     * @see https://www.w3.org/TR/xml/#sec-common-syn
      */
     private function cleanKeysForXml(array $input): array
     {
