@@ -72,12 +72,35 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     /**
      * @param string $url
      * @param mixed  $handler
+     * @param int  $index
      */
     public function __construct(string $path, $handler, int $index)
     {
         $this->path = $path;
+        // TODO : ajouter une vérification pour que le $handler soit un callable ou une string
         $this->handler = $handler;
         $this->identifier = 'route_' . $index;
+    }
+
+    public function getPath(): string
+    {
+        return $this->path;
+    }
+
+    // return : mixed
+    public function getHandler()
+    {
+        return $this->handler;
+    }
+
+    /**
+     * Get route identifier.
+     *
+     * @return string
+     */
+    public function getIdentifier(): string
+    {
+        return $this->identifier;
     }
 
     /**
@@ -105,32 +128,11 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     }
 
     /**
-     * Get route identifier.
-     *
-     * @return string
-     */
-    public function getIdentifier(): string
-    {
-        return $this->identifier;
-    }
-
-    public function getPath(): string
-    {
-        return $this->path;
-    }
-
-    // return : mixed
-    public function getHandler()
-    {
-        return $this->handler;
-    }
-
-    /**
      * Returns the defaults.
      *
      * @return array The defaults
      */
-    public function getDefaults()
+    public function getDefaults(): array
     {
         return $this->defaults;
     }
@@ -144,7 +146,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @return $this
      */
-    public function setDefaults(array $defaults)
+    public function setDefaults(array $defaults): self
     {
         $this->defaults = [];
 
@@ -160,12 +162,13 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @return $this
      */
-    public function addDefaults(array $defaults)
+    public function addDefaults(array $defaults): self
     {
+        // TODO : faire un assert que $name est bien une string sinon lever une exception !!!!
         foreach ($defaults as $name => $default) {
             $this->defaults[$name] = $default;
         }
-        //$this->compiled = null;
+
         return $this;
     }
 
@@ -176,9 +179,9 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @return mixed The default value or null when not given
      */
-    public function getDefault($name)
+    public function getDefault(string $name)
     {
-        return isset($this->defaults[$name]) ? $this->defaults[$name] : null;
+        return $this->defaults[$name] ?? null;
     }
 
     /**
@@ -188,9 +191,22 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @return bool true if the default value is set, false otherwise
      */
-    public function hasDefault($name)
+    public function hasDefault(string $name): bool
     {
         return array_key_exists($name, $this->defaults);
+    }
+
+    /**
+     * Alias for setDefault.
+     *
+     * @param string $name    A variable name
+     * @param mixed  $default The default value
+     *
+     * @return $this
+     */
+    public function value(string $variable, $default): self
+    {
+        return $this->setDefault($variable, $default);
     }
 
     /**
@@ -201,24 +217,9 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @return $this
      */
-    public function setDefault($name, $default)
+    public function setDefault(string $name, $default): self
     {
         $this->defaults[$name] = $default;
-        //$this->compiled = null;
-        return $this;
-    }
-
-    public function value($variable, $default)
-    {
-        $this->setDefault($variable, $default);
-
-        return $this;
-    }
-
-    // TODO : avoir la possibilité de passer un tableau ? si on détecte que c'est un is_array dans le getargs() on appel la méthode addReqirements() pour un tableau, sinon on appel setRequirement()
-    public function assert($key, $regex)
-    {
-        $this->setRequirement($key, $regex);
 
         return $this;
     }
@@ -228,7 +229,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @return array The requirements
      */
-    public function getRequirements()
+    public function getRequirements(): array
     {
         return $this->requirements;
     }
@@ -242,7 +243,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @return $this
      */
-    public function setRequirements(array $requirements)
+    public function setRequirements(array $requirements): self
     {
         $this->requirements = [];
 
@@ -258,12 +259,18 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @return $this
      */
-    public function addRequirements(array $requirements)
+    public function addRequirements(array $requirements): self
     {
+        // TODO : lever une exception si la key et le $regex ne sont pas des strings !!!!!
+        /*
+        if (! is_string($regex)) {
+            throw new InvalidArgumentException(sprintf('Routing requirement for "%s" must be a string.', $key));
+        }*/
+
         foreach ($requirements as $key => $regex) {
             $this->requirements[$key] = $this->sanitizeRequirement($key, $regex);
         }
-        //$this->compiled = null;
+
         return $this;
     }
 
@@ -274,9 +281,9 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @return string|null The regex or null when not given
      */
-    public function getRequirement($key)
+    public function getRequirement(string $key): ?string
     {
-        return isset($this->requirements[$key]) ? $this->requirements[$key] : null;
+        return $this->requirements[$key] ?? null;
     }
 
     /**
@@ -286,9 +293,15 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @return bool true if a requirement is specified, false otherwise
      */
-    public function hasRequirement($key)
+    public function hasRequirement(string $key): bool
     {
         return array_key_exists($key, $this->requirements);
+    }
+
+    // TODO : avoir la possibilité de passer un tableau ? si on détecte que c'est un is_array dans le getargs() on appel la méthode addReqirements() pour un tableau, sinon on appel setRequirement()
+    public function assert(string $key, string $regex): self
+    {
+        return $this->setRequirement($key, $regex);
     }
 
     /**
@@ -299,27 +312,24 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @return $this
      */
-    public function setRequirement($key, $regex)
+    public function setRequirement(string $key, string $regex): self
     {
         $this->requirements[$key] = $this->sanitizeRequirement($key, $regex);
-        //$this->compiled = null;
+
         return $this;
     }
 
     // remove the char "^" at the start of the regex, and the final "$" char at the end of the regex
-    private function sanitizeRequirement($key, $regex)
+    private function sanitizeRequirement(string $key, string $regex): string
     {
-        if (! is_string($regex)) {
-            throw new \InvalidArgumentException(sprintf('Routing requirement for "%s" must be a string.', $key));
-        }
         if ('' !== $regex && '^' === $regex[0]) {
-            $regex = (string) substr($regex, 1); // returns false for a single character
+            $regex = substr($regex, 1); // returns false for a single character
         }
         if ('$' === substr($regex, -1)) {
             $regex = substr($regex, 0, -1);
         }
         if ('' === $regex) {
-            throw new \InvalidArgumentException(sprintf('Routing requirement for "%s" cannot be empty.', $key));
+            throw new InvalidArgumentException(sprintf('Routing requirement for "%s" cannot be empty.', $key));
         }
 
         return $regex;
@@ -333,6 +343,18 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     public function getName(): ?string
     {
         return $this->name;
+    }
+
+    /**
+     * Alia function for "setName()".
+     *
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function name(string $name): self
+    {
+        return $this->setName($name);
     }
 
     /**
@@ -350,18 +372,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     }
 
     /**
-     * Alia function for "setName()".
-     *
-     * @param string $name
-     *
-     * @return $this
-     */
-    public function name(string $name): self
-    {
-        return $this->setName($name);
-    }
-
-    /**
      * Get supported HTTP method(s).
      *
      * @return array
@@ -372,27 +382,27 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     }
 
     /**
+     * Alia function for "setAllowedMethods()".
+     */
+    public function method(string $method, string ...$methods): self
+    {
+        array_unshift($methods, $method);
+
+        return $this->setAllowedMethods($methods);
+    }
+
+    /**
      * Set supported HTTP method(s).
      *
      * @param array
      *
      * @return self
      */
-    public function setAllowedMethods(array $methods): Route
+    public function setAllowedMethods(array $methods): self
     {
         $this->methods = $this->validateHttpMethods($methods);
 
         return $this;
-    }
-
-    /**
-     * Alia function for "setAllowedMethods()".
-     */
-    public function method(string $method, string ...$methods): Route
-    {
-        array_unshift($methods, $method);
-
-        return $this->setAllowedMethods($methods);
     }
 
     /**
@@ -402,7 +412,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @param string[] An array of HTTP method names.
      *
-     * @throws Exception\InvalidArgumentException for any invalid method names.
+     * @throws Exception InvalidArgumentException for any invalid method names.
      *
      * @return string[]
      */
