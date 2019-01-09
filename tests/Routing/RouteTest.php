@@ -168,7 +168,7 @@ class RouteTest extends TestCase
     {
         $route = new Route('/', 'foobar', 0);
 
-        $route->setAllowedMethods(['=']);
+        $route->setAllowedMethods(['POST', '=', 'GET', 0]);
     }
 
 }
