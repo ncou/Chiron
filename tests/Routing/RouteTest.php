@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Routing;
 
-use PHPUnit\Framework\TestCase;
 use Chiron\Routing\Route;
-use Chiron\Routing\RouteGroup;
 use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Chiron\Routing\Route
@@ -17,7 +16,8 @@ class RouteTest extends TestCase
     public function testConstructor()
     {
         // test with a callable for handler
-        $callback = function() {};
+        $callback = function () {
+        };
         $route = new Route('/', $callback, 100);
 
         $this->assertEquals('/', $route->getPath());
@@ -35,82 +35,79 @@ class RouteTest extends TestCase
     public function testDefaultGetterSetter()
     {
         $route = new Route('/', 'foobar', 0);
-        $this->assertEquals([] , $route->getDefaults());
+        $this->assertEquals([], $route->getDefaults());
 
         $route->setDefaults(['foo' => 'bar']);
-        $this->assertEquals(['foo' => 'bar'] , $route->getDefaults());
+        $this->assertEquals(['foo' => 'bar'], $route->getDefaults());
 
         $route->addDefaults(['baz' => true, 'qux' => 0]);
-        $this->assertEquals(['foo' => 'bar', 'baz' => true, 'qux' => 0] , $route->getDefaults());
+        $this->assertEquals(['foo' => 'bar', 'baz' => true, 'qux' => 0], $route->getDefaults());
 
-        $this->assertEquals(null , $route->getDefault('foobar'));
-        $this->assertEquals('bar' , $route->getDefault('foo'));
-        $this->assertEquals(true , $route->getDefault('baz'));
-        $this->assertEquals(0 , $route->getDefault('qux'));
+        $this->assertEquals(null, $route->getDefault('foobar'));
+        $this->assertEquals('bar', $route->getDefault('foo'));
+        $this->assertEquals(true, $route->getDefault('baz'));
+        $this->assertEquals(0, $route->getDefault('qux'));
 
-        $this->assertEquals(true , $route->hasDefault('foo'));
-        $this->assertEquals(false , $route->hasDefault('foobar'));
+        $this->assertEquals(true, $route->hasDefault('foo'));
+        $this->assertEquals(false, $route->hasDefault('foobar'));
 
         $route->value('foo', 'foo');
-        $this->assertEquals('foo' , $route->getDefault('foo'));
+        $this->assertEquals('foo', $route->getDefault('foo'));
 
         $route->setDefault('foobar', 'foo');
-        $this->assertEquals(true , $route->hasDefault('foobar'));
+        $this->assertEquals(true, $route->hasDefault('foobar'));
     }
 
     public function testRequirementGetterSetter()
     {
         $route = new Route('/', 'foobar', 0);
-        $this->assertEquals([] , $route->getRequirements());
+        $this->assertEquals([], $route->getRequirements());
 
         $route->setRequirements(['foo' => 'bar']);
-        $this->assertEquals(['foo' => 'bar'] , $route->getRequirements());
+        $this->assertEquals(['foo' => 'bar'], $route->getRequirements());
 
         $route->addRequirements(['baz' => 'qux']);
-        $this->assertEquals(['foo' => 'bar', 'baz' => 'qux'] , $route->getRequirements());
+        $this->assertEquals(['foo' => 'bar', 'baz' => 'qux'], $route->getRequirements());
 
-        $this->assertEquals(null , $route->getRequirement('foobar'));
-        $this->assertEquals('bar' , $route->getRequirement('foo'));
-        $this->assertEquals('qux' , $route->getRequirement('baz'));
+        $this->assertEquals(null, $route->getRequirement('foobar'));
+        $this->assertEquals('bar', $route->getRequirement('foo'));
+        $this->assertEquals('qux', $route->getRequirement('baz'));
 
-        $this->assertEquals(true , $route->hasRequirement('foo'));
-        $this->assertEquals(false , $route->hasRequirement('foobar'));
+        $this->assertEquals(true, $route->hasRequirement('foo'));
+        $this->assertEquals(false, $route->hasRequirement('foobar'));
 
         $route->assert('foo', 'foo');
-        $this->assertEquals('foo' , $route->getRequirement('foo'));
+        $this->assertEquals('foo', $route->getRequirement('foo'));
 
         $route->setRequirement('foobar', 'foo');
-        $this->assertEquals(true , $route->hasRequirement('foobar'));
+        $this->assertEquals(true, $route->hasRequirement('foobar'));
     }
 
     public function testNameGetterSetter()
     {
         $route = new Route('/', 'foobar', 0);
-        $this->assertEquals(null , $route->getName());
+        $this->assertEquals(null, $route->getName());
 
         $route->name('foobar');
-        $this->assertEquals('foobar' , $route->getName());
+        $this->assertEquals('foobar', $route->getName());
 
         $route->setName('baz');
-        $this->assertEquals('baz' , $route->getName());
+        $this->assertEquals('baz', $route->getName());
     }
-
 
     public function testMethodGetterSetter()
     {
         $route = new Route('/', 'foobar', 0);
-        $this->assertEquals([] , $route->getAllowedMethods());
+        $this->assertEquals([], $route->getAllowedMethods());
 
         $route->method('GET');
-        $this->assertEquals(['GET'] , $route->getAllowedMethods());
+        $this->assertEquals(['GET'], $route->getAllowedMethods());
 
         $route->method('post', 'put');
-        $this->assertEquals(['POST', 'PUT'] , $route->getAllowedMethods());
+        $this->assertEquals(['POST', 'PUT'], $route->getAllowedMethods());
 
         $route->setAllowedMethods(['TRACE', 'PATCH']);
-        $this->assertEquals(['TRACE', 'PATCH'] , $route->getAllowedMethods());
-
-
+        $this->assertEquals(['TRACE', 'PATCH'], $route->getAllowedMethods());
     }
 
     public function testRequirementSanitize()
@@ -118,13 +115,13 @@ class RouteTest extends TestCase
         $route = new Route('/', 'foobar', 0);
 
         $route->setRequirements(['foo' => '^bar']);
-        $this->assertEquals(['foo' => 'bar'] , $route->getRequirements());
+        $this->assertEquals(['foo' => 'bar'], $route->getRequirements());
 
         $route->setRequirements(['foo' => 'bar$']);
-        $this->assertEquals(['foo' => 'bar'] , $route->getRequirements());
+        $this->assertEquals(['foo' => 'bar'], $route->getRequirements());
 
         $route->setRequirements(['foo' => '^bar$']);
-        $this->assertEquals(['foo' => 'bar'] , $route->getRequirements());
+        $this->assertEquals(['foo' => 'bar'], $route->getRequirements());
     }
 
     public function sanitizeInvalid()
@@ -181,6 +178,4 @@ class RouteTest extends TestCase
 
         $route->setAllowedMethods(['POST', 0, 'GET']);
     }
-
 }
-

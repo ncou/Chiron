@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron;
 
-use Psr\Http\Message\ServerRequestInterface;
 use Chiron\Config\ConfigInterface;
 use Chiron\Container\Container;
 use Chiron\Provider\ConfigServiceProvider;
@@ -17,6 +16,7 @@ use Chiron\Provider\ServerRequestCreatorServiceProvider;
 use Chiron\Provider\ServiceProviderInterface;
 use Chiron\Routing\RouterInterface;
 use InvalidArgumentException;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 
 //https://github.com/lambirou/babiphp/blob/master/system/Container/ReflectionContainer.php

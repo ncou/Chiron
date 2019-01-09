@@ -72,7 +72,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     /**
      * @param string $url
      * @param mixed  $handler
-     * @param int  $index
+     * @param int    $index
      */
     public function __construct(string $path, $handler, int $index)
     {

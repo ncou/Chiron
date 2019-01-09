@@ -7,10 +7,8 @@ namespace Chiron\Routing\Resolver;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-
 // TODO : réfléchir si il ne faut pas plutot merger cette méthode dans la classe Kernel (qui est un container) pour faire un peu comme ici => https://github.com/middlewares/utils/blob/master/src/RequestHandlerContainer.php
 // ou aussi un peu dans ce style là => https://github.com/zendframework/zend-expressive/blob/master/src/MiddlewareContainer.php
-
 
 //https://github.com/isholao/callableresolver/blob/1.x/src/Resolver.php
 
@@ -23,7 +21,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 //https://github.com/vixxjy/whmcs/blob/92caef678d7268ed9a15e018b4639b62ef20642c/vendor/middlewares/utils/src/CallableResolver/ReflectionResolver.php
 
 //https://github.com/lambirou/babiphp/blob/master/system/Container/ReflectionContainer.php
-
 
 /**
  * This class resolves a ControllerName of the format 'class@method' into a callable that can be invoked.
