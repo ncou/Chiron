@@ -22,21 +22,24 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+
 class RoutingMiddleware implements MiddlewareInterface
 {
-    // TODO : ajouter une phpdoc avec le type de cette variable (\RouterInterface)
+    /** @var RouterInterface */
     private $router;
+    /** @var ResponseFactoryInterface */
+    private $responseFactory;
+    /** @var StreamFactoryInterface */
+    private $streamFactory;
 
-    private $routes = [];
-
-    // TODO : ajouter un RouterInterface comme type hinting pour la paramétre $router
-    public function __construct(RouterInterface $router)
+    // TODO : passer en paramétre une responsefactory et un streamfactory.
+    public function __construct(RouterInterface $router, ResponseFactoryInterface $responseFactory, StreamFactoryInterface $streamFactory)
     {
         $this->router = $router;
-        /*
-        $this->router = new FastRouteCollector(
-            new \FastRoute\RouteParser\Std, new \FastRoute\DataGenerator\GroupCountBased
-        );*/
+        $this->responseFactory = $responseFactory;
+        $this->streamFactory = $streamFactory;
     }
 
     /**
@@ -54,9 +57,7 @@ class RoutingMiddleware implements MiddlewareInterface
             // The OPTIONS request should send back a response with some headers like "Allow" header.
             // TODO : vérifier le comportement avec CORS.
             if ($request->getMethod() === 'OPTIONS') {
-                //array_unshift($allowedMethods, 'OPTIONS');
-                // TODO : passer un responseFactory en paramétre de ce middleware !!!!!
-                return (new Response())->withHeader('Allow', implode(', ', array_merge(['OPTIONS'], $allowedMethods)));
+                return ($this->responseFactory->createResponse())->withHeader('Allow', implode(', ', $allowedMethods));
             }
 
             throw new MethodNotAllowedHttpException($allowedMethods);
@@ -69,23 +70,16 @@ class RoutingMiddleware implements MiddlewareInterface
         // TODO : faire plutot porter ces informations (method et uri utilisé) directement dans l'objet RouteResult ??????
         //$request = $request->withAttribute('routeInfo', [$request->getMethod(), (string) $request->getUri()]);
 
-        // TODO : bout de code permettant d'injecter les attributs dans la session, à déplacer dans la classe de strategie pour l'invocation des routes !!!!!
-        // Inject individual matched parameters.
-        /*
-        foreach ($result->getMatchedParams() as $param => $value) {
-            $request = $request->withAttribute($param, $value);
-            //$request = $request->withAttribute($param, urldecode($value)); // TODO : regarder si un urldecode est nécessaire.
-        }*/
-
-        // Inject the actual route result in the request
+        // Store the actual route result in the request attributes.
         $request = $request->withAttribute(RouteResult::class, $result);
 
         // Execute the next handler
         $response = $handler->handle($request);
+
         // As per RFC, HEAD request can't have a body.
         // TODO : déplacer ce bout de code dans le EmitterMiddleware ???? ATTENTION : bien vérifier ou se trouve le contentLengthMiddleware car il va devoir recalculer le header "Content-Length" à 0, suite au Body qui vient d'être supprimé !!!!
         if ($request->getMethod() === 'HEAD') {
-            $response = $response->withBody(new Stream(fopen('php://temp', 'wb+')));
+            $response = $response->withBody($this->streamFactory->createStream());
         }
 
         return $response;

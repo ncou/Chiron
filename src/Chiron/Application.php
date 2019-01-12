@@ -255,13 +255,12 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $responseFactory = $this->kernel->get(ResponseFactoryInterface::class);
         $emptyResponse = $responseFactory->createResponse(204);
 
-        $emptyResponse = new FixedResponseMiddleware($emptyResponse);
-
+        $this->pipeline->pipe($this->router->getMiddlewareStack());
         // add an empty response as default response if no route found and no 404 handler is added.
         //array_push($this->middlewares, $emptyResponse);
-        $this->router->middleware($emptyResponse);
+        $this->pipeline->pipe($emptyResponse);
 
-        $response = $this->pipeline->pipe($this->router->getMiddlewareStack())->handle($request);
+        $response = $this->pipeline->handle($request);
 
         return $response;
 

@@ -30,7 +30,7 @@ trait RouteCollectionTrait
     abstract public function map(string $path, $handler): Route;
 
     /**
-     * Add GET route.
+     * Add GET route. Also add the HEAD method because if you can do a GET request, you can also implicitly do a HEAD request.
      *
      * @see https://tools.ietf.org/html/rfc7231#section-4.3.1
      * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3
@@ -42,7 +42,7 @@ trait RouteCollectionTrait
      */
     public function get(string $pattern, $handler): Route
     {
-        return $this->map($pattern, $handler)->method('GET');
+        return $this->map($pattern, $handler)->method('GET', 'HEAD');
     }
 
     /**
@@ -161,8 +161,8 @@ trait RouteCollectionTrait
     }
 
     /**
-     * Add route for any (official or unofficial) HTTP method.
-     * use ->seAllowedMethods([]) with an empty array to support ALL the values (for custom method).
+     * Add route for any HTTP method.
+     * Supports the following methods : 'DELETE','GET','HEAD','OPTIONS','PATCH','POST','PUT','TRACE'
      *
      * @param string          $pattern The route URI pattern
      * @param callable|string $handler The route callback routine
@@ -171,6 +171,6 @@ trait RouteCollectionTrait
      */
     public function any(string $pattern, $handler): Route
     {
-        return $this->map($pattern, $handler)->setAllowedMethods(['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'TRACE']);
+        return $this->map($pattern, $handler); //->setAllowedMethods(['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'TRACE']);
     }
 }

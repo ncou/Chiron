@@ -18,11 +18,11 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class ApplicationStrategyTest extends TestCase
 {
-    public function testRouteStrategyWithoutRequestTypeHintting()
+    public function testRouteStrategyWithRequestTypeHintting()
     {
         $request = new ServerRequest('GET', new Uri('/foo'));
 
-        $routeCallback = function ($request) {
+        $routeCallback = function (ServerRequestInterface $request) {
             $response = new Response();
 
             return $response->write('SUCCESS');
@@ -38,11 +38,15 @@ class ApplicationStrategyTest extends TestCase
         $this->assertEquals('SUCCESS', (string) $response->getBody());
     }
 
-    public function testRouteStrategyWithRequestTypeHintting()
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Controller "Closure" requires that you provide a value for the "$request" argument (because there is no default value or because there is a non optional argument after this one).
+     */
+    public function testRouteStrategyWithoutRequestTypeHintting()
     {
         $request = new ServerRequest('GET', new Uri('/foo'));
 
-        $routeCallback = function (ServerRequestInterface $request) {
+        $routeCallback = function ($request) {
             $response = new Response();
 
             return $response->write('SUCCESS');

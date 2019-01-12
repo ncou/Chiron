@@ -11,14 +11,9 @@ use Chiron\Routing\Traits\RouteConditionHandlerTrait;
 use Chiron\Routing\Traits\StrategyAwareInterface;
 use Chiron\Routing\Traits\StrategyAwareTrait;
 use InvalidArgumentException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
+use LogicException;
 
-//https://github.com/ncou/Wandu-Router-group-prefix-middleware/blob/master/Route.php
-
-class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, MiddlewareAwareInterface, MiddlewareInterface
+class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, MiddlewareAwareInterface
 {
     use MiddlewareAwareTrait;
     use RouteConditionHandlerTrait;
@@ -52,7 +47,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @var array
      */
-    private $methods = [];
+    private $methods = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'];
 
     /** @var null|RouteGroup */
     private $group;
@@ -67,16 +62,22 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     /**
      * @var array
      */
-    private $vars = [];
+    private $parameters;
+
+    /**
+     * @var bool
+     */
+    private $isBinded = false;
 
     /**
      * @param string $url
-     * @param mixed  $handler
+     * @param mixed  $handler should be a string or a callable
      * @param int    $index
      */
     public function __construct(string $path, $handler, int $index)
     {
-        $this->path = $path;
+        // A path must start with a slash and must not have multiple slashes at the beginning because it would be confused with a network path, e.g. '//domain.com/path'.
+        $this->path = '/'.ltrim(trim($path), '/'); // sprintf('/%s', ltrim($path, '/'));
         // TODO : ajouter une vérification pour que le $handler soit un callable ou une string
         $this->handler = $handler;
         $this->identifier = 'route_' . $index;
@@ -87,7 +88,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
         return $this->path;
     }
 
-    // return : mixed
+    // return : mixed => should be a string or a callable
     public function getHandler()
     {
         return $this->handler;
@@ -140,8 +141,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     /**
      * Sets the defaults.
      *
-     * This method implements a fluent interface.
-     *
      * @param array $defaults The defaults
      *
      * @return $this
@@ -155,8 +154,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
 
     /**
      * Adds defaults.
-     *
-     * This method implements a fluent interface.
      *
      * @param array $defaults The defaults
      *
@@ -237,8 +234,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     /**
      * Sets the requirements.
      *
-     * This method implements a fluent interface.
-     *
      * @param array $requirements The requirements
      *
      * @return $this
@@ -252,8 +247,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
 
     /**
      * Adds requirements.
-     *
-     * This method implements a fluent interface.
      *
      * @param array $requirements The requirements
      *
@@ -383,6 +376,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
 
     /**
      * Alia function for "setAllowedMethods()".
+     * @param string or list of string
      */
     public function method(string $method, string ...$methods): self
     {
@@ -440,52 +434,5 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
         }
 
         return array_map('strtoupper', $methods);
-    }
-
-    /**
-     * Indicate whether the specified method is allowed by the route.
-     *
-     * @param string $method HTTP method to test.
-     */
-    /*
-    public function allowsMethod(string $method) : bool
-    {
-        $method = strtoupper($method);
-        if ($this->methods === self::HTTP_METHOD_ANY
-            || in_array($method, $this->methods, true)
-        ) {
-            return true;
-        }
-        return false;
-    }*/
-
-    /**
-     * Return variables to be passed to route callable.
-     *
-     * @return array
-     */
-    public function getVars(): array
-    {
-        return $this->vars;
-    }
-
-    /**
-     * Set variables to be passed to route callable.
-     *
-     * @param array $vars
-     *
-     * @return $this
-     */
-    public function setVars(array $vars): self
-    {
-        $this->vars = $vars;
-
-        return $this;
-    }
-
-    // TODO : il faudrait peut etre rendre le "RouteResult" comme un middleware et déplacer cette méthode dans le routeresult !!!! Ca éviterai aussi de faire porter les Vars par la classe Route.
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
-    {
-        return $this->getStrategy()->invokeRouteCallable($this, $request);
     }
 }

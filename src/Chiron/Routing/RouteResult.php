@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Chiron\Routing;
 
+use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
 // TODO : regarder ici : https://github.com/l0gicgate/Slim/blob/4.x-DispatcherResults/Slim/DispatcherResults.php
 //https://github.com/slimphp/Slim/blob/4.x/Slim/RoutingResults.php
 
@@ -27,7 +31,8 @@ namespace Chiron\Routing;
  * RouteResult instances are consumed by the Application in the routing
  * middleware.
  */
-class RouteResult
+// TODO : renommer la classe en RoutingResults ????
+class RouteResult implements RequestHandlerInterface
 {
     // TODO : voir si on déplace cette constante dans la classe "Route"
     public const HTTP_METHOD_ANY = null;
@@ -50,8 +55,6 @@ class RouteResult
     /**
      * Route matched during routing.
      *
-     * @since 1.3.0
-     *
      * @var Route
      */
     private $route;
@@ -62,7 +65,7 @@ class RouteResult
     private $success;
 
     /**
-     * Only allow instantiation via factory methods.
+     * Only allow instantiation via factory methods (fromRoute or fromRouteFailure).
      */
     //TODO : à virer !!! et créer un vrai constructeur !!!!
     private function __construct()
@@ -90,7 +93,6 @@ class RouteResult
      * @param null|array $methods HTTP methods allowed for the current URI, if any.
      *                            null is equivalent to allowing any HTTP method; empty array means none.
      */
-    //TODO : à virer !!!
     public static function fromRouteFailure(?array $methods): self
     {
         $result = new self();
@@ -106,47 +108,6 @@ class RouteResult
     public function isSuccess(): bool
     {
         return $this->success;
-    }
-
-    /**
-     * Retrieve the route that resulted in the route match.
-     *
-     * @return false|null|Route false if representing a routing failure;
-     *                          null if not created via fromRoute(); Route instance otherwise
-     */
-    public function getMatchedRoute()
-    {
-        return $this->isFailure() ? false : $this->route;
-    }
-
-    /**
-     * Retrieve the matched route name, if possible.
-     *
-     * If this result represents a failure, return false; otherwise, return the
-     * matched route name.
-     *
-     * @return false|string
-     */
-    public function getMatchedRouteName()
-    {
-        if ($this->isFailure()) {
-            return false;
-        }
-        if (! $this->matchedRouteName && $this->route) {
-            $this->matchedRouteName = $this->route->getName();
-        }
-
-        return $this->matchedRouteName;
-    }
-
-    /**
-     * Returns the matched params.
-     *
-     * Guaranted to return an array, even if it is simply empty.
-     */
-    public function getMatchedParams(): array
-    {
-        return $this->matchedParams;
     }
 
     /**
@@ -170,6 +131,49 @@ class RouteResult
     }
 
     /**
+     * Retrieve the route that resulted in the route match.
+     *
+     * @return false|null|Route false if representing a routing failure;
+     *                          null if not created via fromRoute(); Route instance otherwise
+     */
+    public function getMatchedRoute()
+    {
+        return $this->isFailure() ? false : $this->route;
+    }
+
+    /**
+     * Retrieve the matched route name, if possible.
+     *
+     * If this result represents a failure, return false; otherwise, return the
+     * matched route name.
+     *
+     * @return false|string
+     */
+    // TODO : méthode à virer
+    public function getMatchedRouteName()
+    {
+        if ($this->isFailure()) {
+            return false;
+        }
+        if (! $this->matchedRouteName && $this->route) {
+            $this->matchedRouteName = $this->route->getName();
+        }
+
+        return $this->matchedRouteName;
+    }
+
+    /**
+     * Returns the matched params.
+     *
+     * Guaranted to return an array, even if it is simply empty.
+     */
+    // TODO : faire un rawurldecode sur les paramétres ???? => https://github.com/slimphp/Slim/blob/4.x/Slim/RoutingResults.php#L121
+    public function getMatchedParams(): array
+    {
+        return $this->matchedParams;
+    }
+
+    /**
      * Retrieve the allowed methods for the route failure.
      *
      * @return null|string[] HTTP methods allowed
@@ -183,5 +187,36 @@ class RouteResult
         }
 
         return $this->allowedMethods;
+    }
+
+    /**
+     * Retrieve all the middlewares.
+     *
+     * If this result represents a failure, return false; otherwise, return the
+     * middleware of the Route + middleware of the RouteGroup.
+     *
+     * @return false|string
+     */
+    public function gatherMiddlewareStack()
+    {
+        if ($this->isFailure()) {
+            return false;
+        }
+
+        $middlewares = $this->route->getMiddlewareStack();
+        // merge the group middlewares with the route middlewares.
+        if ($group = $this->route->getParentGroup()) {
+            $middlewares = array_merge($middlewares, $group->getMiddlewareStack());
+        }
+
+        return $middlewares;
+    }
+
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        // Merge the default values defined in the Route with the parameters, and add the request class name used to resole the callable parameters using type hint.
+        $params = array_merge($this->route->getDefaults(), $this->matchedParams, [ServerRequestInterface::class => $request]);
+
+        return $this->route->getStrategy()->invokeRouteCallable($this->route->getHandler(), $params, $request);
     }
 }

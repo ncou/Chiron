@@ -24,31 +24,14 @@ use Psr\Http\Message\ServerRequestInterface;
 class Invoker
 {
     /**
-     * Wrapper around the call_user_func_array function to execute the callable.
-     *
-     * @param ServerRequestInterface $request
-     * @param callable               $callback
-     * @param array                  $matched
-     *
-     * @return mixed
-     */
-    public function call(ServerRequestInterface $request, callable $callback, array $matched)
-    {
-        $parameters = $this->bindParameters($request, $callback, $matched);
-
-        return call_user_func_array($callback, $parameters);
-    }
-
-    /**
      * Bind the matched parameters from the request with the callable parameters.
      *
-     * @param ServerRequestInterface $request
      * @param callable               $controller the callable to be executed
      * @param array                  $matched    the parameters extracted from the uri
      *
      * @return array The
      */
-    protected function bindParameters(ServerRequestInterface $request, callable $controller, array $matched): array
+    protected function bindParameters(callable $controller, array $matched): array
     {
         if (is_array($controller)) {
             $reflector = new \ReflectionMethod($controller[0], $controller[1]);
@@ -67,21 +50,16 @@ class Invoker
         foreach ($parameters as $param) {
             // @notice \ReflectionType::getName() is not supported in PHP 7.0, that is why we use __toString()
             $paramType = $param->hasType() ? $param->getType()->__toString() : '';
+            $paramClass = $param->getClass();
 
             if (array_key_exists($param->getName(), $matched)) {
                 $bindParams[] = $this->transformToScalar($matched[$param->getName()], $paramType);
-            } elseif ($param->getClass() && $param->getClass()->isInstance($request)) {
-                //} elseif (ServerRequestInterface::class == $param->getType() || is_subclass_of($param->getType(), ServerRequestInterface::class)) {
-                //} elseif (ServerRequestInterface::class == $paramType || is_subclass_of($paramType, ServerRequestInterface::class)) {
-                $bindParams[] = $request;
+            } elseif ($paramClass && array_key_exists($paramClass->getName(), $matched)) {
+                $bindParams[] = $matched[$paramClass->getName()];
             } elseif ($param->isDefaultValueAvailable()) {
                 $bindParams[] = $param->getDefaultValue();
             //} elseif ($param->hasType() && $param->allowsNull()) {
             //    $result[] = null;
-            } elseif (empty($paramType) && count($parameters) === 1) {
-                // handle special case when there is only 1 parameter and no typehintting.
-                // We suppose the user want the request => probably a closure without the typehint "ServerRequestInterface" :(
-                $bindParams[] = $request;
             } else {
                 // can't find the value, or the default value for the parameter => throw an error
                 throw new InvalidArgumentException(sprintf(
@@ -122,5 +100,20 @@ class Invoker
         }
 
         return $parameter;
+    }
+
+    /**
+     * Wrapper around the call_user_func_array function to execute the callable.
+     *
+     * @param callable               $callback
+     * @param array                  $matched
+     *
+     * @return mixed
+     */
+    public function call(callable $callback, array $matched)
+    {
+        $parameters = $this->bindParameters($callback, $matched);
+
+        return call_user_func_array($callback, $parameters);
     }
 }

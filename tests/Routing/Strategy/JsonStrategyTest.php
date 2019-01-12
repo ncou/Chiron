@@ -27,14 +27,13 @@ class JsonStrategyTest extends TestCase
         $strategy = new JsonStrategy(new ResponseFactory(), new ControllerResolver());
 
         $data = ['foo' => 'bar'];
-        $callback = function (ServerRequestInterface $request) use ($data) {
+        $callback = function () use ($data) {
             return $data;
         };
 
-        $route = new Route('/', $callback, 0);
         $request = new ServerRequest('GET', new Uri('/'));
 
-        $response = $strategy->invokeRouteCallable($route, $request);
+        $response = $strategy->invokeRouteCallable($callback, [], $request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame('application/json', $response->getHeaderLine('content-type'));
@@ -54,14 +53,13 @@ class JsonStrategyTest extends TestCase
     {
         $strategy = new JsonStrategy(new ResponseFactory(), new ControllerResolver());
 
-        $callback = function (ServerRequestInterface $request) use ($data) {
+        $callback = function () use ($data) {
             return $data;
         };
 
-        $route = new Route('/', $callback, 0);
         $request = new ServerRequest('GET', new Uri('/'));
 
-        $response = $strategy->invokeRouteCallable($route, $request);
+        $response = $strategy->invokeRouteCallable($callback, [], $request);
     }
 
     /**
@@ -74,14 +72,13 @@ class JsonStrategyTest extends TestCase
         $strategy = new JsonStrategy(new ResponseFactory(), new ControllerResolver());
         $strategy->setEncodingOptions($strategy->getEncodingOptions() | JSON_PARTIAL_OUTPUT_ON_ERROR);
 
-        $callback = function (ServerRequestInterface $request) use ($data) {
+        $callback = function () use ($data) {
             return $data;
         };
 
-        $route = new Route('/', $callback, 0);
         $request = new ServerRequest('GET', new Uri('/'));
 
-        $response = $strategy->invokeRouteCallable($route, $request);
+        $response = $strategy->invokeRouteCallable($callback, [], $request);
 
         $this->assertInstanceOf(Response::class, $response);
     }
@@ -117,14 +114,13 @@ class JsonStrategyTest extends TestCase
     {
         $strategy = new JsonStrategy(new ResponseFactory(), new ControllerResolver());
 
-        $callback = function (ServerRequestInterface $request) use ($data) {
+        $callback = function () use ($data) {
             return $data;
         };
 
-        $route = new Route('/', $callback, 0);
         $request = new ServerRequest('GET', new Uri('/'));
 
-        $response = $strategy->invokeRouteCallable($route, $request);
+        $response = $strategy->invokeRouteCallable($callback, [], $request);
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(json_encode($data, JsonStrategy::DEFAULT_JSON_FLAGS), (string) $response->getBody());

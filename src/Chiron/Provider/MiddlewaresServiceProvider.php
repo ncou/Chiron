@@ -22,7 +22,8 @@ use Chiron\Http\Middleware\ContentTypeByDefaultMiddleware;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\EmitterMiddleware;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
-//use Chiron\Http\Middleware\ErrorHandlerMiddleware;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Chiron\Http\Middleware\OriginalRequestMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\KernelInterface;
@@ -45,7 +46,7 @@ class MiddlewaresServiceProvider extends ServiceProvider
     public function register(KernelInterface $kernel): void
     {
         $kernel[RoutingMiddleware::class] = function ($c) {
-            return new RoutingMiddleware($c[RouterInterface::class]);
+            return new RoutingMiddleware($c[RouterInterface::class], $c[ResponseFactoryInterface::class], $c[StreamFactoryInterface::class]);
         };
 
         $kernel[DispatcherMiddleware::class] = function ($c) {

@@ -46,17 +46,16 @@ class JsonStrategy implements StrategyInterface
         $this->invoker = new Invoker();
     }
 
-    public function invokeRouteCallable(Route $route, ServerRequestInterface $request): ResponseInterface
+    public function invokeRouteCallable($handler, array $params, ServerRequestInterface $request): ResponseInterface
     {
-        $params = $route->getVars();
         // Inject individual matched parameters.
         foreach ($params as $param => $value) {
             $request = $request->withAttribute($param, $value);
         }
 
-        $callable = $this->resolver->resolve($route->getHandler());
+        $callable = $this->resolver->resolve($handler);
 
-        $content = $this->invoker->call($request, $callable, $params);
+        $content = $this->invoker->call($callable, $params);
 
         // TODO : lever une exception si le retour renvoyé par le controller n'est pas : JsonSerializableInterface ou ArrayObject ou is_array
         if (! $content instanceof ResponseInterface) {

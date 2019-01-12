@@ -19,6 +19,7 @@ use RuntimeException;
 
 //https://github.com/zendframework/zend-expressive-fastroute/blob/master/src/FastRouteRouter.php
 
+// TODO : il manque head et options dans la phpdoc
 /**
  * Aggregate routes for the router.
  *
@@ -69,8 +70,20 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
         '/{(.+?):word}/'          => '{$1:[a-zA-Z]+}',
         '/{(.+?):alphanum_dash}/' => '{$1:[a-zA-Z0-9-_]+}',
         '/{(.+?):slug}/'          => '{$1:[a-z0-9-]+}',
-        '/{(.+?):uuid}/'          => '{$1:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}+}',
+        '/{(.+?):uuid}/'          => '{$1:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}}',
     ];
+
+    /*
+
+    ':any' => '[^/]+',
+    ':all' => '.*'
+
+
+    '*'  => '.+?',
+    '**' => '.++',
+
+
+    */
 
     /**
      * @var string Can be used to ignore leading part of the Request URL (if main file lives in subdirectory of host)
@@ -98,6 +111,23 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     }
 
     /**
+     * Add a convenient pattern matcher to the internal array for use with all routes.
+     *
+     * @param string $alias
+     * @param string $regex
+     *
+     * @return self
+     */
+    public function addPatternMatcher(string $alias, string $regex): self
+    {
+        $pattern = '/{(.+?):' . $alias . '}/';
+        $regex = '{$1:' . $regex . '}';
+        $this->patternMatchers[$pattern] = $regex;
+
+        return $this;
+    }
+
+    /**
      * Set the base path.
      * Useful if you are running your application from a subdirectory.
      */
@@ -121,10 +151,12 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      */
     public function map(string $path, $handler): Route
     {
+        // TODO : il faudrait peut etre remonter ce controle durectement dans l'objet Route() non ????
         if (! is_string($handler) && ! is_callable($handler)) {
             throw new InvalidArgumentException('Route Handler should be a callable or a string (if defined in the container).');
         }
 
+        // TODO : attention vérifier si cette modification du path avec un slash n'est pas en doublon avec celle qui est faite dans la classe Route !!!!
         $path = sprintf('/%s', ltrim($path, '/'));
         $route = new Route($path, $handler, $this->routeCounter);
         $this->routes[$route->getIdentifier()] = $route;
@@ -189,6 +221,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      */
+    // TODO : méthode à renommer en injectRoutes()
     private function prepareRoutes(ServerRequestInterface $request): void
     {
         //$this->processGroups();
@@ -211,13 +244,49 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
             if (is_null($route->getStrategy())) {
                 // Throw an exception if there is not a default strategy defined.
                 if (is_null($this->getStrategy())) {
-                    throw new RuntimeException('A defaut strategy should be defined in the Router is there is no specific strategy defined for the Route.');
+                    throw new RuntimeException('A defaut strategy should be defined in the Router, as there is no specific strategy defined for the Route.');
                 }
                 $route->setStrategy($this->getStrategy());
             }
 
-            $this->addRoute($route->getAllowedMethods(), $this->parseRoutePath($route->getPath()), $route->getIdentifier());
+            $routePath = $this->replaceAssertPatterns($route->getRequirements(), $route->getPath());
+            $routePath = $this->replaceWordPatterns($routePath);
+
+            $this->addRoute($route->getAllowedMethods(), $this->basePath . $routePath, $route->getIdentifier());
         }
+    }
+
+    /**
+     * Add or replace the requirement pattern inside the route path.
+     *
+     * @param array $requirements
+     * @param string $path
+     *
+     * @return string
+     */
+    private function replaceAssertPatterns(array $requirements, string $path): string
+    {
+        $patternAssert = [];
+        foreach ($requirements as $attribute => $pattern) {
+            // it will replace {attribute_name} to {attribute_name:$pattern}, work event if there is alreay a patter {attribute_name:pattern_to_remove} to {attribute_name:$pattern}
+            // the second regex group (starting with the char ':') will be discarded.
+            $patternAssert['/{(' . $attribute . ')(\:.*)?}/'] = '{$1:' . $pattern . '}';
+            //$patternAssert['/{(' . $attribute . ')}/'] = '{$1:' . $pattern . '}'; // TODO : réfléchir si on utilise cette regex, dans ce cas seulement les propriétés qui n'ont pas déjà un pattern de défini (c'est à dire une partie avec ':pattern')
+        }
+
+        return preg_replace(array_keys($patternAssert), array_values($patternAssert), $path);
+    }
+
+    /**
+     * Replace word patterns with regex in route path.
+     *
+     * @param string $path
+     *
+     * @return string
+     */
+    private function replaceWordPatterns(string $path): string
+    {
+        return preg_replace(array_keys($this->patternMatchers), array_values($this->patternMatchers), $path);
     }
 
     /**
@@ -225,17 +294,16 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      *
      * The syntax used in the $route string depends on the used route parser.
      *
-     * @param string|string[] $httpMethod
+     * @param string[] $httpMethod
      * @param string          $routePath
-     * @param mixed           $handler
+     * @param string          $routeId
      */
-    private function addRoute($httpMethod, string $routePath, $handler): void
+    private function addRoute(array $httpMethod, string $routePath, string $routeId): void
     {
-        $routePath = $this->basePath . $routePath;
         $routeDatas = $this->parser->parse($routePath);
-        foreach ((array) $httpMethod as $method) {
+        foreach ($httpMethod as $method) {
             foreach ($routeDatas as $routeData) {
-                $this->generator->addRoute($method, $routeData, $handler);
+                $this->generator->addRoute($method, $routeData, $routeId);
             }
         }
     }
@@ -285,35 +353,6 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     }
 
     /**
-     * Add a convenient pattern matcher to the internal array for use with all routes.
-     *
-     * @param string $alias
-     * @param string $regex
-     *
-     * @return self
-     */
-    public function addPatternMatcher(string $alias, string $regex): self
-    {
-        $pattern = '/{(.+?):' . $alias . '}/';
-        $regex = '{$1:' . $regex . '}';
-        $this->patternMatchers[$pattern] = $regex;
-
-        return $this;
-    }
-
-    /**
-     * Replace word patterns with regex in route path.
-     *
-     * @param string $path
-     *
-     * @return string
-     */
-    private function parseRoutePath(string $path): string
-    {
-        return preg_replace(array_keys($this->patternMatchers), array_values($this->patternMatchers), $path);
-    }
-
-    /**
      * Build the path for a named route including the base path.
      *
      * @param string $name        Route name
@@ -350,6 +389,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      */
     // TODO : renommer cette fonction en "generateUri()", et renommer le paramétre "$data" en "$substitutions" et éventuellement virer la partie $queryParams ???? non ????
     // TODO : ajouter la gestion des segments en plus des query params ???? https://github.com/ellipsephp/url-generator/blob/master/src/UrlGenerator.php#L42
+    // TODO : regarder si on peut améliorer le code => https://github.com/zendframework/zend-expressive-fastroute/blob/master/src/FastRouteRouter.php#L239
     public function relativePathFor(string $name, array $substitutions = [], array $queryParams = []): string
     {
         $route = $this->getNamedRoute($name);

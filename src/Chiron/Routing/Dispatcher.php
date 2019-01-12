@@ -21,20 +21,22 @@ class Dispatcher extends GroupCountBasedDispatcher
     /**
      * Dispatch the current route.
      *
+     * @link   https://github.com/nikic/FastRoute/blob/master/src/Dispatcher.php
+     *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
     public function dispatchRequest(ServerRequestInterface $request): RouteResult
     {
-        $method = $request->getMethod();
-        $path = $request->getUri()->getPath(); //TODO vérifier pourquoi certain font un rawurldecode exemple dans Slim :    $uri = '/' . ltrim(rawurldecode($request->getUri()->getPath()), '/');
+        $httpMethod = $request->getMethod();
+        $uri = rawurldecode($request->getUri()->getPath()); //$uri = '/' . ltrim($request->getUri()->getPath(), '/');
 
-        $result = $this->dispatch($method, $path);
+        $result = $this->dispatch($httpMethod, $uri);
 
         return $result[0] !== self::FOUND
             ? $this->marshalFailedRoute($result)
-            : $this->marshalMatchedRoute($result, $method);
+            : $this->marshalMatchedRoute($result);
     }
 
     /**
@@ -55,13 +57,12 @@ class Dispatcher extends GroupCountBasedDispatcher
     /**
      * Marshals a route result based on the results of matching and the current HTTP method.
      */
-    private function marshalMatchedRoute(array $result, string $method): RouteResult
+    // TODO : attention le paramétre $method n'est pas utilisé !!!! => https://github.com/zendframework/zend-expressive-fastroute/blob/master/src/FastRouteRouter.php#L397
+    private function marshalMatchedRoute(array $result): RouteResult
     {
         $identifier = $result[1];
         $route = $this->routes[$identifier];
         $params = $result[2];
-
-        $params = array_map('urldecode', $params);
 
         return RouteResult::fromRoute($route, $params);
     }

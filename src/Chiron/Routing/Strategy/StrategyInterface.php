@@ -13,10 +13,11 @@ interface StrategyInterface
     /**
      * Invoke the route callable based on the strategy.
      *
-     * @param Route                                    $route
+     * @param string|callable                                    $handler
+     * @param array $params
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function invokeRouteCallable(Route $route, ServerRequestInterface $request): ResponseInterface;
+    public function invokeRouteCallable($handler, array $params, ServerRequestInterface $request): ResponseInterface;
 }

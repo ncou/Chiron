@@ -8,6 +8,14 @@ use Chiron\Routing\Route;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
+use Chiron\Routing\Traits\MiddlewareAwareInterface;
+
+use Chiron\Routing\Traits\RouteConditionHandlerInterface;
+
+use Chiron\Routing\Traits\StrategyAwareInterface;
+//use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+
 /**
  * @covers \Chiron\Routing\Route
  */
@@ -27,6 +35,22 @@ class RouteTest extends TestCase
         // test with a string for handler
         $route = new Route('/', 'foobar', 100);
         $this->assertSame('foobar', $route->getHandler());
+
+        $this->assertInstanceOf(RouteConditionHandlerInterface::class, $route);
+        $this->assertInstanceOf(StrategyAwareInterface::class, $route);
+        $this->assertInstanceOf(MiddlewareAwareInterface::class, $route);
+    }
+
+    public function testPath()
+    {
+        $route = new Route('/{bar}', 'handler', 0);
+        $this->assertEquals('/{bar}', $route->getPath());
+        $route = new Route('', 'handler', 0);
+        $this->assertEquals('/', $route->getPath());
+        $route = new Route('bar', 'handler', 0);
+        $this->assertEquals('/bar', $route->getPath());
+        $route = new Route('//path', 'handler', 0);
+        $this->assertEquals('/path', $route->getPath());
     }
 
     // TODO : tester le getParentGroup et le setParentGroup
@@ -98,7 +122,7 @@ class RouteTest extends TestCase
     public function testMethodGetterSetter()
     {
         $route = new Route('/', 'foobar', 0);
-        $this->assertEquals([], $route->getAllowedMethods());
+        $this->assertEquals(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'], $route->getAllowedMethods());
 
         $route->method('GET');
         $this->assertEquals(['GET'], $route->getAllowedMethods());
