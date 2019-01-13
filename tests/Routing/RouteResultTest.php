@@ -34,6 +34,12 @@ class RouteResultTest extends TestCase
         $this->assertFalse($result->getMatchedRouteName());
     }
 
+    public function testRouteMiddlewareStackIsNotRetrievable()
+    {
+        $result = RouteResult::fromRouteFailure([]);
+        $this->assertFalse($result->getMatchedRouteMiddlewareStack());
+    }
+
 // TODO : à corriger
     public function testRouteFailureRetrieveAllHttpMethods()
     {
@@ -90,8 +96,10 @@ class RouteResultTest extends TestCase
         $result = $data['result'];
         $route = $data['route'];
         $route->getName()->willReturn('route');
+        $route->gatherMiddlewareStack()->willReturn(['middleware']);
         $route->getAllowedMethods()->willReturn(['HEAD', 'OPTIONS', 'GET']);
         $this->assertEquals('route', $result->getMatchedRouteName());
+        $this->assertEquals(['middleware'], $result->getMatchedRouteMiddlewareStack());
         $this->assertEquals(['HEAD', 'OPTIONS', 'GET'], $result->getAllowedMethods());
     }
 
