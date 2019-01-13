@@ -48,7 +48,65 @@ class RouteGroupTest extends TestCase
         $this->assertEquals('/prefix/group/bar', ($router->getRoutes()[2])->getPath());
     }
 
-    public function testRouteGroupWithOverrideHostPortScheme()
+    public function testRouteGroupOfGroup()
+    {
+        $router = new Router();
+
+        $routeGroup = $router->group('/prefix', function ($group) {
+            $group->group('/group/', function ($group) {
+                $group->get('/foo', function () {
+                    return 'ROUTE_1';
+                })->name('test_1');
+            });
+        });
+
+        $this->assertEquals('/prefix/group/foo', $router->getNamedRoute('test_1')->getPath());
+
+        $routeGroup->group('/baz', function ($group) {
+            $group->group('/qux/', function ($group) {
+                $group->get('/user', function () {
+                    return 'ROUTE_2';
+                })->name('test_2');
+            });
+        });
+
+        $this->assertEquals('/prefix/baz/qux/user', $router->getNamedRoute('test_2')->getPath());
+    }
+
+    public function testRouteOverrideStrategyAndConditions()
+    {
+        $router = new Router();
+        $strategyMock = $this->createMock(StrategyInterface::class);
+
+        $routeGroup = $router->group('/prefix', function ($group) use ($strategyMock) {
+
+            $group->map('/foo', function () {
+                return 'ROUTE_1';
+            })->name('test_1')->scheme('http')->host('host')->port(80)->setStrategy($strategyMock);
+
+            $group->group('/group/', function ($group) {
+                $group->get('/foo', function () {
+                    return 'ROUTE_2';
+                })->name('test_2');
+            })->scheme('https')->host('host2')->port(81)->setStrategy($strategyMock);
+        });
+
+        $route_1 = $router->getNamedRoute('test_1');
+        $this->assertEquals('/prefix/foo', $route_1->getPath());
+        $this->assertEquals($strategyMock, $route_1->getStrategy());
+        $this->assertEquals(80, $route_1->getPort());
+        $this->assertEquals('host', $route_1->getHost());
+        $this->assertEquals('http', $route_1->getScheme());
+
+        $route_2 = $router->getNamedRoute('test_2');
+        $this->assertEquals('/prefix/group/foo', $route_2->getPath());
+        $this->assertEquals($strategyMock, $route_2->getStrategy());
+        $this->assertEquals(81, $route_2->getPort());
+        $this->assertEquals('host2', $route_2->getHost());
+        $this->assertEquals('https', $route_2->getScheme());
+    }
+
+    public function testRouteGroupOfGroupWithOverrideHostPortScheme()
     {
         $router = new Router();
 
@@ -178,57 +236,22 @@ class RouteGroupTest extends TestCase
         $this->assertEquals($strategyMock, $group->getStrategy());
     }
 
-    /**
-     * Asserts that the collection can map and return a route object.
-     */
-    public function testRouteCollectionTraitHttpMethods()
+    public function httpMethods()
     {
-        $router = new Router();
-        $group = $router->group('/prefix', function ($group) {
-            $group->get('/get/', 'foobar');
-            $group->post('/post/', 'foobar');
-            $group->put('/put/', 'foobar');
-            $group->patch('/patch/', 'foobar');
-            $group->delete('/delete/', 'foobar');
-            $group->head('/head/', 'foobar');
-            $group->options('/options/', 'foobar');
-            $group->trace('/trace/', 'foobar');
-        });
-
-        $routes = $router->getRoutes();
-
-        $this->assertSame(8, count($routes));
-
-        $route_1 = $router->getRoutes()[0];
-        $this->assertSame([strtoupper('get')], $route_1->getAllowedMethods());
-
-        $route_2 = $router->getRoutes()[1];
-        $this->assertSame([strtoupper('post')], $route_2->getAllowedMethods());
-
-        $route_3 = $router->getRoutes()[2];
-        $this->assertSame([strtoupper('put')], $route_3->getAllowedMethods());
-
-        $route_4 = $router->getRoutes()[3];
-        $this->assertSame([strtoupper('patch')], $route_4->getAllowedMethods());
-
-        $route_5 = $router->getRoutes()[4];
-        $this->assertSame([strtoupper('delete')], $route_5->getAllowedMethods());
-
-        $route_6 = $router->getRoutes()[5];
-        $this->assertSame([strtoupper('head')], $route_6->getAllowedMethods());
-
-        $route_7 = $router->getRoutes()[6];
-        $this->assertSame([strtoupper('options')], $route_7->getAllowedMethods());
-
-        $route_8 = $router->getRoutes()[7];
-        $this->assertSame([strtoupper('trace')], $route_8->getAllowedMethods());
+        return [['get'], ['post'], ['put'], ['patch'], ['delete'], ['head'], ['options'], ['trace']];
     }
 
-    public function testRouteCollectionTraitMap()
+    /**
+     * Asserts that the collection can map and return a route object.
+     *
+     * @dataProvider httpMethods
+     */
+    public function testRouteCollectionTraitHttpMethods($method)
     {
         $router = new Router();
-        $group = $router->group('/prefix', function ($group) {
-            $group->map('/', 'foobar');
+
+        $group = $router->group('/prefix', function ($group) use ($method) {
+            $group->{$method}('/', 'foobar');
         });
 
         $routes = $router->getRoutes();
@@ -237,6 +260,25 @@ class RouteGroupTest extends TestCase
 
         $route = $router->getRoutes()[0];
 
-        $this->assertSame(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'], $route->getAllowedMethods());
+        $this->assertSame([strtoupper($method)], $route->getAllowedMethods());
+    }
+
+    public function testRouteCollectionTraitMapAndAny()
+    {
+        $router = new Router();
+        $group = $router->group('/prefix', function ($group) {
+            $group->map('/', 'foobar');
+            $group->any('/', 'foobar');
+        });
+
+        $routes = $router->getRoutes();
+
+        $this->assertSame(2, count($routes));
+
+        $route_1 = $router->getRoutes()[0];
+        $this->assertSame(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'], $route_1->getAllowedMethods());
+
+        $route_2 = $router->getRoutes()[1];
+        $this->assertSame(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'], $route_2->getAllowedMethods());
     }
 }

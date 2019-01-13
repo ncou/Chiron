@@ -14,7 +14,7 @@ use Chiron\Routing\Strategy\ApplicationStrategy;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \Chiron\Routing\Route
+ * @covers \Chiron\Routing\Router
  */
 class RouterTest extends TestCase
 {
@@ -40,17 +40,18 @@ class RouterTest extends TestCase
         $this->assertSame([strtoupper($method)], $route->getAllowedMethods());
     }
 
-    public function testRouteCollectionTraitMap()
+    public function testRouteCollectionTraitMapAndAny()
     {
         $router = new Router();
         $path = '/something';
         $callable = function () {
         };
 
-        $route = $router->map($path, $callable);
+        $route_1 = $router->map($path, $callable);
+        $this->assertSame(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'], $route_1->getAllowedMethods());
 
-        $this->assertInstanceOf(Route::class, $route);
-        $this->assertSame(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'], $route->getAllowedMethods());
+        $route_2 = $router->any($path, $callable);
+        $this->assertSame(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'], $route_2->getAllowedMethods());
     }
 
     public function matchWithUrlEncodedSpecialCharsDataProvider()
