@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron\Routing;
 
-use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 // TODO : regarder ici : https://github.com/l0gicgate/Slim/blob/4.x-DispatcherResults/Slim/DispatcherResults.php
 //https://github.com/slimphp/Slim/blob/4.x/Slim/RoutingResults.php

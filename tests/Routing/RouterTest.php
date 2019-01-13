@@ -4,24 +4,14 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Routing;
 
-use Chiron\Routing\Route;
-use Chiron\Routing\Router;
-use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
-use Chiron\Routing\Strategy\ApplicationStrategy;
-
-use Chiron\Routing\Traits\MiddlewareAwareInterface;
-
-use Chiron\Routing\Traits\RouteConditionHandlerInterface;
-
-use Chiron\Routing\Traits\StrategyAwareInterface;
-
-use Psr\Http\Server\RequestHandlerInterface;
+use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Http\Factory\ResponseFactory;
-
 use Chiron\Routing\Resolver\ControllerResolver;
+use Chiron\Routing\Route;
+use Chiron\Routing\Router;
+use Chiron\Routing\Strategy\ApplicationStrategy;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Chiron\Routing\Route
@@ -42,7 +32,8 @@ class RouterTest extends TestCase
     {
         $router = new Router();
         $path = '/something';
-        $callable = function() {};
+        $callable = function () {
+        };
 
         $route = $router->{$method}($path, $callable);
 
@@ -56,7 +47,8 @@ class RouterTest extends TestCase
     {
         $router = new Router();
         $path = '/something';
-        $callable = function() {};
+        $callable = function () {
+        };
 
         $route = $router->map($path, $callable);
 

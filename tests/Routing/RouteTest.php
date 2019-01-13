@@ -5,17 +5,13 @@ declare(strict_types=1);
 namespace Chiron\Tests\Routing;
 
 use Chiron\Routing\Route;
-use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
-
-use Chiron\Routing\Traits\MiddlewareAwareInterface;
-
-use Chiron\Routing\Traits\RouteConditionHandlerInterface;
-
-use Chiron\Routing\Traits\StrategyAwareInterface;
-//use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use Chiron\Routing\Strategy\StrategyInterface;
+use Chiron\Routing\Traits\MiddlewareAwareInterface;
+use Chiron\Routing\Traits\RouteConditionHandlerInterface;
+use Chiron\Routing\Traits\StrategyAwareInterface;
+use InvalidArgumentException;
+//use Psr\Http\Server\MiddlewareInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Chiron\Routing\Route
@@ -25,7 +21,8 @@ class RouteTest extends TestCase
     public function testConstructor()
     {
         // test with a callable for handler
-        $callback = function () {};
+        $callback = function () {
+        };
         $route = new Route('/', $callback, 100);
         $this->assertSame($callback, $route->getHandler());
 
