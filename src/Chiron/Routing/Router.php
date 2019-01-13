@@ -263,11 +263,6 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
         }
     }
 
-    public function groups(): array
-    {
-        return $this->groups;
-    }
-
     /**
      * Add or replace the requirement pattern inside the route path.
      *
