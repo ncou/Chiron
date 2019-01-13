@@ -42,6 +42,7 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
      * @param callable        $callback
      * @param RouterInterface $router
      */
+    // TODO : vérifier si on pas plutot utiliser un Closure au lieu d'un callable pour le typehint
     public function __construct(string $prefix, callable $callback, RouterInterface $router)
     {
         $this->callback = $callback;
@@ -54,17 +55,19 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
      *
      * @return string
      */
+    // TODO : vérifier l'utilité de cette méthode !!!! de ma vision elle ne sert à rien !!!!
+    /*
     public function getPrefix(): string
     {
         return $this->prefix;
-    }
+    }*/
 
     /**
      * {@inheritdoc}
      */
     public function map(string $path, $handler): Route
     {
-        $path = ($path === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($path, '/'));
+        $path = ($path === '/') ? $this->prefix : rtrim($this->prefix, '/') . sprintf('/%s', ltrim($path, '/'));
 
         $route = $this->router->map($path, $handler);
 
@@ -87,11 +90,31 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
         return $route;
     }
 
-    public function group(string $prefix, callable $group): RouteGroup
+    // TODO : vérifier si on pas plutot utiliser un Closure au lieu d'un callable pour le typehint
+    public function group(string $prefix, callable $callback): RouteGroup
     {
-        $prefix = ($prefix === '/') ? $this->prefix : $this->prefix . sprintf('/%s', ltrim($prefix, '/'));
+        $prefix = ($prefix === '/') ? $this->prefix : rtrim($this->prefix, '/') . sprintf('/%s', ltrim($prefix, '/'));
 
-        return $this->router->group($prefix, $group);
+        $group = $this->router->group($prefix, $callback);
+
+        // in cases of group of groups, we need to persist the settings from the previous group in the new one.
+        if ($host = $this->getHost()) {
+            $group->setHost($host);
+        }
+        if ($scheme = $this->getScheme()) {
+            $group->setScheme($scheme);
+        }
+        if ($port = $this->getPort()) {
+            $group->setPort($port);
+        }
+        if ($strategy = $this->getStrategy()) {
+            $group->setStrategy($strategy);
+        }
+
+        // merge all the previous group middlewares in this last group.
+        $group->middleware(array_merge($this->getMiddlewareStack(), $group->getMiddlewareStack()));
+
+        return $group;
     }
 
     /**

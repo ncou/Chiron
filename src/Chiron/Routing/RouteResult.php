@@ -53,6 +53,11 @@ class RouteResult implements RequestHandlerInterface
     private $matchedRouteName;
 
     /**
+     * @var array
+     */
+    private $matchedRouteMiddlewareStack;
+
+    /**
      * Route matched during routing.
      *
      * @var Route
@@ -149,7 +154,7 @@ class RouteResult implements RequestHandlerInterface
      *
      * @return false|string
      */
-    // TODO : méthode à virer
+    // TODO : méthode à virer elle ne sert à rien !!!!
     public function getMatchedRouteName()
     {
         if ($this->isFailure()) {
@@ -160,6 +165,27 @@ class RouteResult implements RequestHandlerInterface
         }
 
         return $this->matchedRouteName;
+    }
+
+    /**
+     * Retrieve all the middlewares, if possible.
+     *
+     * If this result represents a failure, return false; otherwise, return the
+     * middleware of the Route + middleware of the RouteGroup.
+     *
+     * @return false|string
+     */
+    public function getMatchedRouteMiddlewareStack()
+    {
+        if ($this->isFailure()) {
+            return false;
+        }
+
+        if (! $this->matchedRouteMiddlewareStack && $this->route) {
+            $this->matchedRouteMiddlewareStack = $this->route->gatherMiddlewareStack();
+        }
+
+        return $this->matchedRouteMiddlewareStack;
     }
 
     /**
@@ -187,29 +213,6 @@ class RouteResult implements RequestHandlerInterface
         }
 
         return $this->allowedMethods;
-    }
-
-    /**
-     * Retrieve all the middlewares.
-     *
-     * If this result represents a failure, return false; otherwise, return the
-     * middleware of the Route + middleware of the RouteGroup.
-     *
-     * @return false|string
-     */
-    public function gatherMiddlewareStack()
-    {
-        if ($this->isFailure()) {
-            return false;
-        }
-
-        $middlewares = $this->route->getMiddlewareStack();
-        // merge the group middlewares with the route middlewares.
-        if ($group = $this->route->getParentGroup()) {
-            $middlewares = array_merge($middlewares, $group->getMiddlewareStack());
-        }
-
-        return $middlewares;
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface

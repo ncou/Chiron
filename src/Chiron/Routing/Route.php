@@ -60,16 +60,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     private $identifier;
 
     /**
-     * @var array
-     */
-    private $parameters;
-
-    /**
-     * @var bool
-     */
-    private $isBinded = false;
-
-    /**
      * @param string $url
      * @param mixed  $handler should be a string or a callable
      * @param int    $index
@@ -77,7 +67,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     public function __construct(string $path, $handler, int $index)
     {
         // A path must start with a slash and must not have multiple slashes at the beginning because it would be confused with a network path, e.g. '//domain.com/path'.
-        $this->path = '/'.ltrim(trim($path), '/'); // sprintf('/%s', ltrim($path, '/'));
+        $this->path = sprintf('/%s', ltrim($path, '/'));
         // TODO : ajouter une vérification pour que le $handler soit un callable ou une string
         $this->handler = $handler;
         $this->identifier = 'route_' . $index;
@@ -113,7 +103,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     {
         return $this->group;
     }
-
     /**
      * Set the parent group.
      *
@@ -434,5 +423,21 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
         }
 
         return array_map('strtoupper', $methods);
+    }
+
+    /**
+     * gather all the middlewares for this route (from group + from route).
+     *
+     * @return array
+     */
+    public function gatherMiddlewareStack(): array
+    {
+        $middlewares = $this->getMiddlewareStack();
+        // If there is a parent group, we merge both middleware stacks (Route + RouteGroup).
+        if ($group = $this->getParentGroup()) {
+            $middlewares = array_merge($middlewares, $group->getMiddlewareStack());
+        }
+
+        return $middlewares;
     }
 }

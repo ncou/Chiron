@@ -28,6 +28,42 @@ use Chiron\Routing\Resolver\ControllerResolver;
  */
 class RouterTest extends TestCase
 {
+    public function httpMethods()
+    {
+        return [['get'], ['post'], ['put'], ['patch'], ['delete'], ['head'], ['options'], ['trace']];
+    }
+
+    /**
+     * Asserts that the collection can map and return a route object.
+     *
+     * @dataProvider httpMethods
+     */
+    public function testRouteCollectionTraitHttpMethods($method)
+    {
+        $router = new Router();
+        $path = '/something';
+        $callable = function() {};
+
+        $route = $router->{$method}($path, $callable);
+
+        $this->assertInstanceOf(Route::class, $route);
+
+        $this->assertSame(1, count($route->getAllowedMethods()));
+        $this->assertSame(strtoupper($method), $route->getAllowedMethods()[0]);
+    }
+
+    public function testRouteCollectionTraitMap()
+    {
+        $router = new Router();
+        $path = '/something';
+        $callable = function() {};
+
+        $route = $router->map($path, $callable);
+
+        $this->assertInstanceOf(Route::class, $route);
+        $this->assertSame(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'], $route->getAllowedMethods());
+    }
+
     public function matchWithUrlEncodedSpecialCharsDataProvider()
     {
         return [

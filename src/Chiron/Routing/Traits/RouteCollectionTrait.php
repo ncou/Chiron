@@ -42,7 +42,7 @@ trait RouteCollectionTrait
      */
     public function get(string $pattern, $handler): Route
     {
-        return $this->map($pattern, $handler)->method('GET', 'HEAD');
+        return $this->map($pattern, $handler)->method('GET');
     }
 
     /**

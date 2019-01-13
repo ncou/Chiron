@@ -15,6 +15,7 @@ use Chiron\Routing\Traits\RouteConditionHandlerInterface;
 use Chiron\Routing\Traits\StrategyAwareInterface;
 //use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Chiron\Routing\Strategy\StrategyInterface;
 
 /**
  * @covers \Chiron\Routing\Route
@@ -24,17 +25,9 @@ class RouteTest extends TestCase
     public function testConstructor()
     {
         // test with a callable for handler
-        $callback = function () {
-        };
+        $callback = function () {};
         $route = new Route('/', $callback, 100);
-
-        $this->assertEquals('/', $route->getPath());
         $this->assertSame($callback, $route->getHandler());
-        $this->assertEquals('route_100', $route->getIdentifier());
-
-        // test with a string for handler
-        $route = new Route('/', 'foobar', 100);
-        $this->assertSame('foobar', $route->getHandler());
 
         $this->assertInstanceOf(RouteConditionHandlerInterface::class, $route);
         $this->assertInstanceOf(StrategyAwareInterface::class, $route);
@@ -58,7 +51,14 @@ class RouteTest extends TestCase
 
     public function testDefaultGetterSetter()
     {
-        $route = new Route('/', 'foobar', 0);
+        $route = new Route('/', 'foobar', 100);
+
+        $this->assertEquals([], $route->gatherMiddlewareStack());
+
+        $this->assertSame('foobar', $route->getHandler());
+        $this->assertEquals('/', $route->getPath());
+        $this->assertEquals('route_100', $route->getIdentifier());
+
         $this->assertEquals([], $route->getDefaults());
 
         $route->setDefaults(['foo' => 'bar']);
@@ -80,6 +80,66 @@ class RouteTest extends TestCase
 
         $route->setDefault('foobar', 'foo');
         $this->assertEquals(true, $route->hasDefault('foobar'));
+    }
+
+    public function testRouteMiddlewareTrait()
+    {
+        $route = new Route('/', 'foobar', 100);
+
+        $this->assertEquals([], $route->getMiddlewareStack());
+
+        $route->middleware('baz');
+
+        $this->assertEquals('baz', $route->getMiddlewareStack()[0]);
+
+        $route->prependMiddleware('qux');
+
+        $this->assertEquals('qux', $route->getMiddlewareStack()[0]);
+    }
+
+    public function testRouteConditionTrait()
+    {
+        $route = new Route('/', 'foobar', 100);
+
+        $this->assertEquals(null, $route->getHost());
+        $this->assertEquals(null, $route->getScheme());
+        $this->assertEquals(null, $route->getPort());
+
+        $route->setHost('host_1');
+        $this->assertEquals('host_1', $route->getHost());
+
+        $route->host('host_2');
+        $this->assertEquals('host_2', $route->getHost());
+
+        $route->setScheme('http');
+        $this->assertEquals('http', $route->getScheme());
+
+        $route->scheme('https');
+        $this->assertEquals('https', $route->getScheme());
+
+        $route->requireHttp();
+        $this->assertEquals('http', $route->getScheme());
+
+        $route->requireHttps();
+        $this->assertEquals('https', $route->getScheme());
+
+        $route->setPort(8080);
+        $this->assertEquals(8080, $route->getPort());
+
+        $route->port(8181);
+        $this->assertEquals(8181, $route->getPort());
+    }
+
+    public function testRouteStrategyTrait()
+    {
+        $route = new Route('/', 'foobar', 100);
+
+        $this->assertEquals(null, $route->getStrategy());
+
+        $strategyMock = $this->createMock(StrategyInterface::class);
+        $route->setStrategy($strategyMock);
+
+        $this->assertEquals($strategyMock, $route->getStrategy());
     }
 
     public function testRequirementGetterSetter()
@@ -130,7 +190,7 @@ class RouteTest extends TestCase
         $route->method('post', 'put');
         $this->assertEquals(['POST', 'PUT'], $route->getAllowedMethods());
 
-        $route->setAllowedMethods(['TRACE', 'PATCH']);
+        $route->setAllowedMethods(['trace', 'patch']);
         $this->assertEquals(['TRACE', 'PATCH'], $route->getAllowedMethods());
     }
 

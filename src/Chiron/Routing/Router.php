@@ -60,7 +60,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     /**
      * @var \Chiron\Routing\RouteGroup[]
      */
-    private $groups = []; // TODO : vérifier l'utilité d'avoir un tableau de groups !!!!
+    private $groups = [];
 
     /**
      * @var array
@@ -174,14 +174,10 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      * @return \Chiron\Routing\RouteGroup
      */
     // TODO : vérifier si on pas plutot utiliser un Closure au lieu d'un callable pour le typehint
-    public function group(string $prefix, callable $group): RouteGroup
+    public function group(string $prefix, callable $callback): RouteGroup
     {
-        $group = new RouteGroup($prefix, $group, $this);
-        // TODO : vérifier l'utilité d'avoir un tableau de groups !!!!
+        $group = new RouteGroup($prefix, $callback, $this);
         $this->groups[] = $group;
-
-        $group();
-        array_pop($this->groups); // TODO : vérifier l'utilité d'avoir un tableau de groups !!!!
 
         return $group;
     }
@@ -207,7 +203,8 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
 
     public function match(ServerRequestInterface $request): RouteResult
     {
-        $this->prepareRoutes($request);
+        $this->processGroups();
+        $this->injectRoutes($request);
 
         // process routes
         $dispatcher = new Dispatcher($this->routes, $this->generator->getData());
@@ -221,11 +218,8 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      */
-    // TODO : méthode à renommer en injectRoutes()
-    private function prepareRoutes(ServerRequestInterface $request): void
+    private function injectRoutes(ServerRequestInterface $request): void
     {
-        //$this->processGroups();
-
         foreach ($this->routes as $key => $route) {
             // check for scheme condition
             if (! is_null($route->getScheme()) && $route->getScheme() !== $request->getUri()->getScheme()) {
@@ -254,6 +248,27 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
 
             $this->addRoute($route->getAllowedMethods(), $this->basePath . $routePath, $route->getIdentifier());
         }
+    }
+
+    /**
+     * Process all groups
+     *
+     * @return void
+     */
+    private function processGroups() : void
+    {
+        // Call the $group by reference because in the case : group of group the size of the array is modified because a new group is added in the group() function.
+        foreach ($this->groups as $key => &$group) {
+            unset($this->groups[$key]);
+            $group();
+            //array_pop($this->groups);
+        }
+
+    }
+
+    public function groups() : array
+    {
+        return $this->groups;
     }
 
     /**
@@ -315,7 +330,8 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      */
     public function getRoutes(): array
     {
-        return $this->routes;
+        $this->processGroups();
+        return array_values($this->routes);
     }
 
     /**
@@ -329,7 +345,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      */
     public function getNamedRoute(string $name): Route
     {
-        foreach ($this->routes as $route) {
+        foreach ($this->getRoutes() as $route) {
             if ($route->getName() === $name) {
                 return $route;
             }
