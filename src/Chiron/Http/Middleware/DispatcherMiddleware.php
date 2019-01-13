@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Chiron\Http\Middleware;
 
 use Chiron\Pipe\Pipeline;
-use Chiron\Pipe\Decorator\RequestHandlerMiddleware;
 use Chiron\Routing\Route;
 use Chiron\Routing\RouteResult;
 use Psr\Http\Message\ResponseInterface;

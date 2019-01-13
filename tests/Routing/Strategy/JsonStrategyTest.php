@@ -11,11 +11,9 @@ use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
 use Chiron\Routing\Resolver\ControllerResolver;
-use Chiron\Routing\Route;
 use Chiron\Routing\Strategy\JsonStrategy;
 use JsonSerializable;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ServerRequestInterface;
 use stdClass;
 
 // TODO : classe à finir de compléter !!!!!!!!!!

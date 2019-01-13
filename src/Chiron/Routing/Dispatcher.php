@@ -21,7 +21,7 @@ class Dispatcher extends GroupCountBasedDispatcher
     /**
      * Dispatch the current route.
      *
-     * @link   https://github.com/nikic/FastRoute/blob/master/src/Dispatcher.php
+     * @see   https://github.com/nikic/FastRoute/blob/master/src/Dispatcher.php
      *
      * @param \Psr\Http\Message\ServerRequestInterface $request
      *

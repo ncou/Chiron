@@ -12,25 +12,24 @@ namespace Chiron\Http\Middleware;
 use Chiron\Http\Exception\Client\MethodNotAllowedHttpException;
 use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Psr\Response;
-use Chiron\Http\Psr\Stream;
 use Chiron\Routing\Route;
 use Chiron\Routing\RouteResult;
 use Chiron\Routing\RouterInterface;
-use FastRoute\RouteCollector as FastRouteCollector;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-
-use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 
 class RoutingMiddleware implements MiddlewareInterface
 {
     /** @var RouterInterface */
     private $router;
+
     /** @var ResponseFactoryInterface */
     private $responseFactory;
+
     /** @var StreamFactoryInterface */
     private $streamFactory;
 

@@ -251,11 +251,9 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     }
 
     /**
-     * Process all groups
-     *
-     * @return void
+     * Process all groups.
      */
-    private function processGroups() : void
+    private function processGroups(): void
     {
         // Call the $group by reference because in the case : group of group the size of the array is modified because a new group is added in the group() function.
         foreach ($this->groups as $key => &$group) {
@@ -263,10 +261,9 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
             $group();
             //array_pop($this->groups);
         }
-
     }
 
-    public function groups() : array
+    public function groups(): array
     {
         return $this->groups;
     }
@@ -274,7 +271,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     /**
      * Add or replace the requirement pattern inside the route path.
      *
-     * @param array $requirements
+     * @param array  $requirements
      * @param string $path
      *
      * @return string
@@ -310,8 +307,8 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      * The syntax used in the $route string depends on the used route parser.
      *
      * @param string[] $httpMethod
-     * @param string          $routePath
-     * @param string          $routeId
+     * @param string   $routePath
+     * @param string   $routeId
      */
     private function addRoute(array $httpMethod, string $routePath, string $routeId): void
     {
@@ -331,6 +328,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     public function getRoutes(): array
     {
         $this->processGroups();
+
         return array_values($this->routes);
     }
 

@@ -11,7 +11,6 @@ use Chiron\Routing\Traits\RouteConditionHandlerTrait;
 use Chiron\Routing\Traits\StrategyAwareInterface;
 use Chiron\Routing\Traits\StrategyAwareTrait;
 use InvalidArgumentException;
-use LogicException;
 
 class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, MiddlewareAwareInterface
 {
@@ -103,6 +102,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     {
         return $this->group;
     }
+
     /**
      * Set the parent group.
      *
@@ -365,6 +365,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
 
     /**
      * Alia function for "setAllowedMethods()".
+     *
      * @param string or list of string
      */
     public function method(string $method, string ...$methods): self

@@ -162,7 +162,7 @@ trait RouteCollectionTrait
 
     /**
      * Add route for any HTTP method.
-     * Supports the following methods : 'DELETE','GET','HEAD','OPTIONS','PATCH','POST','PUT','TRACE'
+     * Supports the following methods : 'DELETE','GET','HEAD','OPTIONS','PATCH','POST','PUT','TRACE'.
      *
      * @param string          $pattern The route URI pattern
      * @param callable|string $handler The route callback routine

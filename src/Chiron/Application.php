@@ -53,7 +53,6 @@ use Chiron\Config\Config;
 use Chiron\Container\Container;
 use Chiron\Http\Emitter\ResponseEmitter;
 use Chiron\Http\Psr\Response;
-use Chiron\Pipe\Decorator\FixedResponseMiddleware;
 use Chiron\Pipe\Pipeline;
 use Chiron\Routing\Route;
 use Chiron\Routing\Router;

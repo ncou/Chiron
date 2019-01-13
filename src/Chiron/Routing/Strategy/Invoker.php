@@ -16,7 +16,6 @@ declare(strict_types=1);
 namespace Chiron\Routing\Strategy;
 
 use InvalidArgumentException;
-use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Resolve the parameters using reflexion and execute the callback.
@@ -26,8 +25,8 @@ class Invoker
     /**
      * Bind the matched parameters from the request with the callable parameters.
      *
-     * @param callable               $controller the callable to be executed
-     * @param array                  $matched    the parameters extracted from the uri
+     * @param callable $controller the callable to be executed
+     * @param array    $matched    the parameters extracted from the uri
      *
      * @return array The
      */
@@ -105,8 +104,8 @@ class Invoker
     /**
      * Wrapper around the call_user_func_array function to execute the callable.
      *
-     * @param callable               $callback
-     * @param array                  $matched
+     * @param callable $callback
+     * @param array    $matched
      *
      * @return mixed
      */

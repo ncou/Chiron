@@ -5,26 +5,17 @@ declare(strict_types=1);
 namespace Chiron\Tests\Routing;
 
 use Chiron\Routing\Route;
-use Chiron\Routing\Router;
 use Chiron\Routing\RouteGroup;
-use InvalidArgumentException;
-use PHPUnit\Framework\TestCase;
-
-use Chiron\Routing\Traits\MiddlewareAwareInterface;
-
-use Chiron\Routing\Traits\RouteConditionHandlerInterface;
-
-use Chiron\Routing\Traits\StrategyAwareInterface;
-//use Psr\Http\Server\MiddlewareInterface;
-use Psr\Http\Server\RequestHandlerInterface;
+use Chiron\Routing\Router;
 use Chiron\Routing\Strategy\StrategyInterface;
+//use Psr\Http\Server\MiddlewareInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Chiron\Routing\Route
  */
 class RouteGroupTest extends TestCase
 {
-
     public function testRouteGroup()
     {
         $router = new Router();
@@ -92,7 +83,7 @@ class RouteGroupTest extends TestCase
         $this->assertEquals('https', $route_3->getScheme());
     }
 
-public function testRouteGroupWithOverrideMiddleware()
+    public function testRouteGroupWithOverrideMiddleware()
     {
         $router = new Router();
 
@@ -124,7 +115,8 @@ public function testRouteGroupWithOverrideMiddleware()
     public function testRouteMiddlewareTrait()
     {
         $router = new Router();
-        $group = $router->group('/prefix', function () {});
+        $group = $router->group('/prefix', function () {
+        });
 
         $this->assertEquals([], $group->getMiddlewareStack());
 
@@ -140,7 +132,8 @@ public function testRouteGroupWithOverrideMiddleware()
     public function testRouteConditionTrait()
     {
         $router = new Router();
-        $group = $router->group('/prefix', function () {});
+        $group = $router->group('/prefix', function () {
+        });
 
         $this->assertEquals(null, $group->getHost());
         $this->assertEquals(null, $group->getScheme());
@@ -174,7 +167,8 @@ public function testRouteGroupWithOverrideMiddleware()
     public function testRouteStrategyTrait()
     {
         $router = new Router();
-        $group = $router->group('/prefix', function () {});
+        $group = $router->group('/prefix', function () {
+        });
 
         $this->assertEquals(null, $group->getStrategy());
 
@@ -226,7 +220,4 @@ public function testRouteGroupWithOverrideMiddleware()
 
         $this->assertSame(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'], $route->getAllowedMethods());
     }
-
-
-
 }
