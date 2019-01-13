@@ -14,9 +14,6 @@ use Chiron\Routing\RouterInterface;
 use Chiron\Routing\Strategy\StrategyInterface;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Chiron\Routing\Router
- */
 class RouterTest extends TestCase
 {
     public function httpMethods()
