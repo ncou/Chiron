@@ -173,7 +173,7 @@ class RouteResult implements RequestHandlerInterface
      * If this result represents a failure, return false; otherwise, return the
      * middleware of the Route + middleware of the RouteGroup.
      *
-     * @return false|string
+     * @return false|array
      */
     public function getMatchedRouteMiddlewareStack()
     {
