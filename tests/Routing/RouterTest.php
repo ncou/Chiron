@@ -35,7 +35,7 @@ class RouterTest extends TestCase
         $callable = function () {
         };
 
-        $route = $router->{$method}($path, $callable);
+        $route = $router->$method($path, $callable);
 
         $this->assertInstanceOf(Route::class, $route);
 
