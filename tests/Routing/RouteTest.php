@@ -137,6 +137,10 @@ class RouteTest extends TestCase
         $route->setStrategy($strategyMock);
 
         $this->assertEquals($strategyMock, $route->getStrategy());
+
+        $route->strategy($strategyMock);
+
+        $this->assertEquals($strategyMock, $route->getStrategy());
     }
 
     public function testRequirementGetterSetter()

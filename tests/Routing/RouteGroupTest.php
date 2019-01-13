@@ -84,10 +84,13 @@ class RouteGroupTest extends TestCase
                 return 'ROUTE_1';
             })->name('test_1')->scheme('http')->host('host')->port(80)->setStrategy($strategyMock);
 
-            $group->group('/group/', function ($group) {
-                $group->get('/foo', function () {
-                    return 'ROUTE_2';
-                })->name('test_2');
+            $group->group('/group1/', function ($group) {
+                $group->group('/group2/', function ($group) {
+
+                    $group->get('/foo', function () {
+                        return 'ROUTE_2';
+                    })->name('test_2');
+                });
             })->scheme('https')->host('host2')->port(81)->setStrategy($strategyMock);
         });
 
@@ -99,7 +102,7 @@ class RouteGroupTest extends TestCase
         $this->assertEquals('http', $route_1->getScheme());
 
         $route_2 = $router->getNamedRoute('test_2');
-        $this->assertEquals('/prefix/group/foo', $route_2->getPath());
+        $this->assertEquals('/prefix/group1/group2/foo', $route_2->getPath());
         $this->assertEquals($strategyMock, $route_2->getStrategy());
         $this->assertEquals(81, $route_2->getPort());
         $this->assertEquals('host2', $route_2->getHost());
@@ -232,6 +235,10 @@ class RouteGroupTest extends TestCase
 
         $strategyMock = $this->createMock(StrategyInterface::class);
         $group->setStrategy($strategyMock);
+
+        $this->assertEquals($strategyMock, $group->getStrategy());
+
+        $group->strategy($strategyMock);
 
         $this->assertEquals($strategyMock, $group->getStrategy());
     }

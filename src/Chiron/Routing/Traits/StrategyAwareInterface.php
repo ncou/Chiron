@@ -23,4 +23,13 @@ interface StrategyAwareInterface
      * @return static
      */
     public function setStrategy(StrategyInterface $strategy): StrategyAwareInterface;
+
+    /**
+     * Alias function for "setStrategy()".
+     *
+     * @param StrategyInterface $strategy
+     *
+     * @return static
+     */
+    public function strategy(StrategyInterface $strategy): StrategyAwareInterface;
 }

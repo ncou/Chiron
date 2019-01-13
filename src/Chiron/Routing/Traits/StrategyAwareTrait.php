@@ -30,4 +30,12 @@ trait StrategyAwareTrait
 
         return $this;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function strategy(StrategyInterface $strategy): StrategyAwareInterface
+    {
+        return $this->setStrategy($strategy);
+    }
 }

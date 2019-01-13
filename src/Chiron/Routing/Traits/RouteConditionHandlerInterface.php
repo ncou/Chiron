@@ -23,7 +23,7 @@ interface RouteConditionHandlerInterface
     public function setHost(string $host): RouteConditionHandlerInterface;
 
     /**
-     * Alia function for "setHost()".
+     * Alias function for "setHost()".
      *
      * @param string $host
      *
@@ -48,7 +48,7 @@ interface RouteConditionHandlerInterface
     public function setScheme(string $scheme): RouteConditionHandlerInterface;
 
     /**
-     * Alia function for "setScheme()".
+     * Alias function for "setScheme()".
      *
      * @param string $scheme
      *
@@ -91,7 +91,7 @@ interface RouteConditionHandlerInterface
     public function setPort(int $port): RouteConditionHandlerInterface;
 
     /**
-     * Alia function for "setPort()".
+     * Alias function for "setPort()".
      *
      * @param int $port
      *
