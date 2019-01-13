@@ -86,7 +86,6 @@ class RouteGroupTest extends TestCase
 
             $group->group('/group1/', function ($group) {
                 $group->group('/group2/', function ($group) {
-
                     $group->get('/foo', function () {
                         return 'ROUTE_2';
                     })->name('test_2');

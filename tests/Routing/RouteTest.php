@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Chiron\Tests\Routing;
 
 use Chiron\Routing\Route;
+use Chiron\Routing\RouteGroup;
+use Chiron\Routing\RouterInterface;
 use Chiron\Routing\Strategy\StrategyInterface;
 use Chiron\Routing\Traits\MiddlewareAwareInterface;
 use Chiron\Routing\Traits\RouteConditionHandlerInterface;
@@ -43,14 +45,28 @@ class RouteTest extends TestCase
         $this->assertEquals('/path', $route->getPath());
     }
 
-    // TODO : tester le getParentGroup et le setParentGroup
-    //$this->assertEquals(null , $route->getParentGroup());
+    public function testGroupGetterSetterAndMiddleware()
+    {
+        $route = new Route('/', 'foobar', 100);
+
+        // get/set parent group assertion
+        $this->assertEquals(null , $route->getParentGroup());
+
+        $routerMock = $this->createMock(RouterInterface::class);
+        $group = new RouteGroup('prefix', function(){}, $routerMock);
+
+        $route->setParentGroup($group);
+        $this->assertEquals($group , $route->getParentGroup());
+
+        // middleware assertion
+        $this->assertEquals([], $route->gatherMiddlewareStack());
+        $group->middleware('foobar');
+        $this->assertEquals(['foobar'], $route->gatherMiddlewareStack());
+    }
 
     public function testDefaultGetterSetter()
     {
         $route = new Route('/', 'foobar', 100);
-
-        $this->assertEquals([], $route->gatherMiddlewareStack());
 
         $this->assertSame('foobar', $route->getHandler());
         $this->assertEquals('/', $route->getPath());
