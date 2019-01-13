@@ -16,6 +16,31 @@ use PHPUnit\Framework\TestCase;
 
 class RouterTest extends TestCase
 {
+    /**
+     * Asserts that appropriately configured regex strings are added to patternMatchers.
+     *
+     * @return void
+     */
+    public function testNewPatternMatchesCanBeAddedAtRuntime()
+    {
+        $router = new Router();
+        $router->addPatternMatcher('mockMatcher', '[a-zA-Z]');
+        $matchers = $this->getObjectAttribute($router, 'patternMatchers');
+        $this->assertArrayHasKey('/{(.+?):mockMatcher}/', $matchers);
+        $this->assertEquals('{$1:[a-zA-Z]}', $matchers['/{(.+?):mockMatcher}/']);
+    }
+
+    public function testGetSetBasePath()
+    {
+        $router = new Router();
+
+        $this->assertSame('', $router->getBasePath());
+
+        $router->setBasePath('/foo');
+
+        $this->assertSame('/foo', $router->getBasePath());
+    }
+
     public function httpMethods()
     {
         return [['get'], ['post'], ['put'], ['patch'], ['delete'], ['head'], ['options'], ['trace']];
