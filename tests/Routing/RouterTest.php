@@ -35,12 +35,9 @@ class RouterTest extends TestCase
         $callable = function () {
         };
 
-        $route = $router->$method($path, $callable);
+        $route = $router->{$method}($path, $callable);
 
-        $this->assertInstanceOf(Route::class, $route);
-
-        $this->assertSame(1, count($route->getAllowedMethods()));
-        $this->assertSame(strtoupper($method), $route->getAllowedMethods()[0]);
+        $this->assertSame([strtoupper($method)], $route->getAllowedMethods());
     }
 
     public function testRouteCollectionTraitMap()

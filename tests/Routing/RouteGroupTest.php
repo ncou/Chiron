@@ -178,31 +178,50 @@ class RouteGroupTest extends TestCase
         $this->assertEquals($strategyMock, $group->getStrategy());
     }
 
-    public function httpMethods()
-    {
-        return [['get'], ['post'], ['put'], ['patch'], ['delete'], ['head'], ['options'], ['trace']];
-    }
-
     /**
      * Asserts that the collection can map and return a route object.
-     *
-     * @dataProvider httpMethods
      */
-    public function testRouteCollectionTraitHttpMethods($method)
+    public function testRouteCollectionTraitHttpMethods()
     {
         $router = new Router();
-        $group = $router->group('/prefix', function ($group) use ($method) {
-            $group->{$method}('/', 'foobar');
+        $group = $router->group('/prefix', function ($group) {
+            $group->get('/get/', 'foobar');
+            $group->post('/post/', 'foobar');
+            $group->put('/put/', 'foobar');
+            $group->patch('/patch/', 'foobar');
+            $group->delete('/delete/', 'foobar');
+            $group->head('/head/', 'foobar');
+            $group->options('/options/', 'foobar');
+            $group->trace('/trace/', 'foobar');
         });
 
         $routes = $router->getRoutes();
 
-        $this->assertSame(1, count($routes));
+        $this->assertSame(8, count($routes));
 
-        $route = $router->getRoutes()[0];
+        $route_1 = $router->getRoutes()[0];
+        $this->assertSame([strtoupper('get')], $route_1->getAllowedMethods());
 
-        $this->assertSame(1, count($route->getAllowedMethods()));
-        $this->assertSame(strtoupper($method), $route->getAllowedMethods()[0]);
+        $route_2 = $router->getRoutes()[1];
+        $this->assertSame([strtoupper('post')], $route_2->getAllowedMethods());
+
+        $route_3 = $router->getRoutes()[2];
+        $this->assertSame([strtoupper('put')], $route_3->getAllowedMethods());
+
+        $route_4 = $router->getRoutes()[3];
+        $this->assertSame([strtoupper('patch')], $route_4->getAllowedMethods());
+
+        $route_5 = $router->getRoutes()[4];
+        $this->assertSame([strtoupper('delete')], $route_5->getAllowedMethods());
+
+        $route_6 = $router->getRoutes()[5];
+        $this->assertSame([strtoupper('head')], $route_6->getAllowedMethods());
+
+        $route_7 = $router->getRoutes()[6];
+        $this->assertSame([strtoupper('options')], $route_7->getAllowedMethods());
+
+        $route_8 = $router->getRoutes()[7];
+        $this->assertSame([strtoupper('trace')], $route_8->getAllowedMethods());
     }
 
     public function testRouteCollectionTraitMap()
