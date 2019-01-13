@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Routing;
 
-use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Routing\Resolver\ControllerResolver;
 use Chiron\Routing\Route;
 use Chiron\Routing\Router;
 use Chiron\Routing\Strategy\StrategyInterface;
@@ -31,6 +29,7 @@ class FastRouterTest extends TestCase
 
         $routeResult = $router->match($request);
     }
+
     /**
      * @expectedException \FastRoute\BadRouteException
      * @expectedExceptionMessage Cannot register two routes matching "/user/([^/]+)" for method "GET"
@@ -48,6 +47,7 @@ class FastRouterTest extends TestCase
 
         $routeResult = $router->match($request);
     }
+
     /**
      * @expectedException \FastRoute\BadRouteException
      * @expectedExceptionMessage Cannot register two routes matching "/user" for method "GET"
@@ -65,6 +65,7 @@ class FastRouterTest extends TestCase
 
         $routeResult = $router->match($request);
     }
+
     /**
      * @codingStandardsIgnoreStart
      * @expectedException \FastRoute\BadRouteException
@@ -84,6 +85,7 @@ class FastRouterTest extends TestCase
 
         $routeResult = $router->match($request);
     }
+
     /**
      * @expectedException \FastRoute\BadRouteException
      * @expectedExceptionMessage Regex "(en|de)" for parameter "lang" contains a capturing group

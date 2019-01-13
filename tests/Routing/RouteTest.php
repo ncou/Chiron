@@ -50,13 +50,14 @@ class RouteTest extends TestCase
         $route = new Route('/', 'foobar', 100);
 
         // get/set parent group assertion
-        $this->assertEquals(null , $route->getParentGroup());
+        $this->assertEquals(null, $route->getParentGroup());
 
         $routerMock = $this->createMock(RouterInterface::class);
-        $group = new RouteGroup('prefix', function(){}, $routerMock);
+        $group = new RouteGroup('prefix', function () {
+        }, $routerMock);
 
         $route->setParentGroup($group);
-        $this->assertEquals($group , $route->getParentGroup());
+        $this->assertEquals($group, $route->getParentGroup());
 
         // middleware assertion
         $this->assertEquals([], $route->gatherMiddlewareStack());

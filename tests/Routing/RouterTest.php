@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Routing;
 
-use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Routing\Resolver\ControllerResolver;
 use Chiron\Routing\Route;
 use Chiron\Routing\Router;
 use Chiron\Routing\RouterInterface;
@@ -18,8 +16,6 @@ class RouterTest extends TestCase
 {
     /**
      * Asserts that appropriately configured regex strings are added to patternMatchers.
-     *
-     * @return void
      */
     public function testNewPatternMatchesCanBeAddedAtRuntime()
     {
@@ -113,7 +109,7 @@ class RouterTest extends TestCase
     }
 
     /**
-     * Base path is ignored by relativePathFor()
+     * Base path is ignored by relativePathFor().
      */
     public function testRelativePathFor()
     {
@@ -129,6 +125,7 @@ class RouterTest extends TestCase
             $router->relativePathFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
         );
     }
+
     public function testPathForWithNoBasePath()
     {
         $router = new Router();
@@ -143,6 +140,7 @@ class RouterTest extends TestCase
             $router->pathFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
         );
     }
+
     public function testPathForWithBasePath()
     {
         $router = new Router();
@@ -157,6 +155,7 @@ class RouterTest extends TestCase
             $router->pathFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
         );
     }
+
     public function testPathForWithOptionalParameters()
     {
         $router = new Router();
@@ -178,6 +177,7 @@ class RouterTest extends TestCase
             $router->pathFor('foo', ['year' => '2015', 'month' => '07', 'day' => '19'])
         );
     }
+
     public function testPathForWithQueryParameters()
     {
         $router = new Router();
@@ -191,6 +191,7 @@ class RouterTest extends TestCase
             $router->pathFor('foo', ['name' => 'josh'], ['a' => 'b', 'c' => 'd'])
         );
     }
+
     /**
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Missing data for URL segment: first
@@ -205,6 +206,7 @@ class RouterTest extends TestCase
         $route->setName('foo');
         $router->pathFor('foo', ['last' => 'lockhart']);
     }
+
     /**
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Named route does not exist for name:
@@ -233,9 +235,9 @@ class RouterTest extends TestCase
         $route1->setName('foo');
         $route2 = $router->map('/bar', 'callable');
         $route2->setName('bar');
-        $route3 = $router->map('/fizz','$callable');
+        $route3 = $router->map('/fizz', '$callable');
         $route3->setName('fizz');
-        $route4 = $router->map('/buzz','$callable');
+        $route4 = $router->map('/buzz', '$callable');
         $route4->setName('buzz');
         $routeToRemove = $router->getNamedRoute('fizz');
         $routeCountBefore = count($router->getRoutes());
@@ -262,6 +264,7 @@ class RouterTest extends TestCase
         // Exception thrown here, route no longer exists
         $router->getNamedRoute($routeToRemove->getName());
     }
+
     /**
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Named route does not exist for name:
@@ -273,6 +276,7 @@ class RouterTest extends TestCase
         $router->setBasePath('/base/path');
         $router->removeNamedRoute('non-existing-route-name');
     }
+
     /*
     public function testPathForWithModifiedRoutePattern()
     {
@@ -289,7 +293,6 @@ class RouterTest extends TestCase
             $router->relativePathFor('foo', ['voornaam' => 'josh', 'achternaam' => 'lockhart'])
         );
     }*/
-
 
     /**
      * @dataProvider provideMethodNotAllowedDispatchCases
@@ -310,7 +313,6 @@ class RouterTest extends TestCase
         $this->assertTrue($routeResult->isFailure());
         $this->assertTrue($routeResult->isMethodFailure());
     }
-
 
     public function provideMethodNotAllowedDispatchCases()
     {
@@ -370,7 +372,6 @@ class RouterTest extends TestCase
         // x -------------------------------------------------------------------------------------->
         return $cases;
     }
-
 
     /**
      * @dataProvider provideNotFoundDispatchCases

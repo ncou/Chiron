@@ -11,8 +11,8 @@ namespace Chiron\Tests\Routing;
 
 use Chiron\Routing\Route;
 use Chiron\Routing\RouteResult;
-use PHPUnit\Framework\TestCase;
 use Error;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @covers \Chiron\Routing\RouteResult
@@ -40,7 +40,7 @@ class RouteResultTest extends TestCase
         $this->assertFalse($result->getMatchedRouteMiddlewareStack());
     }
 
-// TODO : à corriger
+    // TODO : à corriger
     public function testRouteFailureRetrieveAllHttpMethods()
     {
         $result = RouteResult::fromRouteFailure(RouteResult::HTTP_METHOD_ANY);

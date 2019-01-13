@@ -79,7 +79,6 @@ class RouteGroupTest extends TestCase
         $strategyMock = $this->createMock(StrategyInterface::class);
 
         $routeGroup = $router->group('/prefix', function ($group) use ($strategyMock) {
-
             $group->map('/foo', function () {
                 return 'ROUTE_1';
             })->name('test_1')->scheme('http')->host('host')->port(80)->setStrategy($strategyMock);
