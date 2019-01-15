@@ -22,6 +22,7 @@ class LoggerReporter implements ReporterInterface
      *
      * @var array
      */
+    // TODO : passer cela en constante privée ?????
     // TODO : permettre de customiser via une méthode cette map ????
     //https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/BaseErrorHandler.php#L396
     private $levelMap = [
@@ -54,6 +55,7 @@ class LoggerReporter implements ReporterInterface
      *
      * @var array
      */
+    // TODO : passer cela en constante privée ?????
     private $logLevels = [
         LogLevel::EMERGENCY => 7,
         LogLevel::ALERT     => 6,
@@ -99,7 +101,9 @@ class LoggerReporter implements ReporterInterface
     public function report(ServerRequestInterface $request, Throwable $e): void
     {
         $level = $this->getLogLevel($e);
-        $this->logger->log($level, $this->getMessage($request, $e));
+        $message = $this->getMessage($request, $e);
+
+        $this->logger->log($level, $message);
     }
 
     /**

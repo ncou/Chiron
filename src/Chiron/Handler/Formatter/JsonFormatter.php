@@ -41,6 +41,7 @@ class JsonFormatter implements FormatterInterface
 
     private function arrayToJson(array $data): string
     {
+        // TODO : permettre de configurer cette option soit directement dans le constructeur, soit en créant une méthode setFlagOptions($flag)
         $jsonEncodeOptions = JSON_UNESCAPED_SLASHES
             | JSON_UNESCAPED_UNICODE
             | JSON_PRESERVE_ZERO_FRACTION; // | JSON_PARTIAL_OUTPUT_ON_ERROR

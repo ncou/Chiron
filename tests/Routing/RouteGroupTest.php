@@ -8,12 +8,9 @@ use Chiron\Routing\Route;
 use Chiron\Routing\RouteGroup;
 use Chiron\Routing\Router;
 use Chiron\Routing\Strategy\StrategyInterface;
-//use Psr\Http\Server\MiddlewareInterface;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Chiron\Routing\RouteGroup
- */
+
 class RouteGroupTest extends TestCase
 {
     public function testRouteGroup()

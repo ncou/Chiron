@@ -15,9 +15,7 @@ use InvalidArgumentException;
 //use Psr\Http\Server\MiddlewareInterface;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Chiron\Routing\Route
- */
+
 class RouteTest extends TestCase
 {
     public function testConstructor()

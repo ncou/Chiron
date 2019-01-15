@@ -164,7 +164,6 @@ class Application
         ini_set('report_memleaks', $debug);
     }
 
-    // TODO : ajouter 2 méthodes : $app->pipeRoutingMiddleware();   et  $app->pipeDispatchMiddleware();   pour l'ajout du routerMiddleware lui passer au constructeur l'object Router qui a une ionterface RouterInterface !!!!!
 
     /** @var \Zend\Expressive\Application $app */
     /*
@@ -230,7 +229,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $this->emit($response);
     }
 
-    // TODO : renommer cette fonction en "handleRequest()"
+    // TODO : renommer en handleRequest ????
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         //die(var_dump($this->getRouter()->getRoutes()));

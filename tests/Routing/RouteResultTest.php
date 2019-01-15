@@ -14,9 +14,7 @@ use Chiron\Routing\RouteResult;
 use Error;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Chiron\Routing\RouteResult
- */
+
 class RouteResultTest extends TestCase
 {
     /**

@@ -329,4 +329,44 @@ class ErrorHandler implements ErrorHandlerInterface
 
         return $response;
     }
+
+    /**
+     * Inject the provided Content-Type, if none is already present.
+     *
+     * @return array Headers with injected Content-Type
+     */
+    //
+    /*
+    private function injectContentType(string $contentType, array $headers) : array
+    {
+        $hasContentType = array_reduce(array_keys($headers), function ($carry, $item) {
+            return $carry ?: (strtolower($item) === 'content-type');
+        }, false);
+        if (! $hasContentType) {
+            $headers['content-type'] = [$contentType];
+        }
+        return $headers;
+    }*/
+
+    /**
+     * Create a plain text response.
+     *
+     * Produces a text response with a Content-Type of text/plain and a default
+     * status of 200.
+     *
+     * @param string|StreamInterface $text String or stream for the message body.
+     * @param int $status Integer status code for the response; 200 by default.
+     * @param array $headers Array of headers to use at initialization.
+     * @throws Exception\InvalidArgumentException if $text is neither a string or stream.
+     */
+    /*
+    public function __construct($text, int $status = 200, array $headers = [])
+    {
+        parent::__construct(
+            $this->createBody($text),
+            $status,
+            $this->injectContentType('text/plain; charset=utf-8', $headers)
+        );
+    }*/
+
 }

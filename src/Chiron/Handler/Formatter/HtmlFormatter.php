@@ -34,7 +34,7 @@ class HtmlFormatter implements FormatterInterface
             $e = new \Chiron\Http\Exception\Server\InternalServerErrorHttpException();
         }
 
-        return $this->render($e->toArray());
+        return $this->arrayToHtml($e->toArray());
     }
 
     /**
@@ -44,15 +44,15 @@ class HtmlFormatter implements FormatterInterface
      *
      * @return string
      */
-    private function render(array $data)
+    private function arrayToHtml(array $data): string
     {
-        $content = file_get_contents($this->path);
+        $html = file_get_contents($this->path);
 
         foreach ($data as $key => $val) {
-            $content = str_replace("{{ $$key }}", $val, $content);
+            $html = str_replace("{{ $$key }}", $val, $html);
         }
 
-        return $content;
+        return $html;
     }
 
     /**
