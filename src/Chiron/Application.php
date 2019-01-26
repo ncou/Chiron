@@ -64,7 +64,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class Application
 {
-    private const VERSION = '1.0.0-alpha';
+    public const VERSION = '1.0.0-alpha';
 
     /* @var ResponseEmitter */
     private $emitter;
@@ -112,6 +112,8 @@ class Application
         if (is_null($kernel)) {
             $kernel = new Kernel();
         }*/
+
+        // TODO : voir si l'appel au boot doit être déplacé dans la méthode handle() => https://github.com/silexphp/Silex/blob/master/src/Silex/Application.php#L490
         $this->kernel = $kernel->boot();
         $this->pipeline = new Pipeline($this->kernel);
         $this->emitter = new ResponseEmitter();
@@ -336,8 +338,9 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
      *
      * @return string
      */
+    /*
     public function version(): string
     {
         return self::VERSION;
-    }
+    }*/
 }

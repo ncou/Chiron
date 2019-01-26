@@ -22,6 +22,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 //https://github.com/lambirou/babiphp/blob/master/system/Container/ReflectionContainer.php
 
+//https://github.com/silexphp/Silex/blob/master/src/Silex/CallbackResolver.php
+
 /**
  * This class resolves a ControllerName of the format 'class@method' into a callable that can be invoked.
  */

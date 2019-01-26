@@ -9,9 +9,12 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+// TODO : regarder pour conditionner l'ajout du header sur la réponse seulement si c'est défini par l'utilisateur, et possibilité d'utiliser un autre header name
+// https://github.com/qandidate-labs/stack-request-id/blob/master/src/Qandidate/Stack/RequestId.php#L58
+
 class RequestIdMiddleware implements MiddlewareInterface
 {
-    private const HEADER_NAME = 'X-Request-Id';
+    public const HEADER_NAME = 'X-Request-ID'; // 'X-Correlation-ID' // 'X-Unique-ID'
 
     /**
      * Add a unique ID for each HTTP request.
@@ -25,20 +28,19 @@ class RequestIdMiddleware implements MiddlewareInterface
     {
         $uuid = $request->getHeader(self::HEADER_NAME);
 
+        // generate an "unique user id" if not already present.
         if (empty($uuid)) {
-            // generate an "unique user id"
             $uuid = $this->uuid();
             $request = $request->withHeader(self::HEADER_NAME, $uuid);
         }
 
         $response = $handler->handle($request);
+
+        // persist the unique id in the response header list.
         $response = $response->withHeader(self::HEADER_NAME, $uuid);
 
         return $response;
     }
-
-    // TODO : regarder pour conditionner l'ajout du header sur la réponse seulement si c'est défini par l'utilisateur, et possibilité d'utiliser un autre header name
-    // https://github.com/qandidate-labs/stack-request-id/blob/master/src/Qandidate/Stack/RequestId.php#L58
 
     /**
      * Generate a version 4 (random) UUID.

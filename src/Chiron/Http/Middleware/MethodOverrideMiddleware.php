@@ -17,6 +17,8 @@ namespace Chiron\Http\Middleware;
 //https://github.com/koolkode/http-komponent/blob/master/src/Filter/MethodOverrideFilter.php
 //https://github.com/rstgroup/http-method-override
 
+//https://github.com/expressjs/method-override/blob/master/index.js
+
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -68,4 +70,33 @@ class MethodOverrideMiddleware implements MiddlewareInterface
 
         return $response;
     }
+
+    /**
+     * Validate the HTTP method
+     *
+     * @param  mixed $method
+     * @return string
+     * @throws \InvalidArgumentException on invalid HTTP method.
+     */
+    // TODO : utiliser cette fonction pour vérifier que la méthod qui est utilisée en override est bien correcte.
+    /*
+    protected function filterMethod($method):string
+    {
+        // TODO : vérifier si on peut avoir dans la request une méthode qui n'est pas un string ???? il me semble que c'est toujours une string donc le test ici n'est pas nécessaire. Mais à confirmer.
+        if (!is_string($method)) {
+            throw new InvalidArgumentException(sprintf(
+                'Unsupported HTTP method; must be a string, received %s',
+                is_object($method) ? get_class($method) : gettype($method)
+            ));
+        }
+        if (! preg_match("/^[!#$%&'*+.^_`|~0-9a-z-]+$/i", $method)) {
+            throw new InvalidArgumentException(sprintf(
+                'Unsupported HTTP method "%s" provided',
+                $method
+            ));
+        }
+        return $method;
+    }*/
+
+
 }

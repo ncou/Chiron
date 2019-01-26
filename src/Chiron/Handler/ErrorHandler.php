@@ -304,6 +304,18 @@ class ErrorHandler implements ErrorHandlerInterface
 
     public function createResponse(int $statusCode, string $contentType, string $body): ResponseInterface
     {
+
+/*
+        foreach (\array_merge($headers, ['Content-Type' => $this->getContentType()]) as $header => $value) {
+            $response = $response->withAddedHeader($header, $value);
+        }
+        $body = $response->getBody();
+        $body->write(\json_encode(['errors' => [$error]], \JSON_HEX_TAG | \JSON_HEX_APOS | \JSON_HEX_AMP | \JSON_HEX_QUOT | \JSON_UNESCAPED_SLASHES));
+        $body->rewind();
+        return $response->withBody($body);
+*/
+
+
         // TODO : attention il manque le choix de la version HTTP 1.1 ou 1.0 lorsqu'on initialise cette nouvelle response.
         $response = $this->responseFactory->createResponse($statusCode);
 
@@ -311,6 +323,7 @@ class ErrorHandler implements ErrorHandlerInterface
         $response = $response->withHeader('Content-Type', $contentType);
 
         $response->getBody()->write($body);
+        $response->getBody()->rewind();
 
         return $response;
     }

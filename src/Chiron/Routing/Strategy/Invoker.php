@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 // TODO : améliorer la gestion du request => https://github.com/PHP-DI/Silex-Bridge/blob/master/src/Controller/ControllerResolver.php#L72
 
+//https://github.com/mpoiriert/nucleus/blob/9ffb846d06eb64fbcb5197ef42220e3bf9d650f7/src/Nucleus/Invoker/Invoker.php
+
 namespace Chiron\Routing\Strategy;
 
 use InvalidArgumentException;
@@ -109,6 +111,7 @@ class Invoker
      *
      * @return mixed
      */
+    // TODO : renommer la méthode en invoke()
     public function call(callable $callback, array $matched)
     {
         $parameters = $this->bindParameters($callback, $matched);

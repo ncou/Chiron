@@ -57,6 +57,7 @@ class Kernel extends Container implements KernelInterface
         static::setInstance($this);
 
         /*
+        // TODO : attention si on utilise ce bout de code, il faudra aussi faire une méthode __clone() qui remodifie ces valeurs d'instances. => https://github.com/Wandu/Framework/blob/master/src/Wandu/DI/Container.php#L65
                 $this->set(Kernel::class, $this);
                 $this->set(KernelInterface::class, $this);
                 $this->set('kernel', $this);
@@ -90,6 +91,7 @@ class Kernel extends Container implements KernelInterface
      */
     protected function registerBaseServiceProviders()
     {
+        // TODO : utiliser plutot le classname au lieu de faire un "new service()"
         $this->register(new ConfigServiceProvider());
         $this->register(new ServerRequestCreatorServiceProvider());
         $this->register(new HttpFactoriesServiceProvider());
@@ -371,5 +373,18 @@ class Kernel extends Container implements KernelInterface
             }
         }
         throw new DiException('Call to undefined method or service \''.$method."'");
+    }*/
+
+    /**
+     * Aborts the current request by sending a proper HTTP error.
+     *
+     * @param int    $statusCode The HTTP status code
+     * @param string $message    The status message
+     * @param array  $headers    An array of HTTP headers
+     */
+    /*
+    public function abort($statusCode, $message = '', array $headers = [])
+    {
+        throw new HttpException($statusCode, $message, null, $headers);
     }*/
 }
