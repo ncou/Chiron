@@ -379,7 +379,7 @@ class Kernel extends Container implements KernelInterface
         throw new DiException('Call to undefined method or service \''.$method."'");
     }*/
 
-    /**
+    /*
      * Aborts the current request by sending a proper HTTP error.
      *
      * @param int    $statusCode The HTTP status code

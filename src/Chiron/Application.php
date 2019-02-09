@@ -166,7 +166,6 @@ class Application
         ini_set('report_memleaks', $debug);
     }
 
-
     /** @var \Zend\Expressive\Application $app */
     /*
 $app->pipe(\Zend\Stratigility\Middleware\OriginalMessages::class);
@@ -309,7 +308,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         return $this;
     }
 
-    /**
+    /*
      * Get or check the current application environment.
      *
      * @param  mixed
@@ -333,7 +332,7 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         return $env;
     }*/
 
-    /**
+    /*
      * Get the version number of the application.
      *
      * @return string
