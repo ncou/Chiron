@@ -10,8 +10,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-
-
 class ContentTypeByDefaultMiddleware implements MiddlewareInterface
 {
     //https://github.com/middlewares/negotiation/blob/master/src/ContentType.php

@@ -76,7 +76,7 @@ class MethodOverrideMiddleware implements MiddlewareInterface
         return $response;
     }
 
-    /**
+    /*
      * Validate the HTTP method
      *
      * @param  mixed $method
@@ -102,6 +102,4 @@ class MethodOverrideMiddleware implements MiddlewareInterface
         }
         return $method;
     }*/
-
-
 }

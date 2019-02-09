@@ -10,7 +10,6 @@ use Chiron\Routing\Router;
 use Chiron\Routing\Strategy\StrategyInterface;
 use PHPUnit\Framework\TestCase;
 
-
 class RouteGroupTest extends TestCase
 {
     public function testRouteGroup()

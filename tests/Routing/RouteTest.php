@@ -15,7 +15,6 @@ use InvalidArgumentException;
 //use Psr\Http\Server\MiddlewareInterface;
 use PHPUnit\Framework\TestCase;
 
-
 class RouteTest extends TestCase
 {
     public function testConstructor()
