@@ -91,14 +91,13 @@ class Kernel extends Container implements KernelInterface
      */
     protected function registerBaseServiceProviders()
     {
-        // TODO : utiliser plutot le classname au lieu de faire un "new service()"
-        $this->register(new ConfigServiceProvider());
-        $this->register(new ServerRequestCreatorServiceProvider());
-        $this->register(new HttpFactoriesServiceProvider());
-        $this->register(new LoggerServiceProvider());
-        $this->register(new RouterServiceProvider());
-        $this->register(new MiddlewaresServiceProvider());
-        $this->register(new ErrorHandlerServiceProvider());
+        $this->register(ConfigServiceProvider::class);
+        $this->register(ServerRequestCreatorServiceProvider::class);
+        $this->register(HttpFactoriesServiceProvider::class);
+        $this->register(LoggerServiceProvider::class);
+        $this->register(RouterServiceProvider::class);
+        $this->register(MiddlewaresServiceProvider::class);
+        $this->register(ErrorHandlerServiceProvider::class);
     }
 
     /**
@@ -224,7 +223,7 @@ class Kernel extends Container implements KernelInterface
     // TODO : virer le paramétre force et faire un return void
     public function register($provider): KernelInterface
     {
-        $this->resolveProvider($provider);
+        $provider = $this->resolveProvider($provider);
 
         // don't process the service if it's already registered
         if (! $this->isProviderRegistered($provider)) {
@@ -304,6 +303,11 @@ class Kernel extends Container implements KernelInterface
      */
     protected function bootProvider(ServiceProviderInterface $provider): void
     {
+        //https://github.com/laravel/framework/blob/2ede55db4b8201ed0450fa7e7a4d7220aa29bc34/src/Illuminate/Foundation/Application.php#L816
+        /*
+        if (method_exists($provider, 'boot')) {
+            return $this->call([$provider, 'boot']);
+        }*/
         $provider->boot($this);
     }
 

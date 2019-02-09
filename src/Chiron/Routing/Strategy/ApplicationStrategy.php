@@ -16,6 +16,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * Route callback strategy with route parameters as individual arguments.
  */
+// TODO : classe à renommer en HtmlStrategy
 class ApplicationStrategy implements StrategyInterface
 {
     /** ControllerResolverInterface */

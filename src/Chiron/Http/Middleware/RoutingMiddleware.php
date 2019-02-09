@@ -76,7 +76,8 @@ class RoutingMiddleware implements MiddlewareInterface
         $response = $handler->handle($request);
 
         // As per RFC, HEAD request can't have a body.
-        if ($request->getMethod() === 'HEAD') {
+        if (strtoupper($request->getMethod()) === 'HEAD') {
+            // TODO : il faudrait surement enlever le ContentType et le Content-Lenght ? non ????
             $response = $response->withBody($this->streamFactory->createStream());
         }
 

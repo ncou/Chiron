@@ -19,5 +19,6 @@ interface StrategyInterface
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
+    // TODO : renommer en invokeRouteHandler()
     public function invokeRouteCallable($handler, array $params, ServerRequestInterface $request): ResponseInterface;
 }

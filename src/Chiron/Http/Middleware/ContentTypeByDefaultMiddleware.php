@@ -14,6 +14,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class ContentTypeByDefaultMiddleware implements MiddlewareInterface
 {
+    //https://github.com/middlewares/negotiation/blob/master/src/ContentType.php
+
     /**
      * Process a request and return a response.
      */

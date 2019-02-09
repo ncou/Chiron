@@ -414,7 +414,8 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
             if (! is_string($method)) {
                 return false;
             }
-            if (! preg_match('/^[!#$%&\'*+.^_`\|~0-9a-z-]+$/i', $method)) {
+            //if (! preg_match('/^[!#$%&\'*+.^_`\|~0-9a-z-]+$/i', $method)) {
+            if (! preg_match("/^[!#$%&'*+.^_`|~0-9a-z-]+$/i", $method)) {
                 return false;
             }
 

@@ -19,6 +19,11 @@ namespace Chiron\Http\Middleware;
 
 //https://github.com/expressjs/method-override/blob/master/index.js
 
+//https://pypi.org/project/django-method-override/
+//https://github.com/kensonman/django-method-override/tree/master/method_override
+
+//https://github.com/rack/rack/blob/master/lib/rack/method_override.rb
+
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
