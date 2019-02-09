@@ -23,6 +23,7 @@ enabled:
     - php_unit_ordered_covers
     - php_unit_set_up_tear_down_visibility
     - no_alternative_syntax
+    - no_unused_imports
 
 disabled:
     - concat_without_spaces
