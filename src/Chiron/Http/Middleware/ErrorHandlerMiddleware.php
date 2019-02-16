@@ -69,8 +69,6 @@ use Chiron\Handler\ExceptionManager;
 use Chiron\Http\Psr\Response;
 use Chiron\Support\Http\Serializer;
 use ErrorException;
-//use Psr\Container\ContainerInterface;
-
 use Exception;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;

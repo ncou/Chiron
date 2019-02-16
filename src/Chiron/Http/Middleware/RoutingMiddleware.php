@@ -11,7 +11,7 @@ namespace Chiron\Http\Middleware;
 
 use Chiron\Http\Exception\Client\MethodNotAllowedHttpException;
 use Chiron\Http\Exception\Client\NotFoundHttpException;
-use Chiron\Http\Psr\Response;
+//use Chiron\Http\Psr\Response;
 use Chiron\Routing\Route;
 use Chiron\Routing\RouteResult;
 use Chiron\Routing\RouterInterface;

@@ -8,7 +8,7 @@ use Chiron\Handler\Formatter\FormatterInterface;
 use Chiron\Handler\Formatter\PlainTextFormatter;
 use Chiron\Handler\Reporter\ReporterInterface;
 use Chiron\Http\Exception\HttpException;
-use Chiron\Http\Psr\Response;
+//use Chiron\Http\Psr\Response;
 use Exception;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -80,9 +80,6 @@ class ErrorHandler implements ErrorHandlerInterface
     // TODO : refléchir comment alimenter cette liste !!!!
     protected $dontReport = [];
 
-    /**
-     * @param bool $shouldBeVerbose
-     */
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
         $this->responseFactory = $responseFactory;

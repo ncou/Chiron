@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Routing\Strategy;
 
-use Chiron\Http\Psr\Response;
+//use Chiron\Http\Psr\Response;
 use Chiron\Routing\Resolver\ControllerResolverInterface;
 use Chiron\Routing\Route;
 use InvalidArgumentException;

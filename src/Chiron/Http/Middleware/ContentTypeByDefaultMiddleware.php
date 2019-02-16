@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\Http\Psr\Response;
+//use Chiron\Http\Psr\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+//https://github.com/middlewares/negotiation/blob/master/src/ContentType.php
+
 class ContentTypeByDefaultMiddleware implements MiddlewareInterface
 {
-    //https://github.com/middlewares/negotiation/blob/master/src/ContentType.php
-
     /**
      * Process a request and return a response.
      */
