@@ -34,7 +34,7 @@ class PlainTextFormatter implements FormatterInterface
      * @return string
      */
     // TODO : améliorer cette méthode avec ce bout de code : https://github.com/cakephp/cakephp/blob/dc63c2f0d8a1e9d5f336ab81b587a54929d9e1cf/src/Error/Debugger.php#L508
-    public function arrayToPlainText(array $array, $title = null): string
+    private function arrayToPlainText(array $array, $title = null): string
     {
         $root = 'error';
         $text = '';
