@@ -17,7 +17,7 @@ interface ServiceProviderInterface
      *
      * @param KernelInterface $kernel A kernel instance
      */
-    public function boot(KernelInterface $kernel): void;
+    //public function boot(KernelInterface $kernel): void;
 
     /**
      * Registers services on the given container.

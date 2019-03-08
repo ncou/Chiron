@@ -56,14 +56,19 @@ class Kernel extends Container implements KernelInterface
     {
         static::setInstance($this);
 
-        /*
+        parent::__construct();
+
         // TODO : attention si on utilise ce bout de code, il faudra aussi faire une méthode __clone() qui remodifie ces valeurs d'instances. => https://github.com/Wandu/Framework/blob/master/src/Wandu/DI/Container.php#L65
-                $this->set(Kernel::class, $this);
-                $this->set(KernelInterface::class, $this);
-                $this->set('kernel', $this);
-        */
+        $this->instance(Kernel::class, $this);
+        //$this->instance(Kernel::class, $this);
+        //$this->instance('kernel', $this);
+        $this->alias(KernelInterface::class, Kernel::class);
+
+
 
         $this->registerBaseServiceProviders();
+
+
     }
 
     /*
@@ -303,12 +308,10 @@ class Kernel extends Container implements KernelInterface
      */
     protected function bootProvider(ServiceProviderInterface $provider): void
     {
-        //https://github.com/laravel/framework/blob/2ede55db4b8201ed0450fa7e7a4d7220aa29bc34/src/Illuminate/Foundation/Application.php#L816
-        /*
         if (method_exists($provider, 'boot')) {
-            return $this->call([$provider, 'boot']);
-        }*/
-        $provider->boot($this);
+            $this->call([$provider, 'boot']);
+        }
+        //$provider->boot($this);
     }
 
     /**

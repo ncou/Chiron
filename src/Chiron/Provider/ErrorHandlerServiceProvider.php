@@ -36,7 +36,7 @@ use Throwable;
 /**
  * Chiron error handler services provider.
  */
-class ErrorHandlerServiceProvider extends ServiceProvider
+class ErrorHandlerServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register Chiron system services.
@@ -45,34 +45,39 @@ class ErrorHandlerServiceProvider extends ServiceProvider
      */
     public function register(KernelInterface $kernel): void
     {
-        $kernel[HtmlFormatter::class] = function ($c) {
+
+
+        $kernel->closure(HtmlFormatter::class, function () {
             $path = __DIR__ . '/../../../resources/error.html';
 
             return new HtmlFormatter(realpath($path));
-        };
+        });
 
-        $kernel[LoggerReporter::class] = function ($c) {
+        $kernel->closure(LoggerReporter::class, function () use ($kernel) {
             //return new LoggerReporter($c[LoggerInterface::class]);
-            return new LoggerReporter($c['logger']);
-        };
+            return new LoggerReporter($kernel['logger']);
+        });
 
-        $kernel[ErrorHandler::class] = function ($c) {
+
+        $kernel->closure(ErrorHandler::class, function () use ($kernel) {
             // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
             $errorHandler = new ErrorHandler(new ResponseFactory());
 
-            $errorHandler->addReporter($c[LoggerReporter::class]);
+
+
+            $errorHandler->addReporter($kernel[LoggerReporter::class]);
 
             $errorHandler->addFormatter(new WhoopsFormatter());
 
-            $hasRenderer = $c->has(TemplateRendererInterface::class);
+            $hasRenderer = $kernel->has(TemplateRendererInterface::class);
             if ($hasRenderer) {
-                $renderer = $c[TemplateRendererInterface::class];
+                $renderer = $kernel[TemplateRendererInterface::class];
                 //registerErrorViewPaths($renderer);
                 //$renderer->addPath(\Chiron\TEMPLATES_DIR . "/errors", 'errors');
                 $errorHandler->addFormatter(new ViewFormatter($renderer));
             }
 
-            $errorHandler->addFormatter($c[HtmlFormatter::class]);
+            $errorHandler->addFormatter($kernel[HtmlFormatter::class]);
             $errorHandler->addFormatter(new JsonFormatter());
             $errorHandler->addFormatter(new XmlFormatter());
             $errorHandler->addFormatter(new PlainTextFormatter());
@@ -81,7 +86,8 @@ class ErrorHandlerServiceProvider extends ServiceProvider
             $errorHandler->setDefaultFormatter(new PlainTextFormatter());
 
             return $errorHandler;
-        };
+        });
+
 
         /*
          * Register all the possible error template namespaced paths.
@@ -103,17 +109,18 @@ class ErrorHandlerServiceProvider extends ServiceProvider
         }
         */
 
-        $kernel[ErrorHandlerMiddleware::class] = function ($c) {
-            $middleware = new ErrorHandlerMiddleware($c->config->app['debug']);
+        $kernel->closure(ErrorHandlerMiddleware::class, function () use ($kernel) {
+
+            $middleware = new ErrorHandlerMiddleware($kernel->getConfig()->app['debug']);
 
             //$middleware->bindHandler(Throwable::class, new \Chiron\Exception\WhoopsHandler());
 
-            $middleware->bindHandler(Throwable::class, $c[ErrorHandler::class]);
+            $middleware->bindHandler(Throwable::class, $kernel[ErrorHandler::class]);
 
             //$middleware->bindHandler(ServiceUnavailableHttpException::class, new \Chiron\Exception\MaintenanceHandler());
             //$middleware->bindHandler(NotFoundHttpException::class, new \Chiron\Exception\NotFoundHandler());
 
             return $middleware;
-        };
+        });
     }
 }

@@ -17,7 +17,7 @@
         "chiron/http": "^1.0",
         "chiron/http-exceptions": "^2.0",
         "chiron/crypt-engine": "^0.1",
-        "chiron/container": "^1.0",
+        "chiron/container": "^2.0",
         "chiron/pipeline": "^1.2",
         "chiron/config": "^1.1",
         "nyholm/psr7-server": "^0.3.0"

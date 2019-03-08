@@ -21,7 +21,7 @@ use Psr\Container\ContainerInterface;
 /**
  * Config service provider.
  */
-class ConfigServiceProvider extends ServiceProvider
+class ConfigServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register Chiron system services.
@@ -38,9 +38,20 @@ class ConfigServiceProvider extends ServiceProvider
         // register config object
         $kernel->set(Config::class, $config);
 
+/*
+        $kernel->closure(Config::class, function() {
+            $settings['app']['settings']['basePath'] = '/';
+            $settings['app']['debug'] = false;
+
+            return new Config($settings);
+        });*/
+
+
         // add alias
+        $kernel->alias('config', Config::class);
+        /*
         $kernel['config'] = function ($c) {
             return $c->get(Config::class);
-        };
+        };*/
     }
 }

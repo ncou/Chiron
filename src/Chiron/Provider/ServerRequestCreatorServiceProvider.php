@@ -24,7 +24,7 @@ use Psr\Http\Message\UriFactoryInterface;
 /**
  * Chiron server request creator services provider.
  */
-class ServerRequestCreatorServiceProvider extends ServiceProvider
+class ServerRequestCreatorServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register Chiron system services.
@@ -33,6 +33,7 @@ class ServerRequestCreatorServiceProvider extends ServiceProvider
      */
     public function register(KernelInterface $kernel): void
     {
+        /*
         $kernel[ServerRequestCreatorInterface::class] = function ($c) {
             $requestCreator = new ServerRequestCreator(
                 $c[ServerRequestFactoryInterface::class],
@@ -41,15 +42,31 @@ class ServerRequestCreatorServiceProvider extends ServiceProvider
                 $c[StreamFactoryInterface::class]);
 
             return $requestCreator->fromGlobals();
-        };
+        };*/
+
+
+        $kernel->closure(ServerRequestCreatorInterface::class, function (ServerRequestFactoryInterface $serverRequestFactory, UriFactoryInterface $uriFactory, UploadedFileFactoryInterface $uploadedFileFactory, StreamFactoryInterface $streamFactory) {
+            $requestCreator = new ServerRequestCreator(
+                $serverRequestFactory,
+                $uriFactory,
+                $uploadedFileFactory,
+                $streamFactory);
+
+            return $requestCreator->fromGlobals();
+        });
+
+
 
         // *** register alias ***
+        $kernel->alias(ServerRequestCreator::class, ServerRequestCreatorInterface::class);
+        $kernel->alias('request', ServerRequestCreatorInterface::class);
+        /*
         $kernel[ServerRequestCreator::class] = function ($c) {
             return $c->get(ServerRequestCreatorInterface::class);
         };
 
         $kernel['request'] = function ($c) {
             return $c->get(ServerRequestCreatorInterface::class);
-        };
+        };*/
     }
 }

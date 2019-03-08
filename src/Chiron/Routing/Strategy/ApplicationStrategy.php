@@ -8,6 +8,7 @@ namespace Chiron\Routing\Strategy;
 
 use Chiron\Routing\Resolver\ControllerResolverInterface;
 use Chiron\Routing\Route;
+use Chiron\Kernel;
 use LogicException;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -45,6 +46,10 @@ class ApplicationStrategy implements StrategyInterface
         $callable = $this->resolver->resolve($handler);
 
         $content = $this->invoker->call($callable, $params);
+
+
+        //$content = Kernel::getInstance()->call($handler, $params);
+
 
         if (! $content instanceof ResponseInterface) {
             if (! is_string($content)) {

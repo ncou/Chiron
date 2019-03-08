@@ -36,7 +36,7 @@ use Psr\Http\Message\StreamFactoryInterface;
  *
  * Registers system services for Chiron, such as config manager, middleware router and dispatcher...
  */
-class MiddlewaresServiceProvider extends ServiceProvider
+class MiddlewaresServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register Chiron system services.
@@ -45,29 +45,29 @@ class MiddlewaresServiceProvider extends ServiceProvider
      */
     public function register(KernelInterface $kernel): void
     {
-        $kernel[RoutingMiddleware::class] = function ($c) {
-            return new RoutingMiddleware($c[RouterInterface::class], $c[ResponseFactoryInterface::class], $c[StreamFactoryInterface::class]);
-        };
+        $kernel->closure(RoutingMiddleware::class, function () use ($kernel) {
+            return new RoutingMiddleware($kernel[RouterInterface::class], $kernel[ResponseFactoryInterface::class], $kernel[StreamFactoryInterface::class]);
+        });
 
-        $kernel[DispatcherMiddleware::class] = function ($c) {
-            return new DispatcherMiddleware(new Pipeline($c));
-        };
+        $kernel->closure(DispatcherMiddleware::class, function () use ($kernel) {
+            return new DispatcherMiddleware(new Pipeline($kernel));
+        });
 
-        $kernel[ContentTypeByDefaultMiddleware::class] = function ($c) {
+        $kernel->closure(ContentTypeByDefaultMiddleware::class, function () {
             return new ContentTypeByDefaultMiddleware();
-        };
+        });
         /*
-        $kernel[OriginalRequestMiddleware::class] = function ($c) {
+        $kernel->closure(OriginalRequestMiddleware::class, function ($c) {
             return new OriginalRequestMiddleware();
-        };*/
+        });*/
 
-        $kernel[CharsetByDefaultMiddleware::class] = function ($c) {
+        $kernel->closure(CharsetByDefaultMiddleware::class, function () {
             return new CharsetByDefaultMiddleware();
-        };
+        });
         /*
-        $kernel[BodyParserMiddleware::class] = function ($c) {
+        $kernel->closure(BodyParserMiddleware::class, function ($c) {
             return new BodyParserMiddleware();
-        };*/
+        });*/
 
         /*
                 $kernel[EmitterMiddleware::class] = function ($c) {
@@ -75,17 +75,17 @@ class MiddlewaresServiceProvider extends ServiceProvider
                 };
         */
 
-        $kernel[CheckMaintenanceMiddleware::class] = function ($c) {
+        $kernel->closure(CheckMaintenanceMiddleware::class, function () {
             return new CheckMaintenanceMiddleware();
-        };
+        });
 
-        $kernel[MethodOverrideMiddleware::class] = function ($c) {
+        $kernel->closure(MethodOverrideMiddleware::class, function () {
             return new MethodOverrideMiddleware();
-        };
+        });
 
-        $kernel[ContentLengthMiddleware::class] = function ($c) {
+        $kernel->closure(ContentLengthMiddleware::class, function () {
             return new ContentLengthMiddleware();
-        };
+        });
 
         /*
            $kernel['controllerResolver'] = function ($container) {

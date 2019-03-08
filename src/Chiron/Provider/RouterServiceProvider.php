@@ -28,7 +28,7 @@ use Psr\Container\ContainerInterface;
  *
  * Registers system services for Chiron, such as config manager, middleware router and dispatcher...
  */
-class RouterServiceProvider extends ServiceProvider
+class RouterServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register Chiron system services.
@@ -38,6 +38,7 @@ class RouterServiceProvider extends ServiceProvider
     public function register(KernelInterface $kernel): void
     {
         // register router object
+        /*
         $kernel[RouterInterface::class] = function ($c) {
             $router = new Router();
 
@@ -48,11 +49,25 @@ class RouterServiceProvider extends ServiceProvider
             $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new ControllerResolver($c)));
 
             return $router;
-        };
+        };*/
+
+        $kernel->closure(RouterInterface::class, function () use ($kernel) {
+            $router = new Router();
+
+            $router->setBasePath($kernel->getConfig()['app.settings.basePath'] ?? '/');
+
+            // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
+            // TODO : aller chercher la controllerResolver directement dans le container plutot que de faire un new !!!! ca permettra de faire un override de cette classe si l'utilisateur souhaite redéfinir le resolver.
+            $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new ControllerResolver($kernel)));
+
+            return $router;
+        });
 
         // add alias
+        $kernel->alias('router', RouterInterface::class);
+        /*
         $kernel['router'] = function ($c) {
             return $c->get(RouterInterface::class);
-        };
+        };*/
     }
 }

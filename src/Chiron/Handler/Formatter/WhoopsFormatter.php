@@ -11,11 +11,10 @@ use Whoops\Run as Whoops;
 
 // ajouter les informations sur la request de l'application !!!!
 //https://github.com/zendframework/zend-expressive/blob/master/src/Middleware/WhoopsErrorResponseGenerator.php#L95
+//https://github.com/zeuxisoo/php-slim-whoops/blob/master/src/Zeuxisoo/Whoops/Provider/Slim/WhoopsGuard.php#L64
 
 //https://github.com/userfrosting/UserFrosting/blob/master/app/sprinkles/core/src/Error/Renderer/WhoopsRenderer.php
 //https://github.com/filp/whoops/blob/master/src/Whoops/Handler/PrettyPageHandler.php
-
-//https://github.com/zeuxisoo/php-slim-whoops/blob/master/src/Zeuxisoo/Whoops/Provider/Slim/WhoopsGuard.php#L47
 
 //https://github.com/narrowspark/framework/blob/ccda2dca0c312dbea08814d1372c1802920ebcca/src/Viserio/Component/Exception/Displayer/WhoopsPrettyDisplayer.php
 //https://github.com/narrowspark/framework/blob/ccda2dca0c312dbea08814d1372c1802920ebcca/src/Viserio/Component/Exception/Displayer/WhoopsJsonDisplayer.php

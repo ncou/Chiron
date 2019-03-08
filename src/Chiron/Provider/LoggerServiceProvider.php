@@ -26,7 +26,7 @@ use Psr\Log\NullLogger;
  *
  * Registers system services for Chiron, such as config manager, middleware router and dispatcher...
  */
-class LoggerServiceProvider extends ServiceProvider
+class LoggerServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register Chiron system services.
@@ -38,18 +38,21 @@ class LoggerServiceProvider extends ServiceProvider
         // TODO : initialiser un logger ici ???? et éventuellement créer une propriété pour changer le formater dans la restitution de la log. cf nanologger et la liste des todo pour mettre un formater custom à passer en paramétre du constructeur !!!!
 
         // register router object
-        $kernel[LoggerInterface::class] = function ($c) {
+        $kernel->closure(LoggerInterface::class, function () {
             return new NullLogger();
             //$logger = new NullLogger();
             // TODO : à améliorer !!!! regarder la notion de daily et single et de log_max_files : https://laravel.com/docs/5.2/errors
 
             // TODO : rajouter le composant logger dans le fichier composer.json et ensuite décommenter cette ligne !!!!
             //$app->setLogger(new Logger(Chiron\ROOT_DIR.Chiron\DS.Chiron\LOG_DIR_NAME.Chiron\DS.'CHIRON.log'));
-        };
+        });
 
         // add alias
+        $kernel->alias('logger', LoggerInterface::class);
+
+        /*
         $kernel['logger'] = function ($c) {
             return $c->get(LoggerInterface::class);
-        };
+        };*/
     }
 }

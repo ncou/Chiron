@@ -33,7 +33,7 @@ use Psr\Http\Message\UriFactoryInterface;
 /**
  * Chiron http factories services provider.
  */
-class HttpFactoriesServiceProvider extends ServiceProvider
+class HttpFactoriesServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register Chiron system services.
@@ -43,31 +43,39 @@ class HttpFactoriesServiceProvider extends ServiceProvider
     public function register(KernelInterface $kernel): void
     {
         // *** register factories ***
-        $kernel[RequestFactoryInterface::class] = function ($c) {
+        $kernel->closure(RequestFactoryInterface::class, function () {
             return new RequestFactory();
-        };
+        });
 
-        $kernel[ResponseFactoryInterface::class] = function ($c) {
+        $kernel->closure(ResponseFactoryInterface::class,function () {
             return new ResponseFactory();
-        };
+        });
 
-        $kernel[ServerRequestFactoryInterface::class] = function ($c) {
+        $kernel->closure(ServerRequestFactoryInterface::class, function () {
             return new ServerRequestFactory();
-        };
+        });
 
-        $kernel[UriFactoryInterface::class] = function ($c) {
+        $kernel->closure(UriFactoryInterface::class, function () {
             return new UriFactory();
-        };
+        });
 
-        $kernel[UploadedFileFactoryInterface::class] = function ($c) {
+        $kernel->closure(UploadedFileFactoryInterface::class, function () {
             return new UploadedFileFactory();
-        };
+        });
 
-        $kernel[StreamFactoryInterface::class] = function ($c) {
+        $kernel->closure(StreamFactoryInterface::class, function () {
             return new StreamFactory();
-        };
+        });
 
         // *** register alias ***
+        $kernel->alias(RequestFactory::class, RequestFactoryInterface::class);
+        $kernel->alias(ResponseFactory::class, ResponseFactoryInterface::class);
+        $kernel->alias(ServerRequestFactory::class, ServerRequestFactoryInterface::class);
+        $kernel->alias(UriFactory::class, UriFactoryInterface::class);
+        $kernel->alias(UploadedFileFactory::class, UploadedFileFactoryInterface::class);
+        $kernel->alias(StreamFactory::class, StreamFactoryInterface::class);
+
+/*
         $kernel[RequestFactory::class] = function ($c) {
             return $c->get(RequestFactoryInterface::class);
         };
@@ -90,6 +98,6 @@ class HttpFactoriesServiceProvider extends ServiceProvider
 
         $kernel[StreamFactory::class] = function ($c) {
             return $c->get(StreamFactoryInterface::class);
-        };
+        };*/
     }
 }
