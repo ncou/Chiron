@@ -38,6 +38,39 @@ class WhoopsFormatter implements FormatterInterface
         $whoops->writeToOutput(false);
         $whoops->pushHandler(new PrettyPageHandler());
 
+/*
+        //$uri = $request->getAttribute('originalUri', false) ?: $request->getUri();
+        //$request = $request->getAttribute('originalRequest', false) ?: $request;
+
+        $serverParams = $request->getServerParams();
+
+        $scriptName = $serverParams['SCRIPT_NAME'] ?? '';
+
+        $handler->addDataTable('Chiron Application Request', [
+            'HTTP Method'            => $request->getMethod(),
+            'URI'                    => (string) $uri,
+            'Script'                 => $scriptName,
+            'Headers'                => $request->getHeaders(),
+            'Cookies'                => $request->getCookieParams(),
+            'Attributes'             => $request->getAttributes(),
+            'Query String Arguments' => $request->getQueryParams(),
+            'Body Params'            => $request->getParsedBody(),
+        ]);
+
+// TODO : autre exemple de ce que l'on peut ajouter.
+        'HTTP Method'     => $this->request->getMethod(),
+        'Base URL'        => (string) $this->request->getUri(),
+        'Path'            => $this->request->getUri()->getPath(),
+        'Query String'    => $this->request->getUri()->getQuery() ?: '<none>',
+        'Scheme'          => $this->request->getUri()->getScheme(),
+        'Port'            => $this->request->getUri()->getPort(),
+        'Host'            => $this->request->getUri()->getHost(),
+
+        // TODO : il manque les liste suivantes à afficher :
+        //getServerParams / getUploadedFiles / getRequestTarget / getProtocolVersion
+
+        */
+
         return $whoops;
     }
 

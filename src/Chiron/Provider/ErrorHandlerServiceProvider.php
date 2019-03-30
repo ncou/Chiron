@@ -70,6 +70,7 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
             $errorHandler->addFormatter(new WhoopsFormatter());
 
             $hasRenderer = $kernel->has(TemplateRendererInterface::class);
+            // TODO : en plus du has il faut vérifier si il est bien de l'instance TamplateRendererInterface pour rentrer dans le if !!!!
             if ($hasRenderer) {
                 $renderer = $kernel[TemplateRendererInterface::class];
                 //registerErrorViewPaths($renderer);

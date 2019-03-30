@@ -85,6 +85,21 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
 
     */
 
+    /*
+    //https://github.com/codeigniter4/CodeIgniter4/blob/develop/system/Router/RouteCollection.php#L122
+
+    protected $placeholders = [
+        'any'      => '.*',
+        'segment'  => '[^/]+',
+        'alphanum' => '[a-zA-Z0-9]+',
+        'num'      => '[0-9]+',
+        'alpha'    => '[a-zA-Z]+',
+        'hash'     => '[^/]+',
+    ];
+
+
+    */
+
     /**
      * @var string Can be used to ignore leading part of the Request URL (if main file lives in subdirectory of host)
      */

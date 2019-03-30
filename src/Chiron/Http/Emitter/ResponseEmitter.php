@@ -8,6 +8,9 @@ use Chiron\Http\Psr\Stream;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+//https://github.com/narrowspark/http-emitter/blob/master/src/SapiStreamEmitter.php
+//https://github.com/zendframework/zend-httphandlerrunner/blob/master/src/Emitter/SapiStreamEmitter.php
+
 //https://github.com/Wandu/Http/blob/master/Sender/ResponseSender.php
 
 //https://github.com/cakephp/cakephp/blob/master/src/Http/ResponseEmitter.php
@@ -436,6 +439,15 @@ class ResponseEmitter implements EmitterInterface
         return $now->format('D, d M Y H:i:s') . ' GMT';
     }
 
+    //https://github.com/symfony/symfony/blob/master/src/Symfony/Component/HttpFoundation/ResponseHeaderBag.php#L293
+    private function initDate2()
+    {
+        $now = \DateTime::createFromFormat('U', time());
+        $now->setTimezone(new \DateTimeZone('UTC'));
+
+        return $now->format('D, d M Y H:i:s') . ' GMT';
+    }
+
     /**
      * Prepares the Response before it is sent to the client.
      *
@@ -552,16 +564,16 @@ class ResponseEmitter implements EmitterInterface
 
     /**
      * Parse content-range header
-     * https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.16.
+     * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.16
      *
      * @param string $header The Content-Range header to parse.
      *
      * @return false|array [unit, first, last, length]; returns false if no
      *                     content range or an invalid content range is provided
      */
-    protected function parseContentRange(string $header)
+    protected function parseContentRange(string $header): ?array
     {
-        if (preg_match('/(?P<unit>[\w]+)\s+(?P<first>\d+)-(?P<last>\d+)\/(?P<length>\d+|\*)/', $header, $matches)) {
+        if (preg_match('/(?P<unit>[\w]+)\s+(?P<first>\d+)-(?P<last>\d+)\/(?P<length>\d+|\*)/', $header, $matches) === 1) {
             return [
                 $matches['unit'],
                 (int) $matches['first'],
@@ -570,6 +582,6 @@ class ResponseEmitter implements EmitterInterface
             ];
         }
 
-        return false;
+        return null;
     }
 }

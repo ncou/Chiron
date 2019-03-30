@@ -320,6 +320,13 @@ class ErrorHandler implements ErrorHandlerInterface
         $response->getBody()->write($body);
         $response->getBody()->rewind();
 
+        /*
+        $body = $response->getBody();
+        $body->write($bodyContent);
+        $body->rewind();
+        return $response->withBody($body);
+*/
+
         return $response;
     }
 
