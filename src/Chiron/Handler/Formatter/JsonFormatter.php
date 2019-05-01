@@ -9,6 +9,9 @@ use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
+//https://github.com/Seldaek/monolog/blob/master/src/Monolog/Formatter/JsonFormatter.php
+//https://github.com/Seldaek/monolog/blob/master/src/Monolog/Formatter/NormalizerFormatter.php
+
 // TODO : Constructeur => permettre de passer en paramétre le json flags ($jsonEncodeOptions) ????
 // TODO : Constructeur => passer en paramétre la valeur du isPretty == true par défaut
 class JsonFormatter implements FormatterInterface

@@ -23,7 +23,7 @@ class WhoopsFormatter implements FormatterInterface
 {
     public function format(ServerRequestInterface $request, Throwable $e): string
     {
-        return $this->whoops()->handleException($e);
+        return $this->whoops($request)->handleException($e);
     }
 
     /**
@@ -31,45 +31,27 @@ class WhoopsFormatter implements FormatterInterface
      *
      * @return \Whoops\Run
      */
-    private function whoops(): Whoops
+    private function whoops(ServerRequestInterface $request): Whoops
     {
-        $whoops = new Whoops();
-        $whoops->allowQuit(false);
-        $whoops->writeToOutput(false);
-        $whoops->pushHandler(new PrettyPageHandler());
+        // TODO : vérifier si on stock bien ces originalXXX variables en amont.
+        $request = $request->getAttribute('originalRequest', false) ?: $request;
 
-/*
-        //$uri = $request->getAttribute('originalUri', false) ?: $request->getUri();
-        //$request = $request->getAttribute('originalRequest', false) ?: $request;
-
-        $serverParams = $request->getServerParams();
-
-        $scriptName = $serverParams['SCRIPT_NAME'] ?? '';
-
-        $handler->addDataTable('Chiron Application Request', [
-            'HTTP Method'            => $request->getMethod(),
-            'URI'                    => (string) $uri,
-            'Script'                 => $scriptName,
+        $handler = new PrettyPageHandler();
+        $handler->addDataTable('PSR7 Request Data', [
+            'Method'                 => $request->getMethod(),
+            //'Protocol'               => $request->getProtocolVersion(),
+            'URI'                    => (string) $request->getUri(),
             'Headers'                => $request->getHeaders(),
             'Cookies'                => $request->getCookieParams(),
             'Attributes'             => $request->getAttributes(),
-            'Query String Arguments' => $request->getQueryParams(),
-            'Body Params'            => $request->getParsedBody(),
+            'Query Params'           => $request->getQueryParams(),
+            'Body Params'            => $request->getParsedBody()
         ]);
 
-// TODO : autre exemple de ce que l'on peut ajouter.
-        'HTTP Method'     => $this->request->getMethod(),
-        'Base URL'        => (string) $this->request->getUri(),
-        'Path'            => $this->request->getUri()->getPath(),
-        'Query String'    => $this->request->getUri()->getQuery() ?: '<none>',
-        'Scheme'          => $this->request->getUri()->getScheme(),
-        'Port'            => $this->request->getUri()->getPort(),
-        'Host'            => $this->request->getUri()->getHost(),
-
-        // TODO : il manque les liste suivantes à afficher :
-        //getServerParams / getUploadedFiles / getRequestTarget / getProtocolVersion
-
-        */
+        $whoops = new Whoops();
+        $whoops->allowQuit(false);
+        $whoops->writeToOutput(false);
+        $whoops->pushHandler($handler);
 
         return $whoops;
     }

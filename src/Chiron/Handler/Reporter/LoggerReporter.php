@@ -14,7 +14,6 @@ use Throwable;
 
 // TODO : améliorer la fonction de log en utilisant ce bout de code => https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php#L211
 // autre exemple ici : https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/BaseErrorHandler.php#L334
-// TODO : passer en paramétre de la méthode report la Request et logguer le $request->getRequestTarget() + $request->getHeaderLine('Referer') et voir même pour logger l'IP
 class LoggerReporter implements ReporterInterface
 {
     /**
@@ -25,6 +24,9 @@ class LoggerReporter implements ReporterInterface
     // TODO : passer cela en constante privée ?????
     // TODO : permettre de customiser via une méthode cette map ????
     //https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/BaseErrorHandler.php#L396
+    //https://github.com/Seldaek/monolog/blob/master/src/Monolog/ErrorHandler.php#L127
+    //https://github.com/zendframework/zend-log/blob/master/src/Logger.php#L45
+    //https://github.com/symfony/symfony/blob/master/src/Symfony/Component/Debug/ErrorHandler.php#L71
     private $levelMap = [
         E_ERROR             => LogLevel::CRITICAL,
         E_WARNING           => LogLevel::WARNING,
@@ -51,20 +53,35 @@ class LoggerReporter implements ReporterInterface
     private $logLevelThreshold;
 
     /**
-     * Log Levels.
+     * Logging level mapping, used to hierarchize
+     * @const int defined from the BSD Syslog message severities
+     *
+     * This complies to \Psr\Log\LogLevel and RFC 5424 severity values :
+     *   0  Emergency: system is unusable
+     *   1  Alert: action must be taken immediately
+     *   2  Critical: critical conditions
+     *   3  Error: error conditions
+     *   4  Warning: warning conditions
+     *   5  Notice: normal but significant condition
+     *   6  Informational: informational messages
+     *   7  Debug: debug-level messages
+     *
+     * @link https://tools.ietf.org/html/rfc5424#page-11
+     * @link https://tools.ietf.org/html/rfc3164#page-9
      *
      * @var array
      */
-    // TODO : passer cela en constante privée ?????
+    // TODO : changer les valeurs pour passer de 7 à 0. cf : https://github.com/zendframework/zend-log/blob/master/src/Logger.php#L29
+    // TODO : https://github.com/ozh/log/blob/master/src/Logger.php#L59
     private $logLevels = [
-        LogLevel::EMERGENCY => 7,
-        LogLevel::ALERT     => 6,
-        LogLevel::CRITICAL  => 5,
-        LogLevel::ERROR     => 4,
-        LogLevel::WARNING   => 3,
-        LogLevel::NOTICE    => 2,
-        LogLevel::INFO      => 1,
-        LogLevel::DEBUG     => 0,
+        LogLevel::EMERGENCY => 0,
+        LogLevel::ALERT     => 1,
+        LogLevel::CRITICAL  => 2,
+        LogLevel::ERROR     => 3,
+        LogLevel::WARNING   => 4,
+        LogLevel::NOTICE    => 5,
+        LogLevel::INFO      => 6,
+        LogLevel::DEBUG     => 7,
     ];
 
     /**
@@ -135,6 +152,7 @@ class LoggerReporter implements ReporterInterface
     private function getMessage(ServerRequestInterface $request, Throwable $e): string
     {
         $message = $this->getMessageForError($e);
+        // TODO : mettre ce bout de code dans une méthode "requestContext($request)" qui retournerai une string https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/BaseErrorHandler.php#L334
         $message .= "\nRequest URL: " . $request->getRequestTarget();
         $referer = $request->getHeaderLine('Referer');
         if ($referer) {
@@ -153,6 +171,7 @@ class LoggerReporter implements ReporterInterface
      *
      * @return string Error message
      */
+    // TODO : améliorer avec le bout de code : https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/BaseErrorHandler.php#L356
     private function getMessageForError(Throwable $e, bool $isPrevious = false): string
     {
         $message = sprintf(
@@ -183,6 +202,17 @@ class LoggerReporter implements ReporterInterface
     {
         $level = $this->getLogLevel($e);
 
-        return $this->logLevels[$level] >= $this->logLevels[$this->logLevelThreshold];
+        // TODO : utiliser la méthode shouldLog():bool
+        return $this->logLevels[$level] <= $this->logLevels[$this->logLevelThreshold];
     }
+
+    /**
+     * @return bool
+     */
+    // TODO : renommer en canLog
+    /*
+    private function shouldLog($level): bool
+    {
+        return $this->logLevels[$level] <= $this->logLevels[$this->logLevelThreshold];
+    }*/
 }
