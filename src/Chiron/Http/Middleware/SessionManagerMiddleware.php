@@ -10,6 +10,8 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
+//https://github.com/davidecesarano/Embryo-Session/blob/master/Embryo/Session/Middleware/SessionMiddleware.php
+
 class SessionManagerMiddleware implements MiddlewareInterface
 {
     /** @var array Default settings */

@@ -12,6 +12,15 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+//https://github.com/dmandrade/apli-core/blob/master/src/Core/Http/Response.php
+
+//https://github.com/symfony/serializer/blob/master/Encoder/JsonEncode.php
+//https://github.com/thetribeio/json/blob/master/src/encode.php
+
+// TODO : ajouter le jsonP  https://github.com/yiisoft/yii2/blob/master/framework/web/JsonResponseFormatter.php
+
+// TODO : gérer toJson et toArray    https://github.com/zendframework/zf1/blob/master/library/Zend/Json.php#L133    /      https://github.com/zendframework/zend-json/blob/master/src/Json.php#L78
+
 /**
  * Route callback strategy with route parameters as individual arguments and the response is encoded in json.
  */
@@ -25,6 +34,9 @@ class JsonStrategy implements StrategyInterface
      * JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES
      */
     public const DEFAULT_JSON_FLAGS = 79;
+
+    /** @var int */
+    //private $jsonOptions = 0;
 
     /**
      * @var int
@@ -84,6 +96,7 @@ class JsonStrategy implements StrategyInterface
     public function jsonEncode($data): string
     {
         // TODO : attendre la version PHP 7.3 pour utiliser le flag JSON_THROW_ON_ERROR => https://wiki.php.net/rfc/json_throw_on_error
+        // https://github.com/aedart/athenaeum/blob/master/src/Utils/Json.php#L35
         $json = json_encode($data, $this->encodingOptions);
 
         if ($json === false) {
@@ -119,7 +132,21 @@ class JsonStrategy implements StrategyInterface
         return $this;
     }
 
+    /**
+     * Set options for JSON encoding
+     *
+     * @see http://php.net/manual/function.json-encode.php
+     * @see http://php.net/manual/json.constants.php
+     */
     /*
+    public function jsonOptions(int $options): self
+    {
+        $this->jsonOptions = $options;
+        return $this;
+    }*/
+
+    /*
+    //https://github.com/Seldaek/monolog/blob/master/src/Monolog/Formatter/NormalizerFormatter.php#L97
         public function prettyPrint(bool $enable)
         {
             if ($enable) {
@@ -160,5 +187,40 @@ class JsonStrategy implements StrategyInterface
             return false;
         }
         return (is_array($response) || is_object($response));
+    }*/
+
+
+
+    /**
+     * Encode a value to JSON using the PHP built-in json_encode function.
+     *
+     * Uses the encoding options:
+     *
+     * - JSON_HEX_TAG
+     * - JSON_HEX_APOS
+     * - JSON_HEX_QUOT
+     * - JSON_HEX_AMP
+     *
+     * If $prettyPrint is boolean true, also uses JSON_PRETTY_PRINT.
+     *
+     * @param mixed $valueToEncode
+     * @param bool $prettyPrint
+     * @return string|false Boolean false return value if json_encode is not
+     *     available, or the $useBuiltinEncoderDecoder flag is enabled.
+     */
+    /*
+    private static function encodeViaPhpBuiltIn($valueToEncode, $prettyPrint = false)
+    {
+        if (! function_exists('json_encode')) {
+            return false;
+        }
+
+        $encodeOptions = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP;
+
+        if ($prettyPrint) {
+            $encodeOptions |= JSON_PRETTY_PRINT;
+        }
+
+        return json_encode($valueToEncode, $encodeOptions);
     }*/
 }

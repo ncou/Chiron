@@ -12,16 +12,24 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 use Throwable;
 
+//https://github.com/spiral/exceptions/blob/master/src/AbstractHandler.php
+
 // TODO : améliorer la fonction de log en utilisant ce bout de code => https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php#L211
 // autre exemple ici : https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/BaseErrorHandler.php#L334
 class LoggerReporter implements ReporterInterface
 {
     /**
+     * Current minimum logging threshold.
+     *
+     * @var string
+     */
+    private $logLevelThreshold;
+
+    /**
      * PHP to PSR3 error levels map.
      *
      * @var array
      */
-    // TODO : passer cela en constante privée ?????
     // TODO : permettre de customiser via une méthode cette map ????
     //https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/BaseErrorHandler.php#L396
     //https://github.com/Seldaek/monolog/blob/master/src/Monolog/ErrorHandler.php#L127
@@ -46,13 +54,6 @@ class LoggerReporter implements ReporterInterface
     ];
 
     /**
-     * Current minimum logging threshold.
-     *
-     * @var string
-     */
-    private $logLevelThreshold;
-
-    /**
      * Logging level mapping, used to hierarchize
      * @const int defined from the BSD Syslog message severities
      *
@@ -71,7 +72,7 @@ class LoggerReporter implements ReporterInterface
      *
      * @var array
      */
-    // TODO : changer les valeurs pour passer de 7 à 0. cf : https://github.com/zendframework/zend-log/blob/master/src/Logger.php#L29
+    // TODO : https://github.com/zendframework/zend-log/blob/master/src/Logger.php#L29
     // TODO : https://github.com/ozh/log/blob/master/src/Logger.php#L59
     private $logLevels = [
         LogLevel::EMERGENCY => 0,
@@ -93,6 +94,11 @@ class LoggerReporter implements ReporterInterface
     {
         $this->logger = $logger;
         $this->setLogLevelThreshold($logLevelThreshold);
+    }
+
+    public function setLevelMap(array $levelMap)
+    {
+        $this->levelMap = array_replace($this->levelMap, $levelMap);
     }
 
     /**
@@ -172,8 +178,18 @@ class LoggerReporter implements ReporterInterface
      * @return string Error message
      */
     // TODO : améliorer avec le bout de code : https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/BaseErrorHandler.php#L356
+    // TODO : améliorer la méthode getClass() pour gérer les classes anonymes : https://github.com/Seldaek/monolog/blob/master/src/Monolog/Utils.php#L19
     private function getMessageForError(Throwable $e, bool $isPrevious = false): string
     {
+
+/*
+        $this->logger->log(
+            $level,
+            sprintf('Uncaught Exception %s: "%s" at %s line %s', Utils::getClass($e), $e->getMessage(), $e->getFile(), $e->getLine()),
+            ['exception' => $e]
+        );
+*/
+
         $message = sprintf(
             '%s[%s] %s',
             $isPrevious ? "\nCaused by: " : '',

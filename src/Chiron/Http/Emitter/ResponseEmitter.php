@@ -8,6 +8,11 @@ use Chiron\Http\Psr\Stream;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+
+//https://github.com/davidecesarano/Embryo-Emitter/blob/master/Embryo/Http/Emitter/Emitter.php
+
+//https://github.com/relayphp/Relay.Middleware/blob/1.x/src/ResponseSender.php
+
 //https://github.com/narrowspark/http-emitter/blob/master/src/SapiStreamEmitter.php
 //https://github.com/zendframework/zend-httphandlerrunner/blob/master/src/Emitter/SapiStreamEmitter.php
 

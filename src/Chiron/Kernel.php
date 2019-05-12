@@ -394,4 +394,97 @@ class Kernel extends Container implements KernelInterface
     {
         throw new HttpException($statusCode, $message, null, $headers);
     }*/
+
+
+
+
+
+
+    /**
+     * Returns a property of the object or the default value if the property is not set.
+     *
+     * @param string $key     The name of the property.
+     * @param mixed  $default The default value (optional) if none is set.
+     *
+     * @return mixed The value of the configuration.
+     */
+    /*
+    public function get($key, $default = null)
+    {
+        return $this->config->get($key, $default);
+    }*/
+
+
+/**
+     * Modifies a property of the object, creating it if it does not already exist.
+     *
+     * @param string $key   The name of the property.
+     * @param mixed  $value The value of the property to set (optional).
+     *
+     * @return mixed Previous value of the property
+     */
+/*
+    public function set($key, $value = null)
+    {
+        $previous = $this->config->get($key, null);
+        $this->config->put($key, $value);
+        return $previous;
+    }*/
+
+
+/**
+     * Sets the configuration for the application.
+     *
+     * @param Map $config A structure object holding the configuration.
+     *
+     * @return AbstractApplication Returns itself to support chaining.
+     */
+/*
+    public function setConfiguration(Map $config)
+    {
+        $this->config = $config;
+        return $this;
+    }*/
+
+
+
+/**
+     * The application configuration object.
+     *
+     * @var Data
+     */
+    //protected $config;
+
+
+/**
+     * Class constructor of Application.
+     *
+     * @param Map|null $config
+     */
+/*
+    public function __construct(Map $config = null)
+    {
+        $this->config = $config instanceof Map ? $config : new Map();
+        $this->init();
+    }*/
+
+
+/**
+     * is utilized for reading data from inaccessible members.
+     *
+     * @param   $name string
+     *
+     * @return mixed
+     */
+/*
+    public function __get($name)
+    {
+        $allowNames = [
+            'config',
+        ];
+        if (in_array($name, $allowNames)) {
+            return $this->$name;
+        }
+        throw new \UnexpectedValueException('Property: '.$name.' not found in '.get_called_class());
+    }*/
 }
