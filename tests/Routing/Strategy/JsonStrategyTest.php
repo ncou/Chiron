@@ -6,6 +6,7 @@ namespace Chiron\Tests\Routing\Strategy;
 
 use ArrayObject;
 use Chiron\Application;
+use Chiron\Kernel;
 use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
@@ -22,7 +23,7 @@ class JsonStrategyTest extends TestCase
 {
     public function testJsonStrategyInitialisation()
     {
-        $strategy = new JsonStrategy(new ResponseFactory(), new ControllerResolver());
+        $strategy = new JsonStrategy(new Kernel());
 
         $data = ['foo' => 'bar'];
         $callback = function () use ($data) {
@@ -31,7 +32,7 @@ class JsonStrategyTest extends TestCase
 
         $request = new ServerRequest('GET', new Uri('/'));
 
-        $response = $strategy->invokeRouteCallable($callback, [], $request);
+        $response = $strategy->invokeRouteHandler($callback, [], $request);
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertSame('application/json', $response->getHeaderLine('content-type'));
@@ -49,7 +50,7 @@ class JsonStrategyTest extends TestCase
      */
     public function testInvalidArgumentExceptionOnJsonError($data)
     {
-        $strategy = new JsonStrategy(new ResponseFactory(), new ControllerResolver());
+        $strategy = new JsonStrategy(new Kernel());
 
         $callback = function () use ($data) {
             return $data;
@@ -57,7 +58,7 @@ class JsonStrategyTest extends TestCase
 
         $request = new ServerRequest('GET', new Uri('/'));
 
-        $response = $strategy->invokeRouteCallable($callback, [], $request);
+        $response = $strategy->invokeRouteHandler($callback, [], $request);
     }
 
     /**
@@ -67,7 +68,7 @@ class JsonStrategyTest extends TestCase
      */
     public function testGracefullyHandledSomeJsonErrorsWithPartialOutputOnError($data)
     {
-        $strategy = new JsonStrategy(new ResponseFactory(), new ControllerResolver());
+        $strategy = new JsonStrategy(new Kernel());
         $strategy->setEncodingOptions($strategy->getEncodingOptions() | JSON_PARTIAL_OUTPUT_ON_ERROR);
 
         $callback = function () use ($data) {
@@ -76,7 +77,7 @@ class JsonStrategyTest extends TestCase
 
         $request = new ServerRequest('GET', new Uri('/'));
 
-        $response = $strategy->invokeRouteCallable($callback, [], $request);
+        $response = $strategy->invokeRouteHandler($callback, [], $request);
 
         $this->assertInstanceOf(Response::class, $response);
     }
@@ -110,7 +111,7 @@ class JsonStrategyTest extends TestCase
      */
     public function testSetAndRetrieveData($data): void
     {
-        $strategy = new JsonStrategy(new ResponseFactory(), new ControllerResolver());
+        $strategy = new JsonStrategy(new Kernel());
 
         $callback = function () use ($data) {
             return $data;
@@ -118,7 +119,7 @@ class JsonStrategyTest extends TestCase
 
         $request = new ServerRequest('GET', new Uri('/'));
 
-        $response = $strategy->invokeRouteCallable($callback, [], $request);
+        $response = $strategy->invokeRouteHandler($callback, [], $request);
 
         $this->assertInstanceOf(Response::class, $response);
         $this->assertEquals(json_encode($data, JsonStrategy::DEFAULT_JSON_FLAGS), (string) $response->getBody());
