@@ -7,6 +7,7 @@ namespace Chiron\Routing\Strategy;
 //use Chiron\Http\Psr\Response;
 use Chiron\Routing\Resolver\ControllerResolverInterface;
 use Chiron\Routing\Route;
+use Chiron\KernelInterface;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -43,45 +44,31 @@ class JsonStrategy implements StrategyInterface
      */
     private $encodingOptions = self::DEFAULT_JSON_FLAGS;
 
-    /** ControllerResolverInterface */
-    private $resolver;
+    /** KernelInterface */
+    private $kernel;
 
-    /** ResponseFactoryInterface */
-    private $responseFactory;
-
-    private $invoker;
-
-    public function __construct(ResponseFactoryInterface $responseFactory, ControllerResolverInterface $resolver)
+    public function __construct(KernelInterface $kernel)
     {
-        $this->resolver = $resolver;
-        $this->responseFactory = $responseFactory;
-        $this->invoker = new Invoker();
+        $this->kernel = $kernel;
     }
 
-    public function invokeRouteCallable($handler, array $params, ServerRequestInterface $request): ResponseInterface
+    public function invokeRouteHandler($handler, array $params, ServerRequestInterface $request): ResponseInterface
     {
         // Inject individual matched parameters.
         foreach ($params as $param => $value) {
             $request = $request->withAttribute($param, $value);
         }
 
-        $callable = $this->resolver->resolve($handler);
-
-        $content = $this->invoker->call($callable, $params);
+        $result = $this->kernel->call($handler, $params);
 
         // TODO : lever une exception si le retour renvoyé par le controller n'est pas : JsonSerializableInterface ou ArrayObject ou is_array
-        if (! $content instanceof ResponseInterface) {
-            $json = $this->jsonEncode($content);
+        if (! $result instanceof ResponseInterface) {
+            $json = $this->jsonEncode($result);
 
-            // TODO : créer une méthode createResponse dans la classe abstraite avec comme signature : create($content = null, $status = 200, array $headers = [])
-            $response = $this->responseFactory->createResponse(200);
-            $response = $response->withHeader('Content-Type', 'application/json');
-            $response->getBody()->write($json);
-
-            return $response;
+            return $this->kernel->createResponse($json, 200, ['Content-Type' => 'application/json']);
         }
 
-        return $content;
+        return $result;
     }
 
     /**

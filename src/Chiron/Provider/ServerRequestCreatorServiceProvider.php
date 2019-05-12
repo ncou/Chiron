@@ -45,7 +45,7 @@ class ServerRequestCreatorServiceProvider implements ServiceProviderInterface
         };*/
 
 
-        $kernel->closure(ServerRequestCreatorInterface::class, function (ServerRequestFactoryInterface $serverRequestFactory, UriFactoryInterface $uriFactory, UploadedFileFactoryInterface $uploadedFileFactory, StreamFactoryInterface $streamFactory) {
+        $kernel->add(ServerRequestCreatorInterface::class, function (ServerRequestFactoryInterface $serverRequestFactory, UriFactoryInterface $uriFactory, UploadedFileFactoryInterface $uploadedFileFactory, StreamFactoryInterface $streamFactory) {
             $requestCreator = new ServerRequestCreator(
                 $serverRequestFactory,
                 $uriFactory,

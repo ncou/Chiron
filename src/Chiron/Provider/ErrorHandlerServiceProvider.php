@@ -47,19 +47,19 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
     {
 
 
-        $kernel->closure(HtmlFormatter::class, function () {
+        $kernel->add(HtmlFormatter::class, function () {
             $path = __DIR__ . '/../../../resources/error.html';
 
             return new HtmlFormatter(realpath($path));
         });
 
-        $kernel->closure(LoggerReporter::class, function () use ($kernel) {
+        $kernel->add(LoggerReporter::class, function () use ($kernel) {
             //return new LoggerReporter($c[LoggerInterface::class]);
             return new LoggerReporter($kernel['logger']);
         });
 
 
-        $kernel->closure(ErrorHandler::class, function () use ($kernel) {
+        $kernel->add(ErrorHandler::class, function () use ($kernel) {
             // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
             $errorHandler = new ErrorHandler(new ResponseFactory());
 
@@ -110,7 +110,7 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
         }
         */
 
-        $kernel->closure(ErrorHandlerMiddleware::class, function () use ($kernel) {
+        $kernel->add(ErrorHandlerMiddleware::class, function () use ($kernel) {
 
             $middleware = new ErrorHandlerMiddleware($kernel->getConfig()->app['debug']);
 

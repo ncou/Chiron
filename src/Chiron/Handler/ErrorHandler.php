@@ -299,6 +299,7 @@ class ErrorHandler implements ErrorHandlerInterface
         return 500;
     }
 
+// TODO : virer cette méthode et utiliser celle qui existe dans le Kernel !!!!
     public function createResponse(int $statusCode, string $contentType, string $body): ResponseInterface
     {
         /*

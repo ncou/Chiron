@@ -43,27 +43,27 @@ class HttpFactoriesServiceProvider implements ServiceProviderInterface
     public function register(KernelInterface $kernel): void
     {
         // *** register factories ***
-        $kernel->closure(RequestFactoryInterface::class, function () {
+        $kernel->add(RequestFactoryInterface::class, function () {
             return new RequestFactory();
         });
 
-        $kernel->closure(ResponseFactoryInterface::class,function () {
+        $kernel->add(ResponseFactoryInterface::class,function () {
             return new ResponseFactory();
         });
 
-        $kernel->closure(ServerRequestFactoryInterface::class, function () {
+        $kernel->add(ServerRequestFactoryInterface::class, function () {
             return new ServerRequestFactory();
         });
 
-        $kernel->closure(UriFactoryInterface::class, function () {
+        $kernel->add(UriFactoryInterface::class, function () {
             return new UriFactory();
         });
 
-        $kernel->closure(UploadedFileFactoryInterface::class, function () {
+        $kernel->add(UploadedFileFactoryInterface::class, function () {
             return new UploadedFileFactory();
         });
 
-        $kernel->closure(StreamFactoryInterface::class, function () {
+        $kernel->add(StreamFactoryInterface::class, function () {
             return new StreamFactory();
         });
 
@@ -74,6 +74,13 @@ class HttpFactoriesServiceProvider implements ServiceProviderInterface
         $kernel->alias(UriFactory::class, UriFactoryInterface::class);
         $kernel->alias(UploadedFileFactory::class, UploadedFileFactoryInterface::class);
         $kernel->alias(StreamFactory::class, StreamFactoryInterface::class);
+
+        $kernel->alias('requestFactory', RequestFactoryInterface::class);
+        $kernel->alias('responseFactory', ResponseFactoryInterface::class);
+        $kernel->alias('serverRequestFactory', ServerRequestFactoryInterface::class);
+        $kernel->alias('uriFactory', UriFactoryInterface::class);
+        $kernel->alias('uploadedFileFactory', UploadedFileFactoryInterface::class);
+        $kernel->alias('streamFactory', StreamFactoryInterface::class);
 
 /*
         $kernel[RequestFactory::class] = function ($c) {

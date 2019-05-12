@@ -45,27 +45,27 @@ class MiddlewaresServiceProvider implements ServiceProviderInterface
      */
     public function register(KernelInterface $kernel): void
     {
-        $kernel->closure(RoutingMiddleware::class, function () use ($kernel) {
+        $kernel->add(RoutingMiddleware::class, function () use ($kernel) {
             return new RoutingMiddleware($kernel[RouterInterface::class], $kernel[ResponseFactoryInterface::class], $kernel[StreamFactoryInterface::class]);
         });
 
-        $kernel->closure(DispatcherMiddleware::class, function () use ($kernel) {
+        $kernel->add(DispatcherMiddleware::class, function () use ($kernel) {
             return new DispatcherMiddleware(new Pipeline($kernel));
         });
 
-        $kernel->closure(ContentTypeByDefaultMiddleware::class, function () {
+        $kernel->add(ContentTypeByDefaultMiddleware::class, function () {
             return new ContentTypeByDefaultMiddleware();
         });
         /*
-        $kernel->closure(OriginalRequestMiddleware::class, function ($c) {
+        $kernel->add(OriginalRequestMiddleware::class, function ($c) {
             return new OriginalRequestMiddleware();
         });*/
 
-        $kernel->closure(CharsetByDefaultMiddleware::class, function () {
+        $kernel->add(CharsetByDefaultMiddleware::class, function () {
             return new CharsetByDefaultMiddleware();
         });
         /*
-        $kernel->closure(BodyParserMiddleware::class, function ($c) {
+        $kernel->add(BodyParserMiddleware::class, function ($c) {
             return new BodyParserMiddleware();
         });*/
 
@@ -75,15 +75,15 @@ class MiddlewaresServiceProvider implements ServiceProviderInterface
                 };
         */
 
-        $kernel->closure(CheckMaintenanceMiddleware::class, function () {
+        $kernel->add(CheckMaintenanceMiddleware::class, function () {
             return new CheckMaintenanceMiddleware();
         });
 
-        $kernel->closure(MethodOverrideMiddleware::class, function () {
+        $kernel->add(MethodOverrideMiddleware::class, function () {
             return new MethodOverrideMiddleware();
         });
 
-        $kernel->closure(ContentLengthMiddleware::class, function () {
+        $kernel->add(ContentLengthMiddleware::class, function () {
             return new ContentLengthMiddleware();
         });
 

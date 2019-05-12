@@ -220,6 +220,6 @@ class RouteResult implements RequestHandlerInterface
         // Merge the default values defined in the Route with the parameters, and add the request class name used to resole the callable parameters using type hint.
         $params = array_merge($this->route->getDefaults(), $this->matchedParams, [ServerRequestInterface::class => $request]);
 
-        return $this->route->getStrategy()->invokeRouteCallable($this->route->getHandler(), $params, $request);
+        return $this->route->getStrategy()->invokeRouteHandler($this->route->getHandler(), $params, $request);
     }
 }

@@ -38,7 +38,7 @@ class LoggerServiceProvider implements ServiceProviderInterface
         // TODO : initialiser un logger ici ???? et éventuellement créer une propriété pour changer le formater dans la restitution de la log. cf nanologger et la liste des todo pour mettre un formater custom à passer en paramétre du constructeur !!!!
 
         // register router object
-        $kernel->closure(LoggerInterface::class, function () {
+        $kernel->add(LoggerInterface::class, function () {
             return new NullLogger();
             //$logger = new NullLogger();
             // TODO : à améliorer !!!! regarder la notion de daily et single et de log_max_files : https://laravel.com/docs/5.2/errors

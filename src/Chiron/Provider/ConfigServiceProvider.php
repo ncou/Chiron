@@ -36,7 +36,7 @@ class ConfigServiceProvider implements ServiceProviderInterface
         $config = new Config($settings);
 
         // register config object
-        $kernel->set(Config::class, $config);
+        $kernel->share(Config::class, $config);
 
 /*
         $kernel->closure(Config::class, function() {

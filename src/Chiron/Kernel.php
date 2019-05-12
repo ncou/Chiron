@@ -17,6 +17,7 @@ use Chiron\Provider\ServiceProviderInterface;
 use Chiron\Routing\RouterInterface;
 use InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 
 //https://github.com/lambirou/babiphp/blob/master/system/Container/ReflectionContainer.php
@@ -59,9 +60,12 @@ class Kernel extends Container implements KernelInterface
         parent::__construct();
 
         // TODO : attention si on utilise ce bout de code, il faudra aussi faire une méthode __clone() qui remodifie ces valeurs d'instances. => https://github.com/Wandu/Framework/blob/master/src/Wandu/DI/Container.php#L65
-        $this->instance(Kernel::class, $this);
+        //$this->instance(Kernel::class, $this);
         //$this->instance(Kernel::class, $this);
         //$this->instance('kernel', $this);
+
+        $this->add(Kernel::class, $this);
+
         $this->alias(KernelInterface::class, Kernel::class);
 
 
@@ -91,6 +95,25 @@ class Kernel extends Container implements KernelInterface
         return $instance;
     }*/
 
+// TODO : vérifier que cela ne pose pas de problémes si on passe un content à null, si c'est le cas initialiser ce paramétre avec chaine vide.
+    public function createResponse(string $content = null,int $statusCode = 200, array $headers = []) :ResponseInterface
+    {
+        $response = $this->get('responseFactory')->createResponse($statusCode);
+
+        foreach ($headers as $name => $value) {
+            $response = $response->withHeader($name, $value);
+        }
+
+        // create a new body, because in the PSR spec it's not sure the body in writable in the newly created response.
+        //$response->getBody()->write($content);
+        $body = $this->get('streamFactory')->createStream($content);
+        //$body = $this->get('streamFactory')->createStreamFromFile('php://temp', 'wb+');
+        //$body->write($content);
+
+        // TODO : vérifier si il faut faire un rewind ou non sur le body suite au write !!!!
+        return $response->withBody($body);
+    }
+
     /**
      * Register all of the base service providers.
      */
@@ -114,7 +137,7 @@ class Kernel extends Container implements KernelInterface
      */
     public function setEnvironment(string $env): KernelInterface
     {
-        $this->set('environment', $env);
+        $this->add('environment', $env);
 
         return $this;
     }
@@ -143,7 +166,7 @@ class Kernel extends Container implements KernelInterface
      */
     public function setConfig(ConfigInterface $config): KernelInterface
     {
-        $this->set('config', $config);
+        $this->add('config', $config);
 
         return $this;
     }
@@ -167,7 +190,7 @@ class Kernel extends Container implements KernelInterface
      */
     public function setLogger(LoggerInterface $logger): KernelInterface
     {
-        $this->set('logger', $logger);
+        $this->add('logger', $logger);
 
         return $this;
     }
