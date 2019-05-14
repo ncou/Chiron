@@ -27,6 +27,8 @@ use Psr\Log\LoggerInterface;
 //https://github.com/Wandu/Framework/blob/master/src/Wandu/DI/Container.php#L279
 //https://github.com/illuminate/container/blob/master/Container.php#L569    +   https://github.com/laravel/framework/blob/e0dbd6ab143286d81bedf2b34f8820f3d49ea15f/src/Illuminate/Foundation/Application.php#L795
 
+// TODO : ajouter une méthode getEmitter() et setEmitter()
+// TODO : renommer la méthode getRequest en getServerRequest()
 class Kernel extends Container implements KernelInterface
 {
     /**
