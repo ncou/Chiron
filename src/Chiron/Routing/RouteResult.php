@@ -67,6 +67,7 @@ class RouteResult implements RequestHandlerInterface
     /**
      * @var bool success state of routing
      */
+    // TODO : mettre expressement le résultat à false.
     private $success;
 
     /**
@@ -82,6 +83,7 @@ class RouteResult implements RequestHandlerInterface
      *
      * @param array $params parameters associated with the matched route, if any
      */
+    // TODO : déplacer cette méthode dans le dispatcher !!!
     public static function fromRoute(Route $route, array $params = []): self
     {
         $result = new self();
@@ -98,6 +100,7 @@ class RouteResult implements RequestHandlerInterface
      * @param null|array $methods HTTP methods allowed for the current URI, if any.
      *                            null is equivalent to allowing any HTTP method; empty array means none.
      */
+    // TODO : déplacer cette méthode dans le dispatcher !!!
     public static function fromRouteFailure(?array $methods): self
     {
         $result = new self();
@@ -215,11 +218,15 @@ class RouteResult implements RequestHandlerInterface
         return $this->allowedMethods;
     }
 
+    // TODO : lever une execption si on execute ce bout de code sans que le résultat soit à "isSuccess === true"
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         // Merge the default values defined in the Route with the parameters, and add the request class name used to resole the callable parameters using type hint.
-        $params = array_merge($this->route->getDefaults(), $this->matchedParams, [ServerRequestInterface::class => $request]);
+        //$params = array_merge($this->route->getDefaults(), $this->matchedParams, [ServerRequestInterface::class => $request]);
+        $params = array_merge($this->route->getDefaults(), $this->matchedParams);
 
-        return $this->route->getStrategy()->invokeRouteHandler($this->route->getHandler(), $params, $request);
+        $response = $this->route->getStrategy()->invokeRouteHandler($this->route->getHandler(), $params, $request);
+
+        return $response;
     }
 }

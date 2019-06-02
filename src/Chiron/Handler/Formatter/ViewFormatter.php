@@ -9,6 +9,8 @@ use Chiron\Views\TemplateRendererInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
+use function array_merge;
+
 class ViewFormatter implements FormatterInterface
 {
     /**

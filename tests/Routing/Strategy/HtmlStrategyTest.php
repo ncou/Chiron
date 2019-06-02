@@ -16,7 +16,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 // TODO : classe à finir de compléter !!!!!!!!!!
 
-class ApplicationStrategyTest extends TestCase
+class HtmlStrategyTest extends TestCase
 {
     public function testRouteStrategyWithRequestTypeHintting()
     {
@@ -119,5 +119,22 @@ class ApplicationStrategyTest extends TestCase
         $response = $app->handle($request);
 
         $this->assertEquals('123bartrue2.3', (string) $response->getBody());
+    }
+
+    public function testRouteStrategyStoreParamsInRequestAttributes()
+    {
+        $request = new ServerRequest('GET', new Uri('/foo/bar'));
+
+        $routeCallback = function (ServerRequestInterface $request) {
+            $this->assertEquals('bar', $request->getAttribute('name'));
+
+            return new Response();
+        };
+
+        $app = new Application(new Kernel());
+        $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
+        $route = $app->router->get('/foo/{name}', $routeCallback);
+
+        $app->handle($request);
     }
 }

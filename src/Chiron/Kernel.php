@@ -108,12 +108,15 @@ class Kernel extends Container implements KernelInterface
 
         // create a new body, because in the PSR spec it's not sure the body in writable in the newly created response.
         //$response->getBody()->write($content);
-        $body = $this->get('streamFactory')->createStream($content);
+        if (! is_null($content)) {
+            // TODO : vérifier si il faut faire un rewind ou non sur le body suite au write !!!!
+            $body = $this->get('streamFactory')->createStream($content);
+            $response = $response->withBody($body);
+        }
         //$body = $this->get('streamFactory')->createStreamFromFile('php://temp', 'wb+');
         //$body->write($content);
 
-        // TODO : vérifier si il faut faire un rewind ou non sur le body suite au write !!!!
-        return $response->withBody($body);
+        return $response;
     }
 
     /**

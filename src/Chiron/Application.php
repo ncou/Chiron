@@ -53,7 +53,7 @@ use Chiron\Config\Config;
 use Chiron\Container\Container;
 use Chiron\Http\Emitter\ResponseEmitter;
 //use Chiron\Http\Psr\Response;
-use Chiron\Pipe\Pipeline;
+use Chiron\Pipe\PipelineBuilder;
 use Chiron\Routing\Route;
 use Chiron\Routing\Router;
 use Chiron\Routing\RouterInterface;
@@ -61,6 +61,9 @@ use Chiron\Routing\Strategy\JsonStrategy;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
+
+// TODO : transformer cette classe en SERVER avec 2 méthodes : run() et emit()   => https://github.com/cakephp/cakephp/blob/master/src/Http/Server.php
 
 class Application
 {
@@ -76,7 +79,7 @@ class Application
      */
     //private $router;
 
-    private $pipeline;
+    private $pipelineBuilder;
 
     /**
      * The kernel (container).
@@ -113,9 +116,11 @@ class Application
             $kernel = new Kernel();
         }*/
 
+        $this->kernel = $kernel;
         // TODO : voir si l'appel au boot doit être déplacé dans la méthode handle() => https://github.com/silexphp/Silex/blob/master/src/Silex/Application.php#L490
-        $this->kernel = $kernel->boot();
-        $this->pipeline = new Pipeline($this->kernel);
+        //$this->kernel->boot();
+
+        $this->pipelineBuilder = new PipelineBuilder($this->kernel);
         $this->emitter = new ResponseEmitter();
         $this->router = $this->kernel->getRouter();
 
@@ -223,15 +228,20 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
 
     public function run(): void
     {
+        $this->kernel->boot();
+
+        $this->router->setBasePath($this->kernel->getConfig()['app.settings.basePath'] ?? '/');
+
         $request = $this->kernel->getRequest();
 
-        $response = $this->handle($request);
+        $handler = $this->buildHandler();
+
+        $response = $handler->handle($request);
 
         $this->emit($response);
     }
 
-    // TODO : renommer en handleRequest ????
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    public function buildHandler(): RequestHandlerInterface
     {
         //die(var_dump($this->getRouter()->getRoutes()));
         //die(var_dump($this->getRouter()->relativePathFor('test111', ['id' => '0123456'])));
@@ -251,17 +261,20 @@ $app->pipe(\Zend\Expressive\Middleware\NotFoundHandler::class);
         $response = $response->withProtocolVersion($httpVersion);
         */
 
-        $responseFactory = $this->kernel->get(ResponseFactoryInterface::class);
-        $emptyResponse = $responseFactory->createResponse(204);
 
-        $this->pipeline->pipe($this->router->getMiddlewareStack());
+
+        //$responseFactory = $this->kernel->get(ResponseFactoryInterface::class);
+        //$emptyResponse = $responseFactory->createResponse(204);
+        $emptyResponse = $this->kernel->createResponse(null, 204);
+
+        $this->pipelineBuilder->add($this->router->getMiddlewareStack());
         // add an empty response as default response if no route found and no 404 handler is added.
         //array_push($this->middlewares, $emptyResponse);
-        $this->pipeline->pipe($emptyResponse);
+        $this->pipelineBuilder->add($emptyResponse);
 
-        $response = $this->pipeline->handle($request);
 
-        return $response;
+        return $this->pipelineBuilder->build();
+
 
         //'text/plain; q=0.5, application/json; version=1.0, application/xml; version=2.0;'
 //'text/plain;q=0.5,text/html,text/*;q=0.1'

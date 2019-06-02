@@ -13,6 +13,8 @@ declare(strict_types=1);
 //https://github.com/userfrosting/UserFrosting/blob/master/app/system/ServicesProvider.php
 //https://github.com/slimphp/Slim/blob/3.x/Slim/DefaultServicesProvider.php
 
+//https://github.com/laracasts/Favorite-This-Demo/blob/master/vendor/filp/whoops/src/Whoops/Provider/Silex/WhoopsServiceProvider.php
+
 namespace Chiron\Provider;
 
 use Chiron\Handler\ErrorHandler;

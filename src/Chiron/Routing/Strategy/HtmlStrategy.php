@@ -17,8 +17,7 @@ use Psr\Http\Message\ServerRequestInterface;
 /**
  * Route callback strategy with route parameters as individual arguments.
  */
-// TODO : classe à renommer en HtmlStrategy
-class ApplicationStrategy implements StrategyInterface
+class HtmlStrategy implements StrategyInterface
 {
     /** KernelInterface */
     private $kernel;
@@ -29,16 +28,20 @@ class ApplicationStrategy implements StrategyInterface
     }
 
     // $handler => string ou callable
+    // TODO : virer l'argument $request on utilisera celui qui se trouve dans le tableau $params !!!!
     public function invokeRouteHandler($handler, array $params, ServerRequestInterface $request): ResponseInterface
     {
         // Inject individual matched parameters.
         foreach ($params as $param => $value) {
             $request = $request->withAttribute($param, $value);
         }
+        $params[ServerRequestInterface::class] = $request;
 
         $result = $this->kernel->call($handler, $params);
 
         if (! $result instanceof ResponseInterface) {
+            // TODO : gérer le cas ou l'objet a une méthode toString() =>    if (is_object($result) && method_exists($result, '__toString')              https://github.com/middlewares/utils/blob/master/src/CallableHandler.php#L74
+            // TODO : mieux gérer les buffer avant de retourner la chaine de caractére => https://github.com/middlewares/utils/blob/master/src/CallableHandler.php#L61
             if (! is_string($result)) {
                 throw new LogicException('Your controller should return a string or a ResponseInterface instance.');
             }

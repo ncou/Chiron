@@ -20,7 +20,7 @@ use Chiron\KernelInterface;
 use Chiron\Routing\Resolver\ControllerResolver;
 use Chiron\Routing\Router;
 use Chiron\Routing\RouterInterface;
-use Chiron\Routing\Strategy\ApplicationStrategy;
+use Chiron\Routing\Strategy\HtmlStrategy;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -46,7 +46,7 @@ class RouterServiceProvider implements ServiceProviderInterface
 
             // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
             // TODO : aller chercher la controllerResolver directement dans le container plutot que de faire un new !!!! ca permettra de faire un override de cette classe si l'utilisateur souhaite redéfinir le resolver.
-            $router->setStrategy(new ApplicationStrategy(new ResponseFactory(), new ControllerResolver($c)));
+            $router->setStrategy(new HtmlStrategy(new ResponseFactory(), new ControllerResolver($c)));
 
             return $router;
         };*/
@@ -54,11 +54,11 @@ class RouterServiceProvider implements ServiceProviderInterface
         $kernel->share(RouterInterface::class, function () use ($kernel) {
             $router = new Router();
 
-            $router->setBasePath($kernel->getConfig()['app.settings.basePath'] ?? '/');
+            //$router->setBasePath($kernel->getConfig()['app.settings.basePath'] ?? '/');
 
             // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
             // TODO : aller chercher la controllerResolver directement dans le container plutot que de faire un new !!!! ca permettra de faire un override de cette classe si l'utilisateur souhaite redéfinir le resolver.
-            $router->setStrategy(new ApplicationStrategy($kernel));
+            $router->setStrategy(new HtmlStrategy($kernel));
 
             return $router;
         });

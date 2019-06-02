@@ -18,6 +18,8 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 
 // TODO : classe à finir de compléter !!!!!!!!!!
+// TODO : ajouter des tests pour executer la stratégie aprés avoir instancié un objet "Application".
+// TODO : ajouter des tests pour vérifier si les paramétres et la request sont bien stockés dans les attributs de la request. cf tests de la classe HtmlStrategy
 
 class JsonStrategyTest extends TestCase
 {

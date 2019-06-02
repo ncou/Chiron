@@ -9,6 +9,8 @@ use Throwable;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run as Whoops;
 
+use function class_exists;
+
 // ajouter les informations sur la request de l'application !!!!
 //https://github.com/zendframework/zend-expressive/blob/master/src/Middleware/WhoopsErrorResponseGenerator.php#L95
 //https://github.com/zeuxisoo/php-slim-whoops/blob/master/src/Zeuxisoo/Whoops/Provider/Slim/WhoopsGuard.php#L64
@@ -39,7 +41,7 @@ class WhoopsFormatter implements FormatterInterface
         $handler = new PrettyPageHandler();
         $handler->addDataTable('PSR7 Request Data', [
             'Method'                 => $request->getMethod(),
-            //'Protocol'               => $request->getProtocolVersion(),
+            'Protocol'               => $request->getProtocolVersion(),
             'URI'                    => (string) $request->getUri(),
             'Headers'                => $request->getHeaders(),
             'Cookies'                => $request->getCookieParams(),
@@ -85,6 +87,7 @@ class WhoopsFormatter implements FormatterInterface
      */
     public function canFormat(Throwable $e): bool
     {
+        // TODO : ajouter aussi un test si la classe PrettyPageHandler::class existe !!!!
         return class_exists(Whoops::class);
     }
 }

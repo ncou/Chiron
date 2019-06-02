@@ -8,6 +8,7 @@ use Chiron\Http\Psr\Stream;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+//https://github.com/slimphp/Slim/blob/4.x/Slim/ResponseEmitter.php
 
 //https://github.com/davidecesarano/Embryo-Emitter/blob/master/Embryo/Http/Emitter/Emitter.php
 
@@ -27,7 +28,6 @@ use Psr\Http\Message\ServerRequestInterface;
 // Range : https://tools.ietf.org/html/rfc7233#section-4.3
 
 //https://framework.zend.com/blog/2017-09-14-diactoros-emitters.html
-//https://github.com/cakephp/cakephp/blob/master/src/Http/ResponseEmitter.php
 
 // http://infinityquest.com/php-tutorials/program-http-range-in-php/     <== gestion des erreurs 416 quand le header "Range" n'est pas correct + un code 206 pour la response partielle.
 //https://github.com/pomle/php-serveFilePartial/blob/master/ServeFilePartial.inc.php

@@ -168,7 +168,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     {
         // TODO : il faudrait peut etre remonter ce controle durectement dans l'objet Route() non ????
         if (! is_string($handler) && ! is_callable($handler)) {
-            throw new InvalidArgumentException('Route Handler should be a callable or a string (if defined in the container).');
+            throw new InvalidArgumentException('Route Handler should be a callable or a string (service name in the container or class name).');
         }
 
         // TODO : attention vérifier si cette modification du path avec un slash n'est pas en doublon avec celle qui est faite dans la classe Route !!!!
@@ -204,7 +204,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     public function dispatch_OLD(ServerRequestInterface $request) : ResponseInterface
     {
         if (is_null($this->getStrategy())) {
-            $this->setStrategy(new ApplicationStrategy);
+            $this->setStrategy(new HtmlStrategy);
         }
 
         $this->prepareRoutes($request);

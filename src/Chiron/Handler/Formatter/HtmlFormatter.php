@@ -8,6 +8,8 @@ use Chiron\Http\Exception\HttpException;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
+use function file_get_contents;
+
 class HtmlFormatter implements FormatterInterface
 {
     /**
@@ -22,6 +24,7 @@ class HtmlFormatter implements FormatterInterface
      *
      * @param string $path
      */
+    // TODO : renommer en $filePath ou $fileName pour le paramétre ????
     public function __construct(string $path)
     {
         $this->path = $path;
@@ -46,7 +49,8 @@ class HtmlFormatter implements FormatterInterface
      */
     private function arrayToHtml(array $data): string
     {
-        $html = file_get_contents($this->path);
+        // TODO : lever une exception si la valeur de retour est === false car cela veut dire qu'on n'a pas réussi à lire le fichier....
+        $html = file_get_contents($this->path, false);
 
         foreach ($data as $key => $val) {
             $html = str_replace("{{ $$key }}", $val, $html);
@@ -84,6 +88,7 @@ class HtmlFormatter implements FormatterInterface
      */
     public function canFormat(Throwable $e): bool
     {
+        //TODO : faire une vérifiecation si le fichier existe, c'est à dire tester le $this->path
         return true;
     }
 }
