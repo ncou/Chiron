@@ -6,11 +6,9 @@ declare(strict_types=1);
 
 namespace Chiron\Routing\Strategy;
 
-use Chiron\Routing\Resolver\ControllerResolverInterface;
-use Chiron\Routing\Route;
 use Chiron\Kernel;
+use Chiron\Routing\Route;
 use LogicException;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 

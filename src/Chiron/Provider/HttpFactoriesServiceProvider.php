@@ -15,13 +15,14 @@ declare(strict_types=1);
 namespace Chiron\Provider;
 
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
+use Chiron\Container\Container;
+use Chiron\Container\ServiceProvider\ServiceProviderInterface;
 use Chiron\Http\Factory\RequestFactory;
 use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Http\Factory\ServerRequestFactory;
 use Chiron\Http\Factory\StreamFactory;
 use Chiron\Http\Factory\UploadedFileFactory;
 use Chiron\Http\Factory\UriFactory;
-use Chiron\Container\Container;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -29,7 +30,6 @@ use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
-use Chiron\Container\ServiceProvider\ServiceProviderInterface;
 
 /**
  * Chiron http factories services provider.
@@ -48,7 +48,7 @@ class HttpFactoriesServiceProvider implements ServiceProviderInterface
             return new RequestFactory();
         });
 
-        $container->add(ResponseFactoryInterface::class,function () {
+        $container->add(ResponseFactoryInterface::class, function () {
             return new ResponseFactory();
         });
 
@@ -83,29 +83,29 @@ class HttpFactoriesServiceProvider implements ServiceProviderInterface
         $container->alias('uploadedFileFactory', UploadedFileFactoryInterface::class);
         $container->alias('streamFactory', StreamFactoryInterface::class);
 
-/*
-        $kernel[RequestFactory::class] = function ($c) {
-            return $c->get(RequestFactoryInterface::class);
-        };
-
-        $kernel[ResponseFactory::class] = function ($c) {
-            return $c->get(ResponseFactoryInterface::class);
-        };
-
-        $kernel[ServerRequestFactory::class] = function ($c) {
-            return $c->get(ServerRequestFactoryInterface::class);
-        };
-
-        $kernel[UriFactory::class] = function ($c) {
-            return $c->get(UriFactoryInterface::class);
-        };
-
-        $kernel[UploadedFileFactory::class] = function ($c) {
-            return $c->get(UploadedFileFactoryInterface::class);
-        };
-
-        $kernel[StreamFactory::class] = function ($c) {
-            return $c->get(StreamFactoryInterface::class);
-        };*/
+        /*
+                $kernel[RequestFactory::class] = function ($c) {
+                    return $c->get(RequestFactoryInterface::class);
+                };
+        
+                $kernel[ResponseFactory::class] = function ($c) {
+                    return $c->get(ResponseFactoryInterface::class);
+                };
+        
+                $kernel[ServerRequestFactory::class] = function ($c) {
+                    return $c->get(ServerRequestFactoryInterface::class);
+                };
+        
+                $kernel[UriFactory::class] = function ($c) {
+                    return $c->get(UriFactoryInterface::class);
+                };
+        
+                $kernel[UploadedFileFactory::class] = function ($c) {
+                    return $c->get(UploadedFileFactoryInterface::class);
+                };
+        
+                $kernel[StreamFactory::class] = function ($c) {
+                    return $c->get(StreamFactoryInterface::class);
+                };*/
     }
 }

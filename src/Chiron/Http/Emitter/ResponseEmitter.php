@@ -141,12 +141,11 @@ class ResponseEmitter implements EmitterInterface
      * It is important to mention that this method should be called after
      * `emitHeaders()` in order to prevent PHP from changing the status code of
      * the emitted response.
-     *
      */
-    private function emitStatusLine(ResponseInterface $response) : void
+    private function emitStatusLine(ResponseInterface $response): void
     {
         $reasonPhrase = $response->getReasonPhrase();
-        $statusCode   = $response->getStatusCode();
+        $statusCode = $response->getStatusCode();
 
         $statusLine = sprintf(
             'HTTP/%s %d%s',
@@ -552,7 +551,8 @@ class ResponseEmitter implements EmitterInterface
     }*/
 
     /**
-     * Parse content-range header
+     * Parse content-range header.
+     *
      * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.16
      *
      * @param string $header The Content-Range header to parse.

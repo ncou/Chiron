@@ -8,7 +8,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run as Whoops;
-
 use function class_exists;
 
 // ajouter les informations sur la request de l'application !!!!
@@ -47,7 +46,7 @@ class WhoopsFormatter implements FormatterInterface
             'Cookies'                => $request->getCookieParams(),
             'Attributes'             => $request->getAttributes(),
             'Query Params'           => $request->getQueryParams(),
-            'Body Params'            => $request->getParsedBody()
+            'Body Params'            => $request->getParsedBody(),
         ]);
 
         $whoops = new Whoops();

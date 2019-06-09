@@ -15,16 +15,15 @@ declare(strict_types=1);
 namespace Chiron\Provider;
 
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
-use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Container\Container;
+use Chiron\Container\ServiceProvider\ServiceProviderInterface;
+use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Kernel;
-use Chiron\Container\ReflectionResolver;
 use Chiron\Routing\Resolver\ControllerResolver;
 use Chiron\Routing\Router;
 use Chiron\Routing\RouterInterface;
 use Chiron\Routing\Strategy\HtmlStrategy;
 use Psr\Container\ContainerInterface;
-use Chiron\Container\ServiceProvider\ServiceProviderInterface;
 
 /**
  * Chiron system services provider.
