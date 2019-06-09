@@ -13,8 +13,9 @@ declare(strict_types=1);
 namespace Chiron\Provider;
 
 use Chiron\Config\Config;
-use Chiron\KernelInterface;
+use Chiron\Container\Container;
 use Psr\Container\ContainerInterface;
+use Chiron\Container\ServiceProvider\ServiceProviderInterface;
 
 // TODO : créer une classe pour fabriquer l'application, et notamment pour injecter les routes et les middlewares si ils sont indiqués sous forme de texte dans la config => https://github.com/zendframework/zend-expressive/blob/85e2f607109ed8608f4004e622b2aad3bcaa8a4d/src/Container/ApplicationConfigInjectionDelegator.php
 
@@ -28,7 +29,7 @@ class ConfigServiceProvider implements ServiceProviderInterface
      *
      * @param ContainerInterface $container A DI container implementing ArrayAccess and container-interop.
      */
-    public function register(KernelInterface $kernel): void
+    public function register(Container $container): void
     {
         $settings['app']['settings']['basePath'] = '/';
         $settings['app']['debug'] = false;
@@ -36,10 +37,10 @@ class ConfigServiceProvider implements ServiceProviderInterface
         $config = new Config($settings);
 
         // register config object
-        $kernel->share(Config::class, $config);
+        $container->share(Config::class, $config);
 
 /*
-        $kernel->closure(Config::class, function() {
+        $container->closure(Config::class, function() {
             $settings['app']['settings']['basePath'] = '/';
             $settings['app']['debug'] = false;
 
@@ -48,9 +49,10 @@ class ConfigServiceProvider implements ServiceProviderInterface
 
 
         // add alias
-        $kernel->alias('config', Config::class);
+        $container->alias('config', Config::class);
+
         /*
-        $kernel['config'] = function ($c) {
+        $container['config'] = function ($c) {
             return $c->get(Config::class);
         };*/
     }

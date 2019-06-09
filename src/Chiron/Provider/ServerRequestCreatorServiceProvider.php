@@ -12,7 +12,7 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Chiron\KernelInterface;
+use Chiron\Container\Container;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Nyholm\Psr7Server\ServerRequestCreatorInterface;
 use Psr\Container\ContainerInterface;
@@ -20,6 +20,7 @@ use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
+use Chiron\Container\ServiceProvider\ServiceProviderInterface;
 
 /**
  * Chiron server request creator services provider.
@@ -31,10 +32,10 @@ class ServerRequestCreatorServiceProvider implements ServiceProviderInterface
      *
      * @param ContainerInterface $container A DI container implementing ArrayAccess and container-interop.
      */
-    public function register(KernelInterface $kernel): void
+    public function register(Container $container): void
     {
         /*
-        $kernel[ServerRequestCreatorInterface::class] = function ($c) {
+        $container[ServerRequestCreatorInterface::class] = function ($c) {
             $requestCreator = new ServerRequestCreator(
                 $c[ServerRequestFactoryInterface::class],
                 $c[UriFactoryInterface::class],
@@ -45,7 +46,7 @@ class ServerRequestCreatorServiceProvider implements ServiceProviderInterface
         };*/
 
 
-        $kernel->add(ServerRequestCreatorInterface::class, function (ServerRequestFactoryInterface $serverRequestFactory, UriFactoryInterface $uriFactory, UploadedFileFactoryInterface $uploadedFileFactory, StreamFactoryInterface $streamFactory) {
+        $container->add(ServerRequestCreatorInterface::class, function (ServerRequestFactoryInterface $serverRequestFactory, UriFactoryInterface $uriFactory, UploadedFileFactoryInterface $uploadedFileFactory, StreamFactoryInterface $streamFactory) {
             $requestCreator = new ServerRequestCreator(
                 $serverRequestFactory,
                 $uriFactory,
@@ -58,14 +59,14 @@ class ServerRequestCreatorServiceProvider implements ServiceProviderInterface
 
 
         // *** register alias ***
-        $kernel->alias(ServerRequestCreator::class, ServerRequestCreatorInterface::class);
-        $kernel->alias('request', ServerRequestCreatorInterface::class);
+        $container->alias(ServerRequestCreator::class, ServerRequestCreatorInterface::class);
+        $container->alias('request', ServerRequestCreatorInterface::class);
         /*
-        $kernel[ServerRequestCreator::class] = function ($c) {
+        $container[ServerRequestCreator::class] = function ($c) {
             return $c->get(ServerRequestCreatorInterface::class);
         };
 
-        $kernel['request'] = function ($c) {
+        $container['request'] = function ($c) {
             return $c->get(ServerRequestCreatorInterface::class);
         };*/
     }

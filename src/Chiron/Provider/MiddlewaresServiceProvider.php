@@ -24,12 +24,13 @@ use Chiron\Http\Middleware\EmitterMiddleware;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
 use Chiron\Http\Middleware\OriginalRequestMiddleware;
 use Chiron\Http\Middleware\RoutingMiddleware;
-use Chiron\KernelInterface;
+use Chiron\Container\Container;
 use Chiron\Pipe\PipelineBuilder;
 use Chiron\Routing\RouterInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Chiron\Container\ServiceProvider\ServiceProviderInterface;
 
 /**
  * Chiron system services provider.
@@ -43,17 +44,17 @@ class MiddlewaresServiceProvider implements ServiceProviderInterface
      *
      * @param ContainerInterface $container A DI container implementing ArrayAccess and container-interop.
      */
-    public function register(KernelInterface $kernel): void
+    public function register(Container $container): void
     {
-        $kernel->add(RoutingMiddleware::class, function () use ($kernel) {
-            return new RoutingMiddleware($kernel[RouterInterface::class], $kernel[ResponseFactoryInterface::class], $kernel[StreamFactoryInterface::class]);
+        $container->add(RoutingMiddleware::class, function () use ($container) {
+            return new RoutingMiddleware($container[RouterInterface::class], $container[ResponseFactoryInterface::class], $container[StreamFactoryInterface::class]);
         });
 
-        $kernel->add(DispatcherMiddleware::class, function () use ($kernel) {
-            return new DispatcherMiddleware(new PipelineBuilder($kernel));
+        $container->add(DispatcherMiddleware::class, function () use ($container) {
+            return new DispatcherMiddleware(new PipelineBuilder($container));
         });
 
-        $kernel->add(ContentTypeByDefaultMiddleware::class, function () {
+        $container->add(ContentTypeByDefaultMiddleware::class, function () {
             return new ContentTypeByDefaultMiddleware();
         });
         /*
@@ -61,7 +62,7 @@ class MiddlewaresServiceProvider implements ServiceProviderInterface
             return new OriginalRequestMiddleware();
         });*/
 
-        $kernel->add(CharsetByDefaultMiddleware::class, function () {
+        $container->add(CharsetByDefaultMiddleware::class, function () {
             return new CharsetByDefaultMiddleware();
         });
         /*
@@ -75,15 +76,15 @@ class MiddlewaresServiceProvider implements ServiceProviderInterface
                 };
         */
 
-        $kernel->add(CheckMaintenanceMiddleware::class, function () {
+        $container->add(CheckMaintenanceMiddleware::class, function () {
             return new CheckMaintenanceMiddleware();
         });
 
-        $kernel->add(MethodOverrideMiddleware::class, function () {
+        $container->add(MethodOverrideMiddleware::class, function () {
             return new MethodOverrideMiddleware();
         });
 
-        $kernel->add(ContentLengthMiddleware::class, function () {
+        $container->add(ContentLengthMiddleware::class, function () {
             return new ContentLengthMiddleware();
         });
 

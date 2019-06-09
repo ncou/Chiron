@@ -14,12 +14,12 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-//use Chiron\Http\Middleware\ErrorHandlerMiddleware;
-use Chiron\KernelInterface;
+use Chiron\Container\Container;
 use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Chiron\Container\ServiceProvider\ServiceProviderInterface;
 
 /**
  * Chiron system services provider.
@@ -33,12 +33,12 @@ class LoggerServiceProvider implements ServiceProviderInterface
      *
      * @param ContainerInterface $container A DI container implementing ArrayAccess and container-interop.
      */
-    public function register(KernelInterface $kernel): void
+    public function register(Container $container): void
     {
         // TODO : initialiser un logger ici ???? et éventuellement créer une propriété pour changer le formater dans la restitution de la log. cf nanologger et la liste des todo pour mettre un formater custom à passer en paramétre du constructeur !!!!
 
         // register router object
-        $kernel->add(LoggerInterface::class, function () {
+        $container->add(LoggerInterface::class, function () {
             return new NullLogger();
             //$logger = new NullLogger();
             // TODO : à améliorer !!!! regarder la notion de daily et single et de log_max_files : https://laravel.com/docs/5.2/errors
@@ -48,7 +48,7 @@ class LoggerServiceProvider implements ServiceProviderInterface
         });
 
         // add alias
-        $kernel->alias('logger', LoggerInterface::class);
+        $container->alias('logger', LoggerInterface::class);
 
         /*
         $kernel['logger'] = function ($c) {

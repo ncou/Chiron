@@ -53,6 +53,13 @@ class ResponseEmitter implements EmitterInterface
     /** @var int max buffer size (8Kb) */
     private $maxBufferLength = 8 * 1024;
 
+    public function setMaxBufferLength(int $length): self
+    {
+        $this->maxBufferLength = $length;
+
+        return $this;
+    }
+
     /**
      * Emit the http response (headers+body) to the client.
      *
@@ -60,8 +67,9 @@ class ResponseEmitter implements EmitterInterface
      */
     public function emit(ResponseInterface $response): bool
     {
-        // Emit response (Headers + Status + Body)
         $this->emitHeaders($response);
+        // It is important to mention that this method should be called after the headers are sent, in order to prevent PHP from changing the status code of the emitted response.
+        $this->emitStatusLine($response);
 
         $range = $this->parseContentRange($response->getHeaderLine('Content-Range'));
         if (is_array($range) && $range[0] === 'bytes') {
@@ -74,33 +82,6 @@ class ResponseEmitter implements EmitterInterface
 
         return true;
     }
-
-    public function setMaxBufferLength(int $length): self
-    {
-        $this->maxBufferLength = $length;
-
-        return $this;
-    }
-
-    /**
-     * Emit the status line.
-     *
-     * Emits the status line using the protocol version and status code from
-     * the response; if a reason phrase is available, it, too, is emitted.
-     *
-     * @param \Psr\Http\Message\ResponseInterface $response The response to emit
-     */
-    /*
-    protected function emitStatusLine(ResponseInterface $response)
-    {
-        $reasonPhrase = $response->getReasonPhrase();
-        header(sprintf(
-            'HTTP/%s %d%s',
-            $response->getProtocolVersion(),
-            $response->getStatusCode(),
-            ($reasonPhrase ? ' ' . $reasonPhrase : '')
-        ));
-    }*/
 
     /**
      * Send HTTP Headers.
@@ -124,54 +105,57 @@ class ResponseEmitter implements EmitterInterface
         // TODO : regarder ici, car un header peut avoir un tableau de valeurs, dans le cas ou on a mergé 2 headers identiques !!!!   https://github.com/slimphp/Slim/blob/3.x/Slim/App.php#L393
         // headers
         foreach ($response->getHeaders() as $name => $values) {
+            //$first = $name !== 'Set-Cookie';
             $first = stripos($name, 'Set-Cookie') === 0 ? false : true;
             foreach ($values as $value) {
-                header(sprintf('%s: %s', $name, $value), $first, $statusCode);
+                $header = sprintf('%s: %s', $name, $value);
+                header($header, $first, $statusCode);
                 $first = false;
             }
         }
+    }
 
-        // TODO : gérer le cas ou il n'y a pas de ReasonPhrase et mettre une chaine vide : https://github.com/zendframework/zend-diactoros/blob/master/src/Response/SapiEmitterTrait.php#L55
-        // Set proper protocol, status code (and reason phrase) header
-        /*
-        if ($response->getReasonPhrase()) {
-            header(sprintf(
-                'HTTP/%s %d %s',
-                $response->getProtocolVersion(),
-                $response->getStatusCode(),
-                $response->getReasonPhrase()
-            ));
-        } else {
-            header(sprintf(
-                'HTTP/%s %d',
-                $response->getProtocolVersion(),
-                $response->getStatusCode()
-            ));
-        }*/
+    /**
+     * Emit the status line.
+     *
+     * @param \Psr\Http\Message\ResponseInterface $response The response to emit
+     */
+    /*
+    protected function emitStatusLine(ResponseInterface $response): void
+    {
+        $statusLine = sprintf(
+            'HTTP/%s %d %s',
+            $response->getProtocolVersion(),
+            $response->getStatusCode(),
+            $response->getReasonPhrase()
+        );
+        header($statusLine, true, $response->getStatusCode());
+    }*/
 
-        // It is important to mention that this method should be called after the headers are sent, in order to prevent PHP from changing the status code of the emitted response.
-        header(sprintf('HTTP/%s %d %s', $response->getProtocolVersion(), $statusCode, $response->getReasonPhrase()), true, $statusCode);
+    /**
+     * Emit the status line.
+     *
+     * Emits the status line using the protocol version and status code from
+     * the response; if a reason phrase is available, it, too, is emitted.
+     *
+     * It is important to mention that this method should be called after
+     * `emitHeaders()` in order to prevent PHP from changing the status code of
+     * the emitted response.
+     *
+     */
+    private function emitStatusLine(ResponseInterface $response) : void
+    {
+        $reasonPhrase = $response->getReasonPhrase();
+        $statusCode   = $response->getStatusCode();
 
-        // cookies
-//TODO : utiliser les cookies comme des "headers" classiques ('Set-Cookies:xxxxxxx')
-//https://github.com/paragonie/PHP-Cookie/blob/master/src/Cookie.php#L358
+        $statusLine = sprintf(
+            'HTTP/%s %d%s',
+            $response->getProtocolVersion(),
+            $statusCode,
+            ($reasonPhrase ? ' ' . $reasonPhrase : '')
+        );
 
-//        foreach ($response->getCookies() as $cookie) {
-//          setrawcookie($cookie['name'], $cookie['value'], $cookie['expire'], $cookie['path'], $cookie['domain'], $cookie['secure'], $cookie['httponly']);
-//        }
-
-//        flush();
-//      }
-
-      // cookies
-      /*
-      foreach ($this->headers->getCookies() as $cookie) {
-          if ($cookie->isRaw()) {
-              setrawcookie($cookie->getName(), $cookie->getValue(), $cookie->getExpiresTime(), $cookie->getPath(), $cookie->getDomain(), $cookie->isSecure(), $cookie->isHttpOnly());
-          } else {
-              setcookie($cookie->getName(), $cookie->getValue(), $cookie->getExpiresTime(), $cookie->getPath(), $cookie->getDomain(), $cookie->isSecure(), $cookie->isHttpOnly());
-          }
-      }*/
+        header($statusLine, true, $statusCode);
     }
 
     /**

@@ -61,6 +61,16 @@ class ContentLengthMiddleware implements MiddlewareInterface
             }
         }
 
+
+        // TODO : retirer le content-type et le content-length si la réponse est empty (cad 204/205 ou 304)
+        /*
+        if ($this->isResponseEmpty($response)) {
+            $response = $response
+                ->withoutHeader('Content-Type')
+                ->withoutHeader('Content-Length');
+        }*/
+
+
         return $response;
 
         /*
@@ -99,4 +109,18 @@ class ContentLengthMiddleware implements MiddlewareInterface
 
                 */
     }
+
+
+    /**
+     * Asserts response body is empty or status code is 204, 205 or 304
+     *
+     * @param ResponseInterface $response
+     * @return bool
+     */
+    /*
+    public function isResponseEmpty(ResponseInterface $response): bool
+    {
+        $contents = (string) $response->getBody();
+        return empty($contents) || in_array($response->getStatusCode(), [204, 205, 304], true);
+    }*/
 }

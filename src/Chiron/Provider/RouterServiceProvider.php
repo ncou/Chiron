@@ -16,12 +16,15 @@ namespace Chiron\Provider;
 
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Http\Factory\ResponseFactory;
-use Chiron\KernelInterface;
+use Chiron\Container\Container;
+use Chiron\Kernel;
+use Chiron\Container\ReflectionResolver;
 use Chiron\Routing\Resolver\ControllerResolver;
 use Chiron\Routing\Router;
 use Chiron\Routing\RouterInterface;
 use Chiron\Routing\Strategy\HtmlStrategy;
 use Psr\Container\ContainerInterface;
+use Chiron\Container\ServiceProvider\ServiceProviderInterface;
 
 /**
  * Chiron system services provider.
@@ -35,11 +38,11 @@ class RouterServiceProvider implements ServiceProviderInterface
      *
      * @param ContainerInterface $container A DI container implementing ArrayAccess and container-interop.
      */
-    public function register(KernelInterface $kernel): void
+    public function register(Container $container): void
     {
         // register router object
         /*
-        $kernel[RouterInterface::class] = function ($c) {
+        $container[RouterInterface::class] = function ($c) {
             $router = new Router();
 
             $router->setBasePath($c->config['app.settings.basePath'] ?? '/');
@@ -51,22 +54,23 @@ class RouterServiceProvider implements ServiceProviderInterface
             return $router;
         };*/
 
-        $kernel->share(RouterInterface::class, function () use ($kernel) {
+        $container->share(RouterInterface::class, function () use ($container) {
             $router = new Router();
 
             //$router->setBasePath($kernel->getConfig()['app.settings.basePath'] ?? '/');
 
             // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
             // TODO : aller chercher la controllerResolver directement dans le container plutot que de faire un new !!!! ca permettra de faire un override de cette classe si l'utilisateur souhaite redéfinir le resolver.
-            $router->setStrategy(new HtmlStrategy($kernel));
+            $router->setStrategy(new HtmlStrategy($container->get('kernel')));
 
             return $router;
         });
 
         // add alias
-        $kernel->alias('router', RouterInterface::class);
+        $container->alias('router', RouterInterface::class);
+
         /*
-        $kernel['router'] = function ($c) {
+        $container['router'] = function ($c) {
             return $c->get(RouterInterface::class);
         };*/
     }

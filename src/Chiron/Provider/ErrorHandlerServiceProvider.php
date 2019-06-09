@@ -29,11 +29,12 @@ use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
 use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Http\Middleware\ErrorHandlerMiddleware;
-use Chiron\KernelInterface;
+use Chiron\Container\Container;
 use Chiron\Views\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
+use Chiron\Container\ServiceProvider\ServiceProviderInterface;
 
 /**
  * Chiron error handler services provider.
@@ -45,42 +46,42 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
      *
      * @param ContainerInterface $container A DI container implementing ArrayAccess and container-interop.
      */
-    public function register(KernelInterface $kernel): void
+    public function register(Container $container): void
     {
 
 
-        $kernel->add(HtmlFormatter::class, function () {
+        $container->add(HtmlFormatter::class, function () {
             $path = __DIR__ . '/../../../resources/error.html';
 
             return new HtmlFormatter(realpath($path));
         });
 
-        $kernel->add(LoggerReporter::class, function () use ($kernel) {
+        $container->add(LoggerReporter::class, function () use ($container) {
             //return new LoggerReporter($c[LoggerInterface::class]);
-            return new LoggerReporter($kernel['logger']);
+            return new LoggerReporter($container['logger']);
         });
 
 
-        $kernel->add(ErrorHandler::class, function () use ($kernel) {
+        $container->add(ErrorHandler::class, function () use ($container) {
             // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
             $errorHandler = new ErrorHandler(new ResponseFactory());
 
 
 
-            $errorHandler->addReporter($kernel[LoggerReporter::class]);
+            $errorHandler->addReporter($container[LoggerReporter::class]);
 
             $errorHandler->addFormatter(new WhoopsFormatter());
 
-            $hasRenderer = $kernel->has(TemplateRendererInterface::class);
+            $hasRenderer = $container->has(TemplateRendererInterface::class);
             // TODO : en plus du has il faut vérifier si il est bien de l'instance TamplateRendererInterface pour rentrer dans le if !!!!
             if ($hasRenderer) {
-                $renderer = $kernel[TemplateRendererInterface::class];
+                $renderer = $container[TemplateRendererInterface::class];
                 //registerErrorViewPaths($renderer);
                 //$renderer->addPath(\Chiron\TEMPLATES_DIR . "/errors", 'errors');
                 $errorHandler->addFormatter(new ViewFormatter($renderer));
             }
 
-            $errorHandler->addFormatter($kernel[HtmlFormatter::class]);
+            $errorHandler->addFormatter($container[HtmlFormatter::class]);
             $errorHandler->addFormatter(new JsonFormatter());
             $errorHandler->addFormatter(new XmlFormatter());
             $errorHandler->addFormatter(new PlainTextFormatter());
@@ -112,13 +113,13 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
         }
         */
 
-        $kernel->add(ErrorHandlerMiddleware::class, function () use ($kernel) {
+        $container->add(ErrorHandlerMiddleware::class, function () use ($container) {
 
-            $middleware = new ErrorHandlerMiddleware($kernel->getConfig()->app['debug']);
+            $middleware = new ErrorHandlerMiddleware($container->get('config')->app['debug']);
 
             //$middleware->bindHandler(Throwable::class, new \Chiron\Exception\WhoopsHandler());
 
-            $middleware->bindHandler(Throwable::class, $kernel[ErrorHandler::class]);
+            $middleware->bindHandler(Throwable::class, $container[ErrorHandler::class]);
 
             //$middleware->bindHandler(ServiceUnavailableHttpException::class, new \Chiron\Exception\MaintenanceHandler());
             //$middleware->bindHandler(NotFoundHttpException::class, new \Chiron\Exception\NotFoundHandler());

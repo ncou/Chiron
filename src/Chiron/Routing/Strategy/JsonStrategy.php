@@ -7,7 +7,7 @@ namespace Chiron\Routing\Strategy;
 //use Chiron\Http\Psr\Response;
 use Chiron\Routing\Resolver\ControllerResolverInterface;
 use Chiron\Routing\Route;
-use Chiron\KernelInterface;
+use Chiron\Kernel;
 use InvalidArgumentException;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -47,7 +47,7 @@ class JsonStrategy implements StrategyInterface
     /** KernelInterface */
     private $kernel;
 
-    public function __construct(KernelInterface $kernel)
+    public function __construct(Kernel $kernel)
     {
         $this->kernel = $kernel;
     }
