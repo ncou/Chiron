@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Chiron\Provider;
 
 use Chiron\Container\Container;
+use Chiron\Container\ServiceProvider\ServiceProviderInterface;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Nyholm\Psr7Server\ServerRequestCreatorInterface;
 use Psr\Container\ContainerInterface;
@@ -20,7 +21,6 @@ use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
-use Chiron\Container\ServiceProvider\ServiceProviderInterface;
 
 /**
  * Chiron server request creator services provider.
@@ -45,7 +45,6 @@ class ServerRequestCreatorServiceProvider implements ServiceProviderInterface
             return $requestCreator->fromGlobals();
         };*/
 
-
         $container->add(ServerRequestCreatorInterface::class, function (ServerRequestFactoryInterface $serverRequestFactory, UriFactoryInterface $uriFactory, UploadedFileFactoryInterface $uploadedFileFactory, StreamFactoryInterface $streamFactory) {
             $requestCreator = new ServerRequestCreator(
                 $serverRequestFactory,
@@ -55,8 +54,6 @@ class ServerRequestCreatorServiceProvider implements ServiceProviderInterface
 
             return $requestCreator->fromGlobals();
         });
-
-
 
         // *** register alias ***
         $container->alias(ServerRequestCreator::class, ServerRequestCreatorInterface::class);

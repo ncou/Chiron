@@ -7,7 +7,6 @@ namespace Chiron\Handler\Formatter;
 use Chiron\Http\Exception\HttpException;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-
 use function trim;
 
 class PlainTextFormatter implements FormatterInterface

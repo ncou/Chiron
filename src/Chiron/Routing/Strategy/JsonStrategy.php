@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Chiron\Routing\Strategy;
 
 //use Chiron\Http\Psr\Response;
-use Chiron\Routing\Resolver\ControllerResolverInterface;
-use Chiron\Routing\Route;
 use Chiron\Kernel;
+use Chiron\Routing\Route;
 use InvalidArgumentException;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -119,7 +117,7 @@ class JsonStrategy implements StrategyInterface
         return $this;
     }
 
-    /**
+    /*
      * Set options for JSON encoding
      *
      * @see http://php.net/manual/function.json-encode.php
@@ -176,9 +174,7 @@ class JsonStrategy implements StrategyInterface
         return (is_array($response) || is_object($response));
     }*/
 
-
-
-    /**
+    /*
      * Encode a value to JSON using the PHP built-in json_encode function.
      *
      * Uses the encoding options:

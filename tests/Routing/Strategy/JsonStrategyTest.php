@@ -6,12 +6,10 @@ namespace Chiron\Tests\Routing\Strategy;
 
 use ArrayObject;
 use Chiron\Application;
-use Chiron\Kernel;
-use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
-use Chiron\Routing\Resolver\ControllerResolver;
+use Chiron\Kernel;
 use Chiron\Routing\Strategy\JsonStrategy;
 use JsonSerializable;
 use PHPUnit\Framework\TestCase;

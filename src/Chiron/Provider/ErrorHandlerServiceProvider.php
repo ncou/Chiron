@@ -17,6 +17,8 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
+use Chiron\Container\Container;
+use Chiron\Container\ServiceProvider\ServiceProviderInterface;
 use Chiron\Handler\ErrorHandler;
 use Chiron\Handler\Formatter\HtmlFormatter;
 use Chiron\Handler\Formatter\JsonFormatter;
@@ -29,12 +31,10 @@ use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
 use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Http\Middleware\ErrorHandlerMiddleware;
-use Chiron\Container\Container;
 use Chiron\Views\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
-use Chiron\Container\ServiceProvider\ServiceProviderInterface;
 
 /**
  * Chiron error handler services provider.
@@ -48,8 +48,6 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $container): void
     {
-
-
         $container->add(HtmlFormatter::class, function () {
             $path = __DIR__ . '/../../../resources/error.html';
 
@@ -61,12 +59,9 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
             return new LoggerReporter($container['logger']);
         });
 
-
         $container->add(ErrorHandler::class, function () use ($container) {
             // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
             $errorHandler = new ErrorHandler(new ResponseFactory());
-
-
 
             $errorHandler->addReporter($container[LoggerReporter::class]);
 
@@ -92,7 +87,6 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
             return $errorHandler;
         });
 
-
         /*
          * Register all the possible error template namespaced paths.
          */
@@ -114,7 +108,6 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
         */
 
         $container->add(ErrorHandlerMiddleware::class, function () use ($container) {
-
             $middleware = new ErrorHandlerMiddleware($container->get('config')->app['debug']);
 
             //$middleware->bindHandler(Throwable::class, new \Chiron\Exception\WhoopsHandler());

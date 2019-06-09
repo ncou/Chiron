@@ -54,7 +54,8 @@ class LoggerReporter implements ReporterInterface
     ];
 
     /**
-     * Logging level mapping, used to hierarchize
+     * Logging level mapping, used to hierarchize.
+     *
      * @const int defined from the BSD Syslog message severities
      *
      * This complies to \Psr\Log\LogLevel and RFC 5424 severity values :
@@ -67,8 +68,8 @@ class LoggerReporter implements ReporterInterface
      *   6  Informational: informational messages
      *   7  Debug: debug-level messages
      *
-     * @link https://tools.ietf.org/html/rfc5424#page-11
-     * @link https://tools.ietf.org/html/rfc3164#page-9
+     * @see https://tools.ietf.org/html/rfc5424#page-11
+     * @see https://tools.ietf.org/html/rfc3164#page-9
      *
      * @var array
      */
@@ -181,14 +182,13 @@ class LoggerReporter implements ReporterInterface
     // TODO : améliorer la méthode getClass() pour gérer les classes anonymes : https://github.com/Seldaek/monolog/blob/master/src/Monolog/Utils.php#L19
     private function getMessageForError(Throwable $e, bool $isPrevious = false): string
     {
-
-/*
-        $this->logger->log(
-            $level,
-            sprintf('Uncaught Exception %s: "%s" at %s line %s', Utils::getClass($e), $e->getMessage(), $e->getFile(), $e->getLine()),
-            ['exception' => $e]
-        );
-*/
+        /*
+                $this->logger->log(
+                    $level,
+                    sprintf('Uncaught Exception %s: "%s" at %s line %s', Utils::getClass($e), $e->getMessage(), $e->getFile(), $e->getLine()),
+                    ['exception' => $e]
+                );
+        */
 
         $message = sprintf(
             '%s[%s] %s',
@@ -222,7 +222,7 @@ class LoggerReporter implements ReporterInterface
         return $this->logLevels[$level] <= $this->logLevels[$this->logLevelThreshold];
     }
 
-    /**
+    /*
      * @return bool
      */
     // TODO : renommer en canLog

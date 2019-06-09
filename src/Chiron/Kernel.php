@@ -6,6 +6,8 @@ namespace Chiron;
 
 use Chiron\Config\ConfigInterface;
 use Chiron\Container\Container;
+use Chiron\Http\Emitter\ResponseEmitter;
+use Chiron\Pipe\PipelineBuilder;
 use Chiron\Provider\ConfigServiceProvider;
 use Chiron\Provider\ErrorHandlerServiceProvider;
 use Chiron\Provider\HttpFactoriesServiceProvider;
@@ -14,13 +16,10 @@ use Chiron\Provider\MiddlewaresServiceProvider;
 use Chiron\Provider\RouterServiceProvider;
 use Chiron\Provider\ServerRequestCreatorServiceProvider;
 use Chiron\Routing\RouterInterface;
-use InvalidArgumentException;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
-use Chiron\Pipe\PipelineBuilder;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Http\Emitter\ResponseEmitter;
+use Psr\Log\LoggerInterface;
 
 //https://github.com/lambirou/babiphp/blob/master/system/Container/ReflectionContainer.php
 
@@ -77,8 +76,8 @@ class Kernel extends Container
         }
         */
 
-// TODO : vérifier que cela ne pose pas de problémes si on passe un content à null, si c'est le cas initialiser ce paramétre avec chaine vide.
-    public function createResponse(string $content = null,int $statusCode = 200, array $headers = []) :ResponseInterface
+    // TODO : vérifier que cela ne pose pas de problémes si on passe un content à null, si c'est le cas initialiser ce paramétre avec chaine vide.
+    public function createResponse(string $content = null, int $statusCode = 200, array $headers = []): ResponseInterface
     {
         $response = $this->get('responseFactory')->createResponse($statusCode);
 
@@ -103,6 +102,7 @@ class Kernel extends Container
      * Get or check the current application environment.
      *
      * @param  mixed
+     *
      * @return string
      */
     /*
