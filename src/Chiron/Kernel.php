@@ -260,11 +260,17 @@ class Kernel extends Container
 
         $request = $this->getRequest();
 
-        $handler = $this->buildHandler();
-
-        $response = $handler->handle($request);
+        $response = $this->handle($request);
 
         $this->emit($response);
+    }
+
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $handler = $this->buildHandler();
+
+        return $handler->handle($request);
+
     }
 
     protected function buildHandler(): RequestHandlerInterface

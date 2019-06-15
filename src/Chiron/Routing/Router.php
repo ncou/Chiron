@@ -18,6 +18,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
 
 //https://github.com/zendframework/zend-expressive-fastroute/blob/master/src/FastRouteRouter.php
+//https://github.com/Wandu/Router/blob/master/RouteCollection.php
 
 // TODO : il manque head et options dans la phpdoc
 /**
@@ -108,13 +109,6 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     private $basePath = '';
 
     /**
-     * Route counter incrementer.
-     *
-     * @var int
-     */
-    private $routeCounter = 0;
-
-    /**
      * Constructor.
      *
      * @param \FastRoute\RouteParser   $parser
@@ -175,9 +169,9 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
 
         // TODO : attention vérifier si cette modification du path avec un slash n'est pas en doublon avec celle qui est faite dans la classe Route !!!!
         $path = sprintf('/%s', ltrim($path, '/'));
-        $route = new Route($path, $handler, $this->routeCounter);
-        $this->routes[$route->getIdentifier()] = $route;
-        $this->routeCounter++;
+        $route = new Route($path, $handler);
+
+        $this->routes[uniqid('UID_', true)] = $route;
 
         return $route;
     }
@@ -221,8 +215,6 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
 
     public function match(ServerRequestInterface $request): RouteResult
     {
-        // TODO : virer cette ligne processGroups et utiliser dans la méthode injectRoutes un "->getRoutes()" au lieu d'accéder à l'objet $this->routes car la méthode get va faire le processgroup.
-        $this->processGroups();
         $this->injectRoutes($request);
 
         // process routes
@@ -260,8 +252,9 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      */
     private function injectRoutes(ServerRequestInterface $request): void
     {
-        // TODO : utiliser dans la méthode "->getRoutes()" au lieu d'accéder à l'objet $this->routes car la méthode get va faire le processgroup et retourner les routes sans avoir besoin d'utiliser la clé "$key" qui ne sert à rien dans cette boucle !!!!
-        foreach ($this->routes as $key => $route) {
+        $this->processGroups();
+
+        foreach ($this->routes as $identifier => $route) {
             // check for scheme condition
             if (! is_null($route->getScheme()) && $route->getScheme() !== $request->getUri()->getScheme()) {
                 continue;
@@ -287,7 +280,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
             $routePath = $this->replaceAssertPatterns($route->getRequirements(), $route->getPath());
             $routePath = $this->replaceWordPatterns($routePath);
 
-            $this->addRoute($route->getAllowedMethods(), $this->basePath . $routePath, $route->getIdentifier());
+            $this->addRoute($route->getAllowedMethods(), $this->basePath . $routePath, $identifier);
         }
     }
 
@@ -386,8 +379,9 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     {
         $route = $this->getNamedRoute($name);
         // no exception, route exists, now remove by id
-        unset($this->routes[$route->getIdentifier()]);
-        //unset($this->routes[array_search($route,$this->routes)]);
+        //unset($this->routes[$route->getIdentifier()]);
+        // no exception so far so the route exists we can remove the object safely.
+        unset($this->routes[array_search($route, $this->routes)]);
     }
 
     /**

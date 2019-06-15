@@ -54,24 +54,15 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     private $group;
 
     /**
-     * Route identifier.
-     *
-     * @var string
-     */
-    private $identifier;
-
-    /**
      * @param string $url
      * @param mixed  $handler should be a string or a callable
-     * @param int    $index
      */
-    public function __construct(string $path, $handler, int $index)
+    public function __construct(string $path, $handler)
     {
         // A path must start with a slash and must not have multiple slashes at the beginning because it would be confused with a network path, e.g. '//domain.com/path'.
         $this->path = sprintf('/%s', ltrim($path, '/'));
         // TODO : ajouter une vérification pour que le $handler soit un callable ou une string
         $this->handler = $handler;
-        $this->identifier = 'route_' . $index;
     }
 
     public function getPath(): string
@@ -83,16 +74,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     public function getHandler()
     {
         return $this->handler;
-    }
-
-    /**
-     * Get route identifier.
-     *
-     * @return string
-     */
-    public function getIdentifier(): string
-    {
-        return $this->identifier;
     }
 
     /**
@@ -365,18 +346,34 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
         return array_unique($this->methods);
     }
 
-    /**
-     * Alia function for "setAllowedMethods()".
-     *
-     * @param string or list of string
-     */
-    // TODO : faire plutot des méthodes : getMethods() et setMethods()
+
+    /*
     public function method(string $method, string ...$methods): self
     {
         array_unshift($methods, $method);
 
         return $this->setAllowedMethods($methods);
+    }*/
+
+    /**
+     * Alia function for "setAllowedMethods()".
+     *
+     * @param string|array ...$middleware
+     */
+    // TODO : faire plutot des méthodes : getMethods() et setMethods()
+    public function method(...$methods): self
+    {
+        // Allow passing arrays of methods or individual lists of methods
+        if (isset($methods[0]) && is_array($methods[0])
+            && count($methods) === 1
+        ) {
+            $methods = array_shift($methods);
+        }
+
+        return $this->setAllowedMethods($methods);
     }
+
+
 
     /**
      * Set supported HTTP method(s).

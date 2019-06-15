@@ -22,8 +22,10 @@ class RouteTest extends TestCase
         // test with a callable for handler
         $callback = function () {
         };
-        $route = new Route('/', $callback, 100);
+        $route = new Route('/', $callback);
         $this->assertSame($callback, $route->getHandler());
+
+        $this->assertEquals(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'], $route->getAllowedMethods());
 
         $this->assertInstanceOf(RouteConditionHandlerInterface::class, $route);
         $this->assertInstanceOf(StrategyAwareInterface::class, $route);
@@ -32,19 +34,19 @@ class RouteTest extends TestCase
 
     public function testPath()
     {
-        $route = new Route('/{bar}', 'handler', 0);
+        $route = new Route('/{bar}', 'handler');
         $this->assertEquals('/{bar}', $route->getPath());
-        $route = new Route('', 'handler', 0);
+        $route = new Route('', 'handler');
         $this->assertEquals('/', $route->getPath());
-        $route = new Route('bar', 'handler', 0);
+        $route = new Route('bar', 'handler');
         $this->assertEquals('/bar', $route->getPath());
-        $route = new Route('//path', 'handler', 0);
+        $route = new Route('//path', 'handler');
         $this->assertEquals('/path', $route->getPath());
     }
 
     public function testGroupGetterSetterAndMiddleware()
     {
-        $route = new Route('/', 'foobar', 100);
+        $route = new Route('/', 'foobar');
 
         // get/set parent group assertion
         $this->assertEquals(null, $route->getParentGroup());
@@ -64,11 +66,10 @@ class RouteTest extends TestCase
 
     public function testDefaultGetterSetter()
     {
-        $route = new Route('/', 'foobar', 100);
+        $route = new Route('/', 'foobar');
 
         $this->assertSame('foobar', $route->getHandler());
         $this->assertEquals('/', $route->getPath());
-        $this->assertEquals('route_100', $route->getIdentifier());
 
         $this->assertEquals([], $route->getDefaults());
 
@@ -95,7 +96,7 @@ class RouteTest extends TestCase
 
     public function testRouteMiddlewareTrait()
     {
-        $route = new Route('/', 'foobar', 100);
+        $route = new Route('/', 'foobar');
 
         $this->assertEquals([], $route->getMiddlewareStack());
 
@@ -110,7 +111,7 @@ class RouteTest extends TestCase
 
     public function testRouteConditionTrait()
     {
-        $route = new Route('/', 'foobar', 100);
+        $route = new Route('/', 'foobar');
 
         $this->assertEquals(null, $route->getHost());
         $this->assertEquals(null, $route->getScheme());
@@ -143,7 +144,7 @@ class RouteTest extends TestCase
 
     public function testRouteStrategyTrait()
     {
-        $route = new Route('/', 'foobar', 100);
+        $route = new Route('/', 'foobar');
 
         $this->assertEquals(null, $route->getStrategy());
 
@@ -159,7 +160,7 @@ class RouteTest extends TestCase
 
     public function testRequirementGetterSetter()
     {
-        $route = new Route('/', 'foobar', 0);
+        $route = new Route('/', 'foobar');
         $this->assertEquals([], $route->getRequirements());
 
         $route->setRequirements(['foo' => 'bar']);
@@ -184,7 +185,7 @@ class RouteTest extends TestCase
 
     public function testNameGetterSetter()
     {
-        $route = new Route('/', 'foobar', 0);
+        $route = new Route('/', 'foobar');
         $this->assertEquals(null, $route->getName());
 
         $route->name('foobar');
@@ -196,8 +197,7 @@ class RouteTest extends TestCase
 
     public function testMethodGetterSetter()
     {
-        $route = new Route('/', 'foobar', 0);
-        $this->assertEquals(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'], $route->getAllowedMethods());
+        $route = new Route('/', 'foobar');
 
         $route->method('GET');
         $this->assertEquals(['GET'], $route->getAllowedMethods());
@@ -205,13 +205,35 @@ class RouteTest extends TestCase
         $route->method('post', 'put');
         $this->assertEquals(['POST', 'PUT'], $route->getAllowedMethods());
 
-        $route->setAllowedMethods(['trace', 'patch']);
+        $route->method(['trace', 'patch']);
         $this->assertEquals(['TRACE', 'PATCH'], $route->getAllowedMethods());
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage HTTP methods argument was empty; must contain at least one method
+     */
+    public function testMethodEmptyThrowException_1()
+    {
+        $route = new Route('/', 'foobar');
+
+        $route->method();
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage HTTP methods argument was empty; must contain at least one method
+     */
+    public function testMethodEmptyThrowException_2()
+    {
+        $route = new Route('/', 'foobar');
+
+        $route->method([]);
     }
 
     public function testRequirementSanitize()
     {
-        $route = new Route('/', 'foobar', 0);
+        $route = new Route('/', 'foobar');
 
         $route->setRequirements(['foo' => '^bar']);
         $this->assertEquals(['foo' => 'bar'], $route->getRequirements());
@@ -240,7 +262,7 @@ class RouteTest extends TestCase
      */
     public function testRequirementSanitizeException($value)
     {
-        $route = new Route('/', 'foobar', 0);
+        $route = new Route('/', 'foobar');
 
         $route->setRequirements(['foo' => $value]);
     }
@@ -251,7 +273,7 @@ class RouteTest extends TestCase
      */
     public function testMethodEmptyException()
     {
-        $route = new Route('/', 'foobar', 0);
+        $route = new Route('/', 'foobar');
 
         $route->setAllowedMethods([]);
     }
@@ -259,6 +281,8 @@ class RouteTest extends TestCase
     public function invalidHttpMethodsProvider()
     {
         return [
+            [['']],
+            [['', '']],
             [[123]],
             [[123, 456]],
             [['@@@']],
@@ -273,7 +297,7 @@ class RouteTest extends TestCase
      */
     public function testMethodInvalidException(array $invalidHttpMethods)
     {
-        $route = new Route('/', 'foobar', 0);
+        $route = new Route('/', 'foobar');
 
         $route->setAllowedMethods($invalidHttpMethods);
     }
