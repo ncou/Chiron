@@ -30,6 +30,8 @@ use Psr\Log\LoggerInterface;
 
 // TODO : ajouter une méthode getEmitter() et setEmitter()
 // TODO : renommer la méthode getRequest en getServerRequest()
+
+// TODO : faire un imlplements de l'interface RequestHandlerInterface car il y a la méthode ->handle() qui existe dans cette classe Kernel
 class Kernel extends Container
 {
     // TODO : ajouter la possibiilité de passer directement un objet Config dans le constructeur, si il est null on initialise un nouveau config.

@@ -109,9 +109,9 @@ class RouterTest extends TestCase
     }
 
     /**
-     * Base path is ignored by relativePathFor().
+     * Base path is ignored by relativeUrlFor().
      */
-    public function testRelativePathFor()
+    public function testRelativeUrlFor()
     {
         $router = new Router();
 
@@ -122,11 +122,11 @@ class RouterTest extends TestCase
         $route->setName('foo');
         $this->assertEquals(
             '/hello/josh/lockhart',
-            $router->relativePathFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
+            $router->relativeUrlFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
         );
     }
 
-    public function testPathForWithNoBasePath()
+    public function testUrlForWithNoBasePath()
     {
         $router = new Router();
 
@@ -137,11 +137,11 @@ class RouterTest extends TestCase
         $route->setName('foo');
         $this->assertEquals(
             '/hello/josh/lockhart',
-            $router->pathFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
+            $router->urlFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
         );
     }
 
-    public function testPathForWithBasePath()
+    public function testUrlForWithBasePath()
     {
         $router = new Router();
 
@@ -152,11 +152,11 @@ class RouterTest extends TestCase
         $route->setName('foo');
         $this->assertEquals(
             '/base/path/hello/josh/lockhart',
-            $router->pathFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
+            $router->urlFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
         );
     }
 
-    public function testPathForWithOptionalParameters()
+    public function testUrlForWithOptionalParameters()
     {
         $router = new Router();
 
@@ -166,19 +166,19 @@ class RouterTest extends TestCase
         $route->setName('foo');
         $this->assertEquals(
             '/archive/2015',
-            $router->pathFor('foo', ['year' => '2015'])
+            $router->urlFor('foo', ['year' => '2015'])
         );
         $this->assertEquals(
             '/archive/2015/07',
-            $router->pathFor('foo', ['year' => '2015', 'month' => '07'])
+            $router->urlFor('foo', ['year' => '2015', 'month' => '07'])
         );
         $this->assertEquals(
             '/archive/2015/07/d/19',
-            $router->pathFor('foo', ['year' => '2015', 'month' => '07', 'day' => '19'])
+            $router->urlFor('foo', ['year' => '2015', 'month' => '07', 'day' => '19'])
         );
     }
 
-    public function testPathForWithQueryParameters()
+    public function testUrlForWithQueryParameters()
     {
         $router = new Router();
 
@@ -188,7 +188,7 @@ class RouterTest extends TestCase
         $route->setName('foo');
         $this->assertEquals(
             '/hello/josh?a=b&c=d',
-            $router->pathFor('foo', ['name' => 'josh'], ['a' => 'b', 'c' => 'd'])
+            $router->urlFor('foo', ['name' => 'josh'], ['a' => 'b', 'c' => 'd'])
         );
     }
 
@@ -196,7 +196,7 @@ class RouterTest extends TestCase
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Missing data for URL segment: first
      */
-    public function testPathForWithMissingSegmentData()
+    public function testUrlForWithMissingSegmentData()
     {
         $router = new Router();
 
@@ -204,14 +204,14 @@ class RouterTest extends TestCase
 
         $route = $router->map($pattern, 'callable');
         $route->setName('foo');
-        $router->pathFor('foo', ['last' => 'lockhart']);
+        $router->urlFor('foo', ['last' => 'lockhart']);
     }
 
     /**
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Named route does not exist for name:
      */
-    public function testPathForRouteNotExists()
+    public function testUrlForRouteNotExists()
     {
         $router = new Router();
 
@@ -219,7 +219,7 @@ class RouterTest extends TestCase
 
         $route = $router->map($pattern, 'callable');
         $route->setName('foo');
-        $router->pathFor('bar', ['first' => 'josh', 'last' => 'lockhart']);
+        $router->urlFor('bar', ['first' => 'josh', 'last' => 'lockhart']);
     }
 
     /**
@@ -278,7 +278,7 @@ class RouterTest extends TestCase
     }
 
     /*
-    public function testPathForWithModifiedRoutePattern()
+    public function testUrlForWithModifiedRoutePattern()
     {
         $router = new Router();
 
@@ -290,7 +290,7 @@ class RouterTest extends TestCase
         $route->setPattern('/hallo/{voornaam:\w+}/{achternaam}');
         $this->assertEquals(
             '/hallo/josh/lockhart',
-            $router->relativePathFor('foo', ['voornaam' => 'josh', 'achternaam' => 'lockhart'])
+            $router->relativeUrlFor('foo', ['voornaam' => 'josh', 'achternaam' => 'lockhart'])
         );
     }*/
 

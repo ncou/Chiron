@@ -12,6 +12,8 @@ use Chiron\Routing\Traits\StrategyAwareInterface;
 use Chiron\Routing\Traits\StrategyAwareTrait;
 use InvalidArgumentException;
 
+//https://github.com/symfony/routing/blob/master/Route.php
+
 class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, MiddlewareAwareInterface
 {
     use MiddlewareAwareTrait;
@@ -368,6 +370,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @param string or list of string
      */
+    // TODO : faire plutot des méthodes : getMethods() et setMethods()
     public function method(string $method, string ...$methods): self
     {
         array_unshift($methods, $method);
@@ -400,6 +403,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @return string[]
      */
+    // TODO : regarder aussi ici pour une méthode de vérification : https://github.com/cakephp/cakephp/blob/master/src/Routing/Route/Route.php#L197
     private function validateHttpMethods(array $methods): array
     {
         if (empty($methods)) {

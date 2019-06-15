@@ -55,6 +55,7 @@ class RoutingMiddleware implements MiddlewareInterface
             $allowedMethods = $result->getAllowedMethods();
             // The OPTIONS request should send back a response with some headers like "Allow" header.
             // TODO : vérifier le comportement avec CORS.
+            // TODO : regarder si ce code peut aider : https://github.com/illuminate/routing/blob/master/RouteCollection.php#L234
             if ($request->getMethod() === 'OPTIONS') {
                 return ($this->responseFactory->createResponse())->withHeader('Allow', implode(', ', $allowedMethods));
             }

@@ -99,6 +99,7 @@ trait MiddlewareAwareTrait
     /**
      * {@inheritdoc}
      */
+    // TODO : créer une méthode setMiddlewareStack(array $middlewares) pour pouvoir remplacer le tableau de middleware ??? non ???
     public function getMiddlewareStack(): array
     {
         return $this->middlewares;

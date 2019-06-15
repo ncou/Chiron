@@ -65,6 +65,8 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     /**
      * @var array
      */
+    // TODO : regarder ici : https://github.com/ncou/router-group-middleware/blob/master/src/Router/Router.php#L25
+    // TODO : regarder ici : https://github.com/ncou/php-router-group-middleware/blob/master/src/Router.php#L26
     private $patternMatchers = [
         '/{(.+?):number}/'        => '{$1:[0-9]+}',
         '/{(.+?):word}/'          => '{$1:[a-zA-Z]+}',
@@ -188,7 +190,8 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      *
      * @return \Chiron\Routing\RouteGroup
      */
-    // TODO : vérifier si on pas plutot utiliser un Closure au lieu d'un callable pour le typehint
+    // TODO : vérifier si on pas plutot utiliser un Closure au lieu d'un callable pour le typehint.
+    // TODO : il semble pôssible dans Slim de passer une string, ou un callable. Vérifier l'utilité de cette possibilité d'avoir un string !!!!
     public function group(string $prefix, callable $callback): RouteGroup
     {
         $group = new RouteGroup($prefix, $callback, $this);
@@ -218,6 +221,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
 
     public function match(ServerRequestInterface $request): RouteResult
     {
+        // TODO : virer cette ligne processGroups et utiliser dans la méthode injectRoutes un "->getRoutes()" au lieu d'accéder à l'objet $this->routes car la méthode get va faire le processgroup.
         $this->processGroups();
         $this->injectRoutes($request);
 
@@ -228,6 +232,27 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     }
 
     /**
+     * Process all groups.
+     */
+    // A voir si cette méthode ne devrait pas être appellée directement dans la méthode ->group() pour préparer les routes dés qu'on ajoute un group !!!!
+    // https://github.com/slimphp/Slim/blob/4.x/Slim/Routing/RouteCollector.php#L255
+    private function processGroups(): void
+    {
+        // TODO : vérifier si il ne faut pas faire un array_reverse lorsqu'on execute les groups. Surtout dans le cas ou on ajoute des middlewares au group et qui seront propagés à la route.
+        //https://github.com/slimphp/Slim/blob/4.x/Slim/Routing/Route.php#L350
+
+        // Call the $group by reference because in the case : group of group the size of the array is modified because a new group is added in the group() function.
+        foreach ($this->groups as $key => &$group) {
+            // TODO : déplacer le unset aprés la méthode invoke ou collectroute du group. Voir si c'est pas plus ^propre de remplacer le unset par un array_pop ou un array_shift !!!!
+            unset($this->groups[$key]);
+            // TODO : créer une méthode ->collectRoutes() dans la classe RouteGroup, au lieu d'utiliser le invoke() on utilisera cette méthode, c'est plus propre !!!!
+            $group();
+            //array_pop($this->groups);
+            //array_shift($this->routeGroups);
+        }
+    }
+
+    /**
      * Prepare all routes, build name index and filter out none matching
      * routes before being passed off to the parser.
      *
@@ -235,6 +260,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      */
     private function injectRoutes(ServerRequestInterface $request): void
     {
+        // TODO : utiliser dans la méthode "->getRoutes()" au lieu d'accéder à l'objet $this->routes car la méthode get va faire le processgroup et retourner les routes sans avoir besoin d'utiliser la clé "$key" qui ne sert à rien dans cette boucle !!!!
         foreach ($this->routes as $key => $route) {
             // check for scheme condition
             if (! is_null($route->getScheme()) && $route->getScheme() !== $request->getUri()->getScheme()) {
@@ -262,19 +288,6 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
             $routePath = $this->replaceWordPatterns($routePath);
 
             $this->addRoute($route->getAllowedMethods(), $this->basePath . $routePath, $route->getIdentifier());
-        }
-    }
-
-    /**
-     * Process all groups.
-     */
-    private function processGroups(): void
-    {
-        // Call the $group by reference because in the case : group of group the size of the array is modified because a new group is added in the group() function.
-        foreach ($this->groups as $key => &$group) {
-            unset($this->groups[$key]);
-            $group();
-            //array_pop($this->groups);
         }
     }
 
@@ -374,13 +387,26 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
         $route = $this->getNamedRoute($name);
         // no exception, route exists, now remove by id
         unset($this->routes[$route->getIdentifier()]);
+        //unset($this->routes[array_search($route,$this->routes)]);
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    /*
+    public function lookupRoute(string $identifier): Route
+    {
+        if (!isset($this->routes[$identifier])) {
+            throw new InvalidArgumentException('Route not found for identifier: ' . $identifier);
+        }
+        return $this->routes[$identifier];
+    }*/
 
     /**
      * Build the path for a named route including the base path.
      *
-     * @param string $name        Route name
-     * @param array  $data        Named argument replacement data
+     * @param string $routeName        Route name
+     * @param array  $substitutions        Named argument replacement data
      * @param array  $queryParams Optional query string parameters
      *
      * @throws InvalidArgumentException If named route does not exist
@@ -388,9 +414,9 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      *
      * @return string
      */
-    public function pathFor(string $name, array $data = [], array $queryParams = []): string
+    public function urlFor(string $routeName, array $substitutions = [], array $queryParams = []): string
     {
-        $url = $this->relativePathFor($name, $data, $queryParams);
+        $url = $this->relativeUrlFor($routeName, $substitutions, $queryParams);
 
         if ($this->basePath) {
             $url = $this->basePath . $url;
@@ -402,7 +428,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     /**
      * Build the path for a named route excluding the base path.
      *
-     * @param string $name          Route name
+     * @param string $routeName          Route name
      * @param array  $substitutions Named argument replacement data
      * @param array  $queryParams   Optional query string parameters
      *
@@ -411,12 +437,13 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      *
      * @return string
      */
-    // TODO : renommer cette fonction en "generateUri()", et renommer le paramétre "$data" en "$substitutions" et éventuellement virer la partie $queryParams ???? non ????
     // TODO : ajouter la gestion des segments en plus des query params ???? https://github.com/ellipsephp/url-generator/blob/master/src/UrlGenerator.php#L42
     // TODO : regarder si on peut améliorer le code => https://github.com/zendframework/zend-expressive-fastroute/blob/master/src/FastRouteRouter.php#L239
-    public function relativePathFor(string $name, array $substitutions = [], array $queryParams = []): string
+    // TODO ; utiliser ce bout de code : https://github.com/slimphp/Slim/blob/4.x/Slim/Routing/RouteParser.php#L42
+    // TODO : améliorer le code avec cette partie là =>   https://github.com/illuminate/routing/blob/master/RouteUrlGenerator.php#L77
+    public function relativeUrlFor(string $routeName, array $substitutions = [], array $queryParams = []): string
     {
-        $route = $this->getNamedRoute($name);
+        $route = $this->getNamedRoute($routeName);
         $pattern = $route->getPath();
         $routeDatas = $this->parser->parse($pattern);
         // $routeDatas is an array of all possible routes that can be made. There is
@@ -424,7 +451,10 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
         //
         // The most specific is last, so we look for that first.
         $routeDatas = array_reverse($routeDatas);
+
         $segments = [];
+        $segmentName = '';
+
         foreach ($routeDatas as $routeData) {
             foreach ($routeData as $item) {
                 if (is_string($item)) {
