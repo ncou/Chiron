@@ -93,7 +93,7 @@ class RouteResultTest extends TestCase
         $result = $data['result'];
         $route = $data['route'];
         $route->getName()->willReturn('route');
-        $route->gatherMiddlewareStack()->willReturn(['middleware']);
+        $route->getMiddlewareStack()->willReturn(['middleware']);
         $route->getAllowedMethods()->willReturn(['HEAD', 'OPTIONS', 'GET']);
         $this->assertEquals('route', $result->getMatchedRouteName());
         $this->assertEquals(['middleware'], $result->getMatchedRouteMiddlewareStack());

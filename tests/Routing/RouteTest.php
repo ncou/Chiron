@@ -6,7 +6,7 @@ namespace Chiron\Tests\Routing;
 
 use Chiron\Routing\Route;
 use Chiron\Routing\RouteGroup;
-use Chiron\Routing\RouterInterface;
+use Chiron\Routing\Traits\RouteCollectionInterface;
 use Chiron\Routing\Strategy\StrategyInterface;
 use Chiron\Routing\Traits\MiddlewareAwareInterface;
 use Chiron\Routing\Traits\RouteConditionHandlerInterface;
@@ -42,26 +42,6 @@ class RouteTest extends TestCase
         $this->assertEquals('/bar', $route->getPath());
         $route = new Route('//path', 'handler');
         $this->assertEquals('/path', $route->getPath());
-    }
-
-    public function testGroupGetterSetterAndMiddleware()
-    {
-        $route = new Route('/', 'foobar');
-
-        // get/set parent group assertion
-        $this->assertEquals(null, $route->getParentGroup());
-
-        $routerMock = $this->createMock(RouterInterface::class);
-        $group = new RouteGroup('prefix', function () {
-        }, $routerMock);
-
-        $route->setParentGroup($group);
-        $this->assertEquals($group, $route->getParentGroup());
-
-        // middleware assertion
-        $this->assertEquals([], $route->gatherMiddlewareStack());
-        $group->middleware('foobar');
-        $this->assertEquals(['foobar'], $route->gatherMiddlewareStack());
     }
 
     public function testDefaultGetterSetter()
@@ -281,6 +261,7 @@ class RouteTest extends TestCase
     public function invalidHttpMethodsProvider()
     {
         return [
+            [[null]],
             [['']],
             [['', '']],
             [[123]],
@@ -298,7 +279,30 @@ class RouteTest extends TestCase
     public function testMethodInvalidException(array $invalidHttpMethods)
     {
         $route = new Route('/', 'foobar');
-
         $route->setAllowedMethods($invalidHttpMethods);
+    }
+
+    public function invalidHttpMethodsProvider_2()
+    {
+        return [
+            null,
+            '',
+            ['', ''],
+            123,
+            [123, 456],
+            '@@@',
+            ['@@@', '@@@'],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidHttpMethodsProvider
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage One or more HTTP methods were invalid
+     */
+    public function testMethodInvalidException_2(array $invalidHttpMethods)
+    {
+        $route = new Route('/', 'foobar');
+        $route->method($invalidHttpMethods);
     }
 }

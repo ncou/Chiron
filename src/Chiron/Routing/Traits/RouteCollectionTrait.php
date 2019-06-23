@@ -130,8 +130,8 @@ trait RouteCollectionTrait
     /**
      * Add TRACE route.
      *
-     * @see https://tools.ietf.org/html/rfc7231#section-4.3.9
-     * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.9
+     * @see https://tools.ietf.org/html/rfc7231#section-4.3.8
+     * @see https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.8
      *
      * @param string          $pattern The route URI pattern
      * @param callable|string $handler The route callback routine
@@ -162,7 +162,7 @@ trait RouteCollectionTrait
 
     /**
      * Add route for any HTTP method.
-     * Supports the following methods : 'DELETE','GET','HEAD','OPTIONS','PATCH','POST','PUT','TRACE'.
+     * Supports the following methods : 'GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'.
      *
      * @param string          $pattern The route URI pattern
      * @param callable|string $handler The route callback routine
@@ -171,6 +171,49 @@ trait RouteCollectionTrait
      */
     public function any(string $pattern, $handler): Route
     {
-        return $this->map($pattern, $handler); //->setAllowedMethods(['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'TRACE']);
+        return $this->map($pattern, $handler);
+    }
+
+     /**
+     * Create a redirect from one URI to another.
+     *
+     * @param  string  $url
+     * @param  string  $destination
+     * @param  int  $status
+     *
+     * @return \Chiron\Routing\Route
+     */
+    public function redirect(string $url, string $destination, int $status = 302): Route
+    {
+        return $this->any($url, '\Chiron\Routing\Controller\RedirectController@__invoke')
+                ->setDefault('destination', $destination)
+                ->setDefault('status', $status);
+    }
+    /**
+     * Create a permanent redirect from one URI to another.
+     *
+     * @param  string  $url
+     * @param  string  $destination
+     *
+     * @return \Chiron\Routing\Route
+     */
+    public function permanentRedirect(string $url, string $destination): Route
+    {
+        return $this->redirect($url, $destination, 301);
+    }
+    /**
+     * Register a new route that returns a view.
+     *
+     * @param  string  $url
+     * @param  string  $view
+     * @param  array   $params
+     *
+     * @return \Chiron\Routing\Route
+     */
+    public function view(string $url, string $view, array $params = []): Route
+    {
+        return $this->match(['GET', 'HEAD'], $url, '\Chiron\Routing\Controller\ViewController@__invoke')
+                ->setDefault('view', $view)
+                ->setDefault('params', $params);
     }
 }

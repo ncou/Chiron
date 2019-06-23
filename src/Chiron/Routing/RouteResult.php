@@ -185,7 +185,7 @@ class RouteResult implements RequestHandlerInterface
         }
 
         if (! $this->matchedRouteMiddlewareStack && $this->route) {
-            $this->matchedRouteMiddlewareStack = $this->route->gatherMiddlewareStack();
+            $this->matchedRouteMiddlewareStack = $this->route->getMiddlewareStack();
         }
 
         return $this->matchedRouteMiddlewareStack;

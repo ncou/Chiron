@@ -26,9 +26,9 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
     protected $callback;
 
     /**
-     * @var \RouterInterface
+     * @var \RouteCollectionInterface
      */
-    protected $router;
+    protected $collection;
 
     /**
      * @var string
@@ -40,13 +40,14 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
      *
      * @param string          $prefix
      * @param callable        $callback
-     * @param RouterInterface $router
+     * @param RouteCollectionInterface $collection
      */
     // TODO : vérifier si on pas plutot utiliser un Closure au lieu d'un callable pour le typehint
-    public function __construct(string $prefix, callable $callback, RouterInterface $router)
+    // TODO : permettre de passer un callback null, dans ce cas on initialisera avec une fonction vide !!! il faudrait que cela soit géré dans la fonction "group" de la routeCollecitonInterface
+    public function __construct(string $prefix, callable $callback, RouteCollectionInterface $collection)
     {
         $this->callback = $callback;
-        $this->router = $router;
+        $this->collection = $collection;
         $this->prefix = sprintf('/%s', ltrim($prefix, '/'));
     }
 
@@ -69,12 +70,9 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
     {
         $path = ($path === '/') ? $this->prefix : rtrim($this->prefix, '/') . sprintf('/%s', ltrim($path, '/'));
 
-        $route = $this->router->map($path, $handler);
+        $route = $this->collection->map($path, $handler);
 
-        // TODO : Vérifier l'utilité de conserver le group dans l'objet Route. On l'utilise que pour récuipérer les middlewares du group qu'on fusionne avec les middlewares de la route.
-        // Il faudrait plutot faire cette fusion ici !!!! c'est à dire virer la méthode Route::gatherMiddlewareStack() qui ne servirait plus.
-        $route->setParentGroup($this);
-
+        // TODO : on devrait vérifier si la route a un host/scheme ou port on ne doit pas écraser ces valeurs avec les valeurs du group !!!! non ?????
         if ($host = $this->getHost()) {
             $route->setHost($host);
         }
@@ -85,11 +83,14 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
             $route->setPort($port);
         }
 
+        // TODO : pourquoi on vérifi uniquement si la stratégie de la route est vide pour l'écraser, et qu'on ne fait pas cela avec le host/scheme/port ????
         if (is_null($route->getStrategy()) && ! is_null($this->getStrategy())) {
             $route->setStrategy($this->getStrategy());
         }
 
-        // TODO : ajouter aussi les middlewares du group à la route, et virer la propriété setParentGroup de la route car cela ne servira plus !!!!
+        if ($middlewares = $this->getMiddlewareStack()) {
+            $route->middleware($middlewares);
+        }
 
         return $route;
     }
@@ -102,7 +103,7 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
         // TODO : ou utiliser ce code : https://github.com/illuminate/routing/blob/master/Router.php#L560
         $prefix = ($prefix === '/') ? $this->prefix : rtrim($this->prefix, '/') . sprintf('/%s', ltrim($prefix, '/'));
 
-        $group = $this->router->group($prefix, $callback);
+        $group = $this->collection->group($prefix, $callback);
 
         // TODO : je pense que ce bout de code ne servira plus à rien si dans la classe Router on invoke() le group directement dans la méthode d'ajout au group ->group() executerai donc le invoke plutot que de le faire à la fin avec la méthode processGroup !!!
         // in cases of group of groups, we need to persist the settings from the previous group in the new one.
@@ -122,7 +123,10 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
         // merge all the previous group middlewares in this last group.
         // TODO : créer une méthode setMiddlewareStack(array $middlewares) dans la classe MiddlewareAwareTrait.php pour remplacer le tableau de middleware ??? non ???
         // TODO : vérifier si il n'y a pas un bug, on dirait qu'on va ajouter au $group des middleware qu'il posséde déjà !!!! ou alors c'est que l'objet group nouvellement créé n'a pas de middleware mais dans ce cas c'est la méthode array_merge qui ne sert à rien !!!!
-        $group->middleware(array_merge($this->getMiddlewareStack(), $group->getMiddlewareStack()));
+        if ($middlewares = $this->getMiddlewareStack()) {
+            //$group->middleware(array_merge($middlewares, $group->getMiddlewareStack()));
+            $group->middleware($middlewares);
+        }
 
         return $group;
     }

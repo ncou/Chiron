@@ -68,6 +68,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      */
     // TODO : regarder ici : https://github.com/ncou/router-group-middleware/blob/master/src/Router/Router.php#L25
     // TODO : regarder ici : https://github.com/ncou/php-router-group-middleware/blob/master/src/Router.php#L26
+    // TODO : faire un tableau plus simple et ensuite dans le constructeur faire un array walk pour ajouter ces patterns.
     private $patternMatchers = [
         '/{(.+?):number}/'        => '{$1:[0-9]+}',
         '/{(.+?):word}/'          => '{$1:[a-zA-Z]+}',
@@ -114,11 +115,17 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      * @param \FastRoute\RouteParser   $parser
      * @param \FastRoute\DataGenerator $generator
      */
-    public function __construct(RouteParser $parser = null, DataGenerator $generator = null)
+    public function __construct(DataGenerator $generator = null)
     {
+        $this->parser = new RouteParser\Std();
         // build parent route collector
-        $this->parser = ($parser) ?? new RouteParser\Std();
         $this->generator = ($generator) ?? new DataGenerator\GroupCountBased();
+
+// TODO utiliser ce bout de code et faire un tableau de pattern dans la classe de ce type ['slug' => 'xxxx', 'number' => 'yyyy']
+/*
+        array_walk($this->patternMatchers, function ($value, $key) {
+            $this->addPatternMatcher($key, $value);
+        });*/
     }
 
     /**
@@ -133,6 +140,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     {
         $pattern = '/{(.+?):' . $alias . '}/';
         $regex = '{$1:' . $regex . '}';
+
         $this->patternMatchers[$pattern] = $regex;
 
         return $this;
@@ -224,27 +232,6 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     }
 
     /**
-     * Process all groups.
-     */
-    // A voir si cette méthode ne devrait pas être appellée directement dans la méthode ->group() pour préparer les routes dés qu'on ajoute un group !!!!
-    // https://github.com/slimphp/Slim/blob/4.x/Slim/Routing/RouteCollector.php#L255
-    private function processGroups(): void
-    {
-        // TODO : vérifier si il ne faut pas faire un array_reverse lorsqu'on execute les groups. Surtout dans le cas ou on ajoute des middlewares au group et qui seront propagés à la route.
-        //https://github.com/slimphp/Slim/blob/4.x/Slim/Routing/Route.php#L350
-
-        // Call the $group by reference because in the case : group of group the size of the array is modified because a new group is added in the group() function.
-        foreach ($this->groups as $key => &$group) {
-            // TODO : déplacer le unset aprés la méthode invoke ou collectroute du group. Voir si c'est pas plus ^propre de remplacer le unset par un array_pop ou un array_shift !!!!
-            unset($this->groups[$key]);
-            // TODO : créer une méthode ->collectRoutes() dans la classe RouteGroup, au lieu d'utiliser le invoke() on utilisera cette méthode, c'est plus propre !!!!
-            $group();
-            //array_pop($this->groups);
-            //array_shift($this->routeGroups);
-        }
-    }
-
-    /**
      * Prepare all routes, build name index and filter out none matching
      * routes before being passed off to the parser.
      *
@@ -280,7 +267,28 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
             $routePath = $this->replaceAssertPatterns($route->getRequirements(), $route->getPath());
             $routePath = $this->replaceWordPatterns($routePath);
 
-            $this->addRoute($route->getAllowedMethods(), $this->basePath . $routePath, $identifier);
+            $this->injectRoute($identifier, $route->getAllowedMethods(), $this->basePath . $routePath);
+        }
+    }
+
+    /**
+     * Process all groups.
+     */
+    // A voir si cette méthode ne devrait pas être appellée directement dans la méthode ->group() pour préparer les routes dés qu'on ajoute un group !!!!
+    // https://github.com/slimphp/Slim/blob/4.x/Slim/Routing/RouteCollector.php#L255
+    private function processGroups(): void
+    {
+        // TODO : vérifier si il ne faut pas faire un array_reverse lorsqu'on execute les groups. Surtout dans le cas ou on ajoute des middlewares au group et qui seront propagés à la route.
+        //https://github.com/slimphp/Slim/blob/4.x/Slim/Routing/Route.php#L350
+
+        // Call the $group by reference because in the case : group of group the size of the array is modified because a new group is added in the group() function.
+        foreach ($this->groups as $key => &$group) {
+            // TODO : déplacer le unset aprés la méthode invoke ou collectroute du group. Voir si c'est pas plus ^propre de remplacer le unset par un array_pop ou un array_shift !!!!
+            unset($this->groups[$key]);
+            // TODO : créer une méthode ->collectRoutes() dans la classe RouteGroup, au lieu d'utiliser le invoke() on utilisera cette méthode, c'est plus propre !!!!
+            $group();
+            //array_pop($this->groups);
+            //array_shift($this->routeGroups);
         }
     }
 
@@ -322,16 +330,20 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      *
      * The syntax used in the $route string depends on the used route parser.
      *
+     * @param string   $routeId
      * @param string[] $httpMethod
      * @param string   $routePath
-     * @param string   $routeId
      */
-    private function addRoute(array $httpMethod, string $routePath, string $routeId): void
+    private function injectRoute(string $routeId, array $httpMethod, string $routePath): void
     {
         $routeDatas = $this->parser->parse($routePath);
         foreach ($httpMethod as $method) {
             foreach ($routeDatas as $routeData) {
-                $this->generator->addRoute($method, $routeData, $routeId);
+                // TODO : réactiver le try catch si on souhaite pouvoir gérer les doublons de routes.
+                //try {
+                    $this->generator->addRoute($method, $routeData, $routeId);
+                //} catch (\Throwable $e) {
+                //}
             }
         }
     }
@@ -395,99 +407,6 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
         }
         return $this->routes[$identifier];
     }*/
-
-    /**
-     * Build the path for a named route including the base path.
-     *
-     * @param string $routeName        Route name
-     * @param array  $substitutions        Named argument replacement data
-     * @param array  $queryParams Optional query string parameters
-     *
-     * @throws InvalidArgumentException If named route does not exist
-     * @throws InvalidArgumentException If required data not provided
-     *
-     * @return string
-     */
-    public function urlFor(string $routeName, array $substitutions = [], array $queryParams = []): string
-    {
-        $url = $this->relativeUrlFor($routeName, $substitutions, $queryParams);
-
-        if ($this->basePath) {
-            $url = $this->basePath . $url;
-        }
-
-        return $url;
-    }
-
-    /**
-     * Build the path for a named route excluding the base path.
-     *
-     * @param string $routeName          Route name
-     * @param array  $substitutions Named argument replacement data
-     * @param array  $queryParams   Optional query string parameters
-     *
-     * @throws InvalidArgumentException If named route does not exist
-     * @throws InvalidArgumentException If required data not provided
-     *
-     * @return string
-     */
-    // TODO : ajouter la gestion des segments en plus des query params ???? https://github.com/ellipsephp/url-generator/blob/master/src/UrlGenerator.php#L42
-    // TODO : regarder si on peut améliorer le code => https://github.com/zendframework/zend-expressive-fastroute/blob/master/src/FastRouteRouter.php#L239
-    // TODO ; utiliser ce bout de code : https://github.com/slimphp/Slim/blob/4.x/Slim/Routing/RouteParser.php#L42
-    // TODO : améliorer le code avec cette partie là =>   https://github.com/illuminate/routing/blob/master/RouteUrlGenerator.php#L77
-    public function relativeUrlFor(string $routeName, array $substitutions = [], array $queryParams = []): string
-    {
-        $route = $this->getNamedRoute($routeName);
-        $pattern = $route->getPath();
-        $routeDatas = $this->parser->parse($pattern);
-        // $routeDatas is an array of all possible routes that can be made. There is
-        // one routedata for each optional parameter plus one for no optional parameters.
-        //
-        // The most specific is last, so we look for that first.
-        $routeDatas = array_reverse($routeDatas);
-
-        $segments = [];
-        $segmentName = '';
-
-        foreach ($routeDatas as $routeData) {
-            foreach ($routeData as $item) {
-                if (is_string($item)) {
-                    // this segment is a static string
-                    $segments[] = $item;
-
-                    continue;
-                }
-                // This segment has a parameter: first element is the name
-                if (! array_key_exists($item[0], $substitutions)) {
-                    // we don't have a data element for this segment: cancel
-                    // testing this routeData item, so that we can try a less
-                    // specific routeData item.
-                    $segments = [];
-                    $segmentName = $item[0];
-
-                    break;
-                }
-                $segments[] = $substitutions[$item[0]];
-            }
-            if (! empty($segments)) {
-                // we found all the parameters for this route data, no need to check
-                // less specific ones
-                break;
-            }
-        }
-
-        if (empty($segments)) {
-            throw new InvalidArgumentException('Missing data for URL segment: ' . $segmentName);
-        }
-
-        $url = implode('', $segments);
-
-        if ($queryParams) {
-            $url .= '?' . http_build_query($queryParams);
-        }
-
-        return $url;
-    }
 
     /*
      * Determine if the route is duplicated in the current list.

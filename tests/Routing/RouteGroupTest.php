@@ -158,13 +158,45 @@ class RouteGroupTest extends TestCase
         })->middleware('MIDDLEWARE_4');
 
         $route_1 = $router->getNamedRoute('test_1');
-        $this->assertEquals(['MIDDLEWARE_1', 'MIDDLEWARE_4'], $route_1->gatherMiddlewareStack());
+        $this->assertEquals(['MIDDLEWARE_4', 'MIDDLEWARE_1'], $route_1->getMiddlewareStack());
 
         $route_2 = $router->getNamedRoute('test_2');
-        $this->assertEquals(['MIDDLEWARE_2', 'MIDDLEWARE_4', 'MIDDLEWARE_3'], $route_2->gatherMiddlewareStack());
+        $this->assertEquals(['MIDDLEWARE_4', 'MIDDLEWARE_3', 'MIDDLEWARE_2'], $route_2->getMiddlewareStack());
 
         $route_3 = $router->getNamedRoute('test_3');
-        $this->assertEquals(['MIDDLEWARE_4', 'MIDDLEWARE_3'], $route_3->gatherMiddlewareStack());
+        $this->assertEquals(['MIDDLEWARE_4', 'MIDDLEWARE_3'], $route_3->getMiddlewareStack());
+    }
+
+    public function testRouteNestedGroupWithOverrideMiddleware()
+    {
+        $router = new Router();
+
+        $grp = $router->group('/prefix', function ($group) {
+            $group->get('/', function () {
+                return 'ROUTE_1';
+            })->name('test_1')->middleware('MIDDLEWARE_1');
+
+        })->middleware('MIDDLEWARE_4a');
+
+        $grp->middleware('MIDDLEWARE_4b');
+
+        $grp->group('/group/', function ($group) {
+            $group->get('/foo', function () {
+                return 'ROUTE_2';
+            })->name('test_2')->middleware('MIDDLEWARE_2');
+            $group->get('/bar', function () {
+                return 'ROUTE_3';
+            })->name('test_3');
+        })->middleware('MIDDLEWARE_3');
+
+        $route_1 = $router->getNamedRoute('test_1');
+        $this->assertEquals(['MIDDLEWARE_4a', 'MIDDLEWARE_4b', 'MIDDLEWARE_1'], $route_1->getMiddlewareStack());
+
+        $route_2 = $router->getNamedRoute('test_2');
+        $this->assertEquals(['MIDDLEWARE_4a', 'MIDDLEWARE_4b', 'MIDDLEWARE_3', 'MIDDLEWARE_2'], $route_2->getMiddlewareStack());
+
+        $route_3 = $router->getNamedRoute('test_3');
+        $this->assertEquals(['MIDDLEWARE_4a', 'MIDDLEWARE_4b', 'MIDDLEWARE_3'], $route_3->getMiddlewareStack());
     }
 
     public function testRouteMiddlewareTrait()

@@ -108,119 +108,32 @@ class RouterTest extends TestCase
         $this->assertSame(['id' => $expectedId], $routeResult->getMatchedParams());
     }
 
-    /**
-     * Base path is ignored by relativeUrlFor().
-     */
-    public function testRelativeUrlFor()
-    {
-        $router = new Router();
 
-        $router->setBasePath('/base/path');
-        $pattern = '/hello/{first:\w+}/{last}';
 
-        $route = $router->map($pattern, 'callable');
-        $route->setName('foo');
-        $this->assertEquals(
-            '/hello/josh/lockhart',
-            $router->relativeUrlFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
-        );
-    }
 
-    public function testUrlForWithNoBasePath()
-    {
-        $router = new Router();
 
-        $router->setBasePath('');
-        $pattern = '/hello/{first:\w+}/{last}';
 
-        $route = $router->map($pattern, 'callable');
-        $route->setName('foo');
-        $this->assertEquals(
-            '/hello/josh/lockhart',
-            $router->urlFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
-        );
-    }
 
-    public function testUrlForWithBasePath()
-    {
-        $router = new Router();
 
-        $pattern = '/hello/{first:\w+}/{last}';
 
-        $router->setBasePath('/base/path');
-        $route = $router->map($pattern, 'callable');
-        $route->setName('foo');
-        $this->assertEquals(
-            '/base/path/hello/josh/lockhart',
-            $router->urlFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
-        );
-    }
 
-    public function testUrlForWithOptionalParameters()
-    {
-        $router = new Router();
 
-        $pattern = '/archive/{year}[/{month:[\d:{2}]}[/d/{day}]]';
 
-        $route = $router->map($pattern, 'callable');
-        $route->setName('foo');
-        $this->assertEquals(
-            '/archive/2015',
-            $router->urlFor('foo', ['year' => '2015'])
-        );
-        $this->assertEquals(
-            '/archive/2015/07',
-            $router->urlFor('foo', ['year' => '2015', 'month' => '07'])
-        );
-        $this->assertEquals(
-            '/archive/2015/07/d/19',
-            $router->urlFor('foo', ['year' => '2015', 'month' => '07', 'day' => '19'])
-        );
-    }
 
-    public function testUrlForWithQueryParameters()
-    {
-        $router = new Router();
 
-        $pattern = '/hello/{name}';
 
-        $route = $router->map($pattern, 'callable');
-        $route->setName('foo');
-        $this->assertEquals(
-            '/hello/josh?a=b&c=d',
-            $router->urlFor('foo', ['name' => 'josh'], ['a' => 'b', 'c' => 'd'])
-        );
-    }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Missing data for URL segment: first
-     */
-    public function testUrlForWithMissingSegmentData()
-    {
-        $router = new Router();
 
-        $pattern = '/hello/{first}/{last}';
 
-        $route = $router->map($pattern, 'callable');
-        $route->setName('foo');
-        $router->urlFor('foo', ['last' => 'lockhart']);
-    }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Named route does not exist for name:
-     */
-    public function testUrlForRouteNotExists()
-    {
-        $router = new Router();
 
-        $pattern = '/hello/{first}/{last}';
 
-        $route = $router->map($pattern, 'callable');
-        $route->setName('foo');
-        $router->urlFor('bar', ['first' => 'josh', 'last' => 'lockhart']);
-    }
+
+
+
+
+
+
 
     /**
      * @expectedException \InvalidArgumentException

@@ -50,9 +50,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      */
     private $methods = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'];
 
-    /** @var null|RouteGroup */
-    private $group;
-
     /**
      * @param string $url
      * @param mixed  $handler should be a string or a callable
@@ -74,30 +71,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     public function getHandler()
     {
         return $this->handler;
-    }
-
-    /**
-     * Get the parent group.
-     *
-     * @return null|RouteGroup
-     */
-    public function getParentGroup(): ?RouteGroup
-    {
-        return $this->group;
-    }
-
-    /**
-     * Set the parent group.
-     *
-     * @param RouteGroup $group
-     *
-     * @return Route
-     */
-    public function setParentGroup(RouteGroup $group): self
-    {
-        $this->group = $group;
-
-        return $this;
     }
 
     /**
@@ -154,6 +127,21 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     }
 
     /**
+     * Sets a default value.
+     *
+     * @param string $name    A variable name
+     * @param mixed  $default The default value
+     *
+     * @return $this
+     */
+    public function setDefault(string $name, $default): self
+    {
+        $this->defaults[$name] = $default;
+
+        return $this;
+    }
+
+    /**
      * Checks if a default value is set for the given variable.
      *
      * @param string $name A variable name
@@ -176,21 +164,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     public function value(string $variable, $default): self
     {
         return $this->setDefault($variable, $default);
-    }
-
-    /**
-     * Sets a default value.
-     *
-     * @param string $name    A variable name
-     * @param mixed  $default The default value
-     *
-     * @return $this
-     */
-    public function setDefault(string $name, $default): self
-    {
-        $this->defaults[$name] = $default;
-
-        return $this;
     }
 
     /**
@@ -252,6 +225,21 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     }
 
     /**
+     * Sets a requirement for the given key.
+     *
+     * @param string $key   The key
+     * @param string $regex The regex
+     *
+     * @return $this
+     */
+    public function setRequirement(string $key, string $regex): self
+    {
+        $this->requirements[$key] = $this->sanitizeRequirement($key, $regex);
+
+        return $this;
+    }
+
+    /**
      * Checks if a requirement is set for the given key.
      *
      * @param string $key A variable name
@@ -267,21 +255,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     public function assert(string $key, string $regex): self
     {
         return $this->setRequirement($key, $regex);
-    }
-
-    /**
-     * Sets a requirement for the given key.
-     *
-     * @param string $key   The key
-     * @param string $regex The regex
-     *
-     * @return $this
-     */
-    public function setRequirement(string $key, string $regex): self
-    {
-        $this->requirements[$key] = $this->sanitizeRequirement($key, $regex);
-
-        return $this;
     }
 
     // remove the char "^" at the start of the regex, and the final "$" char at the end of the regex
@@ -311,18 +284,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     }
 
     /**
-     * Alia function for "setName()".
-     *
-     * @param string $name
-     *
-     * @return $this
-     */
-    public function name(string $name): self
-    {
-        return $this->setName($name);
-    }
-
-    /**
      * Set the route name.
      *
      * @param string $name
@@ -337,6 +298,18 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     }
 
     /**
+     * Alia function for "setName()".
+     *
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function name(string $name): self
+    {
+        return $this->setName($name);
+    }
+
+    /**
      * Get supported HTTP method(s).
      *
      * @return array
@@ -344,6 +317,20 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     public function getAllowedMethods(): array
     {
         return array_unique($this->methods);
+    }
+
+    /**
+     * Set supported HTTP method(s).
+     *
+     * @param array
+     *
+     * @return self
+     */
+    public function setAllowedMethods(array $methods): self
+    {
+        $this->methods = $this->validateHttpMethods($methods);
+
+        return $this;
     }
 
 
@@ -361,6 +348,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      * @param string|array ...$middleware
      */
     // TODO : faire plutot des méthodes : getMethods() et setMethods()
+    // TODO : à renommer en allows() ????
     public function method(...$methods): self
     {
         // Allow passing arrays of methods or individual lists of methods
@@ -371,22 +359,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
         }
 
         return $this->setAllowedMethods($methods);
-    }
-
-
-
-    /**
-     * Set supported HTTP method(s).
-     *
-     * @param array
-     *
-     * @return self
-     */
-    public function setAllowedMethods(array $methods): self
-    {
-        $this->methods = $this->validateHttpMethods($methods);
-
-        return $this;
     }
 
     /**
@@ -426,21 +398,5 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
         }
 
         return array_map('strtoupper', $methods);
-    }
-
-    /**
-     * gather all the middlewares for this route (from group + from route).
-     *
-     * @return array
-     */
-    public function gatherMiddlewareStack(): array
-    {
-        $middlewares = $this->getMiddlewareStack();
-        // If there is a parent group, we merge both middleware stacks (Route + RouteGroup).
-        if ($group = $this->getParentGroup()) {
-            $middlewares = array_merge($middlewares, $group->getMiddlewareStack());
-        }
-
-        return $middlewares;
     }
 }
