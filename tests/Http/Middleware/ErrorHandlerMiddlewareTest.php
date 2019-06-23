@@ -13,7 +13,9 @@ use Chiron\Http\Psr\Response;
 use Chiron\Http\Psr\ServerRequest;
 use Chiron\Http\Psr\Uri;
 use Chiron\Tests\Utils\RequestHandlerCallable;
+use const E_USER_DEPRECATED;
 use Error;
+use function error_reporting;
 use Exception;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
@@ -21,8 +23,6 @@ use Prophecy\Argument;
 use Psr\Http\Message\ResponseFactoryInterface;
 use RuntimeException;
 use Throwable;
-use const E_USER_DEPRECATED;
-use function error_reporting;
 use function trigger_error;
 
 class ErrorHandlerMiddlewareTest extends TestCase

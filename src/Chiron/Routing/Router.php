@@ -121,7 +121,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
         // build parent route collector
         $this->generator = ($generator) ?? new DataGenerator\GroupCountBased();
 
-// TODO utiliser ce bout de code et faire un tableau de pattern dans la classe de ce type ['slug' => 'xxxx', 'number' => 'yyyy']
+        // TODO utiliser ce bout de code et faire un tableau de pattern dans la classe de ce type ['slug' => 'xxxx', 'number' => 'yyyy']
 /*
         array_walk($this->patternMatchers, function ($value, $key) {
             $this->addPatternMatcher($key, $value);
@@ -341,7 +341,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
             foreach ($routeDatas as $routeData) {
                 // TODO : réactiver le try catch si on souhaite pouvoir gérer les doublons de routes.
                 //try {
-                    $this->generator->addRoute($method, $routeData, $routeId);
+                $this->generator->addRoute($method, $routeData, $routeId);
                 //} catch (\Throwable $e) {
                 //}
             }
@@ -396,7 +396,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
         unset($this->routes[array_search($route, $this->routes)]);
     }
 
-    /**
+    /*
      * {@inheritdoc}
      */
     /*

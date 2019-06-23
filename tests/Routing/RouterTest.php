@@ -108,33 +108,6 @@ class RouterTest extends TestCase
         $this->assertSame(['id' => $expectedId], $routeResult->getMatchedParams());
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Named route does not exist for name:

@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Middleware;
 
-use Chiron\Application;
+use Chiron\Http\Middleware\DispatcherMiddleware;
+use Chiron\Http\Middleware\RoutingMiddleware;
+use Chiron\Http\Psr\ServerRequest;
+use Chiron\Http\Psr\Uri;
 use Chiron\Kernel;
 use Chiron\Routing\Route;
 use PHPUnit\Framework\TestCase;
-use Chiron\Http\Psr\ServerRequest;
-use Chiron\Http\Psr\Uri;
-use Chiron\Http\Middleware\DispatcherMiddleware;
-use Chiron\Http\Middleware\RoutingMiddleware;
 
 class ApplicationRouterTest extends TestCase
 {
@@ -132,26 +131,16 @@ class ApplicationRouterTest extends TestCase
         $this->assertAttributeContains('POST', 'methods', $route);
     }
 
-
-
-
-
-
-
-
-
-
-
     public function testRouteRedirect()
     {
         $app = new Kernel();
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-// TODO : il faut d'abord régler le fait que FastRoute ne supporte pas les routes en doublon avant de pouvoir décommenter ce bout de code !!!
-/*
-        $route = $app->getRouter()->get('/contact_us', function () {
-            throw new \Exception('Route should not be reachable.');
-        });
-*/
+        // TODO : il faut d'abord régler le fait que FastRoute ne supporte pas les routes en doublon avant de pouvoir décommenter ce bout de code !!!
+        /*
+                $route = $app->getRouter()->get('/contact_us', function () {
+                    throw new \Exception('Route should not be reachable.');
+                });
+        */
         $app->getRouter()->redirect('/contact_us', 'contact');
 
         $request = new ServerRequest('GET', new Uri('/contact_us'));
@@ -165,12 +154,12 @@ class ApplicationRouterTest extends TestCase
     {
         $app = new Kernel();
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-// TODO : il faut d'abord régler le fait que FastRoute ne supporte pas les routes en doublon avant de pouvoir décommenter ce bout de code !!!
-/*
-        $route = $app->getRouter()->get('/contact_us', function () {
-            throw new \Exception('Route should not be reachable.');
-        });
-*/
+        // TODO : il faut d'abord régler le fait que FastRoute ne supporte pas les routes en doublon avant de pouvoir décommenter ce bout de code !!!
+        /*
+                $route = $app->getRouter()->get('/contact_us', function () {
+                    throw new \Exception('Route should not be reachable.');
+                });
+        */
         $app->getRouter()->redirect('/contact_us', 'contact', 301);
 
         $request = new ServerRequest('GET', new Uri('/contact_us'));
@@ -184,12 +173,12 @@ class ApplicationRouterTest extends TestCase
     {
         $app = new Kernel();
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-// TODO : il faut d'abord régler le fait que FastRoute ne supporte pas les routes en doublon avant de pouvoir décommenter ce bout de code !!!
-/*
-        $route = $app->getRouter()->get('/contact_us', function () {
-            throw new \Exception('Route should not be reachable.');
-        });
-*/
+        // TODO : il faut d'abord régler le fait que FastRoute ne supporte pas les routes en doublon avant de pouvoir décommenter ce bout de code !!!
+        /*
+                $route = $app->getRouter()->get('/contact_us', function () {
+                    throw new \Exception('Route should not be reachable.');
+                });
+        */
         $app->getRouter()->permanentRedirect('/contact_us', 'contact');
 
         $request = new ServerRequest('GET', new Uri('/contact_us'));

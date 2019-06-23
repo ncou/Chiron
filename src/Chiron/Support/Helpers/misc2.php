@@ -135,6 +135,7 @@ if (! function_exists('logging_extension')) {
 
             default:
                 throw new Exception('Logging time[' . $logging_time . '] not found');
+
             break;
         }
 

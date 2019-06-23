@@ -333,7 +333,6 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
         return $this;
     }
 
-
     /*
     public function method(string $method, string ...$methods): self
     {

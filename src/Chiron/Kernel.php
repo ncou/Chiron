@@ -270,7 +270,6 @@ class Kernel extends Container
         $handler = $this->buildHandler();
 
         return $handler->handle($request);
-
     }
 
     protected function buildHandler(): RequestHandlerInterface

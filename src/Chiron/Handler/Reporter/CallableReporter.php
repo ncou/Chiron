@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Reporter;
 
+use function call_user_func_array;
 use Exception;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-use function call_user_func_array;
 
 class CallableReporter implements ReporterInterface
 {
