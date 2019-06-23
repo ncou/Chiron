@@ -4,13 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Routing;
 
-use Chiron\Http\Psr\ServerRequest;
-use Chiron\Http\Psr\Uri;
 use Chiron\Routing\Route;
 use Chiron\Routing\Router;
 use Chiron\Routing\RouteUrlGenerator;
-use Chiron\Routing\RouterInterface;
-use Chiron\Routing\Strategy\StrategyInterface;
 use PHPUnit\Framework\TestCase;
 
 class RouteCollectorTest extends TestCase
@@ -150,7 +146,7 @@ class RouteCollectorTest extends TestCase
         $urlGenerator->urlFor('bar', ['first' => 'josh', 'last' => 'lockhart']);
     }
 
-// TODO : améliorer les tests, il faut que les queryParams soient calculés automatiquement. regarder les tests mis en commentaire !!!  https://github.com/laravel/framework/blob/5.8/tests/Routing/RoutingUrlGeneratorTest.php#L168
+    // TODO : améliorer les tests, il faut que les queryParams soient calculés automatiquement. regarder les tests mis en commentaire !!!  https://github.com/laravel/framework/blob/5.8/tests/Routing/RoutingUrlGeneratorTest.php#L168
     public function testBasicRouteGeneration()
     {
         $router = new Router();
@@ -202,7 +198,6 @@ class RouteCollectorTest extends TestCase
         $this->assertEquals('/foo/bar#derp', $urlGenerator->urlFor('fragment', [], []));
         $this->assertEquals('/foo/bar?foo=bar#derp', $urlGenerator->urlFor('fragment', [], ['foo' => 'bar']));
         $this->assertEquals('/foo/bar?baz=%C3%A5%CE%B1%D1%84#derp', $urlGenerator->urlFor('fragment', [], ['baz' => 'åαф']));
-
     }
 
     /**

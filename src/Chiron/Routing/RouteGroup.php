@@ -38,8 +38,8 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
     /**
      * Constructor.
      *
-     * @param string          $prefix
-     * @param callable        $callback
+     * @param string                   $prefix
+     * @param callable                 $callback
      * @param RouteCollectionInterface $collection
      */
     // TODO : vérifier si on pas plutot utiliser un Closure au lieu d'un callable pour le typehint
@@ -143,11 +143,11 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
         ($this->callback)($this);
     }
 
-/*
-    public function collectRoutes(): RouteGroupInterface
-    {
-        $callable = $this->callableResolver->resolve($this->callable);
-        $callable($this->routeCollectorProxy);
-        return $this;
-    }*/
+    /*
+        public function collectRoutes(): RouteGroupInterface
+        {
+            $callable = $this->callableResolver->resolve($this->callable);
+            $callable($this->routeCollectorProxy);
+            return $this;
+        }*/
 }

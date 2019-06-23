@@ -87,23 +87,23 @@ class HttpFactoriesServiceProvider implements ServiceProviderInterface
                 $kernel[RequestFactory::class] = function ($c) {
                     return $c->get(RequestFactoryInterface::class);
                 };
-        
+
                 $kernel[ResponseFactory::class] = function ($c) {
                     return $c->get(ResponseFactoryInterface::class);
                 };
-        
+
                 $kernel[ServerRequestFactory::class] = function ($c) {
                     return $c->get(ServerRequestFactoryInterface::class);
                 };
-        
+
                 $kernel[UriFactory::class] = function ($c) {
                     return $c->get(UriFactoryInterface::class);
                 };
-        
+
                 $kernel[UploadedFileFactory::class] = function ($c) {
                     return $c->get(UploadedFileFactoryInterface::class);
                 };
-        
+
                 $kernel[StreamFactory::class] = function ($c) {
                     return $c->get(StreamFactoryInterface::class);
                 };*/

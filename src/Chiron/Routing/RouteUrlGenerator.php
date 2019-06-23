@@ -4,25 +4,14 @@ declare(strict_types=1);
 
 namespace Chiron\Routing;
 
-use Chiron\Routing\Traits\MiddlewareAwareInterface;
-use Chiron\Routing\Traits\MiddlewareAwareTrait;
-use Chiron\Routing\Traits\RouteCollectionInterface;
-use Chiron\Routing\Traits\RouteCollectionTrait;
-use Chiron\Routing\Traits\StrategyAwareInterface;
-use Chiron\Routing\Traits\StrategyAwareTrait;
-use FastRoute\DataGenerator;
 use FastRoute\RouteParser\Std;
 use InvalidArgumentException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use RuntimeException;
 
 //https://github.com/symfony/routing/blob/master/Generator/UrlGenerator.php
 //https://github.com/illuminate/routing/blob/master/RouteUrlGenerator.php
 
 class RouteUrlGenerator
 {
-
     /** @var FastRoute\RouteParser\Std */
     private $parser;
 
@@ -61,9 +50,9 @@ class RouteUrlGenerator
     /**
      * Build the path for a named route including the base path.
      *
-     * @param string $routeName        Route name
-     * @param array  $substitutions        Named argument replacement data
-     * @param array  $queryParams Optional query string parameters
+     * @param string $routeName     Route name
+     * @param array  $substitutions Named argument replacement data
+     * @param array  $queryParams   Optional query string parameters
      *
      * @throws InvalidArgumentException If named route does not exist
      * @throws InvalidArgumentException If required data not provided
@@ -85,7 +74,7 @@ class RouteUrlGenerator
     /**
      * Build the path for a named route excluding the base path.
      *
-     * @param string $routeName          Route name
+     * @param string $routeName     Route name
      * @param array  $substitutions Named argument replacement data
      * @param array  $queryParams   Optional query string parameters
      *
@@ -173,8 +162,9 @@ class RouteUrlGenerator
     /**
      * Add a query string to the URI.
      *
-     * @param  string  $url
-     * @param  array  $parameters
+     * @param string $url
+     * @param array  $parameters
+     *
      * @return mixed|string
      */
     protected function addQueryString(string $url, array $parameters): string
@@ -187,23 +177,24 @@ class RouteUrlGenerator
         }
         $url .= $this->getRouteQueryString($parameters);
 
-        return is_null($fragment) ? $url : $url."#{$fragment}";
+        return is_null($fragment) ? $url : $url . "#{$fragment}";
     }
+
     /**
      * Get the query string for a given route.
      *
-     * @param  array  $parameters
+     * @param array $parameters
+     *
      * @return string
      */
     protected function getRouteQueryString(array $parameters): string
     {
         $query = http_build_query($parameters, '', '&', PHP_QUERY_RFC3986);
 
-        return '?'.$query;
+        return '?' . $query;
     }
 
-
-    /**
+    /*
      * Returns the target path as relative reference from the base path.
      *
      * Only the URIs path component (no schema, host etc.) is relevant and must be given, starting with a slash.

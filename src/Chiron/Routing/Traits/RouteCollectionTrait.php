@@ -174,12 +174,12 @@ trait RouteCollectionTrait
         return $this->map($pattern, $handler);
     }
 
-     /**
+    /**
      * Create a redirect from one URI to another.
      *
-     * @param  string  $url
-     * @param  string  $destination
-     * @param  int  $status
+     * @param string $url
+     * @param string $destination
+     * @param int    $status
      *
      * @return \Chiron\Routing\Route
      */
@@ -189,11 +189,12 @@ trait RouteCollectionTrait
                 ->setDefault('destination', $destination)
                 ->setDefault('status', $status);
     }
+
     /**
      * Create a permanent redirect from one URI to another.
      *
-     * @param  string  $url
-     * @param  string  $destination
+     * @param string $url
+     * @param string $destination
      *
      * @return \Chiron\Routing\Route
      */
@@ -201,12 +202,13 @@ trait RouteCollectionTrait
     {
         return $this->redirect($url, $destination, 301);
     }
+
     /**
      * Register a new route that returns a view.
      *
-     * @param  string  $url
-     * @param  string  $view
-     * @param  array   $params
+     * @param string $url
+     * @param string $view
+     * @param array  $params
      *
      * @return \Chiron\Routing\Route
      */

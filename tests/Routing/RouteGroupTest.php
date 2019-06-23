@@ -175,7 +175,6 @@ class RouteGroupTest extends TestCase
             $group->get('/', function () {
                 return 'ROUTE_1';
             })->name('test_1')->middleware('MIDDLEWARE_1');
-
         })->middleware('MIDDLEWARE_4a');
 
         $grp->middleware('MIDDLEWARE_4b');

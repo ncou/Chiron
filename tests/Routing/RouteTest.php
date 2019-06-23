@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Chiron\Tests\Routing;
 
 use Chiron\Routing\Route;
-use Chiron\Routing\RouteGroup;
-use Chiron\Routing\Traits\RouteCollectionInterface;
 use Chiron\Routing\Strategy\StrategyInterface;
 use Chiron\Routing\Traits\MiddlewareAwareInterface;
 use Chiron\Routing\Traits\RouteConditionHandlerInterface;

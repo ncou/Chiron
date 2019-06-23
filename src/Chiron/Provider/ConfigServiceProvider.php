@@ -43,7 +43,7 @@ class ConfigServiceProvider implements ServiceProviderInterface
                 $container->closure(Config::class, function() {
                     $settings['app']['settings']['basePath'] = '/';
                     $settings['app']['debug'] = false;
-        
+
                     return new Config($settings);
                 });*/
 
