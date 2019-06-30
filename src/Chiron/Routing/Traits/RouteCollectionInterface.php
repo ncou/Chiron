@@ -5,9 +5,22 @@ declare(strict_types=1);
 namespace Chiron\Routing\Traits;
 
 use Chiron\Routing\Route;
+use Chiron\Routing\RouteGroup;
+
+// TODO : on devrait pas aussi ajouter les méthodes map et group dans cette interface ?????
 
 interface RouteCollectionInterface
 {
+    /**
+     * Group a bunch of routes.
+     *
+     * @param string   $prefix
+     * @param callable $group
+     *
+     * @return \Chiron\Routing\RouteGroup
+     */
+    public function group(string $prefix, callable $group): RouteGroup;
+
     /**
      * Add a route to the map.
      *
@@ -16,7 +29,7 @@ interface RouteCollectionInterface
      *
      * @return \Chiron\Routing\Route
      */
-    //public function map(string $path, $handler): Route;
+    public function map(string $path, $handler): Route;
 
     /**
      * Add GET route.
@@ -135,4 +148,36 @@ interface RouteCollectionInterface
      * @return \Chiron\Routing\Route
      */
     public function any(string $pattern, $handler): Route;
+
+    /**
+     * Create a redirect from one URI to another.
+     *
+     * @param string $url
+     * @param string $destination
+     * @param int    $status
+     *
+     * @return \Chiron\Routing\Route
+     */
+    public function redirect(string $url, string $destination, int $status = 302): Route;
+
+    /**
+     * Create a permanent redirect from one URI to another.
+     *
+     * @param string $url
+     * @param string $destination
+     *
+     * @return \Chiron\Routing\Route
+     */
+    public function permanentRedirect(string $url, string $destination): Route;
+
+    /**
+     * Register a new route that returns a view.
+     *
+     * @param string $url
+     * @param string $view
+     * @param array  $params
+     *
+     * @return \Chiron\Routing\Route
+     */
+    public function view(string $url, string $view, array $params = []): Route;
 }

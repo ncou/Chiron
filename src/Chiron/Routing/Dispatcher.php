@@ -9,14 +9,15 @@ use Psr\Http\Message\ServerRequestInterface;
 
 class Dispatcher extends GroupCountBasedDispatcher
 {
-    private $routes;
+    //private $routes;
 
     // mixed[] $data
+    /*
     public function __construct(array $routes, array $data)
     {
         $this->routes = $routes;
         parent::__construct($data);
-    }
+    }*/
 
     /**
      * Dispatch the current route.
@@ -60,8 +61,10 @@ class Dispatcher extends GroupCountBasedDispatcher
     // TODO : attention le paramétre $method n'est pas utilisé !!!! => https://github.com/zendframework/zend-expressive-fastroute/blob/master/src/FastRouteRouter.php#L397
     private function marshalMatchedRoute(array $result): RouteResult
     {
-        $identifier = $result[1];
-        $route = $this->routes[$identifier];
+        //$identifier = $result[1];
+        //$route = $this->routes[$identifier];
+
+        $route = $result[1];
         $params = $result[2];
 
         return RouteResult::fromRoute($route, $params);

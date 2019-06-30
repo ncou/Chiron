@@ -29,7 +29,7 @@ class HtmlStrategyTest extends TestCase
 
         $app = new Kernel();
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $route = $app->getRouter()->get('/foo', $routeCallback);
+        $route = $app->getRouter()->getRouteCollector()->get('/foo', $routeCallback);
 
         $response = $app->handle($request);
 
@@ -53,7 +53,7 @@ class HtmlStrategyTest extends TestCase
 
         $app = new Kernel();
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $route = $app->getRouter()->get('/foo', $routeCallback);
+        $route = $app->getRouter()->getRouteCollector()->get('/foo', $routeCallback);
 
         $response = $app->handle($request);
 
@@ -77,7 +77,7 @@ class HtmlStrategyTest extends TestCase
 
         $app = new Kernel();
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $route = $app->getRouter()->get('/foo', $routeCallback);
+        $route = $app->getRouter()->getRouteCollector()->get('/foo', $routeCallback);
 
         $response = $app->handle($request);
     }
@@ -94,7 +94,7 @@ class HtmlStrategyTest extends TestCase
 
         $app = new Kernel();
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $route = $app->getRouter()->get('/foo/{id}/{name}/{isRegistered}/{floatNumber}', $routeCallback);
+        $route = $app->getRouter()->getRouteCollector()->get('/foo/{id}/{name}/{isRegistered}/{floatNumber}', $routeCallback);
 
         $response = $app->handle($request);
 
@@ -113,7 +113,7 @@ class HtmlStrategyTest extends TestCase
 
         $app = new Kernel();
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $route = $app->getRouter()->get('/foo/[{id}/{name}/{isRegistered}/{floatNumber}]', $routeCallback);
+        $route = $app->getRouter()->getRouteCollector()->get('/foo/[{id}/{name}/{isRegistered}/{floatNumber}]', $routeCallback);
 
         $response = $app->handle($request);
 
@@ -132,7 +132,7 @@ class HtmlStrategyTest extends TestCase
 
         $app = new Kernel();
         $app->middleware([RoutingMiddleware::class, DispatcherMiddleware::class]);
-        $route = $app->getRouter()->get('/foo/{name}', $routeCallback);
+        $route = $app->getRouter()->getRouteCollector()->get('/foo/{name}', $routeCallback);
 
         $app->handle($request);
     }

@@ -44,6 +44,7 @@ class RouteGroup implements MiddlewareAwareInterface, RouteCollectionInterface, 
      */
     // TODO : vérifier si on pas plutot utiliser un Closure au lieu d'un callable pour le typehint
     // TODO : permettre de passer un callback null, dans ce cas on initialisera avec une fonction vide !!! il faudrait que cela soit géré dans la fonction "group" de la routeCollecitonInterface
+    // TODO : passer en paramétre un RouteCollectorInterface et non pas un RouteCollectionInterface. non ????
     public function __construct(string $prefix, callable $callback, RouteCollectionInterface $collection)
     {
         $this->callback = $callback;

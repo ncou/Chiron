@@ -14,7 +14,7 @@ class RouteGroupTest extends TestCase
 {
     public function testRouteGroup()
     {
-        $router = new Router();
+        $router = (new Router())->getRouteCollector();
 
         $res = $router->group('/prefix', function ($group) {
             $group->get('/', function () {
@@ -46,7 +46,7 @@ class RouteGroupTest extends TestCase
 
     public function testRouteGroupOfGroup()
     {
-        $router = new Router();
+        $router = (new Router())->getRouteCollector();
 
         $routeGroup = $router->group('/prefix', function ($group) {
             $group->group('/group/', function ($group) {
@@ -71,7 +71,7 @@ class RouteGroupTest extends TestCase
 
     public function testRouteOverrideStrategyAndConditions()
     {
-        $router = new Router();
+        $router = (new Router())->getRouteCollector();
         $strategyMock = $this->createMock(StrategyInterface::class);
 
         $routeGroup = $router->group('/prefix', function ($group) use ($strategyMock) {
@@ -105,7 +105,7 @@ class RouteGroupTest extends TestCase
 
     public function testRouteGroupOfGroupWithOverrideHostPortScheme()
     {
-        $router = new Router();
+        $router = (new Router())->getRouteCollector();
 
         $router->group('/prefix', function ($group) {
             $group->get('/', function () {
@@ -140,7 +140,7 @@ class RouteGroupTest extends TestCase
 
     public function testRouteGroupWithOverrideMiddleware()
     {
-        $router = new Router();
+        $router = (new Router())->getRouteCollector();
 
         $router->group('/prefix', function ($group) {
             $group->get('/', function () {
@@ -169,7 +169,7 @@ class RouteGroupTest extends TestCase
 
     public function testRouteNestedGroupWithOverrideMiddleware()
     {
-        $router = new Router();
+        $router = (new Router())->getRouteCollector();
 
         $grp = $router->group('/prefix', function ($group) {
             $group->get('/', function () {
@@ -200,7 +200,7 @@ class RouteGroupTest extends TestCase
 
     public function testRouteMiddlewareTrait()
     {
-        $router = new Router();
+        $router = (new Router())->getRouteCollector();
         $group = $router->group('/prefix', function () {
         });
 
@@ -217,7 +217,7 @@ class RouteGroupTest extends TestCase
 
     public function testRouteConditionTrait()
     {
-        $router = new Router();
+        $router = (new Router())->getRouteCollector();
         $group = $router->group('/prefix', function () {
         });
 
@@ -252,7 +252,7 @@ class RouteGroupTest extends TestCase
 
     public function testRouteStrategyTrait()
     {
-        $router = new Router();
+        $router = (new Router())->getRouteCollector();
         $group = $router->group('/prefix', function () {
         });
 
@@ -280,7 +280,7 @@ class RouteGroupTest extends TestCase
      */
     public function testRouteCollectionTraitHttpMethods($method)
     {
-        $router = new Router();
+        $router = (new Router())->getRouteCollector();
 
         $group = $router->group('/prefix', function ($group) use ($method) {
             $group->{$method}('/', 'foobar');
@@ -297,7 +297,7 @@ class RouteGroupTest extends TestCase
 
     public function testRouteCollectionTraitMapAndAny()
     {
-        $router = new Router();
+        $router = (new Router())->getRouteCollector();
         $group = $router->group('/prefix', function ($group) {
             $group->map('/', 'foobar');
             $group->any('/', 'foobar');

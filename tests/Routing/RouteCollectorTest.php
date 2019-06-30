@@ -21,14 +21,14 @@ class RouteCollectorTest extends TestCase
         $router->setBasePath('/base/path');
         $pattern = '/hello/{first:\w+}/{last}';
 
-        $route = $router->map($pattern, 'callable');
+        $route = $router->getRouteCollector()->map($pattern, 'callable');
         $route->setName('foo');
 
-        $urlGenerator = new RouteUrlGenerator($router);
+        $urlGenerator = new RouteUrlGenerator($router->getRouteCollector());
 
         $this->assertEquals(
             '/hello/josh/lockhart',
-            $urlGenerator->relativeUrlFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
+            $router->relativeUrlFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
         );
     }
 
@@ -39,14 +39,14 @@ class RouteCollectorTest extends TestCase
         $router->setBasePath('');
         $pattern = '/hello/{first:\w+}/{last}';
 
-        $route = $router->map($pattern, 'callable');
+        $route = $router->getRouteCollector()->map($pattern, 'callable');
         $route->setName('foo');
 
-        $urlGenerator = new RouteUrlGenerator($router);
+        $urlGenerator = new RouteUrlGenerator($router->getRouteCollector());
 
         $this->assertEquals(
             '/hello/josh/lockhart',
-            $urlGenerator->urlFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
+            $router->urlFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
         );
     }
 
@@ -57,14 +57,14 @@ class RouteCollectorTest extends TestCase
         $pattern = '/hello/{first:\w+}/{last}';
 
         $router->setBasePath('/base/path');
-        $route = $router->map($pattern, 'callable');
+        $route = $router->getRouteCollector()->map($pattern, 'callable');
         $route->setName('foo');
 
-        $urlGenerator = new RouteUrlGenerator($router);
+        $urlGenerator = new RouteUrlGenerator($router->getRouteCollector());
 
         $this->assertEquals(
             '/base/path/hello/josh/lockhart',
-            $urlGenerator->urlFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
+            $router->urlFor('foo', ['first' => 'josh', 'last' => 'lockhart'])
         );
     }
 
@@ -74,22 +74,22 @@ class RouteCollectorTest extends TestCase
 
         $pattern = '/archive/{year}[/{month}[/d/{day}]]';
 
-        $route = $router->map($pattern, 'callable');
+        $route = $router->getRouteCollector()->map($pattern, 'callable');
         $route->setName('foo');
 
-        $urlGenerator = new RouteUrlGenerator($router);
+        $urlGenerator = new RouteUrlGenerator($router->getRouteCollector());
 
         $this->assertEquals(
             '/archive/2015',
-            $urlGenerator->urlFor('foo', ['year' => '2015'])
+            $router->urlFor('foo', ['year' => '2015'])
         );
         $this->assertEquals(
             '/archive/2015/7',
-            $urlGenerator->urlFor('foo', ['year' => '2015', 'month' => 7])
+            $router->urlFor('foo', ['year' => '2015', 'month' => 7])
         );
         $this->assertEquals(
             '/archive/2015/12/d/19',
-            $urlGenerator->urlFor('foo', ['year' => '2015', 'month' => '12', 'day' => '19'])
+            $router->urlFor('foo', ['year' => '2015', 'month' => '12', 'day' => '19'])
         );
     }
 
@@ -99,14 +99,14 @@ class RouteCollectorTest extends TestCase
 
         $pattern = '/hello/{name}';
 
-        $route = $router->map($pattern, 'callable');
+        $route = $router->getRouteCollector()->map($pattern, 'callable');
         $route->setName('foo');
 
-        $urlGenerator = new RouteUrlGenerator($router);
+        $urlGenerator = new RouteUrlGenerator($router->getRouteCollector());
 
         $this->assertEquals(
             '/hello/josh?a=b&c=d',
-            $urlGenerator->urlFor('foo', ['name' => 'josh'], ['a' => 'b', 'c' => 'd'])
+            $router->urlFor('foo', ['name' => 'josh'], ['a' => 'b', 'c' => 'd'])
         );
     }
 
@@ -120,12 +120,12 @@ class RouteCollectorTest extends TestCase
 
         $pattern = '/hello/{first}/{last}';
 
-        $route = $router->map($pattern, 'callable');
+        $route = $router->getRouteCollector()->map($pattern, 'callable');
         $route->setName('foo');
 
-        $urlGenerator = new RouteUrlGenerator($router);
+        $urlGenerator = new RouteUrlGenerator($router->getRouteCollector());
 
-        $urlGenerator->urlFor('foo', ['last' => 'lockhart']);
+        $router->urlFor('foo', ['last' => 'lockhart']);
     }
 
     /**
@@ -138,12 +138,12 @@ class RouteCollectorTest extends TestCase
 
         $pattern = '/hello/{first}/{last}';
 
-        $route = $router->map($pattern, 'callable');
+        $route = $router->getRouteCollector()->map($pattern, 'callable');
         $route->setName('foo');
 
-        $urlGenerator = new RouteUrlGenerator($router);
+        $urlGenerator = new RouteUrlGenerator($router->getRouteCollector());
 
-        $urlGenerator->urlFor('bar', ['first' => 'josh', 'last' => 'lockhart']);
+        $router->urlFor('bar', ['first' => 'josh', 'last' => 'lockhart']);
     }
 
     // TODO : améliorer les tests, il faut que les queryParams soient calculés automatiquement. regarder les tests mis en commentaire !!!  https://github.com/laravel/framework/blob/5.8/tests/Routing/RoutingUrlGeneratorTest.php#L168
@@ -155,36 +155,36 @@ class RouteCollectorTest extends TestCase
         /*
          * Empty Named Route
          */
-        $route = $router->get('/', $callable)->setName('plain');
+        $route = $router->getRouteCollector()->get('/', $callable)->setName('plain');
 
         /*
          * Named Routes
          */
-        $route = $router->get('foo/bar', $callable)->setName('foo');
+        $route = $router->getRouteCollector()->get('foo/bar', $callable)->setName('foo');
         /*
          * Parameters...
          */
-        $route = $router->get('foo/bar/{baz}/breeze/{boom}', $callable)->setName('bar');
+        $route = $router->getRouteCollector()->get('foo/bar/{baz}/breeze/{boom}', $callable)->setName('bar');
         /*
          * Single Parameter...
          */
-        $route = $router->get('foo/bar/{baz}', $callable)->setName('foobar');
+        $route = $router->getRouteCollector()->get('foo/bar/{baz}', $callable)->setName('foobar');
         /*
          * Non ASCII routes
          */
-        $route = $router->get('foo/bar/åαф/{baz}', $callable)->setName('foobarbaz');
+        $route = $router->getRouteCollector()->get('foo/bar/åαф/{baz}', $callable)->setName('foobarbaz');
         /*
          * Fragments
          */
-        $route = $router->get('foo/bar#derp', $callable)->setName('fragment');
+        $route = $router->getRouteCollector()->get('foo/bar#derp', $callable)->setName('fragment');
 
-        $urlGenerator = new RouteUrlGenerator($router);
+        $urlGenerator = new RouteUrlGenerator($router->getRouteCollector());
 
-        $this->assertEquals('/', $urlGenerator->urlFor('plain', []));
+        $this->assertEquals('/', $router->urlFor('plain', []));
 //        $this->assertEquals('/?foo=bar', $urlGenerator->urlFor('plain', ['foo' => 'bar']));
 
-        $this->assertEquals('/foo/bar', $urlGenerator->urlFor('foo'));
-        $this->assertEquals('/foo/bar', $urlGenerator->urlFor('foo', []));
+        $this->assertEquals('/foo/bar', $router->urlFor('foo'));
+        $this->assertEquals('/foo/bar', $router->urlFor('foo', []));
 
 //        $this->assertEquals('/foo/bar?foo=bar', $urlGenerator->urlFor('foo', ['foo' => 'bar']));
 //        $this->assertEquals('/foo/bar/taylor/breeze/otwell?fly=wall', $urlGenerator->urlFor('bar', ['taylor', 'otwell', 'fly' => 'wall']));
@@ -194,10 +194,10 @@ class RouteCollectorTest extends TestCase
 //        $this->assertEquals('/foo/bar/taylor/breeze/otwell?fly=wall', $urlGenerator->urlFor('bar', ['taylor', 'otwell', 'fly' => 'wall']));
 //        $this->assertEquals('/foo/bar/taylor/breeze/otwell?wall&woz', $urlGenerator->urlFor('bar', ['wall', 'woz', 'boom' => 'otwell', 'baz' => 'taylor']));
 //        $this->assertEquals('/foo/bar/taylor/breeze/otwell?wall&woz', $urlGenerator->urlFor('bar', ['taylor', 'otwell', 'wall', 'woz']));
-        $this->assertEquals('/foo/bar/%C3%A5%CE%B1%D1%84/%C3%A5%CE%B1%D1%84', $urlGenerator->urlFor('foobarbaz', ['baz' => 'åαф']));
-        $this->assertEquals('/foo/bar#derp', $urlGenerator->urlFor('fragment', [], []));
-        $this->assertEquals('/foo/bar?foo=bar#derp', $urlGenerator->urlFor('fragment', [], ['foo' => 'bar']));
-        $this->assertEquals('/foo/bar?baz=%C3%A5%CE%B1%D1%84#derp', $urlGenerator->urlFor('fragment', [], ['baz' => 'åαф']));
+        $this->assertEquals('/foo/bar/%C3%A5%CE%B1%D1%84/%C3%A5%CE%B1%D1%84', $router->urlFor('foobarbaz', ['baz' => 'åαф']));
+        $this->assertEquals('/foo/bar#derp', $router->urlFor('fragment', [], []));
+        $this->assertEquals('/foo/bar?foo=bar#derp', $router->urlFor('fragment', [], ['foo' => 'bar']));
+        $this->assertEquals('/foo/bar?baz=%C3%A5%CE%B1%D1%84#derp', $router->urlFor('fragment', [], ['baz' => 'åαф']));
     }
 
     /**
@@ -209,11 +209,11 @@ class RouteCollectorTest extends TestCase
         $router = new Router();
         $callable = 'callable';
 
-        $route = $router->get('/test/{ param : \d{1,9} }', $callable)->setName('numeric');
+        $route = $router->getRouteCollector()->get('/test/{ param : \d{1,9} }', $callable)->setName('numeric');
 
-        $urlGenerator = new RouteUrlGenerator($router);
+        $urlGenerator = new RouteUrlGenerator($router->getRouteCollector());
 
-        $urlGenerator->urlFor('numeric', ['param' => 1234567890]);
+        $router->urlFor('numeric', ['param' => 1234567890]);
     }
 
     /**
@@ -225,11 +225,11 @@ class RouteCollectorTest extends TestCase
         $router = new Router();
         $callable = 'callable';
 
-        $route = $router->get('/test[/{param}[/{id:[0-9]+}]]', $callable)->setName('numeric');
+        $route = $router->getRouteCollector()->get('/test[/{param}[/{id:[0-9]+}]]', $callable)->setName('numeric');
 
-        $urlGenerator = new RouteUrlGenerator($router);
+        $urlGenerator = new RouteUrlGenerator($router->getRouteCollector());
 
-        $urlGenerator->urlFor('numeric', ['param' => 'foo', 'id' => 'foo']);
+        $router->urlFor('numeric', ['param' => 'foo', 'id' => 'foo']);
     }
 
     /**
@@ -241,10 +241,10 @@ class RouteCollectorTest extends TestCase
         $router = new Router();
         $callable = 'callable';
 
-        $route = $router->get('/{lang:(fr|en)}', $callable)->setName('string');
+        $route = $router->getRouteCollector()->get('/{lang:(fr|en)}', $callable)->setName('string');
 
-        $urlGenerator = new RouteUrlGenerator($router);
+        $urlGenerator = new RouteUrlGenerator($router->getRouteCollector());
 
-        $urlGenerator->urlFor('string', ['lang' => 'foo']);
+        $router->urlFor('string', ['lang' => 'foo']);
     }
 }

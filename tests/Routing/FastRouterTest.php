@@ -25,7 +25,7 @@ class FastRouterTest extends TestCase
         $strategyMock = $this->createMock(StrategyInterface::class);
         $router->setStrategy($strategyMock);
 
-        $router->get('/foo/{test}/{test:\d+}', 'handler0');
+        $router->getRouteCollector()->get('/foo/{test}/{test:\d+}', 'handler0');
 
         $routeResult = $router->match($request);
     }
@@ -42,8 +42,8 @@ class FastRouterTest extends TestCase
         $strategyMock = $this->createMock(StrategyInterface::class);
         $router->setStrategy($strategyMock);
 
-        $router->get('/user/{id}', 'handler0'); // oops, forgot \d+ restriction ;)
-        $router->get('/user/{name}', 'handler1');
+        $router->getRouteCollector()->get('/user/{id}', 'handler0'); // oops, forgot \d+ restriction ;)
+        $router->getRouteCollector()->get('/user/{name}', 'handler1');
 
         $routeResult = $router->match($request);
     }
@@ -60,8 +60,8 @@ class FastRouterTest extends TestCase
         $strategyMock = $this->createMock(StrategyInterface::class);
         $router->setStrategy($strategyMock);
 
-        $router->get('/user', 'handler0');
-        $router->get('/user', 'handler1');
+        $router->getRouteCollector()->get('/user', 'handler0');
+        $router->getRouteCollector()->get('/user', 'handler1');
 
         $routeResult = $router->match($request);
     }
@@ -80,8 +80,8 @@ class FastRouterTest extends TestCase
         $strategyMock = $this->createMock(StrategyInterface::class);
         $router->setStrategy($strategyMock);
 
-        $router->get('/user/{name}', 'handler0');
-        $router->get('/user/nikic', 'handler1');
+        $router->getRouteCollector()->get('/user/{name}', 'handler0');
+        $router->getRouteCollector()->get('/user/nikic', 'handler1');
 
         $routeResult = $router->match($request);
     }
@@ -98,7 +98,7 @@ class FastRouterTest extends TestCase
         $strategyMock = $this->createMock(StrategyInterface::class);
         $router->setStrategy($strategyMock);
 
-        $router->get('/{lang:(en|de)}', 'handler0');
+        $router->getRouteCollector()->get('/{lang:(en|de)}', 'handler0');
 
         $routeResult = $router->match($request);
     }

@@ -41,10 +41,9 @@ use RuntimeException;
  * attaching via one of the exposed methods, and will raise an exception when a
  * collision occurs.
  */
-class Router implements RouterInterface, StrategyAwareInterface, RouteCollectionInterface, MiddlewareAwareInterface
+class Router implements RouterInterface
 {
     use MiddlewareAwareTrait;
-    use RouteCollectionTrait;
     use StrategyAwareTrait;
 
     /** @var FastRoute\RouteParser */
@@ -53,15 +52,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     /** @var FastRoute\DataGenerator */
     private $generator;
 
-    /**
-     * @var \Chiron\Routing\Route[]
-     */
-    private $routes = [];
-
-    /**
-     * @var \Chiron\Routing\RouteGroup[]
-     */
-    private $groups = [];
+    private $routeCollector;
 
     /**
      * @var array
@@ -115,11 +106,15 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      * @param \FastRoute\RouteParser   $parser
      * @param \FastRoute\DataGenerator $generator
      */
+    // TODO : créer un constructeur qui prendra en paramétre un routeCollector, ca évitera de faire un appel à setRouteCollector() !!!!
+    // TODO : virer le DataGenerator qui est en paramétre et faire un new directement dans le constructeur.
     public function __construct(DataGenerator $generator = null)
     {
         $this->parser = new RouteParser\Std();
         // build parent route collector
         $this->generator = ($generator) ?? new DataGenerator\GroupCountBased();
+
+        $this->routeCollector = new RouteCollector();
 
         // TODO utiliser ce bout de code et faire un tableau de pattern dans la classe de ce type ['slug' => 'xxxx', 'number' => 'yyyy']
 /*
@@ -165,42 +160,16 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
         return $this->basePath;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function map(string $path, $handler): Route
+    public function getRouteCollector(): RouteCollectorInterface
     {
-        // TODO : il faudrait peut etre remonter ce controle durectement dans l'objet Route() non ????
-        if (! is_string($handler) && ! is_callable($handler)) {
-            throw new InvalidArgumentException('Route Handler should be a callable or a string (service name in the container or class name).');
-        }
-
-        // TODO : attention vérifier si cette modification du path avec un slash n'est pas en doublon avec celle qui est faite dans la classe Route !!!!
-        $path = sprintf('/%s', ltrim($path, '/'));
-        $route = new Route($path, $handler);
-
-        $this->routes[uniqid('UID_', true)] = $route;
-
-        return $route;
+        return $this->routeCollector;
     }
 
-    /**
-     * Add a group of routes to the collection.
-     *
-     * @param string   $prefix
-     * @param callable $group
-     *
-     * @return \Chiron\Routing\RouteGroup
-     */
-    // TODO : vérifier si on pas plutot utiliser un Closure au lieu d'un callable pour le typehint.
-    // TODO : il semble pôssible dans Slim de passer une string, ou un callable. Vérifier l'utilité de cette possibilité d'avoir un string !!!!
-    public function group(string $prefix, callable $callback): RouteGroup
+    public function setRouteCollector(RouteCollectorInterface $collector): void
     {
-        $group = new RouteGroup($prefix, $callback, $this);
-        $this->groups[] = $group;
-
-        return $group;
+        $this->routeCollector = $collector;
     }
+
 
     /**
      * {@inheritdoc}
@@ -226,7 +195,8 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
         $this->injectRoutes($request);
 
         // process routes
-        $dispatcher = new Dispatcher($this->routes, $this->generator->getData());
+        //$dispatcher = new Dispatcher($this->routeCollector->getRoutes(), $this->generator->getData());
+        $dispatcher = new Dispatcher($this->generator->getData());
 
         return $dispatcher->dispatchRequest($request);
     }
@@ -239,9 +209,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      */
     private function injectRoutes(ServerRequestInterface $request): void
     {
-        $this->processGroups();
-
-        foreach ($this->routes as $identifier => $route) {
+        foreach ($this->routeCollector->getRoutes() as $route) {
             // check for scheme condition
             if (! is_null($route->getScheme()) && $route->getScheme() !== $request->getUri()->getScheme()) {
                 continue;
@@ -267,28 +235,7 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
             $routePath = $this->replaceAssertPatterns($route->getRequirements(), $route->getPath());
             $routePath = $this->replaceWordPatterns($routePath);
 
-            $this->injectRoute($identifier, $route->getAllowedMethods(), $this->basePath . $routePath);
-        }
-    }
-
-    /**
-     * Process all groups.
-     */
-    // A voir si cette méthode ne devrait pas être appellée directement dans la méthode ->group() pour préparer les routes dés qu'on ajoute un group !!!!
-    // https://github.com/slimphp/Slim/blob/4.x/Slim/Routing/RouteCollector.php#L255
-    private function processGroups(): void
-    {
-        // TODO : vérifier si il ne faut pas faire un array_reverse lorsqu'on execute les groups. Surtout dans le cas ou on ajoute des middlewares au group et qui seront propagés à la route.
-        //https://github.com/slimphp/Slim/blob/4.x/Slim/Routing/Route.php#L350
-
-        // Call the $group by reference because in the case : group of group the size of the array is modified because a new group is added in the group() function.
-        foreach ($this->groups as $key => &$group) {
-            // TODO : déplacer le unset aprés la méthode invoke ou collectroute du group. Voir si c'est pas plus ^propre de remplacer le unset par un array_pop ou un array_shift !!!!
-            unset($this->groups[$key]);
-            // TODO : créer une méthode ->collectRoutes() dans la classe RouteGroup, au lieu d'utiliser le invoke() on utilisera cette méthode, c'est plus propre !!!!
-            $group();
-            //array_pop($this->groups);
-            //array_shift($this->routeGroups);
+            $this->injectRoute($route, $route->getAllowedMethods(), $this->basePath . $routePath);
         }
     }
 
@@ -334,14 +281,14 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
      * @param string[] $httpMethod
      * @param string   $routePath
      */
-    private function injectRoute(string $routeId, array $httpMethod, string $routePath): void
+    private function injectRoute(Route $route, array $httpMethod, string $routePath): void
     {
         $routeDatas = $this->parser->parse($routePath);
         foreach ($httpMethod as $method) {
             foreach ($routeDatas as $routeData) {
                 // TODO : réactiver le try catch si on souhaite pouvoir gérer les doublons de routes.
                 //try {
-                $this->generator->addRoute($method, $routeData, $routeId);
+                $this->generator->addRoute($method, $routeData, $route);
                 //} catch (\Throwable $e) {
                 //}
             }
@@ -349,51 +296,45 @@ class Router implements RouterInterface, StrategyAwareInterface, RouteCollection
     }
 
     /**
-     * Get route objects.
+     * Build the path for a named route including the base path.
      *
-     * @return Route[]
+     * @param string $routeName     Route name
+     * @param array  $substitutions Named argument replacement data
+     * @param array  $queryParams   Optional query string parameters
+     *
+     * @throws InvalidArgumentException If named route does not exist
+     * @throws InvalidArgumentException If required data not provided
+     *
+     * @return string
      */
-    public function getRoutes(): array
+    public function urlFor(string $routeName, array $substitutions = [], array $queryParams = []): string
     {
-        $this->processGroups();
+        $url = $this->relativeUrlFor($routeName, $substitutions, $queryParams);
 
-        return array_values($this->routes);
-    }
-
-    /**
-     * Get a named route.
-     *
-     * @param string $name Route name
-     *
-     * @throws \InvalidArgumentException If named route does not exist
-     *
-     * @return \Chiron\Routing\Route
-     */
-    public function getNamedRoute(string $name): Route
-    {
-        foreach ($this->getRoutes() as $route) {
-            if ($route->getName() === $name) {
-                return $route;
-            }
+        if ($basePath = $this->getBasePath()) {
+            $url = $basePath . $url;
         }
 
-        throw new InvalidArgumentException('Named route does not exist for name: ' . $name);
+        return $url;
     }
 
     /**
-     * Remove named route.
+     * Build the path for a named route excluding the base path.
      *
-     * @param string $name Route name
+     * @param string $routeName     Route name
+     * @param array  $substitutions Named argument replacement data
+     * @param array  $queryParams   Optional query string parameters
      *
-     * @throws \InvalidArgumentException If named route does not exist
+     * @throws InvalidArgumentException If named route does not exist
+     * @throws InvalidArgumentException If required data not provided
+     *
+     * @return string
      */
-    public function removeNamedRoute(string $name)
+    public function relativeUrlFor(string $routeName, array $substitutions = [], array $queryParams = []): string
     {
-        $route = $this->getNamedRoute($name);
-        // no exception, route exists, now remove by id
-        //unset($this->routes[$route->getIdentifier()]);
-        // no exception so far so the route exists we can remove the object safely.
-        unset($this->routes[array_search($route, $this->routes)]);
+        $route = $this->routeCollector->getNamedRoute($routeName);
+
+        return RouteUrlGenerator::generate($route->getPath(), $substitutions, $queryParams);
     }
 
     /*

@@ -12,17 +12,12 @@ use InvalidArgumentException;
 
 class RouteUrlGenerator
 {
-    /** @var FastRoute\RouteParser\Std */
-    private $parser;
-
-    private $router;
-
     /**
      * Characters that should not be URL encoded.
      *
      * @var array
      */
-    private $dontEncode = [
+    private static $dontEncode = [
         '%2F' => '/',
         '%40' => '@',
         '%3A' => ':',
@@ -39,42 +34,10 @@ class RouteUrlGenerator
         '%25' => '%',
     ];
 
-    // TODO : lui passer plutot un routeCollector en paramétre !!!!
-    public function __construct(Router $router)
-    {
-        // build parent route collector
-        $this->parser = new Std();
-        $this->router = $router;
-    }
-
-    /**
-     * Build the path for a named route including the base path.
-     *
-     * @param string $routeName     Route name
-     * @param array  $substitutions Named argument replacement data
-     * @param array  $queryParams   Optional query string parameters
-     *
-     * @throws InvalidArgumentException If named route does not exist
-     * @throws InvalidArgumentException If required data not provided
-     *
-     * @return string
-     */
-    //https://github.com/illuminate/routing/blob/master/RouteUrlGenerator.php#L77
-    public function urlFor(string $routeName, array $substitutions = [], array $queryParams = []): string
-    {
-        $url = $this->relativeUrlFor($routeName, $substitutions, $queryParams);
-
-        if ($basePath = $this->router->getBasePath()) {
-            $url = $basePath . $url;
-        }
-
-        return $url;
-    }
-
     /**
      * Build the path for a named route excluding the base path.
      *
-     * @param string $routeName     Route name
+     * @param string $routePath     Route path pattern
      * @param array  $substitutions Named argument replacement data
      * @param array  $queryParams   Optional query string parameters
      *
@@ -88,11 +51,12 @@ class RouteUrlGenerator
     // TODO ; utiliser ce bout de code : https://github.com/slimphp/Slim/blob/4.x/Slim/Routing/RouteParser.php#L42
     // TODO : améliorer le code avec cette partie là =>   https://github.com/illuminate/routing/blob/master/RouteUrlGenerator.php#L77
     // https://github.com/zendframework/zend-expressive-fastroute/blob/master/src/FastRouteRouter.php#L239
-    public function relativeUrlFor(string $routeName, array $substitutions = [], array $queryParams = []): string
+    //https://github.com/illuminate/routing/blob/master/RouteUrlGenerator.php#L77
+    public static function generate(string $routePath, array $substitutions = [], array $queryParams = []): string
     {
-        $route = $this->router->getNamedRoute($routeName);
-        $pattern = $route->getPath();
-        $routeDatas = $this->parser->parse($pattern);
+        $parser = new Std();
+        $routeDatas = $parser->parse($routePath);
+
         // $routeDatas is an array of all possible routes that can be made. There is
         // one routedata for each optional parameter plus one for no optional parameters.
         //
@@ -150,11 +114,11 @@ class RouteUrlGenerator
         if ($queryParams) {
             // TODO : améliorer le code avec ca : https://github.com/illuminate/routing/blob/master/RouteUrlGenerator.php#L255 et ca : https://github.com/illuminate/support/blob/master/Arr.php#L599
             //$url .= '?' . http_build_query($queryParams);
-            $url = $this->addQueryString($url, $queryParams);
+            $url = self::addQueryString($url, $queryParams);
         }
 
         // We will encode the URI and prepare it for returning to the developer.
-        $url = strtr(rawurlencode($url), $this->dontEncode);
+        $url = strtr(rawurlencode($url), self::$dontEncode);
 
         return $url;
     }
@@ -167,7 +131,7 @@ class RouteUrlGenerator
      *
      * @return mixed|string
      */
-    protected function addQueryString(string $url, array $parameters): string
+    private static function addQueryString(string $url, array $parameters): string
     {
         // If the URI has a fragment we will move it to the end of this URI since it will
         // need to come after any query string that may be added to the URL else it is
@@ -175,7 +139,7 @@ class RouteUrlGenerator
         if (! is_null($fragment = parse_url($url, PHP_URL_FRAGMENT))) {
             $url = preg_replace('/#.*/', '', $url);
         }
-        $url .= $this->getRouteQueryString($parameters);
+        $url .= self::getRouteQueryString($parameters);
 
         return is_null($fragment) ? $url : $url . "#{$fragment}";
     }
@@ -187,7 +151,7 @@ class RouteUrlGenerator
      *
      * @return string
      */
-    protected function getRouteQueryString(array $parameters): string
+    private static function getRouteQueryString(array $parameters): string
     {
         $query = http_build_query($parameters, '', '&', PHP_QUERY_RFC3986);
 

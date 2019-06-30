@@ -9,6 +9,7 @@ use Chiron\Http\Psr\Uri;
 use Chiron\Routing\Route;
 use Chiron\Routing\Router;
 use Chiron\Routing\RouterInterface;
+use Chiron\Routing\RouteCollectorInterface;
 use Chiron\Routing\Strategy\StrategyInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -49,7 +50,7 @@ class RouterTest extends TestCase
      */
     public function testRouteCollectionTraitHttpMethods($method)
     {
-        $router = new Router();
+        $router = (new Router())->getRouteCollector();
         $path = '/something';
         $callable = function () {
         };
@@ -61,7 +62,7 @@ class RouterTest extends TestCase
 
     public function testRouteCollectionTraitMapAndAny()
     {
-        $router = new Router();
+        $router = (new Router())->getRouteCollector();
         $path = '/something';
         $callable = function () {
         };
@@ -99,7 +100,7 @@ class RouterTest extends TestCase
         $strategyMock = $this->createMock(StrategyInterface::class);
         $router->setStrategy($strategyMock);
 
-        $router->get($routePath, 'handler')->name('foo');
+        $router->getRouteCollector()->get($routePath, 'handler')->name('foo');
 
         $routeResult = $router->match($request);
 
@@ -114,9 +115,9 @@ class RouterTest extends TestCase
      */
     public function testRemoveRoute()
     {
-        $router = new Router();
+        $router = (new Router())->getRouteCollector();
 
-        $router->setBasePath('/base/path');
+        //$router->setBasePath('/base/path');
         $route1 = $router->map('/foo', 'callable');
         $route1->setName('foo');
         $route2 = $router->map('/bar', 'callable');
@@ -157,9 +158,9 @@ class RouterTest extends TestCase
      */
     public function testRouteRemovalNotExists()
     {
-        $router = new Router();
+        $router = (new Router())->getRouteCollector();
 
-        $router->setBasePath('/base/path');
+        //$router->setBasePath('/base/path');
         $router->removeNamedRoute('non-existing-route-name');
     }
 
@@ -191,7 +192,7 @@ class RouterTest extends TestCase
         $strategyMock = $this->createMock(StrategyInterface::class);
         $router->setStrategy($strategyMock);
 
-        $callback($router);
+        $callback($router->getRouteCollector());
 
         $routeResult = $router->match($request);
 
@@ -204,7 +205,7 @@ class RouterTest extends TestCase
     {
         $cases = [];
         // 0 -------------------------------------------------------------------------------------->
-        $callback = function (RouterInterface $r) {
+        $callback = function (RouteCollectorInterface $r) {
             $r->get('/resource/123/456', 'handler0');
         };
         $method = 'POST';
@@ -212,7 +213,7 @@ class RouterTest extends TestCase
         $allowedMethods = ['GET'];
         $cases[] = [$method, $uri, $callback, $allowedMethods];
         // 1 -------------------------------------------------------------------------------------->
-        $callback = function (RouterInterface $r) {
+        $callback = function (RouteCollectorInterface $r) {
             $r->get('/resource/123/456', 'handler0');
             $r->post('/resource/123/456', 'handler1');
             $r->put('/resource/123/456', 'handler2');
@@ -223,7 +224,7 @@ class RouterTest extends TestCase
         $allowedMethods = ['GET', 'POST', 'PUT'];
         $cases[] = [$method, $uri, $callback, $allowedMethods];
         // 2 -------------------------------------------------------------------------------------->
-        $callback = function (RouterInterface $r) {
+        $callback = function (RouteCollectorInterface $r) {
             $r->get('/user/{name}/{id:[0-9]+}', 'handler0');
             $r->post('/user/{name}/{id:[0-9]+}', 'handler1');
             $r->put('/user/{name}/{id:[0-9]+}', 'handler2');
@@ -234,7 +235,7 @@ class RouterTest extends TestCase
         $allowedMethods = ['GET', 'POST', 'PUT', 'PATCH'];
         $cases[] = [$method, $uri, $callback, $allowedMethods];
         // 3 -------------------------------------------------------------------------------------->
-        $callback = function (RouterInterface $r) {
+        $callback = function (RouteCollectorInterface $r) {
             $r->post('/user/{name}', 'handler1');
             $r->put('/user/{name:[a-z]+}', 'handler2');
             $r->patch('/user/{name:[a-z]+}', 'handler3');
@@ -244,13 +245,13 @@ class RouterTest extends TestCase
         $allowedMethods = ['POST', 'PUT', 'PATCH'];
         $cases[] = [$method, $uri, $callback, $allowedMethods];
         // 4 -------------------------------------------------------------------------------------->
-        $callback = function (RouterInterface $r) {
+        $callback = function (RouteCollectorInterface $r) {
             $r->map('/user', 'handlerGetPost')->setAllowedMethods(['GET', 'POST']);
             $r->delete('/user', 'handlerDelete');
         };
         $cases[] = ['PUT', '/user', $callback, ['GET', 'POST', 'DELETE']];
         // 5
-        $callback = function (RouterInterface $r) {
+        $callback = function (RouteCollectorInterface $r) {
             $r->post('/user.json', 'handler0');
             $r->get('/{entity}.json', 'handler1');
         };
@@ -270,7 +271,7 @@ class RouterTest extends TestCase
         $strategyMock = $this->createMock(StrategyInterface::class);
         $router->setStrategy($strategyMock);
 
-        $callback($router);
+        $callback($router->getRouteCollector());
 
         $routeResult = $router->match($request);
 
@@ -283,7 +284,7 @@ class RouterTest extends TestCase
     {
         $cases = [];
         // 0 -------------------------------------------------------------------------------------->
-        $callback = function (RouterInterface $r) {
+        $callback = function (RouteCollectorInterface $r) {
             $r->get('/resource/123/456', 'handler0');
         };
         $method = 'GET';
@@ -300,7 +301,7 @@ class RouterTest extends TestCase
         $uri = '/not-found';
         $cases[] = [$method, $uri, $callback];
         // 3 -------------------------------------------------------------------------------------->
-        $callback = function (RouterInterface $r) {
+        $callback = function (RouteCollectorInterface $r) {
             $r->get('/handler0', 'handler0');
             $r->get('/handler1', 'handler1');
             $r->get('/handler2', 'handler2');
@@ -309,7 +310,7 @@ class RouterTest extends TestCase
         $uri = '/not-found';
         $cases[] = [$method, $uri, $callback];
         // 4 -------------------------------------------------------------------------------------->
-        $callback = function (RouterInterface $r) {
+        $callback = function (RouteCollectorInterface $r) {
             $r->get('/user/{name}/{id:[0-9]+}', 'handler0');
             $r->get('/user/{id:[0-9]+}', 'handler1');
             $r->get('/user/{name}', 'handler2');

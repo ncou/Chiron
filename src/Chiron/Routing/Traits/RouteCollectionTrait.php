@@ -214,7 +214,8 @@ trait RouteCollectionTrait
      */
     public function view(string $url, string $view, array $params = []): Route
     {
-        return $this->match(['GET', 'HEAD'], $url, '\Chiron\Routing\Controller\ViewController@__invoke')
+        return $this->map($url, '\Chiron\Routing\Controller\ViewController@__invoke')
+                ->method('GET', 'HEAD')
                 ->setDefault('view', $view)
                 ->setDefault('params', $params);
     }

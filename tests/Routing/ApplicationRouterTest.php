@@ -24,7 +24,8 @@ class ApplicationRouterTest extends TestCase
             // Do something
         };
         $app = new Kernel();
-        $route = $app->getRouter()->get($path, $callable);
+        $collector = $app->getRouter()->getRouteCollector();
+        $route = $collector->get($path, $callable);
         $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('GET', 'methods', $route);
     }
@@ -36,7 +37,8 @@ class ApplicationRouterTest extends TestCase
             // Do something
         };
         $app = new Kernel();
-        $route = $app->getRouter()->post($path, $callable);
+        $collector = $app->getRouter()->getRouteCollector();
+        $route = $collector->post($path, $callable);
         $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('POST', 'methods', $route);
     }
@@ -48,7 +50,8 @@ class ApplicationRouterTest extends TestCase
             // Do something
         };
         $app = new Kernel();
-        $route = $app->getRouter()->put($path, $callable);
+        $collector = $app->getRouter()->getRouteCollector();
+        $route = $collector->put($path, $callable);
         $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('PUT', 'methods', $route);
     }
@@ -60,7 +63,8 @@ class ApplicationRouterTest extends TestCase
             // Do something
         };
         $app = new Kernel();
-        $route = $app->getRouter()->patch($path, $callable);
+        $collector = $app->getRouter()->getRouteCollector();
+        $route = $collector->patch($path, $callable);
         $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('PATCH', 'methods', $route);
     }
@@ -72,7 +76,8 @@ class ApplicationRouterTest extends TestCase
             // Do something
         };
         $app = new Kernel();
-        $route = $app->getRouter()->delete($path, $callable);
+        $collector = $app->getRouter()->getRouteCollector();
+        $route = $collector->delete($path, $callable);
         $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('DELETE', 'methods', $route);
     }
@@ -84,7 +89,8 @@ class ApplicationRouterTest extends TestCase
             // Do something
         };
         $app = new Kernel();
-        $route = $app->getRouter()->options($path, $callable);
+        $collector = $app->getRouter()->getRouteCollector();
+        $route = $collector->options($path, $callable);
         $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('OPTIONS', 'methods', $route);
     }
@@ -96,7 +102,8 @@ class ApplicationRouterTest extends TestCase
             // Do something
         };
         $app = new Kernel();
-        $route = $app->getRouter()->head($path, $callable);
+        $collector = $app->getRouter()->getRouteCollector();
+        $route = $collector->head($path, $callable);
         $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('HEAD', 'methods', $route);
     }
@@ -108,7 +115,8 @@ class ApplicationRouterTest extends TestCase
             // Do something
         };
         $app = new Kernel();
-        $route = $app->getRouter()->any($path, $callable);
+        $collector = $app->getRouter()->getRouteCollector();
+        $route = $collector->any($path, $callable);
         $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('GET', 'methods', $route);
         $this->assertAttributeContains('POST', 'methods', $route);
@@ -125,7 +133,8 @@ class ApplicationRouterTest extends TestCase
             // Do something
         };
         $app = new Kernel();
-        $route = $app->getRouter()->map($path, $callable)->method('GET', 'POST');
+        $collector = $app->getRouter()->getRouteCollector();
+        $route = $collector->map($path, $callable)->method('GET', 'POST');
         $this->assertInstanceOf(Route::class, $route);
         $this->assertAttributeContains('GET', 'methods', $route);
         $this->assertAttributeContains('POST', 'methods', $route);
@@ -141,7 +150,7 @@ class ApplicationRouterTest extends TestCase
                     throw new \Exception('Route should not be reachable.');
                 });
         */
-        $app->getRouter()->redirect('/contact_us', 'contact');
+        $app->getRouter()->getRouteCollector()->redirect('/contact_us', 'contact');
 
         $request = new ServerRequest('GET', new Uri('/contact_us'));
         $response = $app->handle($request);
@@ -160,7 +169,7 @@ class ApplicationRouterTest extends TestCase
                     throw new \Exception('Route should not be reachable.');
                 });
         */
-        $app->getRouter()->redirect('/contact_us', 'contact', 301);
+        $app->getRouter()->getRouteCollector()->redirect('/contact_us', 'contact', 301);
 
         $request = new ServerRequest('GET', new Uri('/contact_us'));
         $response = $app->handle($request);
@@ -179,7 +188,7 @@ class ApplicationRouterTest extends TestCase
                     throw new \Exception('Route should not be reachable.');
                 });
         */
-        $app->getRouter()->permanentRedirect('/contact_us', 'contact');
+        $app->getRouter()->getRouteCollector()->permanentRedirect('/contact_us', 'contact');
 
         $request = new ServerRequest('GET', new Uri('/contact_us'));
         $response = $app->handle($request);
