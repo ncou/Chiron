@@ -110,7 +110,8 @@ if (! function_exists('logging_extension')) {
     {
         $ext = '';
 
-        switch ($logging_time = config()->app->logging_time) {
+        //switch ($logging_time = config()->app->logging_time) {
+        switch ($logging_time = config()->get('app.logging_time')) {
             case 'hourly':
                 $ext = date('Y-m-d H-00-00');
 

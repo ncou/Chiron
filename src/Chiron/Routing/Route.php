@@ -48,6 +48,7 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
      *
      * @var array
      */
+    // Créer une RouteInterface et ajouter ces verbs dans l'interface : https://github.com/spiral/router/blob/master/src/RouteInterface.php#L26
     private $methods = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'TRACE'];
 
     /**
@@ -350,11 +351,15 @@ class Route implements RouteConditionHandlerInterface, StrategyAwareInterface, M
     // TODO : à renommer en allows() ????
     public function method(...$methods): self
     {
+        //$methods = is_array($methods[0]) ? $methods[0] : $methods;
+
         // Allow passing arrays of methods or individual lists of methods
-        if (isset($methods[0]) && is_array($methods[0])
+        if (isset($methods[0])
+            && is_array($methods[0])
             && count($methods) === 1
         ) {
-            $methods = array_shift($methods);
+            //$methods = array_shift($methods);
+            $methods = $methods[0];
         }
 
         return $this->setAllowedMethods($methods);

@@ -17,7 +17,6 @@ namespace Chiron\Provider;
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Container\Container;
 use Chiron\Container\ServiceProvider\ServiceProviderInterface;
-use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Kernel;
 use Chiron\Routing\Resolver\ControllerResolver;
 use Chiron\Routing\Router;

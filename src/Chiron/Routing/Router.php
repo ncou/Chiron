@@ -149,6 +149,7 @@ class Router implements RouterInterface
     {
         $this->basePath = rtrim($basePath, '/');
         //$this->basePath = $basePath;
+        //$this->basePath = '/' . ltrim($basePath, '/');
     }
 
     /**

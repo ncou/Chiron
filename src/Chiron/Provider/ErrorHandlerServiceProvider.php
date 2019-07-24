@@ -15,6 +15,10 @@ declare(strict_types=1);
 
 //https://github.com/laracasts/Favorite-This-Demo/blob/master/vendor/filp/whoops/src/Whoops/Provider/Silex/WhoopsServiceProvider.php
 
+//https://github.com/rougin/slytherin/blob/b712b88af8f3dcd24c2814f7b28c9abb5a5919c3/src/Debug/ErrorHandlerIntegration.php
+
+//https://github.com/narrowspark/framework/blob/ccda2dca0c312dbea08814d1372c1802920ebcca/src/Viserio/Component/Exception/Provider/HttpExceptionServiceProvider.php
+
 namespace Chiron\Provider;
 
 use Chiron\Container\Container;
@@ -29,7 +33,6 @@ use Chiron\Handler\Formatter\XmlFormatter;
 use Chiron\Handler\Reporter\LoggerReporter;
 use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
-use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Views\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
@@ -61,7 +64,7 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
 
         $container->add(ErrorHandler::class, function () use ($container) {
             // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
-            $errorHandler = new ErrorHandler(new ResponseFactory());
+            $errorHandler = new ErrorHandler($container->get('responseFactory'));
 
             $errorHandler->addReporter($container[LoggerReporter::class]);
 
@@ -108,7 +111,9 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
         */
 
         $container->add(ErrorHandlerMiddleware::class, function () use ($container) {
-            $middleware = new ErrorHandlerMiddleware($container->get('config')->app['debug']);
+            //$middleware = new ErrorHandlerMiddleware($container->get('config')->app['debug']);
+
+            $middleware = new ErrorHandlerMiddleware($container->get('config')->get('app.debug'));
 
             //$middleware->bindHandler(Throwable::class, new \Chiron\Exception\WhoopsHandler());
 

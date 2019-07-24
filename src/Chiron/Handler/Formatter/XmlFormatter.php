@@ -11,6 +11,8 @@ use Throwable;
 //https://github.com/cakephp/cakephp/blob/56f2d2a69870031cd0527d63a2ddeb3fbe6f05d3/src/Utility/Xml.php
 //https://github.com/symfony/serializer/blob/master/Encoder/XmlEncoder.php
 
+// ajouter un escape des caractéres XML : https://github.com/symfony/error-renderer/blob/master/ErrorRenderer/XmlErrorRenderer.php#L82
+
 class XmlFormatter implements FormatterInterface
 {
     // Allow the float to keep the zero (ex : 12.0 is converted to "12.0" instead of "12").

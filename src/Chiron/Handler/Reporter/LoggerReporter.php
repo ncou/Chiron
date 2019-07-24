@@ -16,6 +16,9 @@ use Throwable;
 
 // TODO : améliorer la fonction de log en utilisant ce bout de code => https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php#L211
 // autre exemple ici : https://github.com/cakephp/cakephp/blob/2341c3cd7c32e315c2d54b625313ef55a86ca9cc/src/Error/BaseErrorHandler.php#L334
+
+//https://github.com/davidburger/expressive-logger/blob/master/src/MessageFormatter/DefaultFormatter.php
+
 class LoggerReporter implements ReporterInterface
 {
     /**

@@ -9,6 +9,8 @@ use function file_get_contents;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
+// TODO : ajouter un escape des caractéres HTML : https://github.com/symfony/error-renderer/blob/master/ErrorRenderer/HtmlErrorRenderer.php#L318
+
 class HtmlFormatter implements FormatterInterface
 {
     /**

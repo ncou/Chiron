@@ -21,6 +21,11 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
+//use Monolog\Logger;
+//use Monolog\Handler\StreamHandler;
+
+//https://github.com/spiral/monolog-bridge/blob/master/src/Bootloader/MonologBootloader.php
+
 /**
  * Chiron system services provider.
  *
@@ -35,24 +40,66 @@ class LoggerServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $container): void
     {
-        // TODO : initialiser un logger ici ???? et éventuellement créer une propriété pour changer le formater dans la restitution de la log. cf nanologger et la liste des todo pour mettre un formater custom à passer en paramétre du constructeur !!!!
 
-        // register router object
         $container->add(LoggerInterface::class, function () {
             return new NullLogger();
-            //$logger = new NullLogger();
-            // TODO : à améliorer !!!! regarder la notion de daily et single et de log_max_files : https://laravel.com/docs/5.2/errors
-
-            // TODO : rajouter le composant logger dans le fichier composer.json et ensuite décommenter cette ligne !!!!
-            //$app->setLogger(new Logger(Chiron\ROOT_DIR.Chiron\DS.Chiron\LOG_DIR_NAME.Chiron\DS.'CHIRON.log'));
         });
 
         // add alias
         $container->alias('logger', LoggerInterface::class);
-
-        /*
-        $kernel['logger'] = function ($c) {
-            return $c->get(LoggerInterface::class);
-        };*/
+        $container->alias('log', LoggerInterface::class);
     }
+
+/*
+    public function register()
+    {
+        $this->app->singleton('log', function () {
+            $logger = new Logger('slayer');
+            $logger_name = 'slayer';
+            if ($ext = logging_extension()) {
+                $logger_name .= '-'.$ext;
+            }
+            $logger->pushHandler(
+                new StreamHandler(
+                    storage_path('logs').'/'.$logger_name.'.log',
+                    Logger::DEBUG
+                )
+            );
+            return $logger;
+        });
+    }*/
 }
+
+
+//if (! function_exists('logging_extension')) {
+    /**
+     * This returns an extension name based on the requested logging time.
+     *
+     * @return string
+     */
+    /*
+    function logging_extension()
+    {
+        $ext = '';
+        switch ($logging_time = config()->app->logging_time) {
+            case 'hourly':
+                $ext = date('Y-m-d H-00-00');
+            break;
+            case 'daily':
+                $ext = date('Y-m-d 00-00-00');
+            break;
+            case 'monthly':
+                $ext = date('Y-m-0 00-00-00');
+            break;
+            case '':
+            case null:
+            case false:
+                return $ext;
+            break;
+            default:
+                throw new Exception('Logging time['.$logging_time.'] not found');
+            break;
+        }
+        return $ext;
+    }*/
+//}

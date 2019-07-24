@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 //https://github.com/thephpleague/route/blob/master/src/Middleware/MiddlewareAwareTrait.php
+//https://github.com/spiral/router/blob/master/src/Traits/PipelineTrait.php#L42
+//https://github.com/spiral/http/blob/957b3eb20871177a48556dad7cb990bad9d01168/src/Traits/MiddlewareTrait.php
 
 namespace Chiron\Routing\Traits;
 

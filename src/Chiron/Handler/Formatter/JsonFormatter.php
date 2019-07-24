@@ -47,6 +47,7 @@ class JsonFormatter implements FormatterInterface
         // TODO : permettre de configurer cette option soit directement dans le constructeur, soit en créant une méthode setFlagOptions($flag)
         $jsonEncodeOptions = JSON_UNESCAPED_SLASHES
             | JSON_UNESCAPED_UNICODE
+            | JSON_UNESCAPED_LINE_TERMINATORS
             | JSON_PRESERVE_ZERO_FRACTION; // | JSON_PARTIAL_OUTPUT_ON_ERROR
 
         if ($this->pretty) {

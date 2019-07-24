@@ -237,6 +237,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
             $response = $errorHandler->handle($request, $exception, $this->debug);
         } catch (Throwable $e) {
             // TODO : lui passer en paramétre l'exception précédente $exception + l'esception courrante $e et logger en détail ces 2 exceptions.
+            // TODO : on devrait peut etre déplacer ce bout de code pour gérer les erreurs internes directement dans la classe ErrorHandler (qui posséde déjà un responseFactory !!!)
             $response = $this->handleInternalError($request, $e, $exception);
         }
 
@@ -252,6 +253,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
      *
      * @return \Psr\Http\Message\ResponseInterface $response The response
      */
+    // TODO : méthode à déplacer dans la classe ErrorHandler !!!!
     private function handleInternalError(ServerRequestInterface $request, Throwable $exception, Throwable $previousException): ResponseInterface
     {
         // TODO : passer en paramétre du constructeur ce middleware un responseFactory. pour utiliser la méthode Psr $responseFactory->createResponse(500);

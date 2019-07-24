@@ -59,6 +59,22 @@ if (! function_exists('env')) {
     }
 }
 
+if (!function_exists('env_file')) { // @codeCoverageIgnore
+    /**
+     * Get environment file.
+     *
+     * @param string $envFile
+     * @return string
+     */
+    function env_file($envFile = '.env')
+    {
+        if (getenv('APP_ENV')) {
+            return $envFile . '.' . getenv('APP_ENV');
+        }
+        return $envFile;
+    }
+}
+
 if (! function_exists('is_cli')) {
     /**
      * Check if the application is run in console mode.

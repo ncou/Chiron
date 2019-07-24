@@ -13,16 +13,21 @@ declare(strict_types=1);
 namespace Chiron\Provider;
 
 use Chiron\Config\Config;
+use Chiron\Config\ConfigManager;
 use Chiron\Container\Container;
 use Chiron\Container\ServiceProvider\ServiceProviderInterface;
 use Psr\Container\ContainerInterface;
+use Chiron\Boot\DirectoriesInterface;
 
 // TODO : créer une classe pour fabriquer l'application, et notamment pour injecter les routes et les middlewares si ils sont indiqués sous forme de texte dans la config => https://github.com/zendframework/zend-expressive/blob/85e2f607109ed8608f4004e622b2aad3bcaa8a4d/src/Container/ApplicationConfigInjectionDelegator.php
 
+
+//https://github.com/Anlamas/beejee/blob/master/src/Core/Config/ConfigServiceProvider.php
+
 /**
- * Config service provider.
+ * Config service provider. Should be executed after the dotenv service provider !
  */
-class ConfigServiceProvider implements ServiceProviderInterface
+class ConfigManagerServiceProvider implements ServiceProviderInterface
 {
     /**
      * Register Chiron system services.
@@ -34,10 +39,13 @@ class ConfigServiceProvider implements ServiceProviderInterface
         $settings['app']['settings']['basePath'] = '/';
         $settings['app']['debug'] = false;
 
-        $config = new Config($settings);
+        //$config = new Config($settings);
+        $config = new ConfigManager();
+
+        $config->merge($settings);
 
         // register config object
-        $container->share(Config::class, $config);
+        $container->share(ConfigManager::class, $config);
 
         /*
                 $container->closure(Config::class, function() {
@@ -48,11 +56,16 @@ class ConfigServiceProvider implements ServiceProviderInterface
                 });*/
 
         // add alias
-        $container->alias('config', Config::class);
+        $container->alias('config', ConfigManager::class);
 
         /*
         $container['config'] = function ($c) {
             return $c->get(Config::class);
         };*/
+    }
+
+    public function boot(ConfigManager $config, DirectoriesInterface $directories): void
+    {
+        $config->loadConfig($directories->get('config'));
     }
 }

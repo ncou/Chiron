@@ -21,6 +21,8 @@ use Throwable;
 
 //https://github.com/yiisoft/yii2/blob/master/framework/base/ErrorHandler.php
 
+//https://github.com/symfony/error-renderer/blob/master/ErrorRenderer.php
+
 class ErrorHandler implements ErrorHandlerInterface
 {
     /** ResponseFactoryInterface */

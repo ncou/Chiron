@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Chiron;
 
 use Chiron\Config\ConfigInterface;
+use Chiron\Config\ConfigManager;
 use Chiron\Container\Container;
 use Chiron\Http\Emitter\ResponseEmitter;
 use Chiron\Pipe\PipelineBuilder;
-use Chiron\Provider\ConfigServiceProvider;
+use Chiron\Provider\ConfigManagerServiceProvider;
+use Chiron\Provider\DotEnvServiceProvider;
 use Chiron\Provider\ErrorHandlerServiceProvider;
 use Chiron\Provider\HttpFactoriesServiceProvider;
 use Chiron\Provider\LoggerServiceProvider;
@@ -20,6 +22,10 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
+use Chiron\Boot\DirectoriesInterface;
+use Chiron\Boot\Directories;
+use Chiron\Boot\EnvironmentInterface;
+use Chiron\Boot\Environment;
 
 //https://github.com/lambirou/babiphp/blob/master/system/Container/ReflectionContainer.php
 
@@ -60,13 +66,53 @@ class Kernel extends Container
     // TODO : enregistrer aussi les alias : https://github.com/laravel/framework/blob/5.8/src/Illuminate/Foundation/Application.php#L1128
     protected function registerBaseServiceProviders()
     {
-        $this->register(ConfigServiceProvider::class);
+        $this->register(DotEnvServiceProvider::class);
+        $this->register(ConfigManagerServiceProvider::class);
         $this->register(ServerRequestCreatorServiceProvider::class);
         $this->register(HttpFactoriesServiceProvider::class);
         $this->register(LoggerServiceProvider::class);
         $this->register(RouterServiceProvider::class);
         $this->register(MiddlewaresServiceProvider::class);
         $this->register(ErrorHandlerServiceProvider::class);
+
+        // TODO : à déporter dans un serviceprovider cad dans un fichier séparé !!!!
+        $directories = ['root' => realpath(getcwd().'/../')];
+        $this->add(DirectoriesInterface::class, new Directories($this->mapDirectories($directories)));
+
+        $this->add(EnvironmentInterface::class, new Environment()
+        );
+
+    }
+
+    /**
+     * Normalizes directory list and adds all required aliases.
+     *
+     * @param array $directories
+     * @return array
+     */
+    protected function mapDirectories(array $directories): array
+    {
+        if (!isset($directories['root'])) {
+            throw new LogicException("Missing required directory 'root'.");
+        }
+
+        if (!isset($directories['app'])) {
+            $directories['app'] = $directories['root'] . '/app/';
+        }
+
+        return array_merge([
+            // public root
+            'public'    => $directories['root'] . '/public/',
+            // vendor libraries
+            'vendor'    => $directories['root'] . '/vendor/',
+            // data directories
+            'runtime'   => $directories['root'] . '/runtime/',
+            'cache'     => $directories['root'] . '/runtime/cache/',
+            // application directories
+            //'config'    => $directories['app'] . '/config/',
+            'config'    => $directories['root'] . '/config/',
+            'resources' => $directories['app'] . '/resources/',
+        ], $directories);
     }
 
     /*
@@ -160,7 +206,7 @@ class Kernel extends Container
      *
      * @return Kernel
      */
-    public function setConfig(ConfigInterface $config): self
+    public function setConfig(ConfigManager $config): self
     {
         $this->add('config', $config);
 
@@ -172,7 +218,7 @@ class Kernel extends Container
      *
      * @return Config Current configuration
      */
-    public function getConfig(): ConfigInterface
+    public function getConfig(): ConfigManager
     {
         return $this->get('config');
     }
@@ -256,7 +302,7 @@ class Kernel extends Container
     {
         $this->boot();
 
-        $this->getRouter()->setBasePath($this->getConfig()['app.settings.basePath'] ?? '/');
+        $this->getRouter()->setBasePath($this->getConfig()->get('app.settings.basePath') ?? '/');
 
         $request = $this->getRequest();
 
@@ -291,4 +337,7 @@ class Kernel extends Container
 
         return $emitter->emit($response);
     }
+
+
+
 }
