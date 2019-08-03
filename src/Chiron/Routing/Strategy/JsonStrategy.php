@@ -56,6 +56,7 @@ class JsonStrategy implements StrategyInterface
         foreach ($params as $param => $value) {
             $request = $request->withAttribute($param, $value);
         }
+        $params[ServerRequestInterface::class] = $request;
 
         $result = $this->kernel->call($handler, $params);
 
