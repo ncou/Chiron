@@ -70,6 +70,9 @@ if (!isset($_SERVER['APP_ENV'])) {
      */
     protected function createDotenv(string $filePath): Dotenv
     {
+        //$info = pathinfo($path);
+        //$dotenv = $this->createDotenv($info['dirname'], $info['basename']);
+
         // default file name for the .enf file.
         $fileName = '.env';
 

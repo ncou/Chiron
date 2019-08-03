@@ -8,6 +8,8 @@
  * @license   https://github.com/ncou/Chiron/blob/master/licenses/LICENSE.md (MIT License)
  */
 
+//https://github.com/php-services/http-factory-nyholm/blob/master/src/NyholmHttpFactoryServiceProvider.php
+
 //https://github.com/userfrosting/UserFrosting/blob/master/app/system/ServicesProvider.php
 //https://github.com/slimphp/Slim/blob/3.x/Slim/DefaultServicesProvider.php
 declare(strict_types=1);

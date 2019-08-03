@@ -22,7 +22,8 @@
         "chiron/config": "^1.1",
         "nyholm/psr7-server": "^0.3",
         "vlucas/phpdotenv": "^3.3",
-        "monolog/monolog": "^1.24"
+        "monolog/monolog": "^1.24",
+        "chiron/package-discovery": "^2.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.0",
