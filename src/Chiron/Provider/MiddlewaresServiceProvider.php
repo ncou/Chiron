@@ -25,9 +25,9 @@ use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\EmitterMiddleware;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
 use Chiron\Http\Middleware\OriginalRequestMiddleware;
-use Chiron\Http\Middleware\RoutingMiddleware;
+//use Chiron\Http\Middleware\RoutingMiddleware;
 use Chiron\Pipe\PipelineBuilder;
-use Chiron\Routing\RouterInterface;
+use Chiron\Router\RouterInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
@@ -46,9 +46,10 @@ class MiddlewaresServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $container): void
     {
+        /*
         $container->add(RoutingMiddleware::class, function () use ($container) {
             return new RoutingMiddleware($container[RouterInterface::class], $container[ResponseFactoryInterface::class], $container[StreamFactoryInterface::class]);
-        });
+        });*/
 
         $container->add(DispatcherMiddleware::class, function () use ($container) {
             return new DispatcherMiddleware(new PipelineBuilder($container));

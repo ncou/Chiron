@@ -16,7 +16,6 @@ namespace Chiron\Provider;
 
 use Chiron\Container\Container;
 use Chiron\Container\ServiceProvider\ServiceProviderInterface;
-use Chiron\Routing\Router;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;

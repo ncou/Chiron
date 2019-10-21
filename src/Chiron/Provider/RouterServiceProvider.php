@@ -19,10 +19,9 @@ use Chiron\Container\Container;
 use Chiron\Container\InvokerInterface;
 use Chiron\Container\ServiceProvider\ServiceProviderInterface;
 use Chiron\Kernel;
-use Chiron\Routing\Resolver\ControllerResolver;
-use Chiron\Routing\Router;
-use Chiron\Routing\RouteCollector;
-use Chiron\Routing\RouterInterface;
+use Chiron\Router\FastRoute\FastRoute;
+use Chiron\Router\RouteCollector;
+use Chiron\Router\RouterInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 
@@ -55,7 +54,7 @@ class RouterServiceProvider implements ServiceProviderInterface
         };*/
 
         $container->share(RouterInterface::class, function () use ($container) {
-            $router = new Router();
+            $router = new FastRoute();
 
             //$router->setBasePath($kernel->getConfig()['app.settings.basePath'] ?? '/');
 

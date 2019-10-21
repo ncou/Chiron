@@ -17,7 +17,7 @@ use Chiron\Provider\LoggerServiceProvider;
 use Chiron\Provider\MiddlewaresServiceProvider;
 use Chiron\Provider\RouterServiceProvider;
 use Chiron\Provider\ServerRequestCreatorServiceProvider;
-use Chiron\Routing\RouterInterface;
+use Chiron\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;

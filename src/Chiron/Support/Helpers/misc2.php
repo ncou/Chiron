@@ -156,6 +156,7 @@ if (! function_exists('is_cli')) {
     }
 }
 
+/*
 function dump()
 {
     $args = func_get_args();
@@ -183,3 +184,5 @@ function dump_d()
     call_user_func_array('dump', func_get_args());
     die();
 }
+
+*/
