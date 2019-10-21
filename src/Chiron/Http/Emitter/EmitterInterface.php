@@ -6,6 +6,8 @@ namespace Chiron\Http\Emitter;
 
 use Psr\Http\Message\ResponseInterface;
 
+//https://github.com/yiisoft/yii-web/blob/master/src/Emitter/EmitterInterface.php
+
 interface EmitterInterface
 {
     /**

@@ -113,7 +113,8 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
         $container->add(ErrorHandlerMiddleware::class, function () use ($container) {
             //$middleware = new ErrorHandlerMiddleware($container->get('config')->app['debug']);
 
-            $middleware = new ErrorHandlerMiddleware($container->get('config')->get('app.debug'));
+            //$middleware = new ErrorHandlerMiddleware($container->get('config')->get('app.debug'));
+            $middleware = new ErrorHandlerMiddleware(true);
 
             //$middleware->bindHandler(Throwable::class, new \Chiron\Exception\WhoopsHandler());
 

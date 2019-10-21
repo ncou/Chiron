@@ -287,6 +287,7 @@ class ResponseEmitter implements EmitterInterface
      *
      * @return ResponseInterface
      */
+    //https://github.com/symfony/http-foundation/blob/master/Response.php#L253
     // TODO : regarder aussi ici : https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php#L593   notamment pour le charset !!!!!
     // TODO : méthode à déplacer dans la classe Response ???? OUI et à renommer en finalize ou prepare !!!!!
     // TODO : regarder plutot cette méthode "$response->prepare()" : https://github.com/symfony/http-foundation/blob/master/Response.php#L256

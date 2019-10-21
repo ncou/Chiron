@@ -49,27 +49,18 @@ class HttpFactoriesServiceProvider implements ServiceProviderInterface
             return new ResponseFactory($factory, $headers);
         });
 
-        $container->add(RequestFactoryInterface::class, function () {
-            return Psr17FactoryFinder::findRequestFactory();
-        });
-
-        $container->add(ServerRequestFactoryInterface::class, function () {
-            return Psr17FactoryFinder::findServerRequestFactory();
-        });
-
-        $container->add(UriFactoryInterface::class, function () {
-            return Psr17FactoryFinder::findUriFactory();
-        });
-
-        $container->add(UploadedFileFactoryInterface::class, function () {
-            return Psr17FactoryFinder::findUploadedFileFactory();
-        });
-
-        $container->add(StreamFactoryInterface::class, function () {
-            return Psr17FactoryFinder::findStreamFactory();
-        });
+        $container->add(RequestFactoryInterface::class, Psr17FactoryFinder::findRequestFactory());
+        $container->add(ServerRequestFactoryInterface::class, Psr17FactoryFinder::findServerRequestFactory());
+        $container->add(UriFactoryInterface::class, Psr17FactoryFinder::findUriFactory());
+        $container->add(UploadedFileFactoryInterface::class, Psr17FactoryFinder::findUploadedFileFactory());
+        $container->add(StreamFactoryInterface::class, Psr17FactoryFinder::findStreamFactory());
 
         // *** register alias ***
+        $this->registerAlias($container);
+    }
+
+    private function registerAlias(Container $container): void
+    {
         $container->alias('responseFactory', ResponseFactoryInterface::class);
         $container->alias('requestFactory', RequestFactoryInterface::class);
         $container->alias('serverRequestFactory', ServerRequestFactoryInterface::class);
