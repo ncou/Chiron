@@ -41,6 +41,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
 
         $this->errorReporting = error_reporting();
 
+        // TODO : vérifier si on conserve ce bout de code.
         // prevent the error_log function in the exception handler to show the message in the console (as phpunit is run in cli mode)
         $this->captureFile = tmpfile();
         $this->errorLog = ini_set('error_log', stream_get_meta_data($this->captureFile)['uri']);
