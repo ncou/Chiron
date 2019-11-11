@@ -59,27 +59,27 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
 
         $container->add(LoggerReporter::class, function () use ($container) {
             //return new LoggerReporter($c[LoggerInterface::class]);
-            return new LoggerReporter($container['logger']);
+            return new LoggerReporter($container->get('logger'));
         });
 
         $container->add(ErrorHandler::class, function () use ($container) {
             // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
             $errorHandler = new ErrorHandler($container->get('responseFactory'));
 
-            $errorHandler->addReporter($container[LoggerReporter::class]);
+            $errorHandler->addReporter($container->get(LoggerReporter::class));
 
             $errorHandler->addFormatter(new WhoopsFormatter());
 
             $hasRenderer = $container->has(TemplateRendererInterface::class);
             // TODO : en plus du has il faut vérifier si il est bien de l'instance TamplateRendererInterface pour rentrer dans le if !!!!
             if ($hasRenderer) {
-                $renderer = $container[TemplateRendererInterface::class];
+                $renderer = $container->get(TemplateRendererInterface::class);
                 //registerErrorViewPaths($renderer);
                 //$renderer->addPath(\Chiron\TEMPLATES_DIR . "/errors", 'errors');
                 $errorHandler->addFormatter(new ViewFormatter($renderer));
             }
 
-            $errorHandler->addFormatter($container[HtmlFormatter::class]);
+            $errorHandler->addFormatter($container->get(HtmlFormatter::class));
             $errorHandler->addFormatter(new JsonFormatter());
             $errorHandler->addFormatter(new XmlFormatter());
             $errorHandler->addFormatter(new PlainTextFormatter());
@@ -118,7 +118,7 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
 
             //$middleware->bindHandler(Throwable::class, new \Chiron\Exception\WhoopsHandler());
 
-            $middleware->bindHandler(Throwable::class, $container[ErrorHandler::class]);
+            $middleware->bindHandler(Throwable::class, $container->get(ErrorHandler::class));
 
             //$middleware->bindHandler(ServiceUnavailableHttpException::class, new \Chiron\Exception\MaintenanceHandler());
             //$middleware->bindHandler(NotFoundHttpException::class, new \Chiron\Exception\NotFoundHandler());

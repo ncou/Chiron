@@ -45,7 +45,14 @@ class ServerRequestCreatorServiceProvider implements ServiceProviderInterface
             return $requestCreator->fromGlobals();
         };*/
 
-        $container->add(ServerRequestCreatorInterface::class, function (ServerRequestFactoryInterface $serverRequestFactory, UriFactoryInterface $uriFactory, UploadedFileFactoryInterface $uploadedFileFactory, StreamFactoryInterface $streamFactory) {
+        $container->add(ServerRequestCreatorInterface::class, function ($container) {
+
+
+            $serverRequestFactory = $container->get(ServerRequestFactoryInterface::class);
+            $uriFactory = $container->get(UriFactoryInterface::class);
+            $uploadedFileFactory = $container->get(UploadedFileFactoryInterface::class);
+            $streamFactory = $container->get(StreamFactoryInterface::class);
+
             $requestCreator = new ServerRequestCreator(
                 $serverRequestFactory,
                 $uriFactory,
