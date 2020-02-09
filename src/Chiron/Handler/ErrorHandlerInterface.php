@@ -17,11 +17,11 @@ interface ErrorHandlerInterface
     /**
      * Handle the exception and return PSR7 response.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param \Throwable                               $e
+     * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param bool                                     $displayErrorDetails
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
-    public function handle(ServerRequestInterface $request, Throwable $e, bool $displayErrorDetails): ResponseInterface;
+    public function renderException(Throwable $e, ServerRequestInterface $request, bool $displayErrorDetails): ResponseInterface;
 }

@@ -6,5 +6,7 @@ namespace Chiron\Config;
 
 interface InjectableInterface
 {
-    public function getLinkedFile(): string;
+    public function getConfigSection(): string;
+
+    public function inject(array $config): void;
 }

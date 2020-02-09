@@ -23,109 +23,32 @@ use Throwable;
 
 //https://github.com/symfony/error-renderer/blob/master/ErrorRenderer.php
 
+// TODO : renommer la classe en DefaultErrorHandler
 class ErrorHandler implements ErrorHandlerInterface
 {
     /** ResponseFactoryInterface */
     private $responseFactory;
-
-    /**
-     * List of reporters used to report the exception data.
-     *
-     * @var \Chiron\Exception\Reporter\ReporterInterface[]
-     */
-    private $reporters = [];
-
     /**
      * List of formatters used to format the exception data.
      *
      * @var \Chiron\Exception\Formatter\FormatterInterface[]
      */
     private $formatters = [];
-
     /**
      * Default formatter to use in case all the filters fails.
      *
      * @var \Chiron\Exception\Formatter\FormatterInterface
      */
     private $defaultFormatter;
-
-    /**
-     * The formatter should be verbose (show stacktrace) only in debug mode.
-     *
-     * @var bool
-     */
-    private $shouldBeVerbose;
-
-    /**
-     * @var string
-     */
-    //private $contentType;
-    /**
-     * @var string
-     */
-    //private $method;
-    /**
-     * @var ServerRequestInterface
-     */
-    //private $request;
-
     /**
      * @var Throwable
      */
     private $exception;
 
-    /**
-     * A list of the exception types (classname) that should not be reported.
-     *
-     * @var string[]
-     */
-    // TODO : refléchir comment alimenter cette liste !!!!
-    protected $dontReport = [];
-
     public function __construct(ResponseFactoryInterface $responseFactory)
     {
         $this->responseFactory = $responseFactory;
         $this->defaultFormatter = new PlainTextFormatter();
-    }
-
-    /**
-     * Determine if the exception should be reported.
-     *
-     * @param \Throwable $e
-     *
-     * @return bool
-     */
-    public function shouldReport(Throwable $e): bool
-    {
-        return ! $this->shouldntReport($e);
-    }
-
-    /**
-     * Determine if the exception is in the do not report list.
-     *
-     * @param \Throwable $e
-     *
-     * @return bool
-     */
-    protected function shouldntReport(Throwable $e): bool
-    {
-        foreach ($this->dontReport as $class) {
-            return $e instanceof $class;
-        }
-
-        return false;
-    }
-
-    /**
-     * Add the reporter to the existing array of reporters.
-     *
-     * @param \Chiron\Exception\Reporter\ReporterInterface $reporter Reporter to use in this error handler
-     */
-    // TODO : permettre de passer un tableau à cette méthode.
-    // TODO : créer une méthode pour faire un remove du reporter.
-    public function addReporter(ReporterInterface $reporter): void
-    {
-        array_push($this->reporters, $reporter);
     }
 
     /**
@@ -154,20 +77,17 @@ class ErrorHandler implements ErrorHandlerInterface
     /**
      * Handle the exception and return PSR7 response.
      *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param \Throwable                               $e
+     * @param \Psr\Http\Message\ServerRequestInterface $request
      * @param bool                                     $displayErrorDetails
      *
      * @return \Psr\Http\Message\ResponseInterface
      */
     // TODO : mettre l'exception et la request directement dans des varaibles de la classe pour éviter de devoir à chaque fois les passer en paramétre aux fonctions. Ca permettra de déplacer ce bout de code directement dans la méthode createResponse()
-    public function handle(ServerRequestInterface $request, Throwable $e, bool $displayErrorDetails): ResponseInterface
+    // TODO : méthode à renommer en 'render()' et modifier aussi la signature dans le fichier d'interface !!!!
+    public function renderException(Throwable $e, ServerRequestInterface $request, bool $displayErrorDetails): ResponseInterface
     {
-        $this->shouldBeVerbose = $displayErrorDetails;
-
-        $this->report($request, $e);
-
-        $formatter = $this->getFilteredFormatter($e, $request);
+        $formatter = $this->getFilteredFormatter($e, $request, $displayErrorDetails);
         $body = $formatter->format($request, $e);
 
         $statusCode = $this->determineStatusCode($e, $request);
@@ -183,41 +103,21 @@ class ErrorHandler implements ErrorHandlerInterface
     }
 
     /**
-     * Execute all the reporters in the stack.
-     *
-     * @param \Psr\Http\Message\ServerRequestInterface $request
-     * @param \Throwable                               $e
-     *
-     * @return \Psr\Http\Message\ResponseInterface
-     */
-    private function report(ServerRequestInterface $request, Throwable $e): void
-    {
-        if ($this->shouldntReport($e)) {
-            return;
-        }
-
-        foreach ($this->reporters as $reporter) {
-            if ($reporter->canReport($e)) {
-                $reporter->report($request, $e);
-            }
-        }
-    }
-
-    /**
      * Get the filtered formatter instance.
      *
      * @param \Throwable             $e
      * @param ServerRequestInterface $request
+     * @param bool                   $displayErrorDetails
      *
      * @return \Chiron\Exception\Formatter\FormatterInterface
      */
-    private function getFilteredFormatter(Throwable $e, ServerRequestInterface $request): FormatterInterface
+    private function getFilteredFormatter(Throwable $e, ServerRequestInterface $request, bool $displayErrorDetails): FormatterInterface
     {
         $filtered = $this->formatters;
 
         foreach ($filtered as $index => $formatter) {
             // *** isVerbose Filter ***
-            if (! $this->shouldBeVerbose) {
+            if (! $displayErrorDetails) {
                 if ($formatter->isVerbose()) {
                     unset($filtered[$index]);
 
@@ -239,7 +139,6 @@ class ErrorHandler implements ErrorHandlerInterface
         }
 
         // use a default formatter if there is none present after applying the filters. Else use the first one present in the array.
-        // TODO : attention on devrait lever une exception si il n'y a pas de default formatter de défini par l'utilisateur, ou alors à minima on fait un rethrow de l'exception.
         return reset($filtered) ?: $this->defaultFormatter;
     }
 
@@ -256,6 +155,9 @@ class ErrorHandler implements ErrorHandlerInterface
      * @return bool
      */
     // TODO : bout de code à déplacer dans une classe FormatNegociator ????
+    //TODO : https://github.com/slimphp/Slim/blob/4.x/Slim/Handlers/ErrorHandler.php#L206
+    // TODO : https://github.com/yiisoft/yii-web/blob/master/src/ErrorHandler/ErrorCatcher.php#L99
+    // TODO : utiliser un yield de ce type pour boucler sur les valeurs du header "Accept"  =>   https://github.com/spiral/app/blob/master/app/src/Middleware/LocaleSelector.php#L66
     private function isAcceptableContentType(ServerRequestInterface $request, string $contentType): bool
     {
         $acceptHeader = $request->getHeaderLine('Accept');
@@ -322,13 +224,6 @@ class ErrorHandler implements ErrorHandlerInterface
 
         $response->getBody()->write($body);
         $response->getBody()->rewind();
-
-        /*
-        $body = $response->getBody();
-        $body->write($bodyContent);
-        $body->rewind();
-        return $response->withBody($body);
-*/
 
         return $response;
     }

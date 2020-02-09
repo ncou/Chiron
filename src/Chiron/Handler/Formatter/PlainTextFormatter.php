@@ -9,61 +9,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use function trim;
 
-class PlainTextFormatter implements FormatterInterface
+//https://github.com/rudolfcms/rudolf/blob/d7cd824d8c9553fd95eea4570160a153b37fd7c4/src/component/ErrorHandler/Handler/PlainTextHandler.php
+class PlainTextFormatter extends AbstractFormatter
 {
-    /**
-     * Render Plain-Text error.
-     *
-     * @param \Throwable $e
-     *
-     * @return string
-     */
-    public function format(ServerRequestInterface $request, Throwable $e): string
-    {
-        // This class doesn't show debug information, so by default we hide the php exception behind a neutral http 500 error.
-        if (! $e instanceof HttpException) {
-            $e = new \Chiron\Http\Exception\Server\InternalServerErrorHttpException();
-        }
-
-        return trim($this->arrayToPlainText($e->toArray()));
-    }
-
-    /**
-     * @param array  $array
-     * @param string $title
-     *
-     * @return string
-     */
-    // TODO : améliorer cette méthode avec ce bout de code : https://github.com/cakephp/cakephp/blob/dc63c2f0d8a1e9d5f336ab81b587a54929d9e1cf/src/Error/Debugger.php#L508
-    private function arrayToPlainText(array $array, $title = null): string
-    {
-        $root = 'error';
-        $text = '';
-
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                if ($title !== null) {
-                    $key = $title . '.' . $key;
-                }
-                $text .= $this->arrayToPlainText($value, $key);
-            } else {
-                if (is_null($value) || is_object($value)) {
-                    $value = json_encode($value);
-                }
-                if (is_bool($value)) {
-                    $value = ($value) ? 'true' : 'false';
-                }
-                if ($title != '') {
-                    $text .= $root . '.' . $title . '.' . $key . ': ' . $value . PHP_EOL;
-                } else {
-                    $text .= $root . '.' . $key . ': ' . $value . PHP_EOL;
-                }
-            }
-        }
-
-        return $text;
-    }
-
     /**
      * Get the supported content type.
      *
@@ -95,5 +43,17 @@ class PlainTextFormatter implements FormatterInterface
     public function canFormat(Throwable $e): bool
     {
         return true;
+    }
+
+    /**
+     * Render Plain-Text error.
+     *
+     * @param \Throwable $e
+     *
+     * @return string
+     */
+    public function format(ServerRequestInterface $request, Throwable $e): string
+    {
+        return $this->getErrorDetail($e);
     }
 }

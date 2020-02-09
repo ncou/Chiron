@@ -26,25 +26,13 @@ abstract class AbstractInjectableConfig implements InjectableInterface, Iterator
      * @var array
      */
     protected $config = [];
-    /**
-     * At this moment on array based configs can be supported.
-     *
-     * @param array $config
-     */
-    public function __construct(array $config = [])
-    {
-        // TODO : faire plutot un $this->merge() qu'un remplacement direct de variables !!!!
-        $this->config = $config;
-        //$this->merge($config);
-    }
-
-    //abstract public function getLinkedFile(): string;
 
     /**
      * @param array $config
      */
     public function merge(array $config): void
     {
+        //$this->config = array_replace_recursive($this->config, $config->toArray());
         $this->config = $this->recursiveMerge($this->config, $config);
     }
 

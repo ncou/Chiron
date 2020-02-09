@@ -9,6 +9,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run as Whoops;
+use Chiron\Support\VarDumper;
 
 // ajouter les informations sur la request de l'application !!!!
 //https://github.com/zendframework/zend-expressive/blob/master/src/Middleware/WhoopsErrorResponseGenerator.php#L95
@@ -34,19 +35,20 @@ class WhoopsFormatter implements FormatterInterface
      */
     private function whoops(ServerRequestInterface $request): Whoops
     {
-        // TODO : vérifier si on stock bien ces originalXXX variables en amont.
-        $request = $request->getAttribute('originalRequest', false) ?: $request;
-
         $handler = new PrettyPageHandler();
-        $handler->addDataTable('PSR7 Request Data', [
+        $handler->addDataTable('PSR7/Request Data', [
             'Method'                 => $request->getMethod(),
             'Protocol'               => $request->getProtocolVersion(),
             'URI'                    => (string) $request->getUri(),
-            'Headers'                => $request->getHeaders(),
-            'Cookies'                => $request->getCookieParams(),
-            'Attributes'             => $request->getAttributes(),
-            'Query Params'           => $request->getQueryParams(),
-            'Body Params'            => $request->getParsedBody(),
+            'Path'                   => $request->getUri()->getPath(),
+            'Host'                   => $request->getUri()->getHost(),
+            'Headers'                => $request->getHeaders() ?: '<none>',
+            // TODO : vérifier si on doit utiliser un VarDumper cela permet d'avoir un tableau plus clair (on affiche une synthaxe courte avec les crochets "[]" au lieu de "Array(0 =>)") !!!!
+            //'Headers'                => $request->getHeaders() ? VarDumper::export($request->getHeaders()) : '<none>',
+            'Cookies'                => $request->getCookieParams() ?: '<none>',
+            'Attributes'             => $request->getAttributes() ?: '<none>',
+            'Query Params'           => $request->getQueryParams() ?: '<none>',
+            'Body Params'            => $request->getParsedBody() ?: '<none>',
         ]);
 
         $whoops = new Whoops();

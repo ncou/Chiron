@@ -17,13 +17,15 @@ namespace Chiron\Provider;
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Container\Container;
 use Chiron\Container\InvokerInterface;
-use Chiron\Container\ServiceProvider\ServiceProviderInterface;
+use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use Chiron\Kernel;
 use Chiron\Router\FastRoute\FastRoute;
 use Chiron\Router\RouteCollector;
 use Chiron\Router\RouterInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
+use Chiron\Config\ConfigManager;
+use Chiron\Container\BindingInterface;
 
 /**
  * Chiron system services provider.
@@ -37,43 +39,19 @@ class RouterServiceProvider implements ServiceProviderInterface
      *
      * @param ContainerInterface $container A DI container implementing ArrayAccess and container-interop.
      */
-    public function register(Container $container): void
+    public function register(BindingInterface $container): void
     {
         // register router object
-        /*
-        $container[RouterInterface::class] = function ($c) {
-            $router = new Router();
+        $container->share(RouterInterface::class, function ($container) {
 
-            $router->setBasePath($c->config['app.settings.basePath'] ?? '/');
+            $basePath = ($container->get(ConfigManager::class))->get('app.settings.basePath') ?? '/';
 
-            // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
-            // TODO : aller chercher la controllerResolver directement dans le container plutot que de faire un new !!!! ca permettra de faire un override de cette classe si l'utilisateur souhaite redéfinir le resolver.
-            $router->setStrategy(new HtmlStrategy(new ResponseFactory(), new ControllerResolver($c)));
-
-            return $router;
-        };*/
-
-        $container->share(RouterInterface::class, function () use ($container) {
-            $router = new FastRoute();
-
-            //$router->setBasePath($kernel->getConfig()['app.settings.basePath'] ?? '/');
-
-            // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
-            // TODO : aller chercher la controllerResolver directement dans le container plutot que de faire un new !!!! ca permettra de faire un override de cette classe si l'utilisateur souhaite redéfinir le resolver.
-            //$router->setStrategy(new HtmlStrategy($container->get(ResponseFactoryInterface::class), $container->get(InvokerInterface::class)));
-
-            //$collector = new RouteCollector();
-            //$router->setRouteCollector($collector);
+            $router = new FastRoute($basePath);
 
             return $router;
         });
 
         // add alias
         $container->alias('router', RouterInterface::class);
-
-        /*
-        $container['router'] = function ($c) {
-            return $c->get(RouterInterface::class);
-        };*/
     }
 }

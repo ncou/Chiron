@@ -13,48 +13,10 @@ use Throwable;
 
 // ajouter un escape des caractéres XML : https://github.com/symfony/error-renderer/blob/master/ErrorRenderer/XmlErrorRenderer.php#L82
 
-class XmlFormatter implements FormatterInterface
+//https://github.com/yiisoft/yii-web/blob/master/src/ErrorHandler/XmlRenderer.php
+
+class XmlFormatter extends AbstractFormatter
 {
-    // Allow the float to keep the zero (ex : 12.0 is converted to "12.0" instead of "12").
-    private const XML_PRESERVE_ZERO_FRACTION = true;
-
-    /**
-     * The root DOM Document.
-     *
-     * @var DOMDocument
-     */
-    protected $document;
-
-    /**
-     * Pretty format the output xml ?
-     *
-     * @var bool
-     */
-    // TODO : initialiser cette valeur via un parametre dans le constructeur.
-    protected $pretty = true;
-
-    /**
-     * Render XML error.
-     *
-     * @param Throwable $error
-     *
-     * @return string
-     */
-    public function format(ServerRequestInterface $request, Throwable $e): string
-    {
-        // This class doesn't show debug information, so by default we hide the php exception behind a neutral http 500 error.
-        if (! $e instanceof HttpException) {
-            $e = new \Chiron\Http\Exception\Server\InternalServerErrorHttpException();
-        }
-
-        // TODO : c'est un test. A virer !!!!!
-        /*
-        $info = array_merge($info, ['exception' => $e, " toto /is back<to>". chr(10) ."home baby" => "that 'is' <right>".chr(127), 'pretty' => true, 'ugly' => false, 'money' => 19.0, 'bonus' => 12, 'uri' => "<http:'//www.exémple.com/>", 'unicode' => "\xc3\xa9"]);
-*/
-
-        return $this->arrayToXml($e->toArray());
-    }
-
     /**
      * Get the supported content type.
      *
@@ -89,189 +51,37 @@ class XmlFormatter implements FormatterInterface
         return true;
     }
 
-    private function arrayToXml(array $data): string
-    {
-        // Ensure any objects are flattened to arrays first
-        // TODO : vérifier l'utilité de ce bout de code !!!!
-        //$content = json_decode(json_encode($data, JSON_PRESERVE_ZERO_FRACTION), true); // JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRESERVE_ZERO_FRACTION
-        $content = $data;
-
-        // ensure all keys are valid XML can be json_encoded
-        $cleanedContent = $this->cleanKeysForXml($content);
-
-        $this->document = new \DOMDocument('1.0', 'UTF-8');
-        $root = $this->document->createElement('problem');
-        $root->setAttribute('xmlns', 'urn:ietf:rfc:7807');
-        $this->document->appendChild($root);
-
-        $this->convertElement($root, $cleanedContent);
-
-        if ($this->pretty) {
-            $this->document->preserveWhiteSpace = true;
-            $this->document->formatOutput = true;
-        }
-
-        return $this->document->saveXML();
-    }
-
     /**
-     * Parse individual element.
+     * Render XML error.
      *
-     * @param DOMElement $element
-     * @param mixed      $value
-     */
-    // TODO : renommer en appendXmlChildren
-    private function convertElement(\DOMElement $element, $value)
-    {
-        if (! is_array($value)) {
-            $value = htmlspecialchars(static::convertToString($value));
-            $element->nodeValue = $value;
-
-            return;
-        }
-
-        foreach ($value as $key => $data) {
-            $child = $this->document->createElement($key);
-            $element->appendChild($child);
-            $this->convertElement($child, $data);
-        }
-    }
-
-    /**
-     * Get string representation of boolean value.
-     * Always cast the result as a string (in case of integer for example).
-     * Keep the zero after the fraction for the float values.
-     * String are not modified.
-     *
-     * @param mixed $v
+     * @param Throwable $error
      *
      * @return string
      */
-    private static function convertToString($value): string
+    public function format(ServerRequestInterface $request, Throwable $e): string
     {
-        // float value (INF and NAN are float type)
-        if (is_float($value)) {
-            if (is_infinite($value)) {
-                $value = 'INF';
-            } elseif (is_nan($value)) {
-                $value = 'NAN';
-            } else {
-                $value = (string) $value;
-                if (self::XML_PRESERVE_ZERO_FRACTION && strpos($value, '.') === false) {
-                    $value .= '.0';
-                }
-            }
-        }
+        $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>';
+        $xml .= "\n<error>\n";
+        $xml .= $this->addElement('status', (string) $this->getErrorStatusCode($e));
+        $xml .= $this->addElement('title', $this->getErrorTitle($e));
+        $xml .= $this->addElement('detail', $this->getErrorDetail($e));
+        $xml .= '</error>';
 
-        // bool value
-        if (is_bool($value)) {
-            $value = ($value === true) ? 'true' : 'false';
-        }
-
-        // class value
-        if (is_object($value)) {
-            $value = json_encode($value);
-        }
-
-        // int or string value.
-        return (string) $value;
+        return $xml;
     }
 
-    /**
-     * Ensure all keys in this associative array are valid XML tag names by replacing invalid
-     * characters with an `_`.
-     *
-     * @see https://www.w3.org/TR/xml/#sec-common-syn
-     */
-    private function cleanKeysForXml(array $input): array
+    private function addElement(string $name, string $content): string
     {
-        $return = [];
-        foreach ($input as $key => $value) {
-            // first remove the line return because the regex using "." pattern prevent to include the line return in the preg_replace.
-            $key = str_replace("\n", '_', $key);
-            $startCharacterPattern =
-                '[A-Z]|_|[a-z]|[\xC0-\xD6]|[\xD8-\xF6]|[\xF8-\x{2FF}]|[\x{370}-\x{37D}]|[\x{37F}-\x{1FFF}]|'
-                . '[\x{200C}-\x{200D}]|[\x{2070}-\x{218F}]|[\x{2C00}-\x{2FEF}]|[\x{3001}-\x{D7FF}]|[\x{F900}-\x{FDCF}]'
-                . '|[\x{FDF0}-\x{FFFD}]|[\x{10000}-\x{EFFFF}]';
-            $characterPattern = $startCharacterPattern . '|\-|\.|[0-9]|\xB7|[\x{300}-\x{36F}]|[\x{203F}-\x{2040}]';
-            $key = preg_replace('/(?!' . $characterPattern . ')./u', '_', $key);
-            $key = preg_replace('/^(?!' . $startCharacterPattern . ')./u', '_', $key);
-            if (is_array($value)) {
-                $value = $this->cleanKeysForXml($value);
-            }
-            $return[$key] = $value;
-        }
-
-        return $return;
+        return "  " . "<$name>" . ($this->needsCdataWrapping($content) ? $this->createCdataSection($content) : $content) . "</$name>\n";
     }
 
-    /*
-     * Checks the name is a valid xml element name.
-     */
-/*
-    final protected function isElementNameValid(string $name): bool
+    private function needsCdataWrapping(string $value): bool
     {
-        return $name &&
-            false === strpos($name, ' ') &&
-            preg_match('#^[\pL_][\pL0-9._:-]*$#ui', $name);
+        return preg_match('/[<>&]/', $value) > 0;
     }
-*/
 
-    /*
-     * Checks if a value contains any characters which would require CDATA wrapping.
-     */
-    /*
-    private function needsCdataWrapping(string $val): bool
+    private function createCdataSection(string $value): string
     {
-        return 0 < preg_match('/[<>&]/', $val);
-    }*/
-
-/*
-    final protected function appendText(\DOMNode $node, string $val): bool
-    {
-        $nodeText = $this->dom->createTextNode($val);
-        $node->appendChild($nodeText);
-        return true;
+        return '<![CDATA[' . str_replace(']]>', ']]]]><![CDATA[>', $value) . ']]>';
     }
-    final protected function appendCData(\DOMNode $node, string $val): bool
-    {
-        $nodeText = $this->dom->createCDATASection($val);
-        $node->appendChild($nodeText);
-        return true;
-    }
-*/
-
-    /*
-     * Tests the value being passed and decide what sort of element to create.
-     *
-     * @param mixed $val
-     *
-     * @throws NotEncodableValueException
-     */
-    /*
-    private function selectNodeType(\DOMNode $node, $val): bool
-    {
-        if (\is_array($val)) {
-            return $this->buildXml($node, $val);
-        } elseif ($val instanceof \SimpleXMLElement) {
-            $child = $this->dom->importNode(dom_import_simplexml($val), true);
-            $node->appendChild($child);
-        } elseif ($val instanceof \Traversable) {
-            $this->buildXml($node, $val);
-        } elseif (\is_object($val)) {
-            return $this->selectNodeType($node, $this->serializer->normalize($val, $this->format, $this->context));
-        } elseif (is_numeric($val)) {
-            return $this->appendText($node, (string) $val);
-        } elseif (\is_string($val) && $this->needsCdataWrapping($val)) {
-            return $this->appendCData($node, $val);
-        } elseif (\is_string($val)) {
-            return $this->appendText($node, $val);
-        } elseif (\is_bool($val)) {
-            return $this->appendText($node, (int) $val);
-        } elseif ($val instanceof \DOMNode) {
-            $child = $this->dom->importNode($val, true);
-            $node->appendChild($child);
-        }
-        return true;
-    }*/
 }

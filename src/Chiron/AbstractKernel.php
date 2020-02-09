@@ -113,7 +113,7 @@ class AbstractKernel
      *   The application root.
      */
     /*
-    protected static function guessApplicationRoot() {
+    public static function guessApplicationRoot() {
         // Determine the application root by:
         // - Removing the namespace directories from the path.
         // - Getting the path to the directory two levels up from the path

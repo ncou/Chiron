@@ -8,7 +8,7 @@ use Chiron\Http\Response\HtmlResponse;
 use Psr\Container\ContainerInterface;
 use Chiron\Views\TemplateRendererInterface;
 use Chiron\Container\Container;
-use Chiron\Container\ServiceProvider\ServiceProviderInterface;
+use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use LogicException;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
@@ -20,8 +20,14 @@ use Dotenv\Environment\Adapter\PutenvAdapter;
 use Dotenv\Environment\Adapter\EnvConstAdapter;
 use Dotenv\Environment\Adapter\ServerConstAdapter;
 use Chiron\Boot\DirectoriesInterface;
+use Chiron\Container\BindingInterface;
 
 //https://github.com/Anlamas/beejee/blob/master/src/Core/Config/ConfigServiceProvider.php
+
+//https://github.com/laravel/lumen-framework/blob/6.x/src/Bootstrap/LoadEnvironmentVariables.php
+//https://github.com/viserio/foundation/blob/master/Bootstrap/LoadEnvironmentVariablesBootstrap.php
+
+//https://github.com/laravel/framework/blob/master/src/Illuminate/Foundation/Bootstrap/LoadEnvironmentVariables.php
 
 /**
  * DotEnv service provider. Should be executed before the config service provider !
@@ -38,7 +44,7 @@ if (!isset($_SERVER['APP_ENV'])) {
     (new Dotenv())->load(__DIR__.'/../.env');
 }
 */
-    public function register(Container $container): void
+    public function register(BindingInterface $container): void
     {
     }
 
@@ -53,6 +59,7 @@ if (!isset($_SERVER['APP_ENV'])) {
         }
 
         try {
+            // Load environment file in given directory, silently failing if it doesn't exist.
             $this->createDotenv($directories->get('app'))->safeLoad();
         } catch (InvalidFileException $e) {
             $this->writeErrorAndDie([
@@ -82,6 +89,7 @@ if (!isset($_SERVER['APP_ENV'])) {
             new DotenvFactory([new EnvConstAdapter, new PutenvAdapter, new ServerConstAdapter])
         );
     }
+
     /**
      * Write the error information to the stderr stream and exit.
      *

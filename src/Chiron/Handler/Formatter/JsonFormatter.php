@@ -12,58 +12,21 @@ use Throwable;
 //https://github.com/Seldaek/monolog/blob/master/src/Monolog/Formatter/JsonFormatter.php
 //https://github.com/Seldaek/monolog/blob/master/src/Monolog/Formatter/NormalizerFormatter.php
 
+//https://github.com/thephpleague/booboo/blob/5f2d93a329df9ccb9edf77dac83c483829893d2e/src/Formatter/JsonFormatter.php
+
+//https://github.com/lcobucci/content-negotiation-middleware/blob/master/src/Formatter/Json.php
+
+// FORMAT STACKTRACE :
+//*********************
+//https://github.com/nekonomokochan/php-json-logger/blob/master/src/PhpJsonLogger/ErrorsContextFormatter.php#L31
+//https://github.com/nuxsmin/sysPass/blob/master/lib/BaseFunctions.php#L107
+
 // TODO : Constructeur => permettre de passer en paramétre le json flags ($jsonEncodeOptions) ????
 // TODO : Constructeur => passer en paramétre la valeur du isPretty == true par défaut
-class JsonFormatter implements FormatterInterface
+class JsonFormatter extends AbstractFormatter
 {
-    /**
-     * Pretty format the output xml ?
-     *
-     * @var bool
-     */
-    // TODO : initialiser cette valeur via un parametre dans le constructeur.
-    // TODO : renommer en isPretty
-    protected $pretty = true;
-
-    /**
-     * Render JSON error.
-     *
-     * @param \Throwable $e
-     *
-     * @return string
-     */
-    public function format(ServerRequestInterface $request, Throwable $e): string
-    {
-        // This class doesn't show debug information, so by default we hide the php exception behind a neutral http 500 error.
-        if (! $e instanceof HttpException) {
-            $e = new \Chiron\Http\Exception\Server\InternalServerErrorHttpException();
-        }
-
-        return $this->arrayToJson($e->toArray());
-    }
-
-    private function arrayToJson(array $data): string
-    {
-        // TODO : permettre de configurer cette option soit directement dans le constructeur, soit en créant une méthode setFlagOptions($flag)
-        $jsonEncodeOptions = JSON_UNESCAPED_SLASHES
-            | JSON_UNESCAPED_UNICODE
-            | JSON_UNESCAPED_LINE_TERMINATORS
-            | JSON_PRESERVE_ZERO_FRACTION; // | JSON_PARTIAL_OUTPUT_ON_ERROR
-
-        if ($this->pretty) {
-            $jsonEncodeOptions |= JSON_PRETTY_PRINT;
-        }// else {
-        //$jsonEncodeOptions ^= JSON_PRETTY_PRINT;
-        //}
-
-        $json = json_encode($data, $jsonEncodeOptions);
-
-        if ($json === false) {
-            throw new InvalidArgumentException('JSON encoding failed: ' . json_last_error_msg());
-        }
-
-        return $json;
-    }
+    //json_encode(['errors' => [$error]], \JSON_HEX_TAG | \JSON_HEX_APOS | \JSON_HEX_AMP | \JSON_HEX_QUOT | \JSON_UNESCAPED_SLASHES)
+    private const DEFAULT_JSON_FLAGS = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
 
     /**
      * Get the supported content type.
@@ -95,5 +58,27 @@ class JsonFormatter implements FormatterInterface
     public function canFormat(Throwable $e): bool
     {
         return true;
+    }
+
+    /**
+     * Render JSON error.
+     *
+     * @param \Throwable $e
+     *
+     * @return string
+     */
+    public function format(ServerRequestInterface $request, Throwable $e): string
+    {
+        $data['status'] = $this->getErrorStatusCode($e);
+        $data['title'] = $this->getErrorTitle($e);
+        $data['detail'] = $this->getErrorDetail($e);
+
+        $json = json_encode($data, self::DEFAULT_JSON_FLAGS);
+
+        if ($json === false) {
+            throw new InvalidArgumentException('JSON encoding failed: ' . json_last_error_msg() . '. Encoding: ' . var_export($data, true));
+        }
+
+        return $json;
     }
 }

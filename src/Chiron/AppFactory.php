@@ -26,6 +26,7 @@ use Chiron\Boot\DirectoriesInterface;
 use Chiron\Boot\Directories;
 use Chiron\Boot\EnvironmentInterface;
 use Chiron\Boot\Environment;
+use Chiron\Boot\BootloadManager;
 
 //https://github.com/laravel/lumen-framework/blob/5.8/src/Application.php
 
@@ -87,6 +88,12 @@ class AppFactory
         // TODO : à virer !!!!
         $this->container->share(Kernel::class, $kernel);
         $this->container->alias('kernel', Kernel::class);
+
+
+        $bootload = new BootloadManager($this->container);
+
+        $bootload->register(DotEnvServiceProvider::class);
+        $bootload->register(ConfigManagerServiceProvider::class);
 
         return $kernel;
     }

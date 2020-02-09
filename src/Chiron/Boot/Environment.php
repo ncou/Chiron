@@ -15,6 +15,16 @@ namespace Chiron\Boot;
 //https://github.com/vlucas/phpdotenv/blob/master/src/Loader.php
 //https://github.com/laravel/lumen-framework/blob/5.8/src/Bootstrap/LoadEnvironmentVariables.php#L52
 
+//https://github.com/vlucas/phpdotenv/blob/master/src/Environment/Adapter/ApacheAdapter.php
+//https://github.com/vlucas/phpdotenv/blob/master/src/Environment/Adapter/EnvConstAdapter.php
+//https://github.com/vlucas/phpdotenv/blob/master/src/Environment/Adapter/PutenvAdapter.php
+//https://github.com/vlucas/phpdotenv/blob/master/src/Environment/Adapter/ServerConstAdapter.php
+
+//https://github.com/pn-neutrino/dotenv/blob/master/src/Dotenv.php
+//https://github.com/oscarotero/env/blob/master/src/Env.php
+
+//https://github.com/chillerlan/php-dotenv/blob/master/src/DotEnv.php#L144
+
 // TODO : permettre de faire un getIterator sur cette classe, idem pour utiliser un ArrayAccess pour utiliser cette classe comme un tableau !!!!
 // TODO : ajouter dans cette classe une méthode pour vérifier si on est en mode console (cad is_cli) + ajouter cela dans le fichier functions.php
 class Environment implements EnvironmentInterface
@@ -76,6 +86,13 @@ class Environment implements EnvironmentInterface
 
         return $default;
     }
+    /**
+     * @inheritdoc
+     */
+    public function all(): array
+    {
+        return $this->values;
+    }
 
     /**
      * @param mixed $value
@@ -94,6 +111,8 @@ class Environment implements EnvironmentInterface
 
         return $value;
     }
+
+
 
 
     /**
@@ -132,4 +151,122 @@ class Environment implements EnvironmentInterface
 
         return $value;
     }*/
+
+
+    /**
+     * Set environment
+     *
+     * @param string $key
+     * @param mixed $val
+     */
+    /*
+    public static function setEnv($key, $val)
+    {
+        if (self::getLoader()->overloader == false) {
+            if(self::getEnv($key)) {
+                return;
+            }
+        }
+        putenv("{$key}={$val}");
+        $_ENV[$key] = $val;
+        $_SERVER[$key] = $val;
+    }*/
+
+
+/**
+     * Get environment
+     *
+     * @param string $key
+     * @return mixed
+     */
+/*
+    public static function getEnv($key)
+    {
+        switch (true) {
+            case array_key_exists($key, $_ENV):
+                return $_ENV[$key];
+            case array_key_exists($key, $_SERVER);
+                return $_SERVER[$key];
+            default:
+                return getenv($key);
+        }
+    }*/
+
+
+
+    /**
+     * Retrieve the value of the specified environment variable, translating
+     * values of 'true', 'false', and 'null' (case-insensitive) to their actual
+     * non-string values.
+     *
+     * PHP's built-in "getenv()" function returns a string (or false, if the
+     * environment variable is not set). If the value is 'false', then it will
+     * be returned as the string "false", which evaluates to true. This function
+     * is to check for that kind of string value and return the actual value
+     * that it refers to.
+     *
+     * NOTE:
+     * - If no value is available for the specified environment variable and
+     *   no default value was provided, this function returns null (rather than
+     *   returning false the way getenv() does).
+     * - At version 2.0.0, this method was changed to return the given default
+     *   value even if the environment variable exists but has no value (or a
+     *   value that only contains whitespace).
+     *
+     * @param string $varname The name of the desired environment variable.
+     * @param mixed $default The default value to return if the environment
+     *     variable is not set or its value only contains whitespace.
+     * @return mixed The resulting value (if set to more than whitespace), or
+     *     the given default value (if any, otherwise null).
+     */
+/*
+    public static function get($varname, $default = null)
+    {
+        $originalValue = \getenv($varname);
+
+        if ($originalValue === false) {
+            return $default;
+        }
+
+        $trimmedValue = \trim($originalValue);
+
+        if ($trimmedValue === '') {
+            return $default;
+        }
+
+        $lowercasedTrimmedValue = \strtolower($trimmedValue);
+
+        if ($lowercasedTrimmedValue === 'false') {
+            return false;
+        } elseif ($lowercasedTrimmedValue === 'true') {
+            return true;
+        } elseif ($lowercasedTrimmedValue === 'null') {
+            return null;
+        }
+
+        return $trimmedValue;
+    }*/
+
+    /**
+     * Is running through command line
+     *
+     * @return  bool
+     */
+    static public function isCLI() {
+        if ((defined('PHP_SAPI') && PHP_SAPI == 'cli') || (isset($_SERVER['argc']) && $_SERVER['argc'] >= 1)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check, if possible, that this execution was triggered by a command line.
+     * @return bool
+     */
+    public static function isCommandLine()
+    {
+        return PHP_SAPI == 'cli';
+    }
+
+
 }

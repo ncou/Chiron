@@ -18,7 +18,7 @@ namespace Chiron\Provider;
 
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Container\Container;
-use Chiron\Container\ServiceProvider\ServiceProviderInterface;
+use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use Chiron\Http\Factory\ResponseFactory;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -26,7 +26,7 @@ use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
-
+use Chiron\Container\BindingInterface;
 use Http\Factory\Psr17FactoryFinder;
 
 /**
@@ -39,7 +39,7 @@ class HttpFactoriesServiceProvider implements ServiceProviderInterface
      *
      * @param Container $container A DI container implementing ArrayAccess and container-interop.
      */
-    public function register(Container $container): void
+    public function register(BindingInterface $container): void
     {
         // *** register factories ***
         $container->add(ResponseFactoryInterface::class, function () {

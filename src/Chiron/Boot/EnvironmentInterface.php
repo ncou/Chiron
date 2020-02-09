@@ -31,4 +31,10 @@ interface EnvironmentInterface
      * @return mixed
      */
     public function get(string $name, $default = null);
+    /**
+     * Return all the environement data.
+     *
+     * @return array
+     */
+    public function all(): array;
 }

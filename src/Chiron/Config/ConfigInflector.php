@@ -12,6 +12,7 @@ class ConfigInflector
 {
     private $container;
 
+    // TODO : éviter de passer un $container en paramétre de la classe ConfigInflector mais lui passer un object ConfigManager !!!
     public function __construct(Container $container)
     {
         $this->container = $container;
@@ -22,12 +23,14 @@ class ConfigInflector
         $configManager = $this->container->get(ConfigManager::class);
 
         // handle the case when the user use a directory separator (windows ou linux value) in the linked file path
-        $section = str_replace(array('/', '\\'),'.', $config->getLinkedFile());
+        // TODO : à déplacer dans la classe AbstractInjectableConfig
+        $section = str_replace(array('/', '\\'),'.', $config->getConfigSection());
 
-        $data = $configManager->getConfig($section);
-
-        // inject in the config object, the array settings found in the configuration file (using the configManager to get the data).
-        $config->merge($data);
+        if ($configManager->has($section)) {
+            $data = $configManager->getConfig($section);
+            // inject in the config object, the array settings found in the configuration file (using the configManager to get the data).
+            $config->inject($data);
+        }
 
     }
 

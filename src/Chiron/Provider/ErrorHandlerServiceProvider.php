@@ -22,7 +22,7 @@ declare(strict_types=1);
 namespace Chiron\Provider;
 
 use Chiron\Container\Container;
-use Chiron\Container\ServiceProvider\ServiceProviderInterface;
+use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use Chiron\Handler\ErrorHandler;
 use Chiron\Handler\Formatter\HtmlFormatter;
 use Chiron\Handler\Formatter\JsonFormatter;
@@ -38,6 +38,11 @@ use Chiron\Views\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
+use Chiron\Container\BindingInterface;
+use Chiron\Handler\ErrorManager;
+use Chiron\Boot\EnvironmentInterface;
+use Chiron\Invoker\Support\Invokable;
+use Closure;
 
 /**
  * Chiron error handler services provider.
@@ -49,24 +54,20 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
      *
      * @param ContainerInterface $container A DI container implementing ArrayAccess and container-interop.
      */
-    public function register(Container $container): void
+    public function register(BindingInterface $container): void
     {
+        // TODO : améliorer le cas du html avec une erreur 404, le lien javascript pour revenir à la page d'accueil ne fonctionne pas bien si on a un basePath différent de "/"
         $container->add(HtmlFormatter::class, function () {
             $path = __DIR__ . '/../../../resources/error.html';
 
             return new HtmlFormatter(realpath($path));
         });
 
-        $container->add(LoggerReporter::class, function () use ($container) {
-            //return new LoggerReporter($c[LoggerInterface::class]);
-            return new LoggerReporter($container->get('logger'));
-        });
-
-        $container->add(ErrorHandler::class, function () use ($container) {
+        $container->add(ErrorHandler::class, function ($container) {
             // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
             $errorHandler = new ErrorHandler($container->get('responseFactory'));
 
-            $errorHandler->addReporter($container->get(LoggerReporter::class));
+            //$errorHandler->addReporter($container->get(LoggerReporter::class));
 
             $errorHandler->addFormatter(new WhoopsFormatter());
 
@@ -90,6 +91,23 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
             return $errorHandler;
         });
 
+
+
+
+
+
+        // TODO : à virer c'est un test
+/*
+        $container->add(ErrorHandler::class, function ($container) {
+            $errorHandler = new ErrorHandler($container->get('responseFactory'));
+
+            $errorHandler->setDefaultFormatter(new PlainTextFormatter());
+
+            return $errorHandler;
+        });*/
+
+
+
         /*
          * Register all the possible error template namespaced paths.
          */
@@ -110,20 +128,29 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
         }
         */
 
-        $container->add(ErrorHandlerMiddleware::class, function () use ($container) {
-            //$middleware = new ErrorHandlerMiddleware($container->get('config')->app['debug']);
+        $container->share(ErrorManager::class, new Invokable(Closure::fromCallable([$this, 'errorManager'])));
+    }
 
-            //$middleware = new ErrorHandlerMiddleware($container->get('config')->get('app.debug'));
-            $middleware = new ErrorHandlerMiddleware(true);
+    // TODO : éventuellement séparer cette méthode en deux parties, une pour enregistrer la classe et la seconde pour configurer la partie "bindHandler" ce sera plus propre
+    private function errorManager(EnvironmentInterface $env, ErrorHandler $handler, LoggerInterface $logger): ErrorManager
+    {
+        //$manager = new ErrorManager($container->get('config')->app['debug']);
+        //$manager = new ErrorManager($container->get('config')->get('app.debug'));
 
-            //$middleware->bindHandler(Throwable::class, new \Chiron\Exception\WhoopsHandler());
+        //$manager = new ErrorManager(true);
 
-            $middleware->bindHandler(Throwable::class, $container->get(ErrorHandler::class));
+        $manager = new ErrorManager($env->get('APP_DEBUG', false));
 
-            //$middleware->bindHandler(ServiceUnavailableHttpException::class, new \Chiron\Exception\MaintenanceHandler());
-            //$middleware->bindHandler(NotFoundHttpException::class, new \Chiron\Exception\NotFoundHandler());
+        //$manager->bindHandler(Throwable::class, new \Chiron\Exception\WhoopsHandler());
 
-            return $middleware;
-        });
+        //$manager->bindHandler(Throwable::class, $container->get(ErrorHandler::class));
+        $manager->bindHandler(Throwable::class, $handler);
+
+        //$manager->bindHandler(ServiceUnavailableHttpException::class, new \Chiron\Exception\MaintenanceHandler());
+        //$manager->bindHandler(NotFoundHttpException::class, new \Chiron\Exception\NotFoundHandler());
+
+        $manager->setLogger($logger);
+
+        return $manager;
     }
 }

@@ -11,7 +11,9 @@ use Throwable;
 
 // TODO : ajouter un escape des caractéres HTML : https://github.com/symfony/error-renderer/blob/master/ErrorRenderer/HtmlErrorRenderer.php#L318
 
-class HtmlFormatter implements FormatterInterface
+// TODO : escape des caractéres HTML => https://github.com/symfony/symfony/blob/a44f58bd79296675b93a6bfc1826d85f6bd6acca/src/Symfony/Component/ErrorHandler/ErrorRenderer/HtmlErrorRenderer.php#L183
+
+class HtmlFormatter extends AbstractFormatter
 {
     /**
      * The html template file path.
@@ -29,35 +31,6 @@ class HtmlFormatter implements FormatterInterface
     public function __construct(string $path)
     {
         $this->path = $path;
-    }
-
-    public function format(ServerRequestInterface $request, Throwable $e): string
-    {
-        // This class doesn't show debug information, so by default we hide the php exception behind a neutral http 500 error.
-        if (! $e instanceof HttpException) {
-            $e = new \Chiron\Http\Exception\Server\InternalServerErrorHttpException();
-        }
-
-        return $this->arrayToHtml($e->toArray());
-    }
-
-    /**
-     * Render the page with given data.
-     *
-     * @param array $data
-     *
-     * @return string
-     */
-    private function arrayToHtml(array $data): string
-    {
-        // TODO : lever une exception si la valeur de retour est === false car cela veut dire qu'on n'a pas réussi à lire le fichier....
-        $html = file_get_contents($this->path, false);
-
-        foreach ($data as $key => $val) {
-            $html = str_replace("{{ $$key }}", $val, $html);
-        }
-
-        return $html;
     }
 
     /**
@@ -91,5 +64,34 @@ class HtmlFormatter implements FormatterInterface
     {
         //TODO : faire une vérifiecation si le fichier existe, c'est à dire tester le $this->path
         return true;
+    }
+
+    public function format(ServerRequestInterface $request, Throwable $e): string
+    {
+        $data['status'] = (string) $this->getErrorStatusCode($e);
+        $data['title'] = $this->getErrorTitle($e);
+        $data['detail'] = $this->getErrorDetail($e);
+
+        return $this->render($data);
+    }
+
+    /**
+     * Render the page with given data.
+     *
+     * @param array $data
+     *
+     * @return string
+     */
+    private function render(array $data): string
+    {
+        // TODO : lever une exception si la valeur de retour est === false car cela veut dire qu'on n'a pas réussi à lire le fichier....
+        $html = file_get_contents($this->path, false);
+
+        foreach ($data as $key => $val) {
+            // TODO : il faudrait utiliser la fonction "h()" pour faire un html encode de la variable $val
+            $html = str_replace("{{ $$key }}", $val, $html);
+        }
+
+        return $html;
     }
 }

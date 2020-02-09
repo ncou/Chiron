@@ -15,7 +15,7 @@ declare(strict_types=1);
 namespace Chiron\Provider;
 
 use Chiron\Container\Container;
-use Chiron\Container\ServiceProvider\ServiceProviderInterface;
+use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use Chiron\Http\Middleware\BodyParserMiddleware;
 use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
 use Chiron\Http\Middleware\CheckMaintenanceMiddleware;
@@ -31,6 +31,7 @@ use Chiron\Router\RouterInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Chiron\Container\BindingInterface;
 
 /**
  * Chiron system services provider.
@@ -44,14 +45,14 @@ class MiddlewaresServiceProvider implements ServiceProviderInterface
      *
      * @param ContainerInterface $container A DI container implementing ArrayAccess and container-interop.
      */
-    public function register(Container $container): void
+    public function register(BindingInterface $container): void
     {
         /*
         $container->add(RoutingMiddleware::class, function () use ($container) {
             return new RoutingMiddleware($container[RouterInterface::class], $container[ResponseFactoryInterface::class], $container[StreamFactoryInterface::class]);
         });*/
 
-        $container->add(DispatcherMiddleware::class, function () use ($container) {
+        $container->add(DispatcherMiddleware::class, function ($container) {
             return new DispatcherMiddleware(new PipelineBuilder($container));
         });
 

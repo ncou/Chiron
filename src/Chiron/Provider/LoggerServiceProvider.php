@@ -15,15 +15,20 @@ declare(strict_types=1);
 namespace Chiron\Provider;
 
 use Chiron\Container\Container;
-use Chiron\Container\ServiceProvider\ServiceProviderInterface;
+use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Chiron\Container\BindingInterface;
 
 //use Monolog\Logger;
 //use Monolog\Handler\StreamHandler;
 
 //https://github.com/spiral/monolog-bridge/blob/master/src/Bootloader/MonologBootloader.php
+
+//https://github.com/browscap/browscap-php/blob/5f1436b74a100088c66423e8715de598f50e66d1/src/Helper/LoggerHelper.php
+//https://github.com/browscap/http-access-log-parser/blob/f263af3d9e87b7f93ad89192f1ee2395ee023187/src/Helper/LoggerHelper.php
+//https://github.com/reactive-apps/app/blob/master/config/di/logger.php
 
 /**
  * Chiron system services provider.
@@ -37,7 +42,7 @@ class LoggerServiceProvider implements ServiceProviderInterface
      *
      * @param ContainerInterface $container A DI container implementing ArrayAccess and container-interop.
      */
-    public function register(Container $container): void
+    public function register(BindingInterface $container): void
     {
 
         $container->add(LoggerInterface::class, function () {
@@ -67,6 +72,43 @@ class LoggerServiceProvider implements ServiceProviderInterface
             return $logger;
         });
     }*/
+
+
+
+    /**
+     * creates a \Monolog\Logger instance
+     *
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return LoggerInterface
+     */
+    //https://github.com/medeirosinacio/yii2-website-template/blob/74797c873ac262c14e4bfee7292ddbfc827a9d90/vendor/browscap/browscap-php/src/Helper/LoggerHelper.php#L31
+    public static function createDefaultLogger(OutputInterface $output) : LoggerInterface
+    {
+        $logger = new Logger('browscap');
+        $consoleLogger = new ConsoleLogger($output);
+        $psrHandler = new PsrHandler($consoleLogger);
+
+        $logger->pushHandler($psrHandler);
+
+        /** @var callable $memoryProcessor */
+        $memoryProcessor = new MemoryUsageProcessor(true);
+        $logger->pushProcessor($memoryProcessor);
+
+        /** @var callable $peakMemoryProcessor */
+        $peakMemoryProcessor = new MemoryPeakUsageProcessor(true);
+        $logger->pushProcessor($peakMemoryProcessor);
+
+        ErrorHandler::register($logger);
+
+        return $logger;
+    }
+
+
+
+
+
+
 }
 
 
