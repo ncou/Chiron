@@ -4,29 +4,13 @@ declare(strict_types=1);
 
 namespace Chiron;
 
-use Chiron\Config\ConfigInterface;
-use Chiron\Config\ConfigManager;
-use Chiron\Container\Container;
-use Chiron\Http\Emitter\ResponseEmitter;
-use Chiron\Http\Emitter\SapiEmitter;
-use Chiron\Http\Http;
-use Chiron\Http\DispatcherInterface;
-use Chiron\Router\RouterInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Log\LoggerInterface;
-use Chiron\Boot\DirectoriesInterface;
-use Chiron\Boot\Directories;
-use Chiron\Boot\EnvironmentInterface;
-use Chiron\Boot\Environment;
-use Nyholm\Psr7Server\ServerRequestCreatorInterface;
-use RuntimeException;
 use Chiron\Container\SingletonInterface;
+use Chiron\Http\DispatcherInterface;
+use Chiron\Http\Http;
+use RuntimeException;
 
 final class Application //implements SingletonInterface
 {
-
     /** @var DispatcherInterface[] */
     private $dispatchers = [];
 
@@ -45,8 +29,9 @@ final class Application //implements SingletonInterface
      * Start application and serve user requests using selected dispatcher or throw
      * an exception.
      *
-     * @return mixed (int for console dispatcher and void for sapi dispatcher)
      * @throws RuntimeException
+     *
+     * @return mixed (int for console dispatcher and void for sapi dispatcher)
      */
     // TODO : renommer la méthode en "serve()" ????
     public function run()
@@ -57,7 +42,6 @@ final class Application //implements SingletonInterface
         //return $this->dispatcher->dispatch();
 
         //echo 'TOTO';
-
 
         foreach ($this->dispatchers as $dispatcher) {
             if ($dispatcher->canDispatch()) {

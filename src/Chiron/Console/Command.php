@@ -73,7 +73,7 @@ abstract class Command extends SymfonyCommand
             list($this->input, $this->output) = [$input, $output];
 
             //Executing perform method with method injection
-            return (int)$reflection->invokeArgs($this, $resolver->resolveArguments(
+            return (int) $reflection->invokeArgs($this, $resolver->resolveArguments(
                 $reflection,
                 compact('input', 'output')
             ));

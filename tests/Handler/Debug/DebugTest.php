@@ -4,30 +4,28 @@ declare(strict_types=1);
 
 namespace Tests\Handler\Reporter;
 
-use Chiron\Handler\Reporter\LoggerReporter;
-use Chiron\Http\Psr\ServerRequest;
-use Chiron\Http\Psr\Uri;
-use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
-use Psr\Log\LogLevel;
 use Chiron\Handler\Debug;
+use PHPUnit\Framework\TestCase;
 
 class DebugTest extends TestCase
 {
-   // dummy function to test trace in error handler.
+    // dummy function to test trace in error handler.
     public static function triggerNotice($that)
     {
-        $that->assertSame('', $foo.$foo.$bar);
+        $that->assertSame('', $foo . $foo . $bar);
     }
+
     public function testFailureCall()
     {
         $this->expectException(\ErrorException::class);
         $this->expectExceptionMessage('fopen(unknown.txt): failed to open stream: No such file or directory');
         Debug::call('fopen', 'unknown.txt', 'r');
     }
+
     public function testCallRestoreErrorHandler()
     {
         $prev = set_error_handler('var_dump');
+
         try {
             Debug::call('fopen', 'unknown.txt', 'r');
             $this->fail('An \ErrorException should have been raised');
@@ -39,6 +37,7 @@ class DebugTest extends TestCase
         }
         $this->assertSame('var_dump', $prev);
     }
+
     public function testCallErrorExceptionInfo()
     {
         try {
@@ -56,6 +55,7 @@ class DebugTest extends TestCase
             $this->assertSame(__CLASS__, $trace[1]['class']);
         }
     }
+
     public function testSuccessCall()
     {
         touch($filename = tempnam(sys_get_temp_dir(), 'sf_error_handler_'));
@@ -77,6 +77,7 @@ class DebugTest extends TestCase
 
     /**
      * @dataProvider provideTranslateException
+     *
      * @param string $expected_output
      * @param int    $exception_code
      */
@@ -106,5 +107,4 @@ class DebugTest extends TestCase
         $this->assertContains($msg, $output);
         $this->assertContains('[stacktrace]', $output);
     }
-
 }

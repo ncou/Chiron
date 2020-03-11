@@ -37,10 +37,12 @@ class Environment implements EnvironmentInterface
         '(false)' => false,
         'null'    => null,
         '(null)'  => null,
-        'empty'   => ''
+        'empty'   => '',
     ];
+
     /** @var string|null */
     private $id = null;
+
     /** @var array */
     private $values = [];
 
@@ -54,8 +56,9 @@ class Environment implements EnvironmentInterface
         $this->values = $values + $_ENV + $_SERVER;
         //$this->values = array_merge($_SERVER, $_ENV, $values);
     }
+
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     // TODO : voir si cette méthode est vraiment utile !!!
     public function hash(): string
@@ -66,8 +69,9 @@ class Environment implements EnvironmentInterface
 
         return $this->id;
     }
+
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function set(string $name, $value)
     {
@@ -75,8 +79,9 @@ class Environment implements EnvironmentInterface
         putenv("$name=$value");
         $this->id = null;
     }
+
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     // TODO : réfléchir si on garde le paramétre par défaut ou si on l'enléve et qu'on throw une exception si la valeur n'existe pas.
     public function get(string $name, $default = null)
@@ -95,7 +100,7 @@ class Environment implements EnvironmentInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function all(): array
     {
@@ -104,12 +109,13 @@ class Environment implements EnvironmentInterface
 
     /**
      * @param mixed $value
+     *
      * @return mixed
      */
     // TODO : appeller la méthode normalize directement dans le constructeur au lieu de l'appeller dans le get. non ?????
     protected function normalize($value)
     {
-        if (!is_string($value)) {
+        if (! is_string($value)) {
             return $value;
         }
         $alias = strtolower($value);
@@ -119,9 +125,6 @@ class Environment implements EnvironmentInterface
 
         return $value;
     }
-
-
-
 
     /**
      * This handles the the global environment variables, it acts as getenv()
@@ -160,12 +163,11 @@ class Environment implements EnvironmentInterface
         return $value;
     }*/
 
-
     /**
-     * Set environment
+     * Set environment.
      *
      * @param string $key
-     * @param mixed $val
+     * @param mixed  $val
      */
     /*
     public static function setEnv($key, $val)
@@ -180,27 +182,25 @@ class Environment implements EnvironmentInterface
         $_SERVER[$key] = $val;
     }*/
 
-
-/**
-     * Get environment
+    /**
+     * Get environment.
      *
      * @param string $key
+     *
      * @return mixed
      */
-/*
-    public static function getEnv($key)
-    {
-        switch (true) {
-            case array_key_exists($key, $_ENV):
-                return $_ENV[$key];
-            case array_key_exists($key, $_SERVER);
-                return $_SERVER[$key];
-            default:
-                return getenv($key);
-        }
-    }*/
-
-
+    /*
+        public static function getEnv($key)
+        {
+            switch (true) {
+                case array_key_exists($key, $_ENV):
+                    return $_ENV[$key];
+                case array_key_exists($key, $_SERVER);
+                    return $_SERVER[$key];
+                default:
+                    return getenv($key);
+            }
+        }*/
 
     /**
      * Retrieve the value of the specified environment variable, translating
@@ -222,45 +222,46 @@ class Environment implements EnvironmentInterface
      *   value that only contains whitespace).
      *
      * @param string $varname The name of the desired environment variable.
-     * @param mixed $default The default value to return if the environment
-     *     variable is not set or its value only contains whitespace.
+     * @param mixed  $default The default value to return if the environment
+     *                        variable is not set or its value only contains whitespace.
+     *
      * @return mixed The resulting value (if set to more than whitespace), or
-     *     the given default value (if any, otherwise null).
+     *               the given default value (if any, otherwise null).
      */
-/*
-    public static function get($varname, $default = null)
-    {
-        $originalValue = \getenv($varname);
+    /*
+        public static function get($varname, $default = null)
+        {
+            $originalValue = \getenv($varname);
 
-        if ($originalValue === false) {
-            return $default;
-        }
+            if ($originalValue === false) {
+                return $default;
+            }
 
-        $trimmedValue = \trim($originalValue);
+            $trimmedValue = \trim($originalValue);
 
-        if ($trimmedValue === '') {
-            return $default;
-        }
+            if ($trimmedValue === '') {
+                return $default;
+            }
 
-        $lowercasedTrimmedValue = \strtolower($trimmedValue);
+            $lowercasedTrimmedValue = \strtolower($trimmedValue);
 
-        if ($lowercasedTrimmedValue === 'false') {
-            return false;
-        } elseif ($lowercasedTrimmedValue === 'true') {
-            return true;
-        } elseif ($lowercasedTrimmedValue === 'null') {
-            return null;
-        }
+            if ($lowercasedTrimmedValue === 'false') {
+                return false;
+            } elseif ($lowercasedTrimmedValue === 'true') {
+                return true;
+            } elseif ($lowercasedTrimmedValue === 'null') {
+                return null;
+            }
 
-        return $trimmedValue;
-    }*/
+            return $trimmedValue;
+        }*/
 
     /**
-     * Is running through command line
+     * Is running through command line.
      *
-     * @return  bool
+     * @return bool
      */
-    static public function isCLI(): bool
+    public static function isCLI(): bool
     {
         if ((defined('PHP_SAPI') && PHP_SAPI == 'cli') || (isset($_SERVER['argc']) && $_SERVER['argc'] >= 1)) {
             return true;
@@ -273,6 +274,7 @@ class Environment implements EnvironmentInterface
      * Return true if PHP running in CLI mode.
      *
      * @codeCoverageIgnore
+     *
      * @return bool
      */
     public static function isCLI2(): bool
@@ -286,6 +288,7 @@ class Environment implements EnvironmentInterface
 
     /**
      * Check, if possible, that this execution was triggered by a command line.
+     *
      * @return bool
      */
     public static function isCommandLine(): bool
@@ -293,11 +296,10 @@ class Environment implements EnvironmentInterface
         return PHP_SAPI == 'cli';
     }
 
-/*
-    public static function cliMode(): bool
-    {
-        return PHP_SAPI == 'cli';
-    }
-*/
-
+    /*
+        public static function cliMode(): bool
+        {
+            return PHP_SAPI == 'cli';
+        }
+    */
 }

@@ -4,29 +4,21 @@ declare(strict_types=1);
 
 namespace Chiron;
 
-use Chiron\Config\ConfigInterface;
+use Chiron\Boot\BootloadManager;
+use Chiron\Boot\Directories;
+use Chiron\Boot\DirectoriesInterface;
+use Chiron\Boot\Environment;
 use Chiron\Config\ConfigManager;
 use Chiron\Container\Container;
-use Chiron\Http\Emitter\ResponseEmitter;
-use Chiron\Pipe\PipelineBuilder;
 use Chiron\Provider\ConfigManagerServiceProvider;
 use Chiron\Provider\DotEnvServiceProvider;
 use Chiron\Provider\ErrorHandlerServiceProvider;
 use Chiron\Provider\HttpFactoriesServiceProvider;
 use Chiron\Provider\LoggerServiceProvider;
 use Chiron\Provider\MiddlewaresServiceProvider;
-use Chiron\Router\FastRoute\Provider\FastRouteRouterServiceProvider;
 use Chiron\Provider\ServerRequestCreatorServiceProvider;
-use Chiron\Router\RouterInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Log\LoggerInterface;
-use Chiron\Boot\DirectoriesInterface;
-use Chiron\Boot\Directories;
-use Chiron\Boot\EnvironmentInterface;
-use Chiron\Boot\Environment;
-use Chiron\Boot\BootloadManager;
 
 //https://github.com/laravel/lumen-framework/blob/5.8/src/Application.php
 
@@ -38,12 +30,13 @@ class AppFactory
      * @var string
      */
     private $basePath;
+
     private $container;
 
     /**
      * Container constructor.
      *
-     * @param array $definitions
+     * @param array                     $definitions
      * @param ServiceProviderInterace[] $providers
      *
      * @throws InvalidConfigException
@@ -89,7 +82,6 @@ class AppFactory
         $this->container->share(Kernel::class, $kernel);
         $this->container->alias('kernel', Kernel::class);
 
-
         $bootload = new BootloadManager($this->container);
 
         $bootload->register(DotEnvServiceProvider::class);
@@ -102,16 +94,17 @@ class AppFactory
      * Normalizes directory list and adds all required aliases.
      *
      * @param array $directories
+     *
      * @return array
      */
     protected function mapDirectories(array $directories): array
     {
-        if (!isset($directories['root'])) {
+        if (! isset($directories['root'])) {
             //throw new LogicException("Missing required directory 'root'.");
             $directories['root'] = $this->basePath();
         }
 
-        if (!isset($directories['app'])) {
+        if (! isset($directories['app'])) {
             $directories['app'] = $directories['root'] . '/app/';
         }
 
@@ -149,8 +142,7 @@ class AppFactory
     /**
      * Load a configuration file into the application.
      *
-     * @param  string  $name
-     * @return void
+     * @param string $name
      */
     public function configure($name)
     {
@@ -163,28 +155,30 @@ class AppFactory
             $this->make('config')->set($name, require $path);
         }
     }
+
     /**
      * Get the path to the given configuration file.
      *
      * If no name is provided, then we'll return the path to the config folder.
      *
-     * @param  string|null  $name
+     * @param string|null $name
+     *
      * @return string
      */
     public function getConfigurationPath($name = null)
     {
         if (! $name) {
-            $appConfigDir = $this->basePath('config').'/';
+            $appConfigDir = $this->basePath('config') . '/';
             if (file_exists($appConfigDir)) {
                 return $appConfigDir;
-            } elseif (file_exists($path = __DIR__.'/../config/')) {
+            } elseif (file_exists($path = __DIR__ . '/../config/')) {
                 return $path;
             }
         } else {
-            $appConfigPath = $this->basePath('config').'/'.$name.'.php';
+            $appConfigPath = $this->basePath('config') . '/' . $name . '.php';
             if (file_exists($appConfigPath)) {
                 return $appConfigPath;
-            } elseif (file_exists($path = __DIR__.'/../config/'.$name.'.php')) {
+            } elseif (file_exists($path = __DIR__ . '/../config/' . $name . '.php')) {
                 return $path;
             }
         }
@@ -197,10 +191,10 @@ class AppFactory
      */
     protected function getLanguagePath()
     {
-        if (is_dir($langPath = $this->basePath().'/resources/lang')) {
+        if (is_dir($langPath = $this->basePath() . '/resources/lang')) {
             return $langPath;
         } else {
-            return __DIR__.'/../resources/lang';
+            return __DIR__ . '/../resources/lang';
         }
     }
 
@@ -211,76 +205,79 @@ class AppFactory
      */
     public function path()
     {
-        return $this->basePath.DIRECTORY_SEPARATOR.'app';
+        return $this->basePath . DIRECTORY_SEPARATOR . 'app';
     }
+
     /**
      * Get the base path for the application.
      *
-     * @param  string|null  $path
+     * @param string|null $path
+     *
      * @return string
      */
     public function basePath($path = null)
     {
         if (isset($this->basePath)) {
-            return $this->basePath.($path ? '/'.$path : $path);
+            return $this->basePath . ($path ? '/' . $path : $path);
         }
         //if ($this->runningInConsole()) {
         //    $this->basePath = getcwd();
         //} else {
-            $this->basePath = realpath(getcwd().'/../');
+        $this->basePath = realpath(getcwd() . '/../');
         //}
         return $this->basePath($path);
     }
+
     /**
      * Get the path to the database directory.
      *
-     * @param  string  $path
+     * @param string $path
+     *
      * @return string
      */
     public function databasePath($path = '')
     {
-        return $this->basePath.DIRECTORY_SEPARATOR.'database'.($path ? DIRECTORY_SEPARATOR.$path : $path);
+        return $this->basePath . DIRECTORY_SEPARATOR . 'database' . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 
     /**
      * Get the path to the resources directory.
      *
-     * @param  string|null  $path
+     * @param string|null $path
+     *
      * @return string
      */
     public function resourcePath($path = '')
     {
-        return $this->basePath.DIRECTORY_SEPARATOR.'resources'.($path ? DIRECTORY_SEPARATOR.$path : $path);
+        return $this->basePath . DIRECTORY_SEPARATOR . 'resources' . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
 
     /**
      * Get the storage path for the application.
      *
-     * @param  string|null  $path
+     * @param string|null $path
+     *
      * @return string
      */
     public function storagePath($path = '')
     {
-        return ($this->storagePath ?: $this->basePath.DIRECTORY_SEPARATOR.'storage').($path ? DIRECTORY_SEPARATOR.$path : $path);
+        return ($this->storagePath ?: $this->basePath . DIRECTORY_SEPARATOR . 'storage') . ($path ? DIRECTORY_SEPARATOR . $path : $path);
     }
+
     /**
      * Set the storage directory.
      *
-     * @param  string  $path
+     * @param string $path
+     *
      * @return $this
      */
     public function useStoragePath($path)
     {
         $this->storagePath = $path;
         $this->instance('path.storage', $path);
+
         return $this;
     }
-
-
-
-
-
-
 
     /**
      * Get or check the current application environment.
@@ -408,5 +405,4 @@ class AppFactory
     {
         return $this->getConfig()->get('app.settings.basePath');
     }
-
 }

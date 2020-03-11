@@ -4,29 +4,22 @@ declare(strict_types=1);
 
 namespace Chiron\Console;
 
-use Psr\Container\ContainerExceptionInterface;
-use Psr\Container\ContainerInterface;
-use Symfony\Component\Console\Input\ArgvInput;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\ConsoleOutput;
-use Symfony\Component\Console\Output\OutputInterface;
-use Chiron\Http\DispatcherInterface;
 use Chiron\Boot\Environment;
-use Throwable;
+use Chiron\Http\DispatcherInterface;
 
 /**
  * Manages Console commands and exception. Lazy loads console service.
  */
 final class ConsoleDispatcher implements DispatcherInterface
 {
-
     /** @var Console */
     private $console;
+
     /** @var Environment */
     private $env;
 
     /**
-     * @param Console   $console
+     * @param Console $console
      */
     public function __construct(Console $console, Environment $env)
     {
@@ -35,7 +28,7 @@ final class ConsoleDispatcher implements DispatcherInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function dispatch(): int
     {
@@ -43,7 +36,7 @@ final class ConsoleDispatcher implements DispatcherInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function canDispatch(): bool
     {

@@ -11,7 +11,6 @@ namespace Windwalker\Core\Utilities\Debug;
 use Windwalker\Data\Data;
 use Windwalker\String\Mbstring;
 use Windwalker\String\Str;
-use Windwalker\String\StringHelper;
 use Windwalker\String\Utf8String;
 use Windwalker\Utilities\Reflection\ReflectionHelper;
 
@@ -25,12 +24,12 @@ use Windwalker\Utilities\Reflection\ReflectionHelper;
 class BacktraceHelper
 {
     /**
-     * whoCallMe
+     * whoCallMe.
      *
      * @param int  $backwards
      * @param bool $replaceRoot
      *
-     * @return  array
+     * @return array
      */
     public static function whoCallMe($backwards = 2, bool $replaceRoot = true)
     {
@@ -38,12 +37,12 @@ class BacktraceHelper
     }
 
     /**
-     * normalizeBacktrace
+     * normalizeBacktrace.
      *
      * @param array $trace
      * @param bool  $replaceRoot
      *
-     * @return  array
+     * @return array
      */
     public static function normalizeBacktrace(array $trace, bool $replaceRoot = true)
     {
@@ -79,21 +78,21 @@ class BacktraceHelper
         }
 
         return [
-            'file' => $file,
+            'file'     => $file,
             'function' => ($trace['class'] ? $trace['class'] . $trace['type'] : null) . $trace['function'] .
                 sprintf('(%s)', implode(', ', $args)),
             'pathname' => $trace['file'],
-            'line' => $trace['line']
+            'line'     => $trace['line'],
         ];
     }
 
     /**
-     * normalizeBacktraces
+     * normalizeBacktraces.
      *
      * @param array $traces
      * @param bool  $replaceRoot
      *
-     * @return  array
+     * @return array
      */
     public static function normalizeBacktraces(array $traces, bool $replaceRoot = true)
     {
@@ -107,13 +106,13 @@ class BacktraceHelper
     }
 
     /**
-     * traceAsString
+     * traceAsString.
      *
      * @param int   $i
      * @param array $trace
      * @param bool  $replaceRoot
      *
-     * @return  string
+     * @return string
      *
      * @since  3.5.7
      */
@@ -130,11 +129,11 @@ class BacktraceHelper
     }
 
     /**
-     * replaceRoot
+     * replaceRoot.
      *
      * @param string $file
      *
-     * @return  string
+     * @return string
      */
     public static function replaceRoot($file)
     {

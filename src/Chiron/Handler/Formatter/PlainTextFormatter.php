@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Formatter;
 
-use Chiron\Http\Exception\HttpException;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-use function trim;
 
 //https://github.com/rudolfcms/rudolf/blob/d7cd824d8c9553fd95eea4570160a153b37fd7c4/src/component/ErrorHandler/Handler/PlainTextHandler.php
 class PlainTextFormatter extends AbstractFormatter

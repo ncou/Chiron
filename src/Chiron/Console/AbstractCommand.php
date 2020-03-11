@@ -5,18 +5,14 @@ declare(strict_types=1);
 namespace Chiron\Console;
 
 use Chiron\Invoker\Invoker;
+use LogicException;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
-use Symfony\Component\Console\Output\NullOutput;
-use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use LogicException;
 
 //https://github.com/spiral/console/blob/master/src/Command.php
 //https://github.com/spiral/console/blob/master/src/Traits/HelpersTrait.php
@@ -124,8 +120,6 @@ abstract class AbstractCommand extends SymfonyCommand
      * @param string          $string
      * @param null|string     $style          The output style of the string
      * @param null|int|string $verbosityLevel
-     *
-     * @return void
      */
     public function line(string $string, ?string $style = null): void
     {
@@ -220,6 +214,7 @@ abstract class AbstractCommand extends SymfonyCommand
      * @param array  $headers
      * @param array  $rows
      * @param string $style
+     *
      * @return Table
      */
     protected function table(array $headers, array $rows = [], string $style = 'default'): Table
@@ -232,7 +227,8 @@ abstract class AbstractCommand extends SymfonyCommand
     /**
      * Determine if the given argument is present.
      *
-     * @param  string|int  $name
+     * @param string|int $name
+     *
      * @return bool
      */
     public function hasArgument($name)
@@ -243,7 +239,8 @@ abstract class AbstractCommand extends SymfonyCommand
     /**
      * Get the value of a command argument.
      *
-     * @param  string|null  $key
+     * @param string|null $key
+     *
      * @return string|array|null
      */
     public function argument($key = null)
@@ -268,7 +265,8 @@ abstract class AbstractCommand extends SymfonyCommand
     /**
      * Determine if the given option is present.
      *
-     * @param  string  $name
+     * @param string $name
+     *
      * @return bool
      */
     public function hasOption($name)
@@ -279,7 +277,8 @@ abstract class AbstractCommand extends SymfonyCommand
     /**
      * Get the value of a command option.
      *
-     * @param  string|null  $key
+     * @param string|null $key
+     *
      * @return string|array|bool|null
      */
     public function option($key = null)
@@ -300,5 +299,4 @@ abstract class AbstractCommand extends SymfonyCommand
     {
         return $this->option();
     }
-
 }

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Chiron\Bootload;
 
 use Chiron\Invoker\Invoker;
-use Psr\Container\ContainerInterface;
 use InvalidArgumentException;
+use Psr\Container\ContainerInterface;
 
 //https://github.com/laravel/lumen-framework/blob/6.x/src/Application.php#L222
 final class BootloadManager
@@ -65,8 +65,10 @@ final class BootloadManager
         // TODO : voir si on garder ce throw car de toute facon le typehint va lever une exception.
         if (! $provider instanceof BootloaderInterface) {
             throw new InvalidArgumentException(
-                sprintf('The provider must be an instance of "%s" or a valid class name.',
-                    BootloaderInterface::class)
+                sprintf(
+                    'The provider must be an instance of "%s" or a valid class name.',
+                    BootloaderInterface::class
+                )
             );
         }
 
@@ -108,5 +110,4 @@ final class BootloadManager
             (new Invoker($this->container))->invoke([$provider, 'boot']);
         }
     }
-
 }

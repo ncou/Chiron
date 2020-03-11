@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Formatter;
 
-use function array_merge;
-use Chiron\Http\Exception\HttpException;
 use Chiron\Views\TemplateRendererInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;

@@ -12,19 +12,17 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
+use Chiron\Boot\DirectoriesInterface;
+use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use Chiron\Config\Config;
 use Chiron\Config\ConfigManager;
-use Chiron\Container\Container;
-use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
-use Psr\Container\ContainerInterface;
-use Chiron\Boot\DirectoriesInterface;
-use Chiron\Invoker\Support\Invokable;
 use Chiron\Container\BindingInterface;
+use Chiron\Container\Container;
+use Chiron\Invoker\Support\Invokable;
 use Closure;
-
+use Psr\Container\ContainerInterface;
 
 // TODO : créer une classe pour fabriquer l'application, et notamment pour injecter les routes et les middlewares si ils sont indiqués sous forme de texte dans la config => https://github.com/zendframework/zend-expressive/blob/85e2f607109ed8608f4004e622b2aad3bcaa8a4d/src/Container/ApplicationConfigInjectionDelegator.php
-
 
 //https://github.com/Anlamas/beejee/blob/master/src/Core/Config/ConfigServiceProvider.php
 
@@ -50,8 +48,8 @@ class ConfigManagerServiceProvider implements ServiceProviderInterface
         $container->alias('config', ConfigManager::class);
     }
 
-    private function configManager(DirectoriesInterface $directories): ConfigManager {
-
+    private function configManager(DirectoriesInterface $directories): ConfigManager
+    {
         $config = new ConfigManager();
 
         //if ($this->runningInConsole()) {
@@ -60,9 +58,8 @@ class ConfigManagerServiceProvider implements ServiceProviderInterface
         //    $this->basePath = realpath(getcwd().'/../');
         //}
 
-
         // init the default values
-        $config->loadConfig(__DIR__.'/../../../config/');
+        $config->loadConfig(__DIR__ . '/../../../config/');
 
         // read the config files in the config folder
         $config->loadConfig($directories->get('config'));

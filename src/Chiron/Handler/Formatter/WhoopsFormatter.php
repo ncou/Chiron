@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Chiron\Handler\Formatter;
 
+use Chiron\Support\VarDumper;
 use function class_exists;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run as Whoops;
-use Chiron\Support\VarDumper;
 
 // ajouter les informations sur la request de l'application !!!!
 //https://github.com/zendframework/zend-expressive/blob/master/src/Middleware/WhoopsErrorResponseGenerator.php#L95

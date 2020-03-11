@@ -4,18 +4,11 @@ declare(strict_types=1);
 
 namespace Chiron\Handler;
 
-use Chiron\Handler\Formatter\FormatterInterface;
-use Chiron\Handler\Formatter\PlainTextFormatter;
-use Chiron\Handler\Reporter\ReporterInterface;
-use Chiron\Http\Exception\HttpException;
 //use Chiron\Http\Psr\Response;
-use Exception;
-use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Throwable;
 use ErrorException;
+use Exception;
 use ReflectionProperty;
+use Throwable;
 
 //https://github.com/ventoviro/windwalker-core/blob/e70121c1767c58e9fa22c4f50261084502cf870a/src/Core/Utilities/Debug/BacktraceHelper.php
 
@@ -30,9 +23,9 @@ final class Debug
     /**
      * Calls a function and turns any PHP error into \ErrorException.
      *
-     * @return mixed What $function(...$arguments) returns
-     *
      * @throws \ErrorException When $function(...$arguments) triggers a PHP error
+     *
+     * @return mixed What $function(...$arguments) returns
      */
     public static function call(callable $function, ...$arguments)
     {
@@ -75,42 +68,42 @@ final class Debug
             // the error code should be in the error_reporting range
             //if (error_reporting() & $severity) {
 
-/*
-                if (__FILE__ === $file) {
-                    $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-                    $file = $trace[2]['file'] ?? $file;
-                    $line = $trace[2]['line'] ?? $line;
-                }
-*/
-                $exception = new ErrorException($message, 0, $severity, $file, $line);
+            /*
+                            if (__FILE__ === $file) {
+                                $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
+                                $file = $trace[2]['file'] ?? $file;
+                                $line = $trace[2]['line'] ?? $line;
+                            }
+            */
+            $exception = new ErrorException($message, 0, $severity, $file, $line);
 
-                // overwrite the "trace" property if the xdebug extension is enabled.
-                if (function_exists('xdebug_get_function_stack')) {
-                    $stack = [];
+            // overwrite the "trace" property if the xdebug extension is enabled.
+            if (function_exists('xdebug_get_function_stack')) {
+                $stack = [];
 
-                    // remove the useless last frame in the stack.
-                    foreach (array_slice(array_reverse(xdebug_get_function_stack()), 0, -1) as $row) {
-                        $frame = [
-                            'file' => $row['file'],
-                            'line' => $row['line'],
-                            'function' => $row['function'] ?? '*unknown*',
-                            'args' => [],
-                        ];
+                // remove the useless last frame in the stack.
+                foreach (array_slice(array_reverse(xdebug_get_function_stack()), 0, -1) as $row) {
+                    $frame = [
+                        'file'     => $row['file'],
+                        'line'     => $row['line'],
+                        'function' => $row['function'] ?? '*unknown*',
+                        'args'     => [],
+                    ];
 
-                        if (!empty($row['class'])) {
-                            $frame['type'] = isset($row['type']) && $row['type'] === 'dynamic' ? '->' : '::';
-                            $frame['class'] = $row['class'];
-                        }
-
-                        $stack[] = $frame;
+                    if (! empty($row['class'])) {
+                        $frame['type'] = isset($row['type']) && $row['type'] === 'dynamic' ? '->' : '::';
+                        $frame['class'] = $row['class'];
                     }
 
-                    $ref = new ReflectionProperty(Exception::class, 'trace');
-                    $ref->setAccessible(true);
-                    $ref->setValue($exception, $stack);
+                    $stack[] = $frame;
                 }
 
-                throw $exception;
+                $ref = new ReflectionProperty(Exception::class, 'trace');
+                $ref->setAccessible(true);
+                $ref->setValue($exception, $stack);
+            }
+
+            throw $exception;
             //}
         };
     }
@@ -134,9 +127,10 @@ final class Debug
     }
 
     /**
-     * Create plain text exception representation and return it as a string
+     * Create plain text exception representation and return it as a string.
      *
      * @param Throwable $e
+     *
      * @return string
      */
     // TODO : formatter aussi la previousException qui est portée dans l'exception d'entrée
@@ -160,17 +154,18 @@ final class Debug
             $e->getTraceAsString()
         );
 
-/*
-// TODO : permettre d'afficher ou non la stacktrace selon un paramétre booléen de la méthode
-        if ($includeStacktraces) {
-            $str .= "[stacktrace]\n".$e->getTraceAsString()."\n";
-        }*/
+        /*
+        // TODO : permettre d'afficher ou non la stacktrace selon un paramétre booléen de la méthode
+                if ($includeStacktraces) {
+                    $str .= "[stacktrace]\n".$e->getTraceAsString()."\n";
+                }*/
     }
 
     /**
      * Translate ErrorException code into the represented constant.
      *
      * @param int $error_code
+     *
      * @return string
      */
     // TODO : renommer la fonction en errorCodeToString() ????
@@ -183,54 +178,55 @@ final class Debug
             }
         }
 
-        return "E_UNKNOWN";
+        return 'E_UNKNOWN';
     }
 
-/*
-    public static function codeToString($code): string
-    {
-        switch ($code) {
-            case E_ERROR:
-                return 'E_ERROR';
-            case E_WARNING:
-                return 'E_WARNING';
-            case E_PARSE:
-                return 'E_PARSE';
-            case E_NOTICE:
-                return 'E_NOTICE';
-            case E_CORE_ERROR:
-                return 'E_CORE_ERROR';
-            case E_CORE_WARNING:
-                return 'E_CORE_WARNING';
-            case E_COMPILE_ERROR:
-                return 'E_COMPILE_ERROR';
-            case E_COMPILE_WARNING:
-                return 'E_COMPILE_WARNING';
-            case E_USER_ERROR:
-                return 'E_USER_ERROR';
-            case E_USER_WARNING:
-                return 'E_USER_WARNING';
-            case E_USER_NOTICE:
-                return 'E_USER_NOTICE';
-            case E_STRICT:
-                return 'E_STRICT';
-            case E_RECOVERABLE_ERROR:
-                return 'E_RECOVERABLE_ERROR';
-            case E_DEPRECATED:
-                return 'E_DEPRECATED';
-            case E_USER_DEPRECATED:
-                return 'E_USER_DEPRECATED';
+    /*
+        public static function codeToString($code): string
+        {
+            switch ($code) {
+                case E_ERROR:
+                    return 'E_ERROR';
+                case E_WARNING:
+                    return 'E_WARNING';
+                case E_PARSE:
+                    return 'E_PARSE';
+                case E_NOTICE:
+                    return 'E_NOTICE';
+                case E_CORE_ERROR:
+                    return 'E_CORE_ERROR';
+                case E_CORE_WARNING:
+                    return 'E_CORE_WARNING';
+                case E_COMPILE_ERROR:
+                    return 'E_COMPILE_ERROR';
+                case E_COMPILE_WARNING:
+                    return 'E_COMPILE_WARNING';
+                case E_USER_ERROR:
+                    return 'E_USER_ERROR';
+                case E_USER_WARNING:
+                    return 'E_USER_WARNING';
+                case E_USER_NOTICE:
+                    return 'E_USER_NOTICE';
+                case E_STRICT:
+                    return 'E_STRICT';
+                case E_RECOVERABLE_ERROR:
+                    return 'E_RECOVERABLE_ERROR';
+                case E_DEPRECATED:
+                    return 'E_DEPRECATED';
+                case E_USER_DEPRECATED:
+                    return 'E_USER_DEPRECATED';
+            }
+
+            return 'Unknown PHP error';
         }
-
-        return 'Unknown PHP error';
-    }
-*/
+    */
 
     //https://github.com/Seldaek/monolog/blob/f9d56fd2f5533322caccdfcddbb56aedd622ef1c/src/Monolog/Utils.php#L21
     public static function getClass($object): string
     {
         $class = get_class($object);
-        return 'c' === $class[0] && 0 === strpos($class, "class@anonymous\0") ? get_parent_class($class).'@anonymous' : $class;
+
+        return 'c' === $class[0] && 0 === strpos($class, "class@anonymous\0") ? get_parent_class($class) . '@anonymous' : $class;
     }
 
     /**
@@ -242,7 +238,7 @@ final class Debug
     {
         if (false !== strpos($message, "class@anonymous\0")) {
             $message = preg_replace_callback('/class@anonymous\x00.*?\.php(?:0x?|:)[0-9a-fA-F]++/', function ($m) {
-                return class_exists($m[0], false) ? get_parent_class($m[0]).'@anonymous' : $m[0];
+                return class_exists($m[0], false) ? get_parent_class($m[0]) . '@anonymous' : $m[0];
             }, $message);
         }
 
@@ -251,7 +247,8 @@ final class Debug
 
     /**
      * Starts/stops stopwatch.
-     * @return float   elapsed seconds
+     *
+     * @return float elapsed seconds
      */
     public static function timer(string $name = null): float
     {
@@ -259,13 +256,14 @@ final class Debug
         $now = microtime(true);
         $delta = isset($time[$name]) ? $now - $time[$name] : 0;
         $time[$name] = $now;
+
         return $delta;
     }
 
-
     /**
      * Detects debug mode by IP address.
-     * @param  string|array  $list  IP addresses or computer names whitelist detection
+     *
+     * @param string|array $list IP addresses or computer names whitelist detection
      */
     public static function detectDebugMode($list = null): bool
     {
@@ -276,19 +274,16 @@ final class Debug
         $list = is_string($list)
             ? preg_split('#[,\s]+#', $list)
             : (array) $list;
-        if (!isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !isset($_SERVER['HTTP_FORWARDED'])) {
+        if (! isset($_SERVER['HTTP_X_FORWARDED_FOR']) && ! isset($_SERVER['HTTP_FORWARDED'])) {
             $list[] = '127.0.0.1';
             $list[] = '::1';
             $list[] = '[::1]'; // workaround for PHP < 7.3.4
         }
+
         return in_array($addr, $list, true) || in_array("$secret@$addr", $list, true);
     }
 
-
     /**
-     * @return void
-     * Pretty-printer for debug_backtrace
-     *
      * @suppress PhanUnreferencedPublicMethod
      */
     //https://github.com/phan/phan/blob/master/src/Phan/Debug.php#L237
@@ -296,7 +291,7 @@ final class Debug
     {
         $bt = \debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS, $levels + 1);
         foreach ($bt as $level => $context) {
-            if (!$level) {
+            if (! $level) {
                 continue;
             }
             $file = $context['file'] ?? 'unknown';
@@ -304,7 +299,7 @@ final class Debug
             $class = $context['class'] ?? 'global';
             $function = $context['function'] ?? '';
 
-            echo "#" . ($level - 1) . " $file:$line $class ";
+            echo '#' . ($level - 1) . " $file:$line $class ";
             if (isset($context['type'])) {
                 echo $context['class'] . $context['type'];
             }
@@ -315,6 +310,7 @@ final class Debug
 
     /**
      * Print a message with the file and line.
+     *
      * @suppress PhanUnreferencedPublicMethod added for debugging
      */
     //https://github.com/phan/phan/blob/master/src/Phan/Debug.php#L465

@@ -4,26 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron;
 
-use Chiron\Config\ConfigInterface;
-use Chiron\Config\ConfigManager;
-use Chiron\Container\Container;
-use Chiron\Http\Emitter\ResponseEmitter;
-use Chiron\Http\Emitter\SapiEmitter;
-use Chiron\Http\Http;
-use Chiron\Http\DispatcherInterface;
-use Chiron\Router\RouterInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Log\LoggerInterface;
-use Chiron\Boot\DirectoriesInterface;
 use Chiron\Boot\Directories;
-use Chiron\Boot\EnvironmentInterface;
-use Chiron\Boot\Environment;
-use Nyholm\Psr7Server\ServerRequestCreatorInterface;
-use RuntimeException;
-use Chiron\Container\SingletonInterface;
 use Chiron\Boot\Filesystem;
+use RuntimeException;
 
 final class PackageManifest
 {
@@ -31,14 +14,17 @@ final class PackageManifest
      * @var array
      */
     private $manifest;
+
     /**
      * @var string
      */
     private $runtimeDir;
+
     /**
      * @var string
      */
     private $vendorDir;
+
     /**
      * @var string
      */
@@ -48,7 +34,7 @@ final class PackageManifest
     {
         $this->files = $files;
         $this->runtimeDir = $directories->get('runtime');
-        $this->vendorDir =  $directories->get('vendor');
+        $this->vendorDir = $directories->get('vendor');
 
         $this->manifestPath = $this->runtimeDir . '/packages.php';
     }
@@ -71,33 +57,32 @@ final class PackageManifest
         $manifest = [];
 
         foreach ($installedPackages as $package) {
-            if (!empty($package['extra']['chiron'])) {
+            if (! empty($package['extra']['chiron'])) {
                 $packageInfo = $package['extra']['chiron'];
 
                 $manifest[$package['name']] = [];
 
-                if (!empty($packageInfo['providers'])) {
+                if (! empty($packageInfo['providers'])) {
                     $manifest[$package['name']]['providers'] = $packageInfo['providers'];
                 }
 
-                if (!empty($packageInfo['aliases'])) {
+                if (! empty($packageInfo['aliases'])) {
                     $manifest[$package['name']]['aliases'] = $packageInfo['aliases'];
                 }
 
-                if (!empty($packageInfo['bootloaders'])) {
+                if (! empty($packageInfo['bootloaders'])) {
                     $manifest[$package['name']]['bootloaders'] = $packageInfo['bootloaders'];
                 }
             }
         }
 
         $this->write($manifest);
-
     }
 
     private function write(array $manifest)
     {
         if (! is_writable($this->runtimeDir)) {
-            throw new RuntimeException('The '. $this->runtimeDir . ' directory must be present and writable.');
+            throw new RuntimeException('The ' . $this->runtimeDir . ' directory must be present and writable.');
         }
 
         file_put_contents($this->manifestPath, '<?php return ' . var_export($manifest, true) . ';');
@@ -125,9 +110,9 @@ final class PackageManifest
         $data = [];
 
         foreach ($manifest as $package => $item) {
-           if (isset($item[$key])) {
+            if (isset($item[$key])) {
                 $data = array_merge($data, (array) $item[$key]);
-           }
+            }
         }
 
         return $data;

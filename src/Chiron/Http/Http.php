@@ -4,25 +4,15 @@ declare(strict_types=1);
 
 namespace Chiron\Http;
 
+use Chiron\Container\SingletonInterface;
+use Chiron\Router\RequestHandler;
+use Chiron\Router\RouterInterface;
+use Chiron\Router\RoutingHandler;
 use Chiron\Router\Traits\MiddlewareAwareInterface;
 use Chiron\Router\Traits\MiddlewareAwareTrait;
-use Chiron\Router\Traits\RouteCollectionInterface;
-use Chiron\Router\Traits\RouteCollectionTrait;
-use Chiron\Pipe\PipelineBuilder;
-use Chiron\Router\RouterInterface;
-use Chiron\Router\Route;
-use Chiron\Router\Method;
-use Chiron\Router\RequestHandler;
-use Chiron\Router\RouteCollectorInterface;
-use Chiron\Router\RouteGroup;
-use Chiron\Router\MatchingResult;
-use Chiron\Router\RoutingHandler;
-use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use RuntimeException;
 use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Container\SingletonInterface;
 
 // TODO : faire étendre cette classe de la classe Pipeline::class ?????
 // TODO : utiliser une SplPriorityQueue pour ajouter des middlewares dans cette classe ????
@@ -63,5 +53,4 @@ class Http implements RequestHandlerInterface, MiddlewareAwareInterface, Singlet
 
         return $handler->handle($request);
     }
-
 }

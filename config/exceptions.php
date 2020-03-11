@@ -12,7 +12,6 @@ declare(strict_types=1);
  */
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Exception Transformers
@@ -110,5 +109,4 @@ return [
         'Symfony\Component\Debug\Exception\FatalErrorException'                   => 'critical',
         'Exception'                                                               => 'error',
     ],
-
 ];

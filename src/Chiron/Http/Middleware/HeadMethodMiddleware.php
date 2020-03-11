@@ -9,13 +9,7 @@ namespace Chiron\Http\Middleware;
 
 //namespace Middlewares;
 
-use Chiron\Http\Exception\Client\MethodNotAllowedHttpException;
-use Chiron\Http\Exception\Client\NotFoundHttpException;
 //use Chiron\Http\Psr\Response;
-use Chiron\Router\Route;
-use Chiron\Router\RouteResult;
-use Chiron\Router\RouterInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;

@@ -21,6 +21,7 @@ final class Directories implements DirectoriesInterface
 {
     /** @var array */
     private $directories = [];
+
     /**
      * @param array $directories
      */
@@ -30,6 +31,7 @@ final class Directories implements DirectoriesInterface
             $this->set($name, $directory);
         }
     }
+
     /**
      * {@inheritdoc}
      */
@@ -44,6 +46,7 @@ final class Directories implements DirectoriesInterface
 
         return $this;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -55,6 +58,7 @@ final class Directories implements DirectoriesInterface
 
         return $this->directories[$name];
     }
+
     /**
      * {@inheritdoc}
      */
@@ -62,6 +66,7 @@ final class Directories implements DirectoriesInterface
     {
         return array_key_exists($name, $this->directories);
     }
+
     /**
      * {@inheritdoc}
      */

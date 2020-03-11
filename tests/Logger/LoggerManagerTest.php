@@ -4,26 +4,20 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Logger;
 
-use Monolog\Logger as Monolog;
-use Chiron\Logger\LoggerManager;
 use Chiron\Container\Container;
-use Psr\Log\LoggerInterface;
-use Monolog\Handler\StreamHandler;
-use Monolog\Handler\SyslogHandler;
+use Chiron\Logger\LoggerManager;
+use Monolog\Formatter\HtmlFormatter;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Formatter\NormalizerFormatter;
 use Monolog\Handler\LogEntriesHandler;
 use Monolog\Handler\NewRelicHandler;
-use Monolog\Formatter\LineFormatter;
-use Monolog\Formatter\HtmlFormatter;
-use Monolog\Formatter\NormalizerFormatter;
-use Monolog\Handler\ErrorLogHandler;
-use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\RotatingFileHandler;
-use Monolog\Handler\SlackWebhookHandler;
-use Monolog\Handler\WhatFailureGroupHandler;
-use Monolog\Formatter\FormatterInterface;
+use Monolog\Handler\StreamHandler;
+use Monolog\Handler\SyslogHandler;
+use Monolog\Logger as Monolog;
+use Psr\Log\LoggerInterface;
 use ReflectionProperty;
 
-class LoadManagerTest extends \PHPUnit\Framework\TestCase
+class LoggerManagerTest extends \PHPUnit\Framework\TestCase
 {
     protected $app;
 
@@ -34,15 +28,14 @@ class LoadManagerTest extends \PHPUnit\Framework\TestCase
         //$this->tmpFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'log';
     }
 
-
     public function testLoggerManagerCachesLoggerInstances()
     {
         $conf = ['channels' => [
-        'single' => [
-            'driver' => 'single',
-            'path' => './logs/chiron.log',
-            'level' => 'debug',
-        ]]];
+            'single' => [
+                'driver' => 'single',
+                'path'   => './logs/chiron.log',
+                'level'  => 'debug',
+            ], ]];
 
         $manager = new LoggerManager($this->container, $conf, __DIR__);
         $logger1 = $manager->channel('single');
@@ -53,34 +46,30 @@ class LoadManagerTest extends \PHPUnit\Framework\TestCase
 
     public function testStackChannel()
     {
-
         $conf = ['channels' => [
-        'stack' => [
-            'driver' => 'stack',
-            'channels' => ['stderr', 'stdout'],
-        ],
-        'stderr' => [
-            'driver' => 'monolog',
-            'handler' => StreamHandler::class,
-            'level' => 'notice',
-            'handler_with' => [
-                'stream' => 'php://stderr',
-                'bubble' => false,
+            'stack' => [
+                'driver'   => 'stack',
+                'channels' => ['stderr', 'stdout'],
             ],
-        ],
-        'stdout' => [
-            'driver' => 'monolog',
-            'handler' => StreamHandler::class,
-            'level' => 'info',
-            'handler_with' => [
-                'stream' => 'php://stdout',
-                'bubble' => true,
+            'stderr' => [
+                'driver'       => 'monolog',
+                'handler'      => StreamHandler::class,
+                'level'        => 'notice',
+                'handler_with' => [
+                    'stream' => 'php://stderr',
+                    'bubble' => false,
+                ],
             ],
-        ],
-
-    ]];
-
-
+            'stdout' => [
+                'driver'       => 'monolog',
+                'handler'      => StreamHandler::class,
+                'level'        => 'info',
+                'handler_with' => [
+                    'stream' => 'php://stdout',
+                    'bubble' => true,
+                ],
+            ],
+        ]];
 
         $manager = new LoggerManager($this->container, $conf, __DIR__);
         // create logger with handler specified from configuration
@@ -96,24 +85,20 @@ class LoadManagerTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($handlers[1]->getBubble());
     }
 
-
-
     public function testLoggerManagerCreatesConfiguredMonologHandler()
     {
-
         $conf = ['channels' => [
-        'nonbubblingstream' => [
-            'driver' => 'monolog',
-            'name' => 'foobar',
-            'handler' => StreamHandler::class,
-            'level' => 'notice',
-            'handler_with' => [
-                'stream' => 'php://stderr',
-                'bubble' => false,
+            'nonbubblingstream' => [
+                'driver'       => 'monolog',
+                'name'         => 'foobar',
+                'handler'      => StreamHandler::class,
+                'level'        => 'notice',
+                'handler_with' => [
+                    'stream' => 'php://stderr',
+                    'bubble' => false,
+                ],
             ],
-        ]
-
-    ]];
+        ]];
 
         $manager = new LoggerManager($this->container, $conf, __DIR__);
         // create logger with handler specified from configuration
@@ -131,18 +116,17 @@ class LoadManagerTest extends \PHPUnit\Framework\TestCase
 
         // === second test ===
         $conf = ['channels' => [
-        'logentries' => [
-            'driver' => 'monolog',
-            'name' => 'le',
-            'handler' => LogEntriesHandler::class,
-            'handler_with' => [
-                'token' => '123456789',
+            'logentries' => [
+                'driver'       => 'monolog',
+                'name'         => 'le',
+                'handler'      => LogEntriesHandler::class,
+                'handler_with' => [
+                    'token' => '123456789',
+                ],
             ],
-        ]
+        ]];
 
-    ]];
-
-    $manager = new LoggerManager($this->container, $conf, __DIR__);
+        $manager = new LoggerManager($this->container, $conf, __DIR__);
 
         $logger = $manager->channel('logentries');
         $handlers = $logger->getHandlers();
@@ -155,15 +139,13 @@ class LoadManagerTest extends \PHPUnit\Framework\TestCase
     public function testLoggerManagerCreatesMonologHandlerWithConfiguredFormatter()
     {
         $conf = ['channels' => [
-        'newrelic' => [
-            'driver' => 'monolog',
-            'name' => 'nr',
-            'handler' => NewRelicHandler::class,
-            'formatter' => 'default',
-        ]
-
-    ]];
-
+            'newrelic' => [
+                'driver'    => 'monolog',
+                'name'      => 'nr',
+                'handler'   => NewRelicHandler::class,
+                'formatter' => 'default',
+            ],
+        ]];
 
         $manager = new LoggerManager($this->container, $conf, __DIR__);
         // create logger with handler specified from configuration
@@ -174,18 +156,16 @@ class LoadManagerTest extends \PHPUnit\Framework\TestCase
 
         // === second test ===
         $conf = ['channels' => [
-        'newrelic2' => [
-            'driver' => 'monolog',
-            'name' => 'nr',
-            'handler' => NewRelicHandler::class,
-            'formatter' => HtmlFormatter::class,
-            'formatter_with' => [
-                'dateFormat' => 'Y/m/d--test',
+            'newrelic2' => [
+                'driver'         => 'monolog',
+                'name'           => 'nr',
+                'handler'        => NewRelicHandler::class,
+                'formatter'      => HtmlFormatter::class,
+                'formatter_with' => [
+                    'dateFormat' => 'Y/m/d--test',
+                ],
             ],
-        ]
-
-    ]];
-
+        ]];
 
         $manager = new LoggerManager($this->container, $conf, __DIR__);
         $logger = $manager->channel('newrelic2');
@@ -200,16 +180,13 @@ class LoadManagerTest extends \PHPUnit\Framework\TestCase
 
     public function testLoggerManagerCreateSingleDriverWithConfiguredFormatter()
     {
-
-$conf = ['channels' => [
-        'defaultsingle' => [
-            'driver' => 'single',
-            'name' => 'ds',
-            'path' => './logs/chiron.log',
-        ]
-
-    ]];
-
+        $conf = ['channels' => [
+            'defaultsingle' => [
+                'driver' => 'single',
+                'name'   => 'ds',
+                'path'   => './logs/chiron.log',
+            ],
+        ]];
 
         $manager = new LoggerManager($this->container, $conf, __DIR__);
         // create logger with handler specified from configuration
@@ -221,17 +198,16 @@ $conf = ['channels' => [
 
         // === second test ===
         $conf = ['channels' => [
-        'formattedsingle' => [
-            'driver' => 'single',
-            'name' => 'fs',
-            'path' => './logs/chiron.log',
-            'formatter' => HtmlFormatter::class,
-            'formatter_with' => [
-                'dateFormat' => 'Y/m/d--test',
+            'formattedsingle' => [
+                'driver'         => 'single',
+                'name'           => 'fs',
+                'path'           => './logs/chiron.log',
+                'formatter'      => HtmlFormatter::class,
+                'formatter_with' => [
+                    'dateFormat' => 'Y/m/d--test',
+                ],
             ],
-        ]
-
-    ]];
+        ]];
 
         $manager = new LoggerManager($this->container, $conf, __DIR__);
 
@@ -247,15 +223,13 @@ $conf = ['channels' => [
 
     public function testLoggerManagerCreateDailyDriverWithConfiguredFormatter()
     {
-
         $conf = ['channels' => [
-        'defaultdaily' => [
-            'driver' => 'daily',
-            'name' => 'dd',
-            'path' => './logs/chiron.log',
-        ]
-
-    ]];
+            'defaultdaily' => [
+                'driver' => 'daily',
+                'name'   => 'dd',
+                'path'   => './logs/chiron.log',
+            ],
+        ]];
 
         $manager = new LoggerManager($this->container, $conf, __DIR__);
         // create logger with handler specified from configuration
@@ -267,20 +241,16 @@ $conf = ['channels' => [
 
         // === second test ===
         $conf = ['channels' => [
-        'formatteddaily' => [
-            'driver' => 'daily',
-            'name' => 'fd',
-            'path' => './logs/chiron.log',
-            'formatter' => HtmlFormatter::class,
-            'formatter_with' => [
-                'dateFormat' => 'Y/m/d--test',
+            'formatteddaily' => [
+                'driver'         => 'daily',
+                'name'           => 'fd',
+                'path'           => './logs/chiron.log',
+                'formatter'      => HtmlFormatter::class,
+                'formatter_with' => [
+                    'dateFormat' => 'Y/m/d--test',
+                ],
             ],
-        ]
-
-    ]];
-
-
-
+        ]];
 
         $manager = new LoggerManager($this->container, $conf, __DIR__);
         $logger = $manager->channel('formatteddaily');
@@ -296,13 +266,11 @@ $conf = ['channels' => [
     public function testLoggerManagerCreateSyslogDriverWithConfiguredFormatter()
     {
         $conf = ['channels' => [
-        'defaultsyslog' => [
-            'driver' => 'syslog',
-            'name' => 'ds',
-        ]
-
-    ]];
-
+            'defaultsyslog' => [
+                'driver' => 'syslog',
+                'name'   => 'ds',
+            ],
+        ]];
 
         $manager = new LoggerManager($this->container, $conf, __DIR__);
         // create logger with handler specified from configuration
@@ -314,18 +282,15 @@ $conf = ['channels' => [
 
         // === second test ===
         $conf = ['channels' => [
-        'formattedsyslog' => [
-            'driver' => 'syslog',
-            'name' => 'fs',
-            'formatter' => HtmlFormatter::class,
-            'formatter_with' => [
-                'dateFormat' => 'Y/m/d--test',
+            'formattedsyslog' => [
+                'driver'         => 'syslog',
+                'name'           => 'fs',
+                'formatter'      => HtmlFormatter::class,
+                'formatter_with' => [
+                    'dateFormat' => 'Y/m/d--test',
+                ],
             ],
-        ]
-
-    ]];
-
-
+        ]];
 
         $manager = new LoggerManager($this->container, $conf, __DIR__);
         $logger = $manager->channel('formattedsyslog');

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Boot;
 
 use InvalidArgumentException;
+
 /**
  * Manages application directories.
  */
@@ -20,14 +21,16 @@ interface DirectoriesInterface
      * Get directory value.
      *
      * @param string $name
-     * @return string
      *
      * @throws InvalidArgumentException When no directory found.
+     *
+     * @return string
      */
     public function get(string $name): string;
 
     /**
      * @param string $name
+     *
      * @return bool
      */
     public function has(string $name): bool;

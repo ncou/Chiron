@@ -14,7 +14,8 @@ class Filesystem
     /**
      * Determine if the given path is a file.
      *
-     * @param  string  $filename
+     * @param string $filename
+     *
      * @return bool
      */
     public function isFile(string $filename): bool
@@ -22,9 +23,6 @@ class Filesystem
         return is_file($filename);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function exists(string $filename): bool
     {
         return file_exists($filename);
@@ -33,7 +31,8 @@ class Filesystem
     /**
      * Determine if a file or directory is missing.
      *
-     * @param  string  $filename
+     * @param string $filename
+     *
      * @return bool
      */
     public function missing(string $filename): bool
@@ -41,9 +40,6 @@ class Filesystem
         return ! $this->exists($filename);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function read(string $filename): string
     {
         if ($this->isFile($filename)) {
@@ -53,9 +49,6 @@ class Filesystem
         throw new FileNotFoundException($filename);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function md5(string $filename): string
     {
         if ($this->isFile($filename)) {
@@ -77,7 +70,8 @@ class Filesystem
     /**
      * Extract the file name from a file path.
      *
-     * @param  string  $filename
+     * @param string $filename
+     *
      * @return string
      */
     public function name(string $filename): string
@@ -88,7 +82,8 @@ class Filesystem
     /**
      * Extract the trailing name component from a file path.
      *
-     * @param  string  $filename
+     * @param string $filename
+     *
      * @return string
      */
     public function basename(string $filename): string
@@ -99,7 +94,8 @@ class Filesystem
     /**
      * Extract the parent directory from a file path.
      *
-     * @param  string  $filename
+     * @param string $filename
+     *
      * @return string
      */
     public function dirname(string $filename): string
@@ -110,7 +106,8 @@ class Filesystem
     /**
      * Extract the file extension from a file path.
      *
-     * @param  string  $filename
+     * @param string $filename
+     *
      * @return string
      */
     public function extension(string $filename): string
@@ -121,11 +118,10 @@ class Filesystem
     /**
      * Write the contents of a file, replacing it atomically if it already exists.
      *
-     * @param  string  $path
-     * @param  string  $content
-     * @return void
+     * @param string $path
+     * @param string $content
      */
-    public function write(string $path,string $content): void
+    public function write(string $path, string $content): void
     {
         // If the path already exists and is a symlink, get the real path...
         clearstatcache(true, $path);
@@ -145,10 +141,11 @@ class Filesystem
     /**
      * Get the returned value of a file.
      *
-     * @param  string  $filename
-     * @return mixed
+     * @param string $filename
      *
      * @throws FileNotFoundException
+     *
+     * @return mixed
      */
     public function getRequire(string $filename)
     {
@@ -158,6 +155,4 @@ class Filesystem
 
         throw new FileNotFoundException();
     }
-
-
 }

@@ -25,7 +25,7 @@ final class ResponseFactory implements ResponseFactoryInterface
 
     /**
      * @param ResponseFactoryInterface $factory
-     * @param array   $headers
+     * @param array                    $headers
      */
     public function __construct(ResponseFactoryInterface $factory, array $headers)
     {
@@ -40,6 +40,7 @@ final class ResponseFactory implements ResponseFactoryInterface
      *
      * @param int    $code
      * @param string $reasonPhrase
+     *
      * @return ResponseInterface
      */
     public function createResponse(int $code = 200, string $reasonPhrase = ''): ResponseInterface
@@ -56,7 +57,6 @@ final class ResponseFactory implements ResponseFactoryInterface
 
         return $response;
     }
-
 
     /**
      * Inject the provided Content-Type, if none is already present.
@@ -75,13 +75,10 @@ final class ResponseFactory implements ResponseFactoryInterface
         return $headers;
     }*/
 
-
-
-
     /** @var array */
     //protected $defaultResponseHeaders = [];
     /**
-     * Get current default response headers
+     * Get current default response headers.
      *
      * @return array
      */
@@ -91,7 +88,7 @@ final class ResponseFactory implements ResponseFactoryInterface
         return $this->defaultResponseHeaders;
     }*/
     /**
-     * Add or replace a default response header
+     * Add or replace a default response header.
      *
      * @param string $name
      * @param string $value
@@ -105,7 +102,7 @@ final class ResponseFactory implements ResponseFactoryInterface
         return $this;
     }*/
     /**
-     * Add multiple default response headers
+     * Add multiple default response headers.
      *
      * @param array $headers
      *
@@ -120,7 +117,7 @@ final class ResponseFactory implements ResponseFactoryInterface
         return $this;
     }*/
     /**
-     * Apply default response headers
+     * Apply default response headers.
      *
      * Headers that already exist on the response will NOT be replaced.
      *

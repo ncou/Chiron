@@ -11,8 +11,10 @@ abstract class AbstractFormatter implements FormatterInterface
 {
     /** @var int */
     protected $defaultErrorStatusCode = 500;
+
     /** @var string */
     protected $defaultErrorTitle = 'Chiron Application Error';
+
     /** @var string */
     //protected $defaultErrorDetail = 'A website error has occurred. Sorry for the temporary inconvenience.';
     protected $defaultErrorDetail = 'Whoops, looks like something went wrong.';
@@ -43,5 +45,4 @@ abstract class AbstractFormatter implements FormatterInterface
 
         return $this->defaultErrorStatusCode;
     }
-
 }

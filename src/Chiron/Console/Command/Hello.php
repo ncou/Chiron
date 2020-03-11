@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Chiron\Console\Command;
 
 use Chiron\Console\AbstractCommand;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 
 class Hello extends AbstractCommand
 {

@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Chiron\Config;
 
-use InvalidArgumentException;
-use LogicException;
-
-use ArrayIterator;
-use IteratorAggregate;
 use ArrayAccess;
+use ArrayIterator;
+use InvalidArgumentException;
+use IteratorAggregate;
+use LogicException;
 
 /**
  * Generic implementation of array based configuration.
@@ -70,6 +69,7 @@ abstract class AbstractInjectableConfig implements InjectableInterface, Iterator
     {
         return $this->config;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -77,16 +77,19 @@ abstract class AbstractInjectableConfig implements InjectableInterface, Iterator
     {
         return array_key_exists($offset, $this->config);
     }
+
     /**
      * {@inheritdoc}
      */
     public function offsetGet($offset)
     {
-        if (!$this->offsetExists($offset)) {
+        if (! $this->offsetExists($offset)) {
             throw new InvalidArgumentException("Undefined configuration key '{$offset}'");
         }
+
         return $this->config[$offset];
     }
+
     /**
      *{@inheritdoc}
      *
@@ -98,6 +101,7 @@ abstract class AbstractInjectableConfig implements InjectableInterface, Iterator
             'Unable to change configuration data, configs are treated as immutable by default'
         );
     }
+
     /**
      *{@inheritdoc}
      *
@@ -109,6 +113,7 @@ abstract class AbstractInjectableConfig implements InjectableInterface, Iterator
             'Unable to change configuration data, configs are treated as immutable by default'
         );
     }
+
     /**
      * {@inheritdoc}
      */
@@ -116,6 +121,7 @@ abstract class AbstractInjectableConfig implements InjectableInterface, Iterator
     {
         return new ArrayIterator($this->config);
     }
+
     /**
      * Restoring state.
      *
@@ -130,7 +136,7 @@ abstract class AbstractInjectableConfig implements InjectableInterface, Iterator
     }
 
     /**
-     * Get number of items in collection
+     * Get number of items in collection.
      *
      * @return int
      */

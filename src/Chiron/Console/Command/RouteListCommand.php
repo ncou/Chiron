@@ -122,11 +122,11 @@ class RouteListCommand extends AbstractCommand
         $actions = \explode('@', $route->getActionName());
 
         return $this->filterRoute([
-            'method' => $route->getMethods(),
-            'uri' => $route->getUri(),
-            'name' => \is_string($route->getName()) ? "<fg=green>{$route->getName()}</>" : '-',
+            'method'     => $route->getMethods(),
+            'uri'        => $route->getUri(),
+            'name'       => \is_string($route->getName()) ? "<fg=green>{$route->getName()}</>" : '-',
             'controller' => isset($actions[0]) ? "<fg=cyan>{$actions[0]}</>" : '-',
-            'action' => isset($actions[1]) ? "<fg=red>{$actions[1]}</>" : '-',
+            'action'     => isset($actions[1]) ? "<fg=red>{$actions[1]}</>" : '-',
         ]);
     }
 

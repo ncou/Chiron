@@ -12,8 +12,9 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Chiron\Container\Container;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
+use Chiron\Container\BindingInterface;
+use Chiron\Container\Container;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Nyholm\Psr7Server\ServerRequestCreatorInterface;
 use Psr\Container\ContainerInterface;
@@ -21,7 +22,6 @@ use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
-use Chiron\Container\BindingInterface;
 
 /**
  * Chiron server request creator services provider.
@@ -46,34 +46,30 @@ class ServerRequestCreatorServiceProvider implements ServiceProviderInterface
             return $requestCreator->fromGlobals();
         };*/
 
+        /*
+                $container->add(ServerRequestCreatorInterface::class, function ($container) {
 
-/*
-        $container->add(ServerRequestCreatorInterface::class, function ($container) {
 
+                    $serverRequestFactory = $container->get(ServerRequestFactoryInterface::class);
+                    $uriFactory = $container->get(UriFactoryInterface::class);
+                    $uploadedFileFactory = $container->get(UploadedFileFactoryInterface::class);
+                    $streamFactory = $container->get(StreamFactoryInterface::class);
 
-            $serverRequestFactory = $container->get(ServerRequestFactoryInterface::class);
-            $uriFactory = $container->get(UriFactoryInterface::class);
-            $uploadedFileFactory = $container->get(UploadedFileFactoryInterface::class);
-            $streamFactory = $container->get(StreamFactoryInterface::class);
+                    $requestCreator = new ServerRequestCreator(
+                        $serverRequestFactory,
+                        $uriFactory,
+                        $uploadedFileFactory,
+                        $streamFactory);
 
-            $requestCreator = new ServerRequestCreator(
-                $serverRequestFactory,
-                $uriFactory,
-                $uploadedFileFactory,
-                $streamFactory);
-
-            return $requestCreator->fromGlobals();
-        });
-*/
+                    return $requestCreator->fromGlobals();
+                });
+        */
 
         $container->add(ServerRequestCreatorInterface::class, ServerRequestCreator::class);
-
-
 
         // *** register alias ***
         $container->alias(ServerRequestCreator::class, ServerRequestCreatorInterface::class);
         //$container->alias('request', ServerRequestCreatorInterface::class);
-
 
         /*
         $container[ServerRequestCreator::class] = function ($c) {

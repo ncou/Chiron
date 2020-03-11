@@ -66,20 +66,14 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\Handler\ErrorHandlerInterface;
-use Chiron\Handler\ExceptionManager;
+use Chiron\Handler\Debug;
+use Chiron\Handler\ErrorManager;
 use Chiron\Http\Psr\Response;
-use Chiron\Support\Http\Serializer;
-use ErrorException;
-use Exception;
-use InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
-use Chiron\Handler\Debug;
-use Chiron\Handler\ErrorManager;
 
 class ErrorHandlerMiddleware implements MiddlewareInterface
 {

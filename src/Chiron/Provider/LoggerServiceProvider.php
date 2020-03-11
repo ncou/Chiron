@@ -14,12 +14,12 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Chiron\Container\Container;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
+use Chiron\Container\BindingInterface;
+use Chiron\Container\Container;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Chiron\Container\BindingInterface;
 
 //use Monolog\Logger;
 //use Monolog\Handler\StreamHandler;
@@ -44,7 +44,6 @@ class LoggerServiceProvider implements ServiceProviderInterface
      */
     public function register(BindingInterface $container): void
     {
-
         $container->add(LoggerInterface::class, function () {
             return new NullLogger();
         });
@@ -54,36 +53,34 @@ class LoggerServiceProvider implements ServiceProviderInterface
         $container->alias('log', LoggerInterface::class);
     }
 
-/*
-    public function register()
-    {
-        $this->app->singleton('log', function () {
-            $logger = new Logger('slayer');
-            $logger_name = 'slayer';
-            if ($ext = logging_extension()) {
-                $logger_name .= '-'.$ext;
-            }
-            $logger->pushHandler(
-                new StreamHandler(
-                    storage_path('logs').'/'.$logger_name.'.log',
-                    Logger::DEBUG
-                )
-            );
-            return $logger;
-        });
-    }*/
-
-
+    /*
+        public function register()
+        {
+            $this->app->singleton('log', function () {
+                $logger = new Logger('slayer');
+                $logger_name = 'slayer';
+                if ($ext = logging_extension()) {
+                    $logger_name .= '-'.$ext;
+                }
+                $logger->pushHandler(
+                    new StreamHandler(
+                        storage_path('logs').'/'.$logger_name.'.log',
+                        Logger::DEBUG
+                    )
+                );
+                return $logger;
+            });
+        }*/
 
     /**
-     * creates a \Monolog\Logger instance
+     * creates a \Monolog\Logger instance.
      *
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
      * @return LoggerInterface
      */
     //https://github.com/medeirosinacio/yii2-website-template/blob/74797c873ac262c14e4bfee7292ddbfc827a9d90/vendor/browscap/browscap-php/src/Helper/LoggerHelper.php#L31
-    public static function createDefaultLogger(OutputInterface $output) : LoggerInterface
+    public static function createDefaultLogger(OutputInterface $output): LoggerInterface
     {
         $logger = new Logger('browscap');
         $consoleLogger = new ConsoleLogger($output);
@@ -103,14 +100,7 @@ class LoggerServiceProvider implements ServiceProviderInterface
 
         return $logger;
     }
-
-
-
-
-
-
 }
-
 
 //if (! function_exists('logging_extension')) {
     /**

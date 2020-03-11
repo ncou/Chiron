@@ -1,6 +1,7 @@
 <?php
 /**
- * @link http://www.yiiframework.com/
+ * @see http://www.yiiframework.com/
+ *
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license http://www.yiiframework.com/license/
  */
@@ -8,6 +9,7 @@
 namespace Chiron\Support;
 
 use Yiisoft\Arrays\ArrayableInterface;
+
 /**
  * VarDumper is intended to replace the PHP functions var_dump and print_r.
  * It can correctly identify the recursively referenced objects in a complex
@@ -18,7 +20,6 @@ use Yiisoft\Arrays\ArrayableInterface;
  *
  * ```php
  * VarDumper::dump($var);
- *
  */
 
 //https://github.com/ventoviro/windwalker-core/blob/e70121c1767c58e9fa22c4f50261084502cf870a/src/Core/Utilities/Debug/BacktraceHelper.php
@@ -33,27 +34,34 @@ use Yiisoft\Arrays\ArrayableInterface;
 class VarDumper
 {
     private static $objects;
+
     private static $output;
+
     private static $depth;
+
     /**
      * Displays a variable.
      * This method achieves the similar functionality as var_dump and print_r
      * but is more robust when handling complex objects such as Yii controllers.
-     * @param mixed $var variable to be dumped
-     * @param int $depth maximum depth that the dumper should go into the variable. Defaults to 10.
-     * @param bool $highlight whether the result should be syntax-highlighted
+     *
+     * @param mixed $var       variable to be dumped
+     * @param int   $depth     maximum depth that the dumper should go into the variable. Defaults to 10.
+     * @param bool  $highlight whether the result should be syntax-highlighted
      */
     public static function dump($var, int $depth = 10, bool $highlight = false): void
     {
         echo static::dumpAsString($var, $depth, $highlight);
     }
+
     /**
      * Dumps a variable in terms of a string.
      * This method achieves the similar functionality as var_dump and print_r
      * but is more robust when handling complex objects such as Yii controllers.
-     * @param mixed $var variable to be dumped
-     * @param int $depth maximum depth that the dumper should go into the variable. Defaults to 10.
-     * @param bool $highlight whether the result should be syntax-highlighted
+     *
+     * @param mixed $var       variable to be dumped
+     * @param int   $depth     maximum depth that the dumper should go into the variable. Defaults to 10.
+     * @param bool  $highlight whether the result should be syntax-highlighted
+     *
      * @return string the string representation of the variable
      */
     public static function dumpAsString($var, int $depth = 10, bool $highlight = false): string
@@ -66,35 +74,44 @@ class VarDumper
             $result = highlight_string("<?php\n" . self::$output, true);
             self::$output = preg_replace('/&lt;\\?php<br \\/>/', '', $result, 1);
         }
+
         return self::$output;
     }
+
     /**
-     * @param mixed $var variable to be dumped
-     * @param int $level depth level
+     * @param mixed $var   variable to be dumped
+     * @param int   $level depth level
      */
     private static function dumpInternal($var, int $level): void
     {
         switch (gettype($var)) {
             case 'boolean':
                 self::$output .= $var ? 'true' : 'false';
+
                 break;
             case 'integer':
-                self::$output .= (string)$var;
+                self::$output .= (string) $var;
+
                 break;
             case 'double':
-                self::$output .= (string)$var;
+                self::$output .= (string) $var;
+
                 break;
             case 'string':
                 self::$output .= "'" . addslashes($var) . "'";
+
                 break;
             case 'resource':
                 self::$output .= '{resource}';
+
                 break;
             case 'NULL':
                 self::$output .= 'null';
+
                 break;
             case 'unknown type':
                 self::$output .= '{unknown}';
+
                 break;
             case 'array':
                 if (self::$depth <= $level) {
@@ -113,6 +130,7 @@ class VarDumper
                     }
                     self::$output .= "\n" . $spaces . ']';
                 }
+
                 break;
             case 'object':
                 if (($id = array_search($var, self::$objects, true)) !== false) {
@@ -126,7 +144,7 @@ class VarDumper
                     self::$output .= "$className#$id\n" . $spaces . '(';
                     if ('__PHP_Incomplete_Class' !== get_class($var) && method_exists($var, '__debugInfo')) {
                         $dumpValues = $var->__debugInfo();
-                        if (!is_array($dumpValues)) {
+                        if (! is_array($dumpValues)) {
                             throw new \Exception('__debugInfo() must return an array');
                         }
                     } else {
@@ -139,9 +157,11 @@ class VarDumper
                     }
                     self::$output .= "\n" . $spaces . ')';
                 }
+
                 break;
         }
     }
+
     /**
      * Exports a variable as a string representation.
      *
@@ -156,23 +176,27 @@ class VarDumper
      * PHP 5.4 or above is required to parse the exported value.
      *
      * @param mixed $var the variable to be exported.
+     *
      * @return string a string representation of the variable
      */
     public static function export($var): string
     {
         self::$output = '';
         self::exportInternal($var, 0);
+
         return self::$output;
     }
+
     /**
-     * @param mixed $var variable to be exported
-     * @param int $level depth level
+     * @param mixed $var   variable to be exported
+     * @param int   $level depth level
      */
     private static function exportInternal($var, int $level): void
     {
         switch (gettype($var)) {
             case 'NULL':
                 self::$output .= 'null';
+
                 break;
             case 'array':
                 if (empty($var)) {
@@ -193,6 +217,7 @@ class VarDumper
                     }
                     self::$output .= "\n" . $spaces . ']';
                 }
+
                 break;
             case 'object':
                 if ($var instanceof \Closure) {
@@ -205,6 +230,7 @@ class VarDumper
                         // so we use a fallback
                         if ($var instanceof ArrayableInterface) {
                             self::exportInternal($var->toArray(), $level);
+
                             return;
                         }
                         if ($var instanceof \IteratorAggregate) {
@@ -213,6 +239,7 @@ class VarDumper
                                 $varAsArray[$key] = $value;
                             }
                             self::exportInternal($varAsArray, $level);
+
                             return;
                         }
                         if ('__PHP_Incomplete_Class' !== get_class($var) && method_exists($var, '__toString')) {
@@ -225,14 +252,18 @@ class VarDumper
                     }
                     self::$output .= $output;
                 }
+
                 break;
             default:
                 self::$output .= var_export($var, true);
         }
     }
+
     /**
      * Exports a [[Closure]] instance.
+     *
      * @param \Closure $closure closure instance.
+     *
      * @return string
      */
     private static function exportClosure(\Closure $closure): string
@@ -244,7 +275,7 @@ class VarDumper
         if ($fileName === false || $start === false || $end === false) {
             return 'function() {/* Error: unable to determine Closure source */}';
         }
-        --$start;
+        $start--;
         $source = implode("\n", array_slice(file($fileName), $start, $end - $start));
         $tokens = token_get_all('<?php ' . $source);
         array_shift($tokens);
@@ -253,6 +284,7 @@ class VarDumper
         foreach ($tokens as $token) {
             if (isset($token[0]) && $token[0] === T_FUNCTION) {
                 $closureTokens[] = $token[1];
+
                 continue;
             }
             if ($closureTokens !== []) {
@@ -267,6 +299,7 @@ class VarDumper
                 }
             }
         }
+
         return implode('', $closureTokens);
     }
 }

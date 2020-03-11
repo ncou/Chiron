@@ -4,29 +4,21 @@ declare(strict_types=1);
 
 namespace Chiron\Handler;
 
-use Chiron\Handler\Formatter\FormatterInterface;
-use Chiron\Handler\Formatter\PlainTextFormatter;
-use Chiron\Handler\Reporter\ReporterInterface;
 use Chiron\Http\Exception\HttpException;
 //use Chiron\Http\Psr\Response;
-use Exception;
-use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Throwable;
-
-
-use Chiron\Handler\ExceptionManager;
 use Chiron\Http\Psr\Response;
 use Chiron\Support\Http\Serializer;
 use ErrorException;
+use Exception;
 use InvalidArgumentException;
-use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LogLevel;
+use Throwable;
 
 // TODO : classe à renommer en ExceptionManager ?????
 class ErrorManager implements LoggerAwareInterface
