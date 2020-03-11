@@ -47,13 +47,13 @@ final class RuntimeDirectory
 
         $runtimeDirectory = $this->dirs->get('runtime');
 
-        if (!$this->files->exists($runtimeDirectory)) {
+        if (! $this->files->exists($runtimeDirectory)) {
             $this->files->ensureDirectory($runtimeDirectory);
             $output->writeln('<comment>created</comment>');
+
             return;
         }
         $output->writeln('<info>exists</info>');
-
 
         foreach ($this->files->getFiles($runtimeDirectory) as $filename) {
             try {
@@ -68,6 +68,7 @@ final class RuntimeDirectory
                         $e->getMessage()
                     )
                 );
+
                 continue;
                 // @codeCoverageIgnoreEnd
             }

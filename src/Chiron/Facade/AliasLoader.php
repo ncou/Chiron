@@ -34,8 +34,7 @@ class AliasLoader
     /**
      * Create a new AliasLoader instance.
      *
-     * @param  array  $aliases
-     * @return void
+     * @param array $aliases
      */
     private function __construct(array $aliases)
     {
@@ -45,7 +44,8 @@ class AliasLoader
     /**
      * Get or create the singleton alias loader instance.
      *
-     * @param  array  $aliases
+     * @param array $aliases
+     *
      * @return \Illuminate\Foundation\AliasLoader
      */
     public static function getInstance(array $aliases = []): self
@@ -63,8 +63,6 @@ class AliasLoader
 
     /**
      * Register the loader on the auto-loader stack.
-     *
-     * @return void
      */
     public function register(): void
     {
@@ -77,8 +75,6 @@ class AliasLoader
 
     /**
      * Prepend the load method to the auto-loader stack.
-     *
-     * @return void
      */
     protected function prependToLoaderStack(): void
     {
@@ -88,7 +84,8 @@ class AliasLoader
     /**
      * Load a class alias if it is registered.
      *
-     * @param  string  $alias
+     * @param string $alias
+     *
      * @return bool|null
      */
     public function load(string $alias)
@@ -101,9 +98,8 @@ class AliasLoader
     /**
      * Add an alias to the loader.
      *
-     * @param  string  $class
-     * @param  string  $alias
-     * @return void
+     * @param string $class
+     * @param string $alias
      */
     public function alias(string $class, string $alias): void
     {
@@ -123,8 +119,7 @@ class AliasLoader
     /**
      * Set the registered aliases.
      *
-     * @param  array  $aliases
-     * @return void
+     * @param array $aliases
      */
     public function setAliases(array $aliases): void
     {
@@ -144,8 +139,7 @@ class AliasLoader
     /**
      * Set the "registered" state of the loader.
      *
-     * @param  bool  $value
-     * @return void
+     * @param bool $value
      */
     public function setRegistered(bool $value): void
     {
@@ -155,8 +149,7 @@ class AliasLoader
     /**
      * Set the value of the singleton alias loader.
      *
-     * @param  \Illuminate\Foundation\AliasLoader  $loader
-     * @return void
+     * @param \Illuminate\Foundation\AliasLoader $loader
      */
     public static function setInstance(self $loader): void
     {
@@ -165,8 +158,6 @@ class AliasLoader
 
     /**
      * Clone method.
-     *
-     * @return void
      */
     private function __clone()
     {

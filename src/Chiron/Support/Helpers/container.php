@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-use Chiron\Container\Container;
 use Chiron\Boot\DirectoriesInterface;
 use Chiron\Boot\EnvironmentInterface;
+use Chiron\Container\Container;
 use Psr\Container\ContainerExceptionInterface;
 
 /**
  * Resolve given alias in current IoC scope.
  *
  * @param string $alias Class name or alias.
- * @return object|null
  *
  * @throws ScopeException
+ *
+ * @return object|null
  */
 /*
 function spiral(string $alias)
@@ -29,13 +30,13 @@ function spiral(string $alias)
 }*/
 
 // TODO : fonction à renommer en "chiron()" ????
-if (!function_exists('container')) {
+if (! function_exists('container')) {
     /**
      * Resolve given alias in the container.
      *
      * @param string $alias Class name or alias.
-     * @return object|null
      *
+     * @return object|null
      */
     function container(string $alias, bool $forceNew = false)
     {
@@ -55,11 +56,12 @@ if (!function_exists('container')) {
     }
 }
 
-if (!function_exists('directory')) {
+if (! function_exists('directory')) {
     /**
      * Get directory alias value. Uses application core from the current global scope.
      *
      * @param string $alias Directory alias, ie. "config".
+     *
      * @return string
      */
     // TODO : ajouter un second paramétre de type string, qui correspondra à une partie de l'url à concaténer, par exemple : directory('runtime', 'logs/error.txt') ca donnera un résultat "xxxx/app/runtime/logs/error.txt"
@@ -69,12 +71,13 @@ if (!function_exists('directory')) {
     }
 }
 
-if (!function_exists('env')) {
+if (! function_exists('env')) {
     /**
      * Gets the value of an environment variable. Uses application core from the current global scope.
      *
      * @param string $key
      * @param mixed  $default
+     *
      * @return mixed
      */
     function env(string $key, $default = null)

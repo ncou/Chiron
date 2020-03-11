@@ -4,43 +4,18 @@ declare(strict_types=1);
 
 namespace Chiron\Http;
 
-use Chiron\Router\Traits\MiddlewareAwareInterface;
-use Chiron\Router\Traits\MiddlewareAwareTrait;
-use Chiron\Router\Traits\RouteCollectionInterface;
-use Chiron\Router\Traits\RouteCollectionTrait;
-use Chiron\Pipe\PipelineBuilder;
-use Chiron\Router\RouterInterface;
-use Chiron\Router\Route;
-use Chiron\Router\Method;
-use Chiron\Router\RequestHandler;
-use Chiron\Router\RouteCollectorInterface;
-use Chiron\Router\RouteGroup;
-use Chiron\Router\MatchingResult;
-use Chiron\Router\RoutingHandler;
-use InvalidArgumentException;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use RuntimeException;
-use Psr\Http\Server\RequestHandlerInterface;
-
-
-use Chiron\Config\ConfigInterface;
-use Chiron\Config\ConfigManager;
-use Chiron\Container\Container;
 use Chiron\Http\Emitter\ResponseEmitter;
-use Chiron\Http\Emitter\SapiEmitter;
-use Psr\Log\LoggerInterface;
-use Chiron\Boot\DirectoriesInterface;
-use Chiron\Boot\Directories;
-use Chiron\Boot\EnvironmentInterface;
 use Nyholm\Psr7Server\ServerRequestCreatorInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class SapiDispatcher implements DispatcherInterface
 {
     /** @var ServerRequestInterface */
     private $request;
+
     /** @var Http */
     private $http;
+
     /** @var ResponseEmitter */
     private $emitter;
 
@@ -53,7 +28,7 @@ class SapiDispatcher implements DispatcherInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function dispatch(): void
     {
@@ -64,7 +39,7 @@ class SapiDispatcher implements DispatcherInterface
     }
 
     /**
-     * @inheritdoc
+     * {@inheritdoc}
      */
     public function canDispatch(): bool
     {

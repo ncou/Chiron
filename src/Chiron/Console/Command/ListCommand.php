@@ -29,7 +29,7 @@ use Throwable;
 
 final class ListCommand extends Command implements SingletonInterface
 {
-    protected const NAME        = 'route:list';
+    protected const NAME = 'route:list';
     protected const DESCRIPTION = 'List application routes';
 
     /**
@@ -48,7 +48,7 @@ final class ListCommand extends Command implements SingletonInterface
                     [
                         $this->getVerbs($route),
                         $this->getPattern($route),
-                        $this->getTarget($route, $kernel)
+                        $this->getTarget($route, $kernel),
                     ]
                 );
             }
@@ -59,6 +59,7 @@ final class ListCommand extends Command implements SingletonInterface
 
     /**
      * @param Route $route
+     *
      * @return string
      */
     private function getVerbs(Route $route): string
@@ -73,15 +74,19 @@ final class ListCommand extends Command implements SingletonInterface
             switch (strtolower($verb)) {
                 case 'get':
                     $verb = '<fg=green>GET</>';
+
                     break;
                 case 'post':
                     $verb = '<fg=blue>POST</>';
+
                     break;
                 case 'put':
                     $verb = '<fg=yellow>PUT</>';
+
                     break;
                 case 'delete':
                     $verb = '<fg=red>DELETE</>';
+
                     break;
             }
 
@@ -93,6 +98,7 @@ final class ListCommand extends Command implements SingletonInterface
 
     /**
      * @param Route $route
+     *
      * @return string
      */
     private function getPattern(Route $route): string
@@ -116,9 +122,10 @@ final class ListCommand extends Command implements SingletonInterface
     /**
      * @param Route           $route
      * @param KernelInterface $kernel
-     * @return string
      *
      * @throws ReflectionException
+     *
+     * @return string
      */
     private function getTarget(Route $route, KernelInterface $kernel): string
     {
@@ -126,6 +133,7 @@ final class ListCommand extends Command implements SingletonInterface
         switch (true) {
             case $target instanceof Closure:
                 $reflection = new ReflectionFunction($target);
+
                 return sprintf(
                     'Closure(%s:%s)',
                     basename($reflection->getFileName()),
@@ -167,6 +175,7 @@ final class ListCommand extends Command implements SingletonInterface
     /**
      * @param object $object
      * @param string $property
+     *
      * @return mixed
      */
     private function getValue(object $object, string $property)
@@ -185,6 +194,7 @@ final class ListCommand extends Command implements SingletonInterface
     /**
      * @param string          $class
      * @param KernelInterface $kernel
+     *
      * @return string
      */
     private function relativeClass(string $class, KernelInterface $kernel): string

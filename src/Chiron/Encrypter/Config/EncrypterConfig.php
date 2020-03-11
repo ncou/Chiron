@@ -11,7 +11,7 @@ class EncrypterConfig extends AbstractInjectableConfig implements InjectableInte
 {
     /** @var array */
     protected $config = [
-        'key'        => ''
+        'key'        => '',
     ];
 
     public function inject(array $config): void

@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron;
 
-use Chiron\Boot\DirectoriesInterface;
 use Chiron\Boot\Directories;
-
+use Chiron\Boot\DirectoriesInterface;
 use LogicException;
-
 
 //https://github.com/spiral/boot/blob/master/src/AbstractKernel.php
 //https://github.com/spiral/framework/blob/master/src/Framework/Kernel.php
@@ -42,15 +40,16 @@ class AbstractKernel
      * Normalizes directory list and adds all required aliases.
      *
      * @param array $directories
+     *
      * @return array
      */
     protected function mapDirectories(array $directories): array
     {
-        if (!isset($directories['root'])) {
+        if (! isset($directories['root'])) {
             throw new LogicException("Missing required directory 'root'.");
         }
 
-        if (!isset($directories['app'])) {
+        if (! isset($directories['app'])) {
             $directories['app'] = $directories['root'] . '/app/';
         }
 
@@ -71,10 +70,11 @@ class AbstractKernel
     /**
      * Initiate application core.
      *
-     * @param array                     $directories Spiral directories should include root,
+     * @param array                     $directories  Spiral directories should include root,
      *                                                libraries and application directories.
-     * @param EnvironmentInterface|null $environment Application specific environment if any.
+     * @param EnvironmentInterface|null $environment  Application specific environment if any.
      * @param bool                      $handleErrors Enable global error handling.
+     *
      * @return self|static
      */
     public static function init(array $directories, EnvironmentInterface $environment = null, bool $handleErrors = true): ?self
@@ -102,15 +102,13 @@ class AbstractKernel
         return $core;
     }
 
-
-
     //https://github.com/drupal/core/blob/0ae6421e8d33e227170ec9819055110057b8f738/lib/Drupal/Core/DrupalKernel.php#L299
     //$app_root = static::guessApplicationRoot();
     /**
      * Determine the application root directory based on this file's location.
      *
      * @return string
-     *   The application root.
+     *                The application root.
      */
     /*
     public static function guessApplicationRoot() {
@@ -120,7 +118,6 @@ class AbstractKernel
         //   determined in the previous step.
         return dirname(dirname(substr(__DIR__, 0, -strlen(__NAMESPACE__))));
     }*/
-
 
     /**
      * Gets the application root dir (path of the project's composer file).

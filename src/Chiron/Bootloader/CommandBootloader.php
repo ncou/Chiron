@@ -4,19 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron\Bootloader;
 
-use Chiron\Views\TemplateRendererInterface;
-use Psr\Container\ContainerInterface;
-use Chiron\Boot\DirectoriesInterface;
-use Chiron\Views\Config\ViewsConfig;
 use Chiron\Bootload\BootloaderInterface;
-use Chiron\Container\BindingInterface;
-use Chiron\Application;
-use Chiron\Http\SapiDispatcher;
-use Chiron\Console\ConsoleDispatcher;
-use Chiron\Console\Console;
-use Chiron\Console\Command\Hello;
-use Chiron\Console\Command\Package;
 use Chiron\Console\Config\ConsoleConfig;
+use Chiron\Console\Console;
 
 class CommandBootloader implements BootloaderInterface
 {

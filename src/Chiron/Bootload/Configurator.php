@@ -4,43 +4,31 @@ declare(strict_types=1);
 
 namespace Chiron\Bootload;
 
-use Chiron\Config\ConfigInterface;
-use Chiron\Config\ConfigManager;
-use Chiron\Container\Container;
-use Chiron\Http\Emitter\ResponseEmitter;
-use Chiron\Pipe\PipelineBuilder;
-use Chiron\Provider\ConfigManagerServiceProvider;
-use Chiron\Provider\ErrorHandlerServiceProvider;
-use Chiron\Provider\RoadRunnerServiceProvider;
-use Chiron\Provider\HttpFactoriesServiceProvider;
-use Chiron\Provider\LoggerServiceProvider;
-use Chiron\Provider\MiddlewaresServiceProvider;
-use Chiron\Router\FastRoute\Provider\FastRouteRouterServiceProvider;
-use Chiron\Provider\ServerRequestCreatorServiceProvider;
-use Chiron\Router\RouterInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Log\LoggerInterface;
-use Chiron\Boot\DirectoriesInterface;
 use Chiron\Boot\Directories;
-use Chiron\Boot\EnvironmentInterface;
+use Chiron\Boot\DirectoriesInterface;
 use Chiron\Boot\Environment;
-use Chiron\Bootload\BootloadManager;
+use Chiron\Boot\EnvironmentInterface;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
-use InvalidArgumentException;
-
-use Chiron\Bootloader\ViewBootloader;
+use Chiron\Bootloader\CommandBootloader;
+use Chiron\Bootloader\DispatcherBootloader;
 use Chiron\Bootloader\DotEnvBootloader;
 use Chiron\Bootloader\HttpBootloader;
 use Chiron\Bootloader\RouteCollectorBootloader;
-use Chiron\Bootloader\DispatcherBootloader;
-use Chiron\Bootloader\CommandBootloader;
-
-use Chiron\Provider\SharedServiceProvider;
-
-use Chiron\Config\InjectableInterface;
+use Chiron\Bootloader\ViewBootloader;
 use Chiron\Config\ConfigInflector;
+use Chiron\Config\ConfigManager;
+use Chiron\Config\InjectableInterface;
+use Chiron\Container\Container;
+use Chiron\Provider\ConfigManagerServiceProvider;
+use Chiron\Provider\ErrorHandlerServiceProvider;
+use Chiron\Provider\HttpFactoriesServiceProvider;
+use Chiron\Provider\LoggerServiceProvider;
+use Chiron\Provider\MiddlewaresServiceProvider;
+use Chiron\Provider\RoadRunnerServiceProvider;
+use Chiron\Provider\ServerRequestCreatorServiceProvider;
+use Chiron\Provider\SharedServiceProvider;
+use Chiron\Router\FastRoute\Provider\FastRouteRouterServiceProvider;
+use InvalidArgumentException;
 
 class Configurator
 {
@@ -111,7 +99,6 @@ class Configurator
         $bootload->bootloader(DispatcherBootloader::class);
         $bootload->bootloader(CommandBootloader::class);
 
-
         // TODO : à virer c'est un test !!!!!
         $bootload->bootloader(ViewBootloader::class);
         // TODO : à virer c'est un test !!!!!
@@ -128,16 +115,17 @@ class Configurator
      * Normalizes directory list and adds all required aliases.
      *
      * @param array $directories
+     *
      * @return array
      */
     protected function mapDirectories(array $directories): array
     {
-        if (!isset($directories['root'])) {
+        if (! isset($directories['root'])) {
             //throw new LogicException("Missing required directory 'root'.");
             $directories['root'] = $this->basePath();
         }
 
-        if (!isset($directories['app'])) {
+        if (! isset($directories['app'])) {
             $directories['app'] = $directories['root'] . '/app/';
         }
 
@@ -161,20 +149,21 @@ class Configurator
     /**
      * Get the base path for the application.
      *
-     * @param  string|null  $path
+     * @param string|null $path
+     *
      * @return string
      */
     // TODO : renommer toutes les variables et fonctions de basePath en rootPath !!!!
     public function basePath(?string $path = null): string
     {
         if (isset($this->basePath)) {
-            return $this->basePath.($path ? '/'.$path : $path);
+            return $this->basePath . ($path ? '/' . $path : $path);
         }
 
         if (PHP_SAPI === 'cli') {
             $this->basePath = getcwd();
         } else {
-            $this->basePath = realpath(getcwd().'/../');
+            $this->basePath = realpath(getcwd() . '/../');
         }
 
         return $this->basePath($path);
@@ -256,8 +245,10 @@ class Configurator
         // TODO : voir si on garder ce throw car de toute facon le typehint va lever une exception.
         if (! $provider instanceof ServiceProviderInterface) {
             throw new InvalidArgumentException(
-                sprintf('The provider must be an instance of "%s" or a valid class name.',
-                    ServiceProviderInterface::class)
+                sprintf(
+                    'The provider must be an instance of "%s" or a valid class name.',
+                    ServiceProviderInterface::class
+                )
             );
         }
 
@@ -276,5 +267,4 @@ class Configurator
         // store the registered service
         $this->serviceProviders[get_class($provider)] = $provider;
     }
-
 }

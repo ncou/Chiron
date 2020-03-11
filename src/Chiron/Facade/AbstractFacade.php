@@ -14,14 +14,14 @@ use RuntimeException;
 abstract class AbstractFacade extends AbstractFacadeProxy
 {
     /**
-     * Prevent the instanciation of the class. Use only static calls
+     * Prevent the instanciation of the class. Use only static calls.
      */
     private function __construct()
     {
     }
 
     /**
-     * getInstance
+     * getInstance.
      *
      * @param bool $forceNew
      *

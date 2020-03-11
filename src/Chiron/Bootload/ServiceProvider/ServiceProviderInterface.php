@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Bootload\ServiceProvider;
 
-use Chiron\Container\Container;
 use Chiron\Container\BindingInterface;
+use Chiron\Container\Container;
 
 /**
  * Defines the interface for a Service Provider.

@@ -4,24 +4,13 @@ declare(strict_types=1);
 
 namespace Chiron\Console;
 
-use Chiron\Invoker\Invoker;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Application as SymfonyConsole;
-use Symfony\Component\Console\Command\Command as SymfonyCommand;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Formatter\OutputFormatterStyle;
-use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Output\ConsoleOutputInterface;
-use Symfony\Component\Console\Output\NullOutput;
-use Symfony\Component\Console\Question\ChoiceQuestion;
-use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use LogicException;
 
 class Console
 {
     private $container;
+
     private $application;
 
     public function __construct(ContainerInterface $container)
@@ -60,5 +49,4 @@ class Console
 
         $this->application->add($command);
     }
-
 }

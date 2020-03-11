@@ -86,16 +86,6 @@ if ($retryAfter instanceof DateTimeInterface) {
     }
 */
 
-
-
-
-
-
-
-
-
-
-
 /**
  * A RFC7231 Compliant date.
  *

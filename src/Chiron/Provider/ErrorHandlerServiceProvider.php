@@ -21,9 +21,12 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Chiron\Container\Container;
+use Chiron\Boot\EnvironmentInterface;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
+use Chiron\Container\BindingInterface;
+use Chiron\Container\Container;
 use Chiron\Handler\ErrorHandler;
+use Chiron\Handler\ErrorManager;
 use Chiron\Handler\Formatter\HtmlFormatter;
 use Chiron\Handler\Formatter\JsonFormatter;
 use Chiron\Handler\Formatter\PlainTextFormatter;
@@ -33,16 +36,12 @@ use Chiron\Handler\Formatter\XmlFormatter;
 use Chiron\Handler\Reporter\LoggerReporter;
 use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
-use Chiron\Http\Middleware\ErrorHandlerMiddleware;
+use Chiron\Invoker\Support\Invokable;
 use Chiron\Views\TemplateRendererInterface;
+use Closure;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
-use Chiron\Container\BindingInterface;
-use Chiron\Handler\ErrorManager;
-use Chiron\Boot\EnvironmentInterface;
-use Chiron\Invoker\Support\Invokable;
-use Closure;
 
 /**
  * Chiron error handler services provider.
@@ -91,22 +90,15 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
             return $errorHandler;
         });
 
-
-
-
-
-
         // TODO : à virer c'est un test
-/*
-        $container->add(ErrorHandler::class, function ($container) {
-            $errorHandler = new ErrorHandler($container->get('responseFactory'));
+        /*
+                $container->add(ErrorHandler::class, function ($container) {
+                    $errorHandler = new ErrorHandler($container->get('responseFactory'));
 
-            $errorHandler->setDefaultFormatter(new PlainTextFormatter());
+                    $errorHandler->setDefaultFormatter(new PlainTextFormatter());
 
-            return $errorHandler;
-        });*/
-
-
+                    return $errorHandler;
+                });*/
 
         /*
          * Register all the possible error template namespaced paths.

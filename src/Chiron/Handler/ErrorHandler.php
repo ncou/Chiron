@@ -6,7 +6,6 @@ namespace Chiron\Handler;
 
 use Chiron\Handler\Formatter\FormatterInterface;
 use Chiron\Handler\Formatter\PlainTextFormatter;
-use Chiron\Handler\Reporter\ReporterInterface;
 use Chiron\Http\Exception\HttpException;
 //use Chiron\Http\Psr\Response;
 use Exception;
@@ -28,18 +27,21 @@ class ErrorHandler implements ErrorHandlerInterface
 {
     /** ResponseFactoryInterface */
     private $responseFactory;
+
     /**
      * List of formatters used to format the exception data.
      *
      * @var \Chiron\Exception\Formatter\FormatterInterface[]
      */
     private $formatters = [];
+
     /**
      * Default formatter to use in case all the filters fails.
      *
      * @var \Chiron\Exception\Formatter\FormatterInterface
      */
     private $defaultFormatter;
+
     /**
      * @var Throwable
      */

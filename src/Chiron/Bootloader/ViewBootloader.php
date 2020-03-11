@@ -4,26 +4,22 @@ declare(strict_types=1);
 
 namespace Chiron\Bootloader;
 
-use Chiron\Views\TemplateRendererInterface;
-use Chiron\Container\Container;
-use Chiron\Boot\DirectoriesInterface;
-use Chiron\Views\Config\ViewsConfig;
 use Chiron\Bootload\BootloaderInterface;
-use Chiron\Container\BindingInterface;
+use Chiron\Views\Config\ViewsConfig;
+use Chiron\Views\TemplateRendererInterface;
 
 class ViewBootloader implements BootloaderInterface
 {
     public function boot(TemplateRendererInterface $renderer, ViewsConfig $config): void
     {
-
-/*
-        if (! $config->has('templates')) {
-            $config->merge(['templates' => [
-                'extension' => 'phtml',
-                'paths'     => [$dirs->get('templates')],
-            ]]);
-        }
-*/
+        /*
+                if (! $config->has('templates')) {
+                    $config->merge(['templates' => [
+                        'extension' => 'phtml',
+                        'paths'     => [$dirs->get('templates')],
+                    ]]);
+                }
+        */
 
         // Add template file extension.
         $renderer->setExtension($config->getExtension());

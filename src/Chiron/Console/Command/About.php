@@ -27,7 +27,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
  *
  * @final
  */
-class AboutCommand extends Command
+class About extends Command
 {
     protected static $defaultName = 'about';
 
@@ -38,7 +38,8 @@ class AboutCommand extends Command
     {
         $this
             ->setDescription('Displays information about the current project')
-            ->setHelp(<<<'EOT'
+            ->setHelp(
+                <<<'EOT'
 The <info>%command.name%</info> command displays information about the current Symfony project.
 
 The <info>PHP</info> section displays important configuration that could affect your application. The values might
@@ -47,8 +48,7 @@ be different between web and CLI.
 The <info>Environment</info> section displays the current environment variables managed by Symfony Dotenv. It will not
 be shown if no variables were found. The values might be different between web and CLI.
 EOT
-            )
-        ;
+            );
     }
 
     /**
@@ -66,8 +66,8 @@ EOT
             new TableSeparator(),
             ['Version', Kernel::VERSION],
             ['Long-Term Support', 4 === Kernel::MINOR_VERSION ? 'Yes' : 'No'],
-            ['End of maintenance', Kernel::END_OF_MAINTENANCE.(self::isExpired(Kernel::END_OF_MAINTENANCE) ? ' <error>Expired</>' : '')],
-            ['End of life', Kernel::END_OF_LIFE.(self::isExpired(Kernel::END_OF_LIFE) ? ' <error>Expired</>' : '')],
+            ['End of maintenance', Kernel::END_OF_MAINTENANCE . (self::isExpired(Kernel::END_OF_MAINTENANCE) ? ' <error>Expired</>' : '')],
+            ['End of life', Kernel::END_OF_LIFE . (self::isExpired(Kernel::END_OF_LIFE) ? ' <error>Expired</>' : '')],
             new TableSeparator(),
             ['<info>Kernel</>'],
             new TableSeparator(),
@@ -75,15 +75,15 @@ EOT
             ['Environment', $kernel->getEnvironment()],
             ['Debug', $kernel->isDebug() ? 'true' : 'false'],
             ['Charset', $kernel->getCharset()],
-            ['Cache directory', self::formatPath($kernel->getCacheDir(), $kernel->getProjectDir()).' (<comment>'.self::formatFileSize($kernel->getCacheDir()).'</>)'],
-            ['Log directory', self::formatPath($kernel->getLogDir(), $kernel->getProjectDir()).' (<comment>'.self::formatFileSize($kernel->getLogDir()).'</>)'],
+            ['Cache directory', self::formatPath($kernel->getCacheDir(), $kernel->getProjectDir()) . ' (<comment>' . self::formatFileSize($kernel->getCacheDir()) . '</>)'],
+            ['Log directory', self::formatPath($kernel->getLogDir(), $kernel->getProjectDir()) . ' (<comment>' . self::formatFileSize($kernel->getLogDir()) . '</>)'],
             new TableSeparator(),
             ['<info>PHP</>'],
             new TableSeparator(),
             ['Version', PHP_VERSION],
-            ['Architecture', (PHP_INT_SIZE * 8).' bits'],
+            ['Architecture', (PHP_INT_SIZE * 8) . ' bits'],
             ['Intl locale', class_exists('Locale', false) && \Locale::getDefault() ? \Locale::getDefault() : 'n/a'],
-            ['Timezone', date_default_timezone_get().' (<comment>'.(new \DateTime())->format(\DateTime::W3C).'</>)'],
+            ['Timezone', date_default_timezone_get() . ' (<comment>' . (new \DateTime())->format(\DateTime::W3C) . '</>)'],
             ['OPcache', \extension_loaded('Zend OPcache') && filter_var(ini_get('opcache.enable'), FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false'],
             ['APCu', \extension_loaded('apcu') && filter_var(ini_get('apc.enabled'), FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false'],
             ['Xdebug', \extension_loaded('xdebug') ? 'true' : 'false'],
@@ -106,7 +106,7 @@ EOT
 
     private static function formatPath(string $path, string $baseDir): string
     {
-        return preg_replace('~^'.preg_quote($baseDir, '~').'~', '.', $path);
+        return preg_replace('~^' . preg_quote($baseDir, '~') . '~', '.', $path);
     }
 
     private static function formatFileSize(string $path): string
@@ -125,7 +125,7 @@ EOT
 
     private static function isExpired(string $date): bool
     {
-        $date = \DateTime::createFromFormat('d/m/Y', '01/'.$date);
+        $date = \DateTime::createFromFormat('d/m/Y', '01/' . $date);
 
         return false !== $date && new \DateTime() > $date->modify('last day of this month 23:59:59');
     }

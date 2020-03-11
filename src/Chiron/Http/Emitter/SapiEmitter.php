@@ -10,7 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 //https://github.com/spiral/http/blob/master/src/Emitter/SapiEmitter.php
 
 /**
- * SapiEmitter sends a response using PHP Server API
+ * SapiEmitter sends a response using PHP Server API.
  */
 final class SapiEmitter implements EmitterInterface
 {
@@ -53,6 +53,6 @@ final class SapiEmitter implements EmitterInterface
 
     private function shouldOutputBody(ResponseInterface $response): bool
     {
-        return !in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES, true);
+        return ! in_array($response->getStatusCode(), self::NO_BODY_RESPONSE_CODES, true);
     }
 }

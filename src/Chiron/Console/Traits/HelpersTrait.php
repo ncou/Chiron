@@ -49,6 +49,7 @@ trait HelpersTrait
      * Input option.
      *
      * @param string $name
+     *
      * @return mixed
      */
     protected function option(string $name)
@@ -60,6 +61,7 @@ trait HelpersTrait
      * Input argument.
      *
      * @param string $name
+     *
      * @return mixed
      */
     protected function argument(string $name)
@@ -109,6 +111,7 @@ trait HelpersTrait
      * @param array  $headers
      * @param array  $rows
      * @param string $style
+     *
      * @return Table
      */
     protected function table(array $headers, array $rows = [], string $style = 'default'): Table

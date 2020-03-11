@@ -14,8 +14,9 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Chiron\Container\Container;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
+use Chiron\Container\BindingInterface;
+use Chiron\Container\Container;
 use Chiron\Http\Middleware\BodyParserMiddleware;
 use Chiron\Http\Middleware\CharsetByDefaultMiddleware;
 use Chiron\Http\Middleware\CheckMaintenanceMiddleware;
@@ -24,14 +25,13 @@ use Chiron\Http\Middleware\ContentTypeByDefaultMiddleware;
 use Chiron\Http\Middleware\DispatcherMiddleware;
 use Chiron\Http\Middleware\EmitterMiddleware;
 use Chiron\Http\Middleware\MethodOverrideMiddleware;
-use Chiron\Http\Middleware\OriginalRequestMiddleware;
 //use Chiron\Http\Middleware\RoutingMiddleware;
+use Chiron\Http\Middleware\OriginalRequestMiddleware;
 use Chiron\Pipe\PipelineBuilder;
 use Chiron\Router\RouterInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
-use Chiron\Container\BindingInterface;
 
 /**
  * Chiron system services provider.

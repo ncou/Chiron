@@ -11,11 +11,11 @@ class HttpConfig extends AbstractInjectableConfig implements InjectableInterface
 {
     /** @var array */
     protected $config = [
-        'bufferSize'        => 8 * 1024 *1024,
-        'protocol'        => '1.1',
-        'basePath'        => '/',
-        'headers'   => ['Content-Type' => 'UTF8'],
-        'middlewares'   => [],
+        'bufferSize'        => 8 * 1024 * 1024,
+        'protocol'          => '1.1',
+        'basePath'          => '/',
+        'headers'           => ['Content-Type' => 'UTF8'],
+        'middlewares'       => [],
     ];
 
     public function inject(array $config): void

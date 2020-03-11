@@ -15,6 +15,7 @@ interface EnvironmentInterface
      * @return string
      */
     public function hash(): string;
+
     /**
      * Set environment value.
      *
@@ -22,6 +23,7 @@ interface EnvironmentInterface
      * @param mixed  $value
      */
     public function set(string $name, $value);
+
     /**
      * Get environment value.
      *
@@ -31,6 +33,7 @@ interface EnvironmentInterface
      * @return mixed
      */
     public function get(string $name, $default = null);
+
     /**
      * Return all the environement data.
      *

@@ -17,17 +17,9 @@ declare(strict_types=1);
 namespace Chiron\Provider;
 
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
-use Chiron\Container\Container;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
-use Chiron\Http\Factory\ResponseFactory;
-use Psr\Http\Message\RequestFactoryInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ServerRequestFactoryInterface;
-use Psr\Http\Message\StreamFactoryInterface;
-use Psr\Http\Message\UploadedFileFactoryInterface;
-use Psr\Http\Message\UriFactoryInterface;
 use Chiron\Container\BindingInterface;
-use Http\Factory\Psr17FactoryFinder;
+use Chiron\Container\Container;
 use Spiral\Goridge\StreamRelay;
 use Spiral\RoadRunner\PSR7Client;
 use Spiral\RoadRunner\Worker;
@@ -49,6 +41,7 @@ class RoadRunnerServiceProvider implements ServiceProviderInterface
         // *** register factories ***
         $container->add(PSR7Client::class, function () {
             $relay = new StreamRelay(STDIN, STDOUT);
+
             return new PSR7Client(new Worker($relay));
         });
     }

@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace Chiron\Bootloader;
 
-use Chiron\Views\TemplateRendererInterface;
-use Chiron\Container\Container;
-use Chiron\Boot\DirectoriesInterface;
-use Chiron\Views\Config\ViewsConfig;
-use Chiron\Bootload\BootloaderInterface;
-use Chiron\Container\BindingInterface;
 use Chiron\Application;
-use Chiron\Http\SapiDispatcher;
-use Chiron\Http\RrDispatcher;
+use Chiron\Bootload\BootloaderInterface;
 use Chiron\Console\ConsoleDispatcher;
+use Chiron\Http\RrDispatcher;
+use Chiron\Http\SapiDispatcher;
 use Spiral\RoadRunner\PSR7Client;
 
 class DispatcherBootloader implements BootloaderInterface
@@ -24,11 +19,10 @@ class DispatcherBootloader implements BootloaderInterface
         $application->addDispatcher($sapiDispatcher);
         $application->addDispatcher($consoleDispatcher);
 
-/*
-        if (class_exists(PSR7Client::class)) {
-            $application->addDispatcher($rrDispatcher);
-        }
-*/
-
+        /*
+                if (class_exists(PSR7Client::class)) {
+                    $application->addDispatcher($rrDispatcher);
+                }
+        */
     }
 }

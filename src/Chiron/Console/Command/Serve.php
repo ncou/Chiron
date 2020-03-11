@@ -3,9 +3,9 @@
 namespace Chiron\Console\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -46,18 +46,21 @@ class Serve extends Command
             $address .= ':' . $port;
         }
 
-        if (!is_dir($documentRoot)) {
+        if (! is_dir($documentRoot)) {
             $io->error("Document root \"$documentRoot\" does not exist.");
+
             return self::EXIT_CODE_NO_DOCUMENT_ROOT;
         }
 
         if ($this->isAddressTaken($address)) {
             $io->error("http://$address is taken by another process.");
+
             return self::EXIT_CODE_ADDRESS_TAKEN_BY_ANOTHER_PROCESS;
         }
 
-        if ($router !== null && !file_exists($router)) {
+        if ($router !== null && ! file_exists($router)) {
             $io->error("Routing file \"$router\" does not exist.");
+
             return self::EXIT_CODE_NO_ROUTING_FILE;
         }
 
@@ -73,6 +76,7 @@ class Serve extends Command
 
     /**
      * @param string $address server address
+     *
      * @return bool if address is already in use
      */
     private function isAddressTaken(string $address): bool
@@ -83,6 +87,7 @@ class Serve extends Command
             return false;
         }
         fclose($fp);
+
         return true;
     }
 }

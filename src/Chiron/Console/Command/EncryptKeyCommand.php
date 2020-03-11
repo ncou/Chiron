@@ -4,15 +4,12 @@ declare(strict_types=1);
 
 namespace Chiron\Console\Command;
 
+use Chiron\Boot\Filesystem;
 use Chiron\Console\AbstractCommand;
 use Chiron\Console\ExitCode;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Chiron\Boot\Filesystem;
 use Chiron\Encrypter\Config\EncrypterConfig;
 use Chiron\Support\Security;
 use Symfony\Component\Console\Input\InputOption;
-use RuntimeException;
 
 class EncryptKeyCommand extends AbstractCommand
 {
@@ -39,6 +36,7 @@ class EncryptKeyCommand extends AbstractCommand
 
         if ($files->missing($filepath)) {
             $this->sprintf('<error>Unable to find `%s`</error>', $filepath);
+
             return ExitCode::NOINPUT;
         }
 

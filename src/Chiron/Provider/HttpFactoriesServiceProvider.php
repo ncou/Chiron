@@ -17,17 +17,17 @@ declare(strict_types=1);
 namespace Chiron\Provider;
 
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
-use Chiron\Container\Container;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
+use Chiron\Container\BindingInterface;
+use Chiron\Container\Container;
 use Chiron\Http\Factory\ResponseFactory;
+use Http\Factory\Psr17FactoryFinder;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UploadedFileFactoryInterface;
 use Psr\Http\Message\UriFactoryInterface;
-use Chiron\Container\BindingInterface;
-use Http\Factory\Psr17FactoryFinder;
 
 /**
  * Chiron http factories services provider.
