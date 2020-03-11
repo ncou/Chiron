@@ -11,7 +11,6 @@ enabled:
     - phpdoc_link_to_see
     - phpdoc_return_self_reference
     - phpdoc_no_empty_return
-    - return_type_declaration
     - const_visibility_required
     - not_operator_with_successor_space
     - concat_with_spaces
