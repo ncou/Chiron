@@ -17,7 +17,6 @@ enabled:
     - no_extra_block_blank_lines
     - property_separation
     - single_line_class_definition
-    - array_indentation
     - standardize_increment
     - php_unit_ordered_covers
     - php_unit_set_up_tear_down_visibility
