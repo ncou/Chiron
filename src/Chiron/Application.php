@@ -9,6 +9,8 @@ use Chiron\Config\ConfigManager;
 use Chiron\Container\Container;
 use Chiron\Http\Emitter\ResponseEmitter;
 use Chiron\Http\Emitter\SapiEmitter;
+use Chiron\Http\Http;
+use Chiron\Http\DispatcherInterface;
 use Chiron\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -19,48 +21,50 @@ use Chiron\Boot\Directories;
 use Chiron\Boot\EnvironmentInterface;
 use Chiron\Boot\Environment;
 use Nyholm\Psr7Server\ServerRequestCreatorInterface;
+use RuntimeException;
+use Chiron\Container\SingletonInterface;
 
-class Application
+final class Application //implements SingletonInterface
 {
-    /** @var ServerRequestInterface */
-    private $request;
-    /** @var RouterInterface */
-    private $router;
-    /** @var ResponseEmitter */
-    private $emitter;
 
-// TODO : utiliser plutot un EmiterInterface au lieu de l'objet ResponseEmitter !!!!
-    public function __construct(ServerRequestCreatorInterface $requestCreator, RouterInterface $router, ResponseEmitter $emitter)
-    {
-        $this->request = $requestCreator->fromGlobals();
-        $this->router = $router;
-        $this->emitter = $emitter;
-    }
-
-    /*******************************************************************************
-     * Middleware Stack
-     ******************************************************************************/
+    /** @var DispatcherInterface[] */
+    private $dispatchers = [];
 
     /**
-     * Add a middleware.
+     * Add new dispatcher. This method must only be called before method `serve`
+     * will be invoked.
      *
-     * Proxies to the Router::middleware() method.
+     * @param DispatcherInterface $dispatcher
      */
-    public function middleware($middleware): self
+    public function addDispatcher(DispatcherInterface $dispatcher): void
     {
-        $this->router->middleware($middleware);
-
-        return $this;
+        $this->dispatchers[] = $dispatcher;
     }
 
-    /*******************************************************************************
-     * Run App
-     ******************************************************************************/
-
-    public function run(): void
+    /**
+     * Start application and serve user requests using selected dispatcher or throw
+     * an exception.
+     *
+     * @return mixed (int for console dispatcher and void for sapi dispatcher)
+     * @throws RuntimeException
+     */
+    // TODO : renommer la méthode en "serve()" ????
+    public function run()
     {
-        $response = $this->router->handle($this->request);
+        // TODO : utiliser un objet Invoker::class pour executer la méthode dispatch sur l'objet $this->dispatcher pour pouvoir résoudre les potentiels paramétres (facultatif ou non !!!!) ???? ou non ????? exemple :
+        //              https://github.com/spiral/framework/blob/master/src/Http/SapiDispatcher.php#L54
+        //              https://github.com/spiral/framework/blob/master/src/Console/ConsoleDispatcher.php#L69
+        //return $this->dispatcher->dispatch();
 
-        $this->emitter->emit($response);
+        //echo 'TOTO';
+
+
+        foreach ($this->dispatchers as $dispatcher) {
+            if ($dispatcher->canDispatch()) {
+                return $dispatcher->dispatch();
+            }
+        }
+
+        throw new RuntimeException('Unable to locate active dispatcher.');
     }
 }

@@ -54,6 +54,13 @@ class ConfigManagerServiceProvider implements ServiceProviderInterface
 
         $config = new ConfigManager();
 
+        //if ($this->runningInConsole()) {
+        //    $this->basePath = getcwd();
+        //} else {
+        //    $this->basePath = realpath(getcwd().'/../');
+        //}
+
+
         // init the default values
         $config->loadConfig(__DIR__.'/../../../config/');
 

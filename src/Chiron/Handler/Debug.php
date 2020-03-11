@@ -17,6 +17,8 @@ use Throwable;
 use ErrorException;
 use ReflectionProperty;
 
+//https://github.com/ventoviro/windwalker-core/blob/e70121c1767c58e9fa22c4f50261084502cf870a/src/Core/Utilities/Debug/BacktraceHelper.php
+
 // TODO : améliroer les messages des exceptions => https://github.com/nette/tracy/blob/ca52715e9771822fb5d49386cc85fda6d2b83ed0/src/Tracy/Helpers.php#L175
 
 // TODO : ajouter des tests pour la fonction "call()"   =>  https://github.com/symfony/symfony/blob/master/src/Symfony/Component/ErrorHandler/Tests/ErrorHandlerTest.php
@@ -145,6 +147,9 @@ final class Debug
 
         $class = $e instanceof ErrorException ? self::translateErrorCode($e->getSeverity()) : self::getClass($e);
 
+        // replace invisible ascii characters (range 0-9 and 11-31 except the new line character 10) with a single space character.
+        //$message = preg_replace('#[\x00-\x09\x0B-\x1F]+#', ' ', $e->getMessage());
+
         return sprintf(
             "%s (code: %d) thrown with message '%s' in file %s on line %d\n[stacktrace]\n%s\n",
             $class,
@@ -244,4 +249,78 @@ final class Debug
         return $message;
     }
 
+    /**
+     * Starts/stops stopwatch.
+     * @return float   elapsed seconds
+     */
+    public static function timer(string $name = null): float
+    {
+        static $time = [];
+        $now = microtime(true);
+        $delta = isset($time[$name]) ? $now - $time[$name] : 0;
+        $time[$name] = $now;
+        return $delta;
+    }
+
+
+    /**
+     * Detects debug mode by IP address.
+     * @param  string|array  $list  IP addresses or computer names whitelist detection
+     */
+    public static function detectDebugMode($list = null): bool
+    {
+        $addr = $_SERVER['REMOTE_ADDR'] ?? php_uname('n');
+        $secret = isset($_COOKIE[self::COOKIE_SECRET]) && is_string($_COOKIE[self::COOKIE_SECRET])
+            ? $_COOKIE[self::COOKIE_SECRET]
+            : null;
+        $list = is_string($list)
+            ? preg_split('#[,\s]+#', $list)
+            : (array) $list;
+        if (!isset($_SERVER['HTTP_X_FORWARDED_FOR']) && !isset($_SERVER['HTTP_FORWARDED'])) {
+            $list[] = '127.0.0.1';
+            $list[] = '::1';
+            $list[] = '[::1]'; // workaround for PHP < 7.3.4
+        }
+        return in_array($addr, $list, true) || in_array("$secret@$addr", $list, true);
+    }
+
+
+    /**
+     * @return void
+     * Pretty-printer for debug_backtrace
+     *
+     * @suppress PhanUnreferencedPublicMethod
+     */
+    //https://github.com/phan/phan/blob/master/src/Phan/Debug.php#L237
+    public static function backtrace(int $levels = 0): void
+    {
+        $bt = \debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS, $levels + 1);
+        foreach ($bt as $level => $context) {
+            if (!$level) {
+                continue;
+            }
+            $file = $context['file'] ?? 'unknown';
+            $line = $context['line'] ?? 1;
+            $class = $context['class'] ?? 'global';
+            $function = $context['function'] ?? '';
+
+            echo "#" . ($level - 1) . " $file:$line $class ";
+            if (isset($context['type'])) {
+                echo $context['class'] . $context['type'];
+            }
+            echo $function;
+            echo "\n";
+        }
+    }
+
+    /**
+     * Print a message with the file and line.
+     * @suppress PhanUnreferencedPublicMethod added for debugging
+     */
+    //https://github.com/phan/phan/blob/master/src/Phan/Debug.php#L465
+    public static function debugLog(string $message): void
+    {
+        $frame = \debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS)[0];
+        \fprintf(\STDERR, "%s:%d %s\n", $frame['file'] ?? 'unknown', $frame['line'] ?? 0, $message);
+    }
 }

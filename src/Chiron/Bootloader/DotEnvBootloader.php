@@ -1,6 +1,6 @@
 <?php
 
-namespace Chiron\Provider;
+namespace Chiron\Bootloader;
 
 //use Chiron\Http\Psr\Response;
 use Chiron\Http\Response\HtmlResponse;
@@ -8,7 +8,7 @@ use Chiron\Http\Response\HtmlResponse;
 use Psr\Container\ContainerInterface;
 use Chiron\Views\TemplateRendererInterface;
 use Chiron\Container\Container;
-use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
+use Chiron\Bootload\BootloaderInterface;
 use LogicException;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
@@ -32,7 +32,7 @@ use Chiron\Container\BindingInterface;
 /**
  * DotEnv service provider. Should be executed before the config service provider !
  */
-class DotEnvServiceProvider implements ServiceProviderInterface
+class DotEnvBootloader implements BootloaderInterface
 {
 
 /*
@@ -44,10 +44,6 @@ if (!isset($_SERVER['APP_ENV'])) {
     (new Dotenv())->load(__DIR__.'/../.env');
 }
 */
-    public function register(BindingInterface $container): void
-    {
-    }
-
     /**
      * @param DirectoriesInterface $directories
      */

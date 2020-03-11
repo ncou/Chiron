@@ -163,6 +163,7 @@ class ErrorManager implements LoggerAwareInterface
      *
      * @param \Throwable $e
      */
+    // TODO : utiliser la méthode Debug::formatException pour formatter l'exception à logger !!!!
     private function logError(Throwable $e): void
     {
         if ($this->logger !== null) {
@@ -190,6 +191,8 @@ class ErrorManager implements LoggerAwareInterface
      *
      * @return \Psr\Http\Message\ResponseInterface $response The response
      */
+    // TODO : utiliser la méthode Debug::formatException pour formatter l'exception à logger !!!!
+    // TODO : utiliser une méthode htmlentities pour encoder les caractéres spéciaux ????
     private function renderInternalException(ServerRequestInterface $request, Throwable $exception, Throwable $originalException): ResponseInterface
     {
         // TODO : passer en paramétre du constructeur ce middleware un responseFactory. pour utiliser la méthode Psr $responseFactory->createResponse(500);

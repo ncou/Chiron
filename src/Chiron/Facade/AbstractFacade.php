@@ -10,6 +10,7 @@ use RuntimeException;
 /**
  * You must override the function "getFacadeAccessor" in your class and return the Container alias key used to retrieve the service.
  */
+// TODO : ajouter une méthode pour insérer un ContainerInterface dans cette classe et ne plus utiliser directement la fonction "container()" mais passer par l'objet qu'on aura injecté. Il faudra aussi prévoir une classe de boot pour injecter ce container. Genre ajouter un ContainerAwareInterface à cette classe. exemple :        https://github.com/laravel/framework/blob/1bbe5528568555d597582fdbec73e31f8a818dbc/src/Illuminate/Foundation/Bootstrap/RegisterFacades.php#L22
 abstract class AbstractFacade extends AbstractFacadeProxy
 {
     /**

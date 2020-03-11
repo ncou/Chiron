@@ -2,11 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Boot;
+namespace Chiron\Bootload;
 
 use Chiron\Invoker\Invoker;
 use Psr\Container\ContainerInterface;
-use Chiron\Bootload\ServiceProvider\ServiceProviderInterface as BootableInterface;
 use InvalidArgumentException;
 
 //https://github.com/laravel/lumen-framework/blob/6.x/src/Application.php#L222
@@ -34,7 +33,7 @@ final class BootloadManager
         $this->container = $container;
     }
 
-    public function register($provider): self
+    public function bootloader($provider): self
     {
         $provider = $this->resolveProvider($provider);
 
@@ -51,11 +50,11 @@ final class BootloadManager
     /**
      * Register a service provider with the application.
      *
-     * @param BootableInterface|string $provider
+     * @param BootloaderInterface|string $provider
      *
-     * @return BootableInterface
+     * @return BootloaderInterface
      */
-    protected function resolveProvider($provider): BootableInterface
+    protected function resolveProvider($provider): BootloaderInterface
     {
         // If the given "provider" is a string, we will resolve it.
         // This is simply a more convenient way of specifying your service provider classes.
@@ -64,17 +63,17 @@ final class BootloadManager
         }
 
         // TODO : voir si on garder ce throw car de toute facon le typehint va lever une exception.
-        if (! $provider instanceof BootableInterface) {
+        if (! $provider instanceof BootloaderInterface) {
             throw new InvalidArgumentException(
                 sprintf('The provider must be an instance of "%s" or a valid class name.',
-                    BootableInterface::class)
+                    BootloaderInterface::class)
             );
         }
 
         return $provider;
     }
 
-    protected function isProviderRegistered(BootableInterface $provider): bool
+    protected function isProviderRegistered(BootloaderInterface $provider): bool
     {
         // is service already present in the array ? if it's the case, it's already registered.
         return array_key_exists(get_class($provider), $this->serviceProviders);
@@ -98,11 +97,11 @@ final class BootloadManager
     /**
      * Boot the given service provider.
      *
-     * @param \Illuminate\Support\ServiceProvider $provider
+     * @param BootloaderInterface $provider
      *
      * @return mixed
      */
-    protected function bootProvider(BootableInterface $provider): void
+    protected function bootProvider(BootloaderInterface $provider): void
     {
         if (method_exists($provider, 'boot')) {
             //$this->call([$provider, 'boot']);

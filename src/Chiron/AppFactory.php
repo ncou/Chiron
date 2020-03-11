@@ -15,7 +15,7 @@ use Chiron\Provider\ErrorHandlerServiceProvider;
 use Chiron\Provider\HttpFactoriesServiceProvider;
 use Chiron\Provider\LoggerServiceProvider;
 use Chiron\Provider\MiddlewaresServiceProvider;
-use Chiron\Provider\RouterServiceProvider;
+use Chiron\Router\FastRoute\Provider\FastRouteRouterServiceProvider;
 use Chiron\Provider\ServerRequestCreatorServiceProvider;
 use Chiron\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;

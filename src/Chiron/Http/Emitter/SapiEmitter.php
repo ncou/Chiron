@@ -6,6 +6,9 @@ namespace Chiron\Http\Emitter;
 
 use Psr\Http\Message\ResponseInterface;
 
+//https://github.com/yiisoft/yii-web/blob/master/src/Emitter/SapiEmitter.php
+//https://github.com/spiral/http/blob/master/src/Emitter/SapiEmitter.php
+
 /**
  * SapiEmitter sends a response using PHP Server API
  */

@@ -10,12 +10,12 @@ use Chiron\Container\Container;
 use Chiron\Http\Emitter\ResponseEmitter;
 use Chiron\Pipe\PipelineBuilder;
 use Chiron\Provider\ConfigManagerServiceProvider;
-use Chiron\Provider\DotEnvServiceProvider;
 use Chiron\Provider\ErrorHandlerServiceProvider;
+use Chiron\Provider\RoadRunnerServiceProvider;
 use Chiron\Provider\HttpFactoriesServiceProvider;
 use Chiron\Provider\LoggerServiceProvider;
 use Chiron\Provider\MiddlewaresServiceProvider;
-use Chiron\Provider\RouterServiceProvider;
+use Chiron\Router\FastRoute\Provider\FastRouteRouterServiceProvider;
 use Chiron\Provider\ServerRequestCreatorServiceProvider;
 use Chiron\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -26,10 +26,18 @@ use Chiron\Boot\DirectoriesInterface;
 use Chiron\Boot\Directories;
 use Chiron\Boot\EnvironmentInterface;
 use Chiron\Boot\Environment;
-use Chiron\Boot\BootloadManager;
+use Chiron\Bootload\BootloadManager;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use InvalidArgumentException;
-use Chiron\Views\PhpRendererBootable;
+
+use Chiron\Bootloader\ViewBootloader;
+use Chiron\Bootloader\DotEnvBootloader;
+use Chiron\Bootloader\HttpBootloader;
+use Chiron\Bootloader\RouteCollectorBootloader;
+use Chiron\Bootloader\DispatcherBootloader;
+use Chiron\Bootloader\CommandBootloader;
+
+use Chiron\Provider\SharedServiceProvider;
 
 use Chiron\Config\InjectableInterface;
 use Chiron\Config\ConfigInflector;
@@ -99,15 +107,21 @@ class Configurator
     {
         $bootload = new BootloadManager($this->container);
 
-        $bootload->register(DotEnvServiceProvider::class);
-        //$bootload->register(ConfigManagerServiceProvider::class);
+        $bootload->bootloader(DotEnvBootloader::class);
+        $bootload->bootloader(DispatcherBootloader::class);
+        $bootload->bootloader(CommandBootloader::class);
+
 
         // TODO : à virer c'est un test !!!!!
-        $bootload->register(PhpRendererBootable::class);
+        $bootload->bootloader(ViewBootloader::class);
         // TODO : à virer c'est un test !!!!!
-        $bootload->register(\Providers\LoggerServiceProvider::class);
+        $bootload->bootloader(HttpBootloader::class);
         // TODO : à virer c'est un test !!!!!
-        $bootload->register(\Providers\LoadRoutesServiceProvider::class);
+        $bootload->bootloader(RouteCollectorBootloader::class);
+        // TODO : à virer c'est un test !!!!!
+        $bootload->bootloader(\Bootloader\LoggerBootloader::class);
+        // TODO : à virer c'est un test !!!!!
+        $bootload->bootloader(\Bootloader\LoadRoutesBootloader::class);
     }
 
     /**
@@ -156,11 +170,13 @@ class Configurator
         if (isset($this->basePath)) {
             return $this->basePath.($path ? '/'.$path : $path);
         }
-        //if ($this->runningInConsole()) {
-        //    $this->basePath = getcwd();
-        //} else {
+
+        if (PHP_SAPI === 'cli') {
+            $this->basePath = getcwd();
+        } else {
             $this->basePath = realpath(getcwd().'/../');
-        //}
+        }
+
         return $this->basePath($path);
     }
 
@@ -178,19 +194,24 @@ class Configurator
 
         $this->container->share(EnvironmentInterface::class, Environment::class);
 
-        //$this->register(DotEnvServiceProvider::class);
         $this->register(ConfigManagerServiceProvider::class);
         $this->register(ServerRequestCreatorServiceProvider::class);
         $this->register(HttpFactoriesServiceProvider::class);
         $this->register(LoggerServiceProvider::class);
-        $this->register(RouterServiceProvider::class);
         $this->register(MiddlewaresServiceProvider::class);
         $this->register(ErrorHandlerServiceProvider::class);
+        $this->register(RoadRunnerServiceProvider::class);
+
+        // TODO : à virer c'est un test !!!!
+        $this->register(FastRouteRouterServiceProvider::class);
 
         // TODO : à virer c'est un test !!!!
         $this->register(\Chiron\Views\Provider\PhpRendererServiceProvider::class);
         // TODO : à virer c'est un test !!!!!
         $this->register(\Providers\DatabaseServiceProvider::class);
+
+        // TODO : à virer c'est un test !!!!!
+        $this->register(SharedServiceProvider::class);
     }
 
     /*******************************************************************************

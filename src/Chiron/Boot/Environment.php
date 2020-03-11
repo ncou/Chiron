@@ -78,6 +78,7 @@ class Environment implements EnvironmentInterface
     /**
      * @inheritdoc
      */
+    // TODO : réfléchir si on garde le paramétre par défaut ou si on l'enléve et qu'on throw une exception si la valeur n'existe pas.
     public function get(string $name, $default = null)
     {
         if (isset($this->values[$name])) {
@@ -86,6 +87,13 @@ class Environment implements EnvironmentInterface
 
         return $default;
     }
+
+    // TODO : voir si on garde cette méthode ou si avec la valeur du paramétre par défaut lors du get() cela est suffisant.
+    public function has(string $name): bool
+    {
+        return isset($this->values[$name]);
+    }
+
     /**
      * @inheritdoc
      */
@@ -252,10 +260,27 @@ class Environment implements EnvironmentInterface
      *
      * @return  bool
      */
-    static public function isCLI() {
+    static public function isCLI(): bool
+    {
         if ((defined('PHP_SAPI') && PHP_SAPI == 'cli') || (isset($_SERVER['argc']) && $_SERVER['argc'] >= 1)) {
             return true;
         }
+
+        return false;
+    }
+
+    /**
+     * Return true if PHP running in CLI mode.
+     *
+     * @codeCoverageIgnore
+     * @return bool
+     */
+    public static function isCLI2(): bool
+    {
+        if (php_sapi_name() === 'cli') {
+            return true;
+        }
+
         return false;
     }
 
@@ -263,10 +288,16 @@ class Environment implements EnvironmentInterface
      * Check, if possible, that this execution was triggered by a command line.
      * @return bool
      */
-    public static function isCommandLine()
+    public static function isCommandLine(): bool
     {
         return PHP_SAPI == 'cli';
     }
 
+/*
+    public static function cliMode(): bool
+    {
+        return PHP_SAPI == 'cli';
+    }
+*/
 
 }
