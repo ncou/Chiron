@@ -16,11 +16,9 @@ enabled:
     - concat_with_spaces
     - no_extra_block_blank_lines
     - property_separation
-    - single_line_class_definition
     - standardize_increment
     - php_unit_ordered_covers
     - php_unit_set_up_tear_down_visibility
-    - no_alternative_syntax
 
 disabled:
     - concat_without_spaces
