@@ -6,39 +6,27 @@ namespace Chiron\Config;
 
 use Chiron\Container\Container;
 
+// TODO : renommer en ConfigInjectableMutation, faire étendre de l'interface MutationInterface, et passer aussi cette classe en final !!!
+// TODO : éventuellement ajouter le Trait ContainerAwareInterface et setter automatiquement le container !!!!!
 class ConfigInflector
 {
     private $container;
 
-    // TODO : éviter de passer un $container en paramétre de la classe ConfigInflector mais lui passer un object ConfigManager !!!
+    // TODO : éviter de passer un $container en paramétre de la classe ConfigInflector mais lui passer un object ConfigManager !!! Attention pas sur que cela fonctionne car ce configmanager peux être alimenté plus tard par un bootloader, donc les données ne seront peut être pas fraiches entre le moment ou on instancie cette classe et le moment ou on fait le invoke !!!!
     public function __construct(Container $container)
     {
         $this->container = $container;
     }
 
-    public function __invoke(InjectableInterface $config)
+    public function __invoke(InjectableInterface $injectableConfig)
     {
-        $configManager = $this->container->get(ConfigManager::class);
+        $manager = $this->container->get(ConfigManager::class);
+        $section = $injectableConfig->getConfigSectionName();
 
-        // handle the case when the user use a directory separator (windows ou linux value) in the linked file path
-        // TODO : à déplacer dans la classe AbstractInjectableConfig
-        $section = str_replace(['/', '\\'], '.', $config->getConfigSection());
-
-        if ($configManager->has($section)) {
-            $data = $configManager->getConfig($section);
-            // inject in the config object, the array settings found in the configuration file (using the configManager to get the data).
-            $config->inject($data);
+        if ($manager->hasConfig($section)) {
+            $config = $manager->getConfig($section);
+            // inject in the config the configuration file data.
+            $injectableConfig->setConfig($config->toArray());
         }
     }
-
-    /*
-        function constant_exists($class, $name){
-            if(is_string($class)){
-                return defined("$class::$name");
-            } else if(is_object($class)){
-                return defined(get_class($class)."::$name");
-            }
-            return false;
-        }
-    */
 }

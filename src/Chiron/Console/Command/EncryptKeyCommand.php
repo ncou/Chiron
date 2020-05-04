@@ -11,7 +11,7 @@ use Chiron\Encrypter\Config\EncrypterConfig;
 use Chiron\Support\Security;
 use Symfony\Component\Console\Input\InputOption;
 
-class EncryptKeyCommand extends AbstractCommand
+final class EncryptKeyCommand extends AbstractCommand
 {
     protected static $defaultName = 'encrypt:key';
 

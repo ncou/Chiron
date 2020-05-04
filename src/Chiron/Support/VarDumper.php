@@ -31,6 +31,10 @@ use Yiisoft\Arrays\ArrayableInterface;
 
 //https://github.com/Seldaek/monolog/blob/9776fa1d548716490a7d49ffbb608e5c2dda589b/src/Monolog/Formatter/NormalizerFormatter.php#L112
 
+//https://github.com/nunomaduro/collision/blob/stable/src/ArgumentFormatter.php#L26
+
+//https://github.com/symfony/var-exporter/blob/master/Internal/Exporter.php#L188
+
 class VarDumper
 {
     private static $objects;

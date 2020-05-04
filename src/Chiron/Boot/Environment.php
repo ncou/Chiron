@@ -96,6 +96,7 @@ class Environment implements EnvironmentInterface
     // TODO : voir si on garde cette méthode ou si avec la valeur du paramétre par défaut lors du get() cela est suffisant.
     public function has(string $name): bool
     {
+        // TODO ; utiliser un array_key_exist() comme dans le classe Directories ????
         return isset($this->values[$name]);
     }
 

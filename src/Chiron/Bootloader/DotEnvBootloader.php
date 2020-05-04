@@ -39,6 +39,7 @@ class DotEnvBootloader implements BootloaderInterface
     /**
      * @param DirectoriesInterface $directories
      */
+    // TODO : réfléchir à passer un LoggerInterface en paramétre pour logger l'erreur ???? non ????
     public function boot(DirectoriesInterface $directories)
     {
         if (! class_exists(Dotenv::class)) {
@@ -50,6 +51,7 @@ class DotEnvBootloader implements BootloaderInterface
             // Load environment file in given directory, silently failing if it doesn't exist.
             $this->createDotenv($directories->get('app'))->safeLoad();
         } catch (InvalidFileException $e) {
+            // Ce try/catch est il encore utile ? visiblement avec le error handler ajouter de maniére globale on devrait catcher cette erreur plus tard dans le code !!!! virer le try catch
             $this->writeErrorAndDie([
                 'The environment file (.env) is invalid!',
                 $e->getMessage(),

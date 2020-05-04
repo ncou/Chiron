@@ -26,7 +26,7 @@ class ViewBootloader implements BootloaderInterface
 
         // add template paths
         foreach ($config->getPaths() as $namespace => $paths) {
-            $namespace = is_numeric($namespace) ? null : $namespace;
+            $namespace = is_int($namespace) ? null : $namespace;
 
             foreach ((array) $paths as $path) {
                 $renderer->addPath($path, $namespace);

@@ -25,15 +25,15 @@ use Chiron\Boot\EnvironmentInterface;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
-use Chiron\Handler\ErrorHandler;
-use Chiron\Handler\ErrorManager;
-use Chiron\Handler\Formatter\HtmlFormatter;
-use Chiron\Handler\Formatter\JsonFormatter;
-use Chiron\Handler\Formatter\PlainTextFormatter;
-use Chiron\Handler\Formatter\ViewFormatter;
-use Chiron\Handler\Formatter\WhoopsFormatter;
-use Chiron\Handler\Formatter\XmlFormatter;
-use Chiron\Handler\Reporter\LoggerReporter;
+use Chiron\ErrorHandler\ErrorHandler;
+use Chiron\ErrorHandler\ErrorManager;
+use Chiron\ErrorHandler\Formatter\HtmlFormatter;
+use Chiron\ErrorHandler\Formatter\JsonFormatter;
+use Chiron\ErrorHandler\Formatter\PlainTextFormatter;
+use Chiron\ErrorHandler\Formatter\ViewFormatter;
+use Chiron\ErrorHandler\Formatter\WhoopsFormatter;
+use Chiron\ErrorHandler\Formatter\XmlFormatter;
+use Chiron\ErrorHandler\Reporter\LoggerReporter;
 use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
 use Chiron\Invoker\Support\Invokable;
@@ -62,6 +62,7 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
             return new HtmlFormatter(realpath($path));
         });
 
+        // TODO : il faudrait plutot binder l'interface ErrorHandlerInterface et pas directement la classe ErrorHandler, cela permettra à l'utilisateur de faire un override du module de gestion des erreurs/exceptions.
         $container->add(ErrorHandler::class, function ($container) {
             // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
             $errorHandler = new ErrorHandler($container->get('responseFactory'));

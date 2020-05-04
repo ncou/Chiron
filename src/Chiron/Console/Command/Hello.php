@@ -17,12 +17,16 @@ class Hello extends AbstractCommand
 
     public function perform()
     {
+
+        $this->getOutput()->writeln('Arguments dans le input : '. (string) $this->input);
+
+
         $this->getOutput()->writeln('Hello World');
         $this->line('FOO', 'error');
 
         $this->output->title('FOOBAR');
 
-        $this->output->confirm('FOOBARBAZ ????', true);
+        //$this->output->confirm('FOOBARBAZ ????', true);
 
         //throw new \RuntimeException("Test A Virer");
 

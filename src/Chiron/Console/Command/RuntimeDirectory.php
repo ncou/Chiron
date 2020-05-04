@@ -23,19 +23,19 @@ use Symfony\Component\Console\Output\OutputInterface;
 final class RuntimeDirectory
 {
     /** @var FilesInterface */
-    private $files;
+    private $filesystem;
 
     /** @var DirectoriesInterface */
-    private $dirs;
+    private $directories;
 
     /**
      * @param FilesInterface       $files
-     * @param DirectoriesInterface $dirs
+     * @param DirectoriesInterface $directories
      */
-    public function __construct(FilesInterface $files, DirectoriesInterface $dirs)
+    public function __construct(FilesInterface $filesystem, DirectoriesInterface $directories)
     {
-        $this->files = $files;
-        $this->dirs = $dirs;
+        $this->filesystem = $filesystem;
+        $this->directories = $directories;
     }
 
     /**
@@ -45,26 +45,26 @@ final class RuntimeDirectory
     {
         $output->write('Verifying runtime directory... ');
 
-        $runtimeDirectory = $this->dirs->get('runtime');
+        $runtimeDirectory = $this->directories->get('runtime');
 
-        if (! $this->files->exists($runtimeDirectory)) {
-            $this->files->ensureDirectory($runtimeDirectory);
+        if (! $this->filesystem->exists($runtimeDirectory)) {
+            $this->filesystem->ensureDirectory($runtimeDirectory);
             $output->writeln('<comment>created</comment>');
 
             return;
         }
         $output->writeln('<info>exists</info>');
 
-        foreach ($this->files->getFiles($runtimeDirectory) as $filename) {
+        foreach ($this->filesystem->files($runtimeDirectory) as $filename) {
             try {
-                $this->files->setPermissions($filename, FilesInterface::RUNTIME);
-                $this->files->setPermissions(dirname($filename), FilesInterface::RUNTIME);
+                $this->filesystem->setPermissions($filename, FilesInterface::RUNTIME);
+                $this->filesystem->setPermissions(dirname($filename), FilesInterface::RUNTIME);
             } catch (\Throwable $e) {
                 // @codeCoverageIgnoreStart
                 $output->writeln(
                     sprintf(
                         '<fg=red>[errored]</fg=red> `%s`: <fg=red>%s</fg=red>',
-                        $this->files->relativePath($filename, $runtimeDirectory),
+                        $this->filesystem->relativePath($filename, $runtimeDirectory),
                         $e->getMessage()
                     )
                 );
@@ -77,7 +77,7 @@ final class RuntimeDirectory
                 $output->writeln(
                     sprintf(
                         '<fg=green>[updated]</fg=green> `%s`',
-                        $this->files->relativePath($filename, $runtimeDirectory)
+                        $this->filesystem->relativePath($filename, $runtimeDirectory)
                     )
                 );
             }

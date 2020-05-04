@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Middleware;
 
-use Chiron\Handler\ErrorHandler;
+use Chiron\ErrorHandler\ErrorHandler;
 use Chiron\Http\Exception\Client\BadRequestHttpException;
 use Chiron\Http\Exception\HttpException;
 use Chiron\Http\Factory\ResponseFactory;

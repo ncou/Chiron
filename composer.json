@@ -17,10 +17,13 @@
         "chiron/pipeline": "^3.2",
         "chiron/config": "^1.2",
         "chiron/router-fastroute": "^0.4",
+        "chiron/filesystem": "^1.0",
+        "nette/schema": "^1.0",
         "nyholm/psr7-server": "^0.3",
         "vlucas/phpdotenv": "^3.3",
         "monolog/monolog": "^1.24",
-        "chiron/package-discovery": "^2.0"
+        "chiron/package-discovery": "^2.0",
+        "chiron/console": "^0.1"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.0",

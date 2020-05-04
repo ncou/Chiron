@@ -1,13 +1,5 @@
 <?php
 
-/**
- * Chiron (http://www.chironframework.com).
- *
- * @see      https://github.com/ncou/Chiron
- *
- * @license   https://github.com/ncou/Chiron/blob/master/licenses/LICENSE.md (MIT License)
- */
-
 declare(strict_types=1);
 
 namespace Chiron\Provider;
@@ -18,9 +10,12 @@ use Chiron\Config\Config;
 use Chiron\Config\ConfigManager;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
-use Chiron\Invoker\Support\Invokable;
+use Chiron\Invoker\Support\Invokable2;
 use Closure;
 use Psr\Container\ContainerInterface;
+
+
+use Chiron\Invoker\CallableResolver;
 
 // TODO : créer une classe pour fabriquer l'application, et notamment pour injecter les routes et les middlewares si ils sont indiqués sous forme de texte dans la config => https://github.com/zendframework/zend-expressive/blob/85e2f607109ed8608f4004e622b2aad3bcaa8a4d/src/Container/ApplicationConfigInjectionDelegator.php
 
@@ -38,8 +33,24 @@ class ConfigManagerServiceProvider implements ServiceProviderInterface
      */
     public function register(BindingInterface $container): void
     {
+
+/*
+        $callableResolver = new CallableResolver($container);
+        //$callable = $callableResolver->resolve_SAVE([$this, 'configManager']);
+        $callable = $callableResolver->resolve_SAVE([$this, 'configManager']);
+
+        die(var_dump(is_callable($callable)));
+*/
+
+        $container->share(ConfigManager::class, new Invokable2([$this, 'configManager']));
+
+        //$container->share(ConfigManager::class, new Invokable(Closure::fromCallable([$this, 'configManager'])));
+
+
+
+
         // register object
-        $container->share(ConfigManager::class, new Invokable(Closure::fromCallable([$this, 'configManager'])));
+        //$container->share(ConfigManager::class, new Invokable(Closure::fromCallable([$this, 'configManager'])));
         //$container->share(ConfigManager::class, new Invokable([ConfigManagerServiceProvider::class, 'configManager']));
         //$container->share(ConfigManager::class, new Invokable([self::class, 'configManager']));
         //$container->share(ConfigManager::class, new Invokable([$this, 'configManager']));
@@ -48,9 +59,11 @@ class ConfigManagerServiceProvider implements ServiceProviderInterface
         $container->alias('config', ConfigManager::class);
     }
 
-    private function configManager(DirectoriesInterface $directories): ConfigManager
+    // TODO : sépararer la création de la classe ConfigManager, et l'initialisation de la classe (les loadfromdirectory()) qui devra être mise dans une classe séparée de type Bootloader !!!!
+    private static function configManager(DirectoriesInterface $directories): ConfigManager
     {
-        $config = new ConfigManager();
+        // TODO : permettre de passer au constructeur du ConfigManager un path ou un tableau de path pour charger les configurations. Ca éviterai un appel à la méthode loadFromDirectory() car le path serait donné directement au constructeur !!!!
+        $manager = new ConfigManager();
 
         //if ($this->runningInConsole()) {
         //    $this->basePath = getcwd();
@@ -59,15 +72,15 @@ class ConfigManagerServiceProvider implements ServiceProviderInterface
         //}
 
         // init the default values
-        $config->loadConfig(__DIR__ . '/../../../config/');
+        $manager->loadFromDirectory(__DIR__ . '/../../../config/');
 
         // read the config files in the config folder
-        $config->loadConfig($directories->get('config'));
+        $manager->loadFromDirectory($directories->get('config'));
 
         // TODO : il fa falloir ajouter une méthode default dans la classe de config !!!!
         //$settings['templates']['paths'] = [$directories->get('templates')];
         //$config->merge($settings);
 
-        return $config;
+        return $manager;
     }
 }

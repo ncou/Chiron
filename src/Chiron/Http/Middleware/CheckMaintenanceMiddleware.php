@@ -17,6 +17,11 @@ https://github.com/luisinder/maintenance-middleware/blob/master/src/Maintenance.
 https://github.com/BootstrapCMS/CMS/blob/master/app/Http/Middleware/CheckForMaintenanceMode.php
 https://github.com/ladybirdweb/momo-email-listener/blob/master/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/CheckForMaintenanceMode.php
 https://github.com/jimrubenstein/laravel-framework/blob/master/src/Illuminate/Foundation/Http/Middleware/CheckForMaintenanceMode.php
+
+// TODO : dans cet exemple on utilise un fichier json pour détecter si le site est down !!! Et il existe une commande via la Console pour activer/désactiver le mode maintenance
+https://github.com/viserio/http-foundation/blob/4af138c4a188b9bebbaa07ee19ff92a68bf829ad/Middleware/CheckForMaintenanceModeMiddleware.php
+https://github.com/laravel/framework/blob/0b12ef19623c40e22eff91a4b48cb13b3b415b25/src/Illuminate/Foundation/Http/Middleware/CheckForMaintenanceMode.php
+
 */
 
 declare(strict_types=1);
@@ -92,6 +97,7 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+
         /*
         // TODO : ajouter le header "Retry-After" avec une gestion des options, genre durée de la maintenance, et durée avant de faire un refresh !!!!
         // https://github.com/php-middleware/maintenance/blob/master/src/MaintenanceMiddleware.php

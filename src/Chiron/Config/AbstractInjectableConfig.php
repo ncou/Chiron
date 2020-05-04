@@ -10,138 +10,89 @@ use InvalidArgumentException;
 use IteratorAggregate;
 use LogicException;
 
+use Nette\Schema\Expect;
+use Nette\Schema\Processor;
+use Nette\Schema\Schema;
+use Nette\Schema\Context;
+use Nette\Schema\ValidationException;
+use Chiron\Config\Config;
+use Chiron\Config\Exception\ConfigException;
+
+
+//https://github.com/jenssegers/lean/blob/master/src/Slim/Settings.php
+
 /**
  * Generic implementation of array based configuration.
  */
 // TODO : il faudrait pas aussi ajouter une interface Countable ???? => https://github.com/slimphp/Slim/blob/3.x/Slim/Collection.php
-abstract class AbstractInjectableConfig implements InjectableInterface, IteratorAggregate, ArrayAccess
+// TODO : Il faudra que cette méthode get() ou getData() supporte la DotNotation pour aller chercher des clés du genre : getData('buffer.channel1.size')
+// TODO : il faudra faire une vérification du modéle de données lorsqu'on appel la méthode injectConfig, voir même une verif lorsqu'on appellera la méthode getData(). Il faudrait éventuellement lever une exception si on manipule une classe de config sans avoir appeller auparavent la méthode injectConfig, car on se retrouvera avec un tableau vide !!!!
+abstract class AbstractInjectableConfig extends Config implements InjectableInterface
 {
-    // TODO : à virer
-    //public const INJECTOR = ConfigsInterface::class;
+    /** @var string */
+    protected const CONFIG_SECTION_NAME = null;
 
     /**
-     * Configuration data.
-     *
-     * @var array
+     * @param array $items
      */
-    protected $config = [];
-
-    /**
-     * @param array $config
-     */
-    public function merge(array $config): void
+    public function __construct(array $data = [])
     {
-        //$this->config = array_replace_recursive($this->config, $config->toArray());
-        $this->config = $this->recursiveMerge($this->config, $config);
+        // init the data values (with default scheme values if $data is empty)
+        $this->setConfig($data);
     }
 
-    /**
-     * @param mixed $origin
-     * @param mixed $appender
-     *
-     * @return mixed
-     */
-    // TODO : on dirait que les deux paramétres sont des tableaux. et que la valeur de retour sera aussi un tableau. modifier le typehint
-    private function recursiveMerge($origin, $appender)
+    public function getConfigSectionName(): string
     {
-        if (is_array($origin)
-            && array_values($origin) !== $origin
-            && is_array($appender)
-            && array_values($appender) !== $appender) {
-            foreach ($appender as $key => $value) {
-                if (isset($origin[$key])) {
-                    $origin[$key] = $this->recursiveMerge($origin[$key], $value);
-                } else {
-                    $origin[$key] = $value;
-                }
-            }
+        // user should redefine the protected value for the section name.
+        if (! is_string(static::CONFIG_SECTION_NAME)) {
+            throw new ConfigException(sprintf('The config section name should be defined (const %s::CONFIG_SECTION is missing)', static::class));
 
-            return $origin;
         }
+        // handle the case when the user use a directory separator (windows ou linux value) in the linked file path. And remove the starting/ending char '.' if found.
+        $section = trim(str_replace(['/', '\\'], '.', static::CONFIG_SECTION_NAME), '.');
 
-        return $appender;
+        // TODO : tester le comportement quand on ne passe qu'une chaine vide, ou un seul "." qui devient une chaine vide comment se conporte le configManager quand on veux récupérer la section ????
+        return $section;
+    }
+
+    abstract protected function getConfigSchema(): Schema;
+
+    public function setConfig(array $data): void
+    {
+        $this->data = $this->processSchema([$data]);
+        $this->cache = [];
     }
 
     /**
-     * {@inheritdoc}
+     * Merges (and validates) the current configuration and the new added configuration.
      */
-    public function toArray(): array
+    public function addConfig(array $data): void
     {
-        return $this->config;
+        $this->data = $this->processSchema([$this->data, $data]);
+        $this->cache = [];
+    }
+
+    public function resetConfig(): void
+    {
+        $this->data = $this->processSchema([]);
+        $this->cache = [];
     }
 
     /**
-     * {@inheritdoc}
+     * Merges and validates configurations against scheme.
+     *
+     * @return array
      */
-    public function offsetExists($offset)
+    private function processSchema(array $configs): array
     {
-        return array_key_exists($offset, $this->config);
-    }
+        // Force the return value to be an array (by default the processed schema return an stdObject)
+        $schema = $this->getConfigSchema()->castTo('array');
+        $processor = new Processor;
 
-    /**
-     * {@inheritdoc}
-     */
-    public function offsetGet($offset)
-    {
-        if (! $this->offsetExists($offset)) {
-            throw new InvalidArgumentException("Undefined configuration key '{$offset}'");
+        try {
+            return $processor->processMultiple($schema, $configs);
+        } catch (ValidationException $e) {
+            throw new ConfigException(sprintf('Schema validation inside %s::class failed [%s]', static::class, $e->getMessage()));
         }
-
-        return $this->config[$offset];
-    }
-
-    /**
-     *{@inheritdoc}
-     *
-     * @throws ConfigException
-     */
-    public function offsetSet($offset, $value)
-    {
-        throw new LogicException(
-            'Unable to change configuration data, configs are treated as immutable by default'
-        );
-    }
-
-    /**
-     *{@inheritdoc}
-     *
-     * @throws ConfigException
-     */
-    public function offsetUnset($offset)
-    {
-        throw new LogicException(
-            'Unable to change configuration data, configs are treated as immutable by default'
-        );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getIterator()
-    {
-        return new ArrayIterator($this->config);
-    }
-
-    /**
-     * Restoring state.
-     *
-     * @param array $an_array
-     *
-     * @return static
-     */
-    // TODO : vérifier l'utilité de cette fonction !!!!
-    public static function __set_state($an_array)
-    {
-        return new static($an_array['config']);
-    }
-
-    /**
-     * Get number of items in collection.
-     *
-     * @return int
-     */
-    public function count()
-    {
-        return count($this->config);
     }
 }

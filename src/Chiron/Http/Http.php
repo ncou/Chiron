@@ -8,26 +8,65 @@ use Chiron\Container\SingletonInterface;
 use Chiron\Router\RequestHandler;
 use Chiron\Router\RouterInterface;
 use Chiron\Router\RoutingHandler;
-use Chiron\Router\Traits\MiddlewareAwareInterface;
-use Chiron\Router\Traits\MiddlewareAwareTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Chiron\Facade\HttpDecorator;
 
 // TODO : faire étendre cette classe de la classe Pipeline::class ?????
 // TODO : utiliser une SplPriorityQueue pour ajouter des middlewares dans cette classe ????
-// TODO : ajouter un MiddlewareFactory ou MiddlewareDecorator dans le constructeur pour décorer les middleware de type string ou callable !!!!
-class Http implements RequestHandlerInterface, MiddlewareAwareInterface, SingletonInterface
+// TODO : classe à renommer en HttpRunner ????
+final class Http implements RequestHandlerInterface, SingletonInterface
 {
-    // TODO : vérifier si on a vraiment besoin du trait MiddlewareAwareTrait
-    use MiddlewareAwareTrait;
+    private $handler;
 
-    //RouterInterface
-    private $router;
+    /**
+     * @var array MiddlewareInterface[]
+     */
+    private $stack = [];
 
-    public function __construct(RouterInterface $router)
+    /**
+     * Add middleware to the beginning of the stack (Prepend).
+     *
+     * @param string|callable|MiddlewareInterface|RequestHandlerInterface|ResponseInterface $middlewares It could also be an array of such arguments.
+     *
+     * @return self
+     */
+    public function addMiddlewaresOnTop($middlewares): self
     {
-        $this->router = $router;
+        // Keep the right order when adding an array to the top of the middlewares stack.
+        if (is_array($middlewares)) {
+            $middlewares = array_reverse($middlewares);
+        }
+
+        return $this->add($middlewares, true);
+    }
+
+    /**
+     * Add middleware to the bottom of the stack by default (Append).
+     *
+     * @param string|callable|MiddlewareInterface|RequestHandlerInterface|ResponseInterface $middlewares It could also be an array of such arguments.
+     * @param bool                                                                          $onTop       Force the middleware position on top of the stack
+     *
+     * @return self
+     */
+    public function addMiddlewares($middlewares, bool $onTop = false): self
+    {
+        if (! is_array($middlewares)) {
+            $middlewares = [$middlewares];
+        }
+
+        foreach ($middlewares as $middleware) {
+            if ($onTop) {
+                //prepend Middleware
+                array_unshift($this->stack, $middleware);
+            } else {
+                // append Middleware
+                array_push($this->stack, $middleware);
+            }
+        }
+
+        return $this;
     }
 
     /**
@@ -40,17 +79,31 @@ class Http implements RequestHandlerInterface, MiddlewareAwareInterface, Singlet
     // TODO : améliorer le code, initialiser l'objet Pipeline::class dans le constructeur + ajouter un setter pour injecter directement le middleware (utiliser un MiddlewareDecorator pour toujours avoir des objets MiddlewareInterface), et la méthode getStackMiddleware ne servira plus à rien !!!!
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        // TODO : injecter de force dans cette méthode le middleware ErrorHandlerMiddlware::class au sommet de la stack ???? ou alors passer par un Bootloader pour faire cet ajout de middlware avant l'execution de la stack ???
-        $handler = new RequestHandler();
+        $this->seedRequestHandler();
 
-        // TODO : passer par un MiddlewareDecorator::class pour gérer le cas ou le middleware qui est dans ce tableau est un string qu'on doit aller chercher dans le container par exemple. Dans ce cas il faudra un LazyMiddleware pour décorer cette string.
-        foreach ($this->getMiddlewareStack() as $middleware) {
-            $handler->pipe($middleware);
+        return $this->handler->handle($request);
+    }
+
+    // TODO : réfléchir si le code ne peux pas être amélioré !!! je n'aime pas trop qu'on utilise une variable de classe $this->handler. Réfléchir si il n'est pas possible de passer l'ensemble de cette classe comme un objet handler, regarder du côté de la classe Pipeline c'est ce qu'elle fait !!!!
+    private function seedRequestHandler(): void
+    {
+        if ($this->handler) {
+            // The handler is already seeded, we get out!
+            return;
         }
 
-        // TODO : il n'y a pas moyen de faire un code plus propre que cela ? il faudrait éviter de passer dans le constructeur un objet Router::class mais directement un RoutingHandler::class. non ????
-        $handler->setFallback(new RoutingHandler($this->router));
+        $this->handler = new RequestHandler();
 
-        return $handler->handle($request);
+        //****************************
+        // TODO : injecter de force dans cette méthode le middleware ErrorHandlerMiddlware::class au sommet de la stack ???? ou alors passer par un Bootloader pour faire cet ajout de middlware avant l'execution de la stack ???
+        // TODO : déplacer le middleware de gestion des Errors ErrorHandlerMiddleware dans le répertoire "ErrorHandler", et forcer ici l'ajout au sommet da la pile des middleware et utilisant un décorateur pour résoudre le nom du middleware via le container.
+        //****************************
+
+        foreach ($this->stack as $middleware) {
+            $this->handler->pipe(HttpDecorator::toMiddleware($middleware));
+        }
+
+        // add the default routing handler at the bottom of the stack, to execute the MatchingRoute handler.
+        $this->handler->setFallback(HttpDecorator::toHandler(RoutingHandler::class));
     }
 }

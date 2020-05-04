@@ -4,52 +4,48 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Config;
 
+use Nette\Schema\Expect;
+use Nette\Schema\Schema;
 use Chiron\Config\AbstractInjectableConfig;
-use Chiron\Config\InjectableInterface;
 
-class HttpConfig extends AbstractInjectableConfig implements InjectableInterface
+class HttpConfig extends AbstractInjectableConfig
 {
-    /** @var array */
-    protected $config = [
-        'bufferSize'        => 8 * 1024 * 1024,
-        'protocol'          => '1.1',
-        'basePath'          => '/',
-        'headers'           => ['Content-Type' => 'UTF8'],
-        'middlewares'       => [],
-    ];
+    protected const CONFIG_SECTION_NAME = 'http';
 
-    public function inject(array $config): void
+    // TODO : il faudra surement améliorer le Expect::array pour le header histoire de sécuriser le contenu de ce tableau !!!!
+    protected function getConfigSchema(): Schema
     {
-        parent::merge($config);
-    }
-
-    public function getConfigSection(): string
-    {
-        return 'http';
+        return Expect::structure([
+            'bufferSize'        => Expect::int()->default(8 * 1024 * 1024),
+            'protocol'          => Expect::string()->default('1.1'),
+            'basePath'          => Expect::string()->default('/'),
+            'headers'           => Expect::array(),
+            'middlewares'       => Expect::arrayOf('string'),
+        ]);
     }
 
     public function getBufferSize(): int
     {
-        return $this->config['bufferSize'];
+        return $this->get('bufferSize');
     }
 
     public function getProtocol(): string
     {
-        return $this->config['protocol'];
-    }
-
-    public function getDefaultHeaders(): array
-    {
-        return (array) $this->config['headers'];
+        return $this->get('protocol');
     }
 
     public function getBasePath(): string
     {
-        return $this->config['basePath'];
+        return $this->get('basePath');
+    }
+
+    public function getHeaders(): array
+    {
+        return $this->get('headers');
     }
 
     public function getMiddlewares(): array
     {
-        return (array) $this->config['middlewares'];
+        return $this->get('middlewares');
     }
 }

@@ -16,7 +16,9 @@ namespace Chiron\Provider;
 
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Application;
+use Chiron\PublishableCollection;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
+use Chiron\Bootload\ServiceProvider\AbstractServiceProvider;
 use Chiron\Console\Console;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
@@ -25,32 +27,40 @@ use Chiron\Http\Http;
 use Chiron\Http\SapiDispatcher;
 use Chiron\Router\RouteCollector;
 use Psr\Container\ContainerInterface;
+use Chiron\Pipe\HttpDecorator;
+use Chiron\Http\Emitter\EmitterInterface;
+use Chiron\Http\Emitter\SapiEmitter;
 
 /**
  * Chiron system services provider.
  *
  * Registers system services for Chiron, such as config manager, middleware router and dispatcher...
  */
-class SharedServiceProvider implements ServiceProviderInterface
+final class SharedServiceProvider extends AbstractServiceProvider
 {
-    /**
-     * Register Chiron system services.
-     *
-     * @param ContainerInterface $container A DI container implementing ArrayAccess and container-interop.
-     */
-    public function register(BindingInterface $container): void
-    {
-        // TODO : Il faudra gérer avec la classe "SingletonInterface" pour que le container force la création de l'objet en shared !!!! et ensuite virer cette classe car ce provider ne servira plus à rien !!!!
-        //$container->share(RouteCollector::class);
+    protected const SINGLETONS = [
+        Application::class,
+        Console::class,
+        PublishableCollection::class,
+        Http::class,
+        // save some memory
+        HttpDecorator::class,
+        \Nyholm\Psr7Server\ServerRequestCreatorInterface::class,
+        EmitterInterface::class => SapiEmitter::class,
+    ];
 
-        //$container->share(Http::class);
+    /*
+    protected const BINDINGS = [
+        CookieQueue::class => [self::class, 'cookieQueue']
+    ];*/
 
-        // TODO : ajouter un ->share() pour les classes Environement et pour Directories (+ virer leurs interfaces !!!!).
+    /*
+    protected const SINGLETONS = [
+        ViewsInterface::class => ViewManager::class,
+    ];*/
 
-        // TODO : à virer !!!
-        //$container->share(DispatcherInterface::class, SapiDispatcher::class);
-
-        $container->share(Application::class);
-        $container->share(Console::class);
-    }
+    /*
+    protected const ALIASES = [
+        'view.manager' => ViewManager::class,
+    ];*/
 }

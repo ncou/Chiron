@@ -12,6 +12,7 @@ class CommandBootloader implements BootloaderInterface
 {
     public function boot(Console $console, ConsoleConfig $config): void
     {
+        // TODO : améliorer le code pour utiliser plutot une classe de type "CommandLoader" pour charger les commandes depuis le fichier de config et en utilisant le container !!!!
         foreach ($config->getCommands() as $command) {
             $console->addCommand($command);
         }

@@ -1,13 +1,5 @@
 <?php
 
-/**
- * Chiron (http://www.chironframework.com).
- *
- * @see      https://github.com/ncou/Chiron
- *
- * @license   https://github.com/ncou/Chiron/blob/master/licenses/LICENSE.md (MIT License)
- */
-
 //https://github.com/php-services/http-factory-nyholm/blob/master/src/NyholmHttpFactoryServiceProvider.php
 
 //https://github.com/userfrosting/UserFrosting/blob/master/app/system/ServicesProvider.php
@@ -18,11 +10,13 @@ namespace Chiron\Provider;
 
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
+use Chiron\Invoker\Support\Invokable;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
 use Spiral\Goridge\StreamRelay;
 use Spiral\RoadRunner\PSR7Client;
 use Spiral\RoadRunner\Worker;
+use Closure;
 
 // TODO : code à améliorer : https://github.com/spiral/framework/blob/98654e9d217f7d4ca994f27c68cfde0b70ac67d5/src/Bootloader/ServerBootloader.php#L31
 
@@ -39,10 +33,13 @@ class RoadRunnerServiceProvider implements ServiceProviderInterface
     public function register(BindingInterface $container): void
     {
         // *** register factories ***
-        $container->add(PSR7Client::class, function () {
-            $relay = new StreamRelay(STDIN, STDOUT);
+        $container->add(PSR7Client::class, new Invokable(Closure::fromCallable([$this, 'psr7Client'])));
+    }
 
-            return new PSR7Client(new Worker($relay));
-        });
+    private function psr7Client(): PSR7Client
+    {
+        $relay = new StreamRelay(STDIN, STDOUT);
+
+        return new PSR7Client(new Worker($relay));
     }
 }

@@ -66,8 +66,8 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\Handler\Debug;
-use Chiron\Handler\ErrorManager;
+use Chiron\ErrorHandler\Debug;
+use Chiron\ErrorHandler\ErrorManager;
 use Chiron\Http\Psr\Response;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

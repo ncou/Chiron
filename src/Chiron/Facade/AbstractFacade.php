@@ -28,7 +28,7 @@ abstract class AbstractFacade extends AbstractFacadeProxy
      * @return mixed
      */
     // TODO : forcer le type de retour à "object" attention il faut une version minimale de PHP 7.3 pour utiliser cette notation !!!!
-    // TODO : éventuellement faire un check is_object et lever une RuntimeException si le type obtenu depuis le container n'est pas le bon !!!!
+    // TODO : éventuellement faire un check is_object et lever une RuntimeException (ou exception consom si besoin) si le type obtenu depuis le container n'est pas le bon !!!! + ajouter dans la dochead le @throw RuntimeException par exemple.
     public static function getInstance(bool $forceNew = false)
     {
         return container(static::getFacadeAccessor(), $forceNew);

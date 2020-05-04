@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Facade;
 
-use Chiron\Container\Container;
-
 /**
  * You must override the function "getFacadeAccessor" in your class and return the Container alias key used to retrieve the service.
  */
@@ -33,5 +31,7 @@ abstract class AbstractFacadeProxy
         return $instance->$method(...$arguments);
     }
 
+    // TODO : forcer le type de retour à "object" attention il faut une version minimale de PHP 7.3 pour utiliser cette notation !!!!
+    // TODO : éventuellement faire un check is_object et lever une RuntimeException (ou exception consom si besoin) si le type obtenu depuis le container n'est pas le bon !!!! + ajouter dans la dochead le @throw RuntimeException par exemple.
     abstract public static function getInstance();
 }
