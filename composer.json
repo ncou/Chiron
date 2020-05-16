@@ -13,17 +13,17 @@
         "psr/log": "^1.0",
         "chiron/psr17factoryfinder": "^0.1",
         "chiron/crypt-engine": "^0.1",
-        "chiron/container": "^3.1",
-        "chiron/pipeline": "^3.2",
-        "chiron/config": "^1.2",
-        "chiron/router-fastroute": "^0.4",
-        "chiron/filesystem": "^1.0",
+        "chiron/container": "^3.3",
+        "chiron/pipeline": "^3.3",
+        "chiron/config": "^1.3",
+        "chiron/router-fastroute": "^0.5",
+        "chiron/filesystem": "^1.1",
         "nette/schema": "^1.0",
         "nyholm/psr7-server": "^0.3",
         "vlucas/phpdotenv": "^3.3",
         "monolog/monolog": "^1.24",
         "chiron/package-discovery": "^2.0",
-        "chiron/console": "^0.1"
+        "chiron/console": "^0.4"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.0",
