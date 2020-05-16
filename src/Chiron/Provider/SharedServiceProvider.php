@@ -45,8 +45,8 @@ final class SharedServiceProvider extends AbstractServiceProvider
         Http::class,
         // save some memory
         HttpDecorator::class,
-        \Nyholm\Psr7Server\ServerRequestCreatorInterface::class,
-        EmitterInterface::class => SapiEmitter::class,
+        //\Nyholm\Psr7Server\ServerRequestCreatorInterface::class,
+        //EmitterInterface::class => SapiEmitter::class,
     ];
 
     /*

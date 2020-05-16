@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Chiron\Boot\DirectoriesInterface;
-use Chiron\Boot\EnvironmentInterface;
+use Chiron\Boot\Directories;
+use Chiron\Boot\Environment;
 use Chiron\Container\Container;
 use Psr\Container\ContainerExceptionInterface;
 
@@ -18,7 +18,7 @@ if (! function_exists('directory')) {
     // TODO : ajouter un second paramétre de type string, qui correspondra à une partie de l'url à concaténer, par exemple : directory('runtime', 'logs/error.txt') ca donnera un résultat "xxxx/app/runtime/logs/error.txt"
     function directory(string $alias): string
     {
-        return container(DirectoriesInterface::class)->get($alias);
+        return container(Directories::class)->get($alias);
     }
 }
 
@@ -33,7 +33,7 @@ if (! function_exists('env')) {
      */
     function env(string $key, $default = null)
     {
-        return container(EnvironmentInterface::class)->get($key, $default);
+        return container(Environment::class)->get($key, $default);
     }
 }
 

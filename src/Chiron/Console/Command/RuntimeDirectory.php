@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Spiral\Console\Sequence;
 
-use Spiral\Boot\DirectoriesInterface;
+use Spiral\Boot\Directories;
 use Spiral\Files\FilesInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -25,14 +25,14 @@ final class RuntimeDirectory
     /** @var FilesInterface */
     private $filesystem;
 
-    /** @var DirectoriesInterface */
+    /** @var Directories */
     private $directories;
 
     /**
      * @param FilesInterface       $files
-     * @param DirectoriesInterface $directories
+     * @param Directories $directories
      */
-    public function __construct(FilesInterface $filesystem, DirectoriesInterface $directories)
+    public function __construct(FilesInterface $filesystem, Directories $directories)
     {
         $this->filesystem = $filesystem;
         $this->directories = $directories;

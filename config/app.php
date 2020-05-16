@@ -106,4 +106,31 @@ return [
     'key' => env('APP_KEY'),
 
     'cipher' => 'AES-256-CBC',
+
+
+
+
+
+    'dispatchers' => [
+        Chiron\Dispatcher\ConsoleDispatcher::class,
+        Chiron\Dispatcher\SapiDispatcher::class,
+        Chiron\Dispatcher\RrDispatcher::class,
+        //Chiron\Dispatcher\ReactDispatcher::class,
+    ],
+
+    'providers' => [
+        Chiron\Router\FastRoute\Provider\FastRouteRouterServiceProvider::class,
+        Chiron\Views\Provider\PhpRendererServiceProvider::class,
+        Providers\DatabaseServiceProvider::class,
+    ],
+
+    'bootloaders' => [
+        Chiron\Bootloader\ViewBootloader::class,
+        Chiron\Bootloader\HttpBootloader::class,
+        Chiron\Bootloader\RouteCollectorBootloader::class,
+        Bootloader\LoggerBootloader::class,
+        Bootloader\LoadRoutesBootloader::class,
+    ],
+
+
 ];

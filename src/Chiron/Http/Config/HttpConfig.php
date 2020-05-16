@@ -12,15 +12,14 @@ class HttpConfig extends AbstractInjectableConfig
 {
     protected const CONFIG_SECTION_NAME = 'http';
 
-    // TODO : il faudra surement améliorer le Expect::array pour le header histoire de sécuriser le contenu de ce tableau !!!!
     protected function getConfigSchema(): Schema
     {
         return Expect::structure([
             'bufferSize'        => Expect::int()->default(8 * 1024 * 1024),
             'protocol'          => Expect::string()->default('1.1'),
             'basePath'          => Expect::string()->default('/'),
-            'headers'           => Expect::array(),
-            'middlewares'       => Expect::arrayOf('string'),
+            'headers'           => Expect::arrayOf('string')->assert(static::isArrayAssociative(), 'expect associative array'),
+            'middlewares'       => Expect::listOf('string'),
         ]);
     }
 

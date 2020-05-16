@@ -6,6 +6,8 @@ namespace Chiron\Boot;
 
 use InvalidArgumentException;
 
+//https://github.com/yiisoft/aliases/blob/master/src/Aliases.php
+
 // TODO : NormalizePath ***************************
 //https://github.com/yiisoft/files/blob/0ce2ab3b36fc1dac90d1c1f6dee7882f7c7fbb76/src/FileHelper.php#L107
 //https://github.com/composer/composer/blob/78b8c365cd879ce29016884360d4e61350f0d176/src/Composer/Util/Filesystem.php#L473
@@ -20,7 +22,7 @@ use InvalidArgumentException;
  * Manage application directories set.
  */
 // TODO : permettre d'utiliser les helpers ArrayAccess pour faire un truc du genre "$directories['config']"
-final class Directories implements DirectoriesInterface
+final class Directories
 {
     /** @var array */
     private $directories = [];
@@ -38,7 +40,7 @@ final class Directories implements DirectoriesInterface
     /**
      * {@inheritdoc}
      */
-    public function set(string $name, string $path): DirectoriesInterface
+    public function set(string $name, string $path): self
     {
         //$path = strtr($path, '\\', '/');
         $path = str_replace(['\\', '//'], '/', $path);

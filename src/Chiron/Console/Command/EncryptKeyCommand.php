@@ -22,7 +22,7 @@ final class EncryptKeyCommand extends AbstractCommand
             ->addOption('mount', 'm', InputOption::VALUE_OPTIONAL, 'Mount encrypter key into given file');
     }
 
-    public function perform(Filesystem $files, EncrypterConfig $config): int
+    public function perform(Filesystem $filesystem, EncrypterConfig $config): int
     {
         $key = Security::generateKey();
 
@@ -34,16 +34,16 @@ final class EncryptKeyCommand extends AbstractCommand
             return ExitCode::OK;
         }
 
-        if ($files->missing($filepath)) {
+        if ($filesystem->missing($filepath)) {
             $this->sprintf('<error>Unable to find `%s`</error>', $filepath);
 
             return ExitCode::NOINPUT;
         }
 
-        $content = $files->read($filepath);
+        $content = $filesystem->read($filepath);
         $content = str_replace($config->getKey(), $key, $content);
 
-        $files->write($filepath, $content);
+        $filesystem->write($filepath, $content);
 
         $this->writeln('<comment>Encryption key has been updated.</comment>');
 

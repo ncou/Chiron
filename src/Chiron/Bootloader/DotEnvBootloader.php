@@ -4,7 +4,7 @@ namespace Chiron\Bootloader;
 
 //use Chiron\Http\Psr\Response;
 
-use Chiron\Boot\DirectoriesInterface;
+use Chiron\Boot\Directories;
 use Chiron\Bootload\BootloaderInterface;
 use Chiron\Config\Config;
 use Dotenv\Dotenv;
@@ -37,10 +37,10 @@ class DotEnvBootloader implements BootloaderInterface
     */
 
     /**
-     * @param DirectoriesInterface $directories
+     * @param Directories $directories
      */
     // TODO : réfléchir à passer un LoggerInterface en paramétre pour logger l'erreur ???? non ????
-    public function boot(DirectoriesInterface $directories)
+    public function boot(Directories $directories)
     {
         if (! class_exists(Dotenv::class)) {
             // if the dotenv library is not installed we get out !

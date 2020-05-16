@@ -19,10 +19,15 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Chiron\Console\Console;
 use ErrorException;
 
+//https://github.com/laravel/lumen-framework/blob/38f42c1399650b6c2286de7e9831e7174cfd14e8/src/Concerns/RegistersExceptionHandlers.php
+//https://github.com/laravel/lumen-framework/blob/38f42c1399650b6c2286de7e9831e7174cfd14e8/src/Application.php#L103
+
 // TODO : regarder ici comment tester la méthode shutdownHandler !!!!     https://github.com/nette/tracy/blob/02b60e183ad82c26ad8415547ab393941bef7e94/tests/Tracy/Debugger.E_COMPILE_ERROR.console.phpt
 
 //https://github.com/getsentry/sentry-php/blob/master/src/ErrorHandler.php
 //https://github.com/yiisoft/yii2/blob/1a8c83ba438f92075fc6e4ab9124b6ae59fdda8f/framework/web/ErrorHandler.php
+
+//https://github.com/yiisoft/yii-web/blob/master/src/ErrorHandler/ErrorHandler.php
 
 final class RegisterErrorHandler
 {
@@ -32,6 +37,7 @@ final class RegisterErrorHandler
      * @param  \Illuminate\Contracts\Foundation\Application  $app
      * @return void
      */
+    // TODO : passer les méthodes en static !!!
     public function register()
     {
         error_reporting(E_ALL);
@@ -40,6 +46,15 @@ final class RegisterErrorHandler
         set_error_handler([$this, 'handleError']);
         set_exception_handler([$this, 'handleException']);
         register_shutdown_function([$this, 'handleShutdown']);
+    }
+
+    /**
+     * Unregisters this error handler by restoring the PHP error and exception handlers.
+     */
+    public function unregister(): void
+    {
+        restore_error_handler();
+        restore_exception_handler();
     }
 
     /**
@@ -73,6 +88,9 @@ final class RegisterErrorHandler
      */
     public function handleException(Throwable $e)
     {
+        // disable error capturing to avoid recursive errors while handling exceptions
+        //$this->unregister();
+
         try {
             //$this->getExceptionHandler()->report($e);
         } catch (Exception $e) {
@@ -110,6 +128,7 @@ final class RegisterErrorHandler
     protected function renderHttpResponse(Throwable $e)
     {
 
+        // TODO : externaliser la création du content dans une méthode séparée du style '$this->handleCaughtThrowable($throwable): string' qui retourne le texte à la méthode echo. Elle pourrait être aussi utilisée dans le middleware de ErroHandlerMiddleware pour créer le contenu de la réponse !!!!
         $content = '';
         try {
             //$this->log($t);
@@ -137,7 +156,7 @@ final class RegisterErrorHandler
     public function handleShutdown()
     {
         if (! is_null($error = error_get_last()) && $this->isFatalError($error['type'])) {
-            // TODO : code à corriger car cela ne fonctionnera pas !!!!!!
+            // TODO : code à corriger car cela ne fonctionnera pas !!!!!! exemple qui fonctionne : https://github.com/yiisoft/yii-web/blob/master/src/ErrorHandler/ErrorHandler.php#L125
             $this->handleException($this->fatalErrorFromPhpError($error, 0));
         }
     }

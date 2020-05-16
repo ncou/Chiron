@@ -20,18 +20,13 @@ class Security
     }
 
     /**
-     * Generate a random password.
+     * Generate a random string.
      *
      * This is a fork of Joomla JUserHelper::genRandomPassword()
      *
-     * @param int $length Length of the password to generate
+     * @param int $length Length of the random string to generate
      *
-     * @throws \Exception
-     *
-     * @return string Random Password
-     *
-     * @since   2.0.9
-     * @see     https://github.com/joomla/joomla-cms/blob/staging/libraries/joomla/user/helper.php#L642
+     * @return string
      */
     public static function randomString(int $length = 16): string
     {
@@ -51,7 +46,6 @@ class Security
 
         for ($i = 1; $i <= $length; $i++) {
             $password .= $salt[($shift + ord($random[$i])) % $base];
-
             $shift += ord($random[$i]);
         }
 

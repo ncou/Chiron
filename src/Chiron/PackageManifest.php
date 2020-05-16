@@ -104,30 +104,29 @@ final class PackageManifest
         file_put_contents($this->manifestPath, '<?php return ' . var_export($manifest, true) . ';');
     }
 
-    public function providers(): array
+    public function getProviders(): array
     {
-        return $this->config('providers');
+        return $this->getMeta('providers');
     }
 
-    public function aliases(): array
+    public function getAliases(): array
     {
-        return $this->config('aliases');
+        return $this->getMeta('aliases');
     }
 
-    public function bootloaders(): array
+    public function getBootloaders(): array
     {
-        return $this->config('bootloaders');
+        return $this->getMeta('bootloaders');
     }
 
-    public function commands(): array
+    public function getCommands(): array
     {
-        return $this->config('commands');
+        return $this->getMeta('commands');
     }
 
-    private function config(string $key): array
+    private function getMeta(string $key): array
     {
         $manifest = $this->getManifest();
-
         $data = [];
 
         foreach ($manifest as $package => $item) {

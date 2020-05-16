@@ -7,7 +7,6 @@ namespace Chiron\Console\Config;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Chiron\Config\AbstractInjectableConfig;
-use Chiron\Config\InjectableInterface;
 
 class ConsoleConfig extends AbstractInjectableConfig
 {

@@ -21,7 +21,7 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Chiron\Boot\EnvironmentInterface;
+use Chiron\Boot\Environment;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
@@ -125,7 +125,7 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
     }
 
     // TODO : éventuellement séparer cette méthode en deux parties, une pour enregistrer la classe et la seconde pour configurer la partie "bindHandler" ce sera plus propre
-    private function errorManager(EnvironmentInterface $env, ErrorHandler $handler, LoggerInterface $logger): ErrorManager
+    private function errorManager(Environment $env, ErrorHandler $handler, LoggerInterface $logger): ErrorManager
     {
         //$manager = new ErrorManager($container->get('config')->app['debug']);
         //$manager = new ErrorManager($container->get('config')->get('app.debug'));

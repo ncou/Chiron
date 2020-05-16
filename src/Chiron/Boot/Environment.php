@@ -27,7 +27,7 @@ namespace Chiron\Boot;
 
 // TODO : permettre de faire un getIterator sur cette classe, idem pour utiliser un ArrayAccess pour utiliser cette classe comme un tableau !!!!
 // TODO : ajouter dans cette classe une méthode pour vérifier si on est en mode console (cad is_cli) + ajouter cela dans le fichier functions.php
-class Environment implements EnvironmentInterface
+class Environment
 {
     // TODO : il faudrait pas ajouter à cette liste "yes" et "no" ????
     private const VALUE_MAP = [

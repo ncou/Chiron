@@ -65,6 +65,7 @@ class ServerRequestCreatorServiceProvider implements ServiceProviderInterface
                 });
         */
 
+        // TODO : utiliser un singleton/share() plutot que add car ca éconoisera de la mémoire, plutot que d'intancier à chaque fois une nouvelle classe.
         $container->add(ServerRequestCreatorInterface::class, ServerRequestCreator::class);
 
         // *** register alias ***

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Chiron\Boot\DirectoriesInterface;
+use Chiron\Boot\Directories;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use Chiron\Config\Config;
 use Chiron\Config\ConfigManager;
@@ -59,8 +59,7 @@ class ConfigManagerServiceProvider implements ServiceProviderInterface
         $container->alias('config', ConfigManager::class);
     }
 
-    // TODO : sépararer la création de la classe ConfigManager, et l'initialisation de la classe (les loadfromdirectory()) qui devra être mise dans une classe séparée de type Bootloader !!!!
-    private static function configManager(DirectoriesInterface $directories): ConfigManager
+    private static function configManager(Directories $directories): ConfigManager
     {
         // TODO : permettre de passer au constructeur du ConfigManager un path ou un tableau de path pour charger les configurations. Ca éviterai un appel à la méthode loadFromDirectory() car le path serait donné directement au constructeur !!!!
         $manager = new ConfigManager();

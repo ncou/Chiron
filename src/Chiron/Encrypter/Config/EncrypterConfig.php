@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace Chiron\Encrypter\Config;
 
 use Chiron\Config\AbstractInjectableConfig;
-use Chiron\Config\InjectableInterface;
 
-class EncrypterConfig extends AbstractInjectableConfig implements InjectableInterface
+class EncrypterConfig extends AbstractInjectableConfig
 {
     /** @var array */
     protected $config = [

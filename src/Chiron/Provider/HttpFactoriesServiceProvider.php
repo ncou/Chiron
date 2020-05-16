@@ -44,7 +44,7 @@ class HttpFactoriesServiceProvider implements ServiceProviderInterface
         // *** register factories ***
         $container->add(ResponseFactoryInterface::class, function () {
             $factory = Psr17FactoryFinder::findResponseFactory();
-            $headers = []; // TODO : aller rechercher dans la config les headers de base à injecter dans la réponse.
+            $headers = []; // TODO : aller rechercher dans la classe httpConfig les headers de base à injecter dans la réponse.
 
             return new ResponseFactory($factory, $headers);
         });
