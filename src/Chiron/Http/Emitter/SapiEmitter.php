@@ -9,6 +9,8 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use InvalidArgumentException;
 
+//https://github.com/cakephp/cakephp/blob/master/src/Http/ResponseEmitter.php
+
 // TODO : Interface à virer elle ne sert pas à grand choses !!!!!
 // TODO : ajouter une méthode public ->withoutBody(bool) ou 'shouldOutputBody(bool)' pour gérer le cas de la request méthode === GET, et pour ne pas passer ce booléen lors de la méthode emit, mais bien avant !!!!
 // TODO : externaliser la méthode pour définri la tailler du buffer, elle pourra être appeller dans un bootloader pour modifier cette valeur.

@@ -135,4 +135,45 @@ final class ResponseFactory implements ResponseFactoryInterface
         }
         return $response;
     }*/
+
+
+
+    /**
+     * Formats the Content-Type header based on the configured contentType and charset
+     * the charset will only be set in the header if the response is of type text/*
+     *
+     * @param string $type The type to set.
+     * @return void
+     */
+    //https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php#L486
+    /*
+    protected function _setContentType(string $type): void
+    {
+        if (in_array($this->_status, [304, 204], true)) {
+            $this->_clearHeader('Content-Type');
+
+            return;
+        }
+        $whitelist = [
+            'application/javascript', 'application/xml', 'application/rss+xml',
+        ];
+
+        $charset = false;
+        if (
+            $this->_charset &&
+            (
+                strpos($type, 'text/') === 0 ||
+                in_array($type, $whitelist, true)
+            )
+        ) {
+            $charset = true;
+        }
+
+        if ($charset && strpos($type, ';') === false) {
+            $this->_setHeader('Content-Type', "{$type}; charset={$this->_charset}");
+        } else {
+            $this->_setHeader('Content-Type', $type);
+        }
+    }
+    */
 }

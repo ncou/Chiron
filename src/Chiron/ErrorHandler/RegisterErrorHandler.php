@@ -19,6 +19,12 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 use Chiron\Console\Console;
 use ErrorException;
 
+//https://github.com/cakephp/cakephp/blob/master/src/Error/BaseErrorHandler.php#L89
+//https://github.com/cakephp/cakephp/blob/master/src/Error/ConsoleErrorHandler.php
+//https://github.com/cakephp/cakephp/blob/master/src/Error/ErrorHandler.php#L205
+//https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php
+
+
 //https://github.com/laravel/lumen-framework/blob/38f42c1399650b6c2286de7e9831e7174cfd14e8/src/Concerns/RegistersExceptionHandlers.php
 //https://github.com/laravel/lumen-framework/blob/38f42c1399650b6c2286de7e9831e7174cfd14e8/src/Application.php#L103
 
@@ -125,6 +131,7 @@ final class RegisterErrorHandler
      * @return void
      */
     // TODO : code à améliorer !!!!!!
+    // TODO : regarder ici comment c'est fait (initialiser un SapiEmitter::class) :    https://github.com/cakephp/cakephp/blob/master/src/Error/ErrorHandler.php#L205
     protected function renderHttpResponse(Throwable $e)
     {
 
