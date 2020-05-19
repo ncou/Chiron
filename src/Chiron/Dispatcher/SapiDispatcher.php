@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Chiron\Dispatcher;
 
-use Chiron\Http\Http;
+use Chiron\ErrorHandler\ErrorHandler;
+use Chiron\Facade\Request;
 use Chiron\Http\Emitter\EmitterInterface;
 use Chiron\Http\Emitter\SapiEmitter;
-use Psr\Http\Message\ServerRequestInterface;
-use Chiron\Facade\Request;
-use Chiron\ErrorHandler\ErrorHandler;
+use Chiron\Http\Http;
 use Chiron\Router\Method;
 use Throwable;
 
@@ -24,9 +23,9 @@ final class SapiDispatcher extends AbstractDispatcher
     }
 
     /**
-     * @param Http   $http
-     * @param EmitterInterface   $emitter
-     * @param ErrorHandler   $errorHandler
+     * @param Http             $http
+     * @param EmitterInterface $emitter
+     * @param ErrorHandler     $errorHandler
      */
     // TODO : utiliser plutot un ErrorHandlerInterface au lieu de l'objet ErrorHandler !!!!
     protected function perform(Http $http, SapiEmitter $emitter, ErrorHandler $errorHandler): void

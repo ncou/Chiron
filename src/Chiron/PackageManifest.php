@@ -30,6 +30,7 @@ final class PackageManifest
      * @var string
      */
     private $manifestPath;
+
     /**
      * @var Filesystem
      */

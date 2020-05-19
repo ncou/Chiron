@@ -57,9 +57,6 @@ class Environment
         //$this->values = array_merge($_SERVER, $_ENV, $values);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     // TODO : voir si cette méthode est vraiment utile !!!
     public function hash(): string
     {
@@ -70,9 +67,6 @@ class Environment
         return $this->id;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function set(string $name, $value)
     {
         $this->values[$name] = $_ENV[$name] = $value;
@@ -80,9 +74,6 @@ class Environment
         $this->id = null;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     // TODO : réfléchir si on garde le paramétre par défaut ou si on l'enléve et qu'on throw une exception si la valeur n'existe pas.
     public function get(string $name, $default = null)
     {
@@ -100,9 +91,6 @@ class Environment
         return isset($this->values[$name]);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function all(): array
     {
         return $this->values;

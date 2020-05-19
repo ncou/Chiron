@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Chiron\Console\Command;
 
+use Chiron\Boot\Directories;
+use Chiron\Boot\Filesystem;
 use Chiron\Console\AbstractCommand;
 use Chiron\Console\ExitCode;
-use Chiron\Boot\Filesystem;
-use Chiron\Boot\Directories;
-use Chiron\PublishableCollection;
-use Symfony\Component\Console\Input\InputOption;
 
 //https://github.com/yiisoft/yii-demo/blob/master/src/Installer.php#L16
 
@@ -33,7 +31,7 @@ final class RuntimeDirCommand extends AbstractCommand
     private const RUNTIME_PERMISSION = 0777;
 
     /**
-     * @param Filesystem       $files
+     * @param Filesystem  $files
      * @param Directories $directories
      */
     public function __construct(Filesystem $filesystem, Directories $directories)
@@ -59,7 +57,7 @@ final class RuntimeDirCommand extends AbstractCommand
             $this->filesystem->ensureDirectory($runtimeDirectory);
             $this->writeln('<comment>created</comment>');
 
-            return ExitCode::OK;;
+            return ExitCode::OK;
         }
 
         $this->writeln('<info>exists</info>');

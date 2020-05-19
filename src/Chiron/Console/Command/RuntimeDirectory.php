@@ -29,8 +29,8 @@ final class RuntimeDirectory
     private $directories;
 
     /**
-     * @param FilesInterface       $files
-     * @param Directories $directories
+     * @param FilesInterface $files
+     * @param Directories    $directories
      */
     public function __construct(FilesInterface $filesystem, Directories $directories)
     {

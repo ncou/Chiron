@@ -136,14 +136,11 @@ final class ResponseFactory implements ResponseFactoryInterface
         return $response;
     }*/
 
-
-
     /**
      * Formats the Content-Type header based on the configured contentType and charset
-     * the charset will only be set in the header if the response is of type text/*
+     * the charset will only be set in the header if the response is of type text/*.
      *
      * @param string $type The type to set.
-     * @return void
      */
     //https://github.com/cakephp/cakephp/blob/master/src/Http/Response.php#L486
     /*

@@ -4,27 +4,19 @@ declare(strict_types=1);
 
 namespace Chiron\ErrorHandler;
 
-use Chiron\Container\Container;
-use Chiron\ErrorHandler\Formatter\FormatterInterface;
-use Chiron\ErrorHandler\Formatter\PlainTextFormatter;
-use Chiron\Http\Exception\HttpException;
-use Chiron\ErrorHandler\Exception\FatalErrorException;
-//use Chiron\Http\Psr\Response;
-use Exception;
-use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Throwable;
-
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Chiron\Console\Console;
+use Chiron\Container\Container;
+//use Chiron\Http\Psr\Response;
+use Chiron\ErrorHandler\Exception\FatalErrorException;
 use ErrorException;
+use Exception;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Throwable;
 
 //https://github.com/cakephp/cakephp/blob/master/src/Error/BaseErrorHandler.php#L89
 //https://github.com/cakephp/cakephp/blob/master/src/Error/ConsoleErrorHandler.php
 //https://github.com/cakephp/cakephp/blob/master/src/Error/ErrorHandler.php#L205
 //https://github.com/cakephp/cakephp/blob/master/src/Error/Middleware/ErrorHandlerMiddleware.php
-
 
 //https://github.com/laravel/lumen-framework/blob/38f42c1399650b6c2286de7e9831e7174cfd14e8/src/Concerns/RegistersExceptionHandlers.php
 //https://github.com/laravel/lumen-framework/blob/38f42c1399650b6c2286de7e9831e7174cfd14e8/src/Application.php#L103
@@ -54,12 +46,10 @@ final class RegisterErrorHandler
     /**
      * Convert PHP errors to ErrorException instances.
      *
-     * @param  int  $level
-     * @param  string  $message
-     * @param  string  $file
-     * @param  int  $line
-     *
-     * @return void
+     * @param int    $level
+     * @param string $message
+     * @param string $file
+     * @param int    $line
      *
      * @throws \ErrorException
      */
@@ -73,8 +63,7 @@ final class RegisterErrorHandler
     /**
      * Handle an uncaught exception from the application.
      *
-     * @param  \Throwable  $e
-     * @return void
+     * @param \Throwable $e
      */
     public static function handleException(Throwable $e): void
     {
@@ -97,8 +86,7 @@ final class RegisterErrorHandler
     /**
      * Render an exception to the console.
      *
-     * @param  \Throwable  $e
-     * @return void
+     * @param \Throwable $e
      */
     private static function renderForConsole(Throwable $e): void
     {
@@ -109,23 +97,21 @@ final class RegisterErrorHandler
     /**
      * Render an exception as an HTTP response and send it.
      *
-     * @param  \Throwable  $e
-     * @return void
+     * @param \Throwable $e
      */
     // TODO : code à améliorer !!!!!!
     // TODO : regarder ici comment c'est fait (initialiser un SapiEmitter::class) :    https://github.com/cakephp/cakephp/blob/master/src/Error/ErrorHandler.php#L205
     private static function renderHttpResponse(Throwable $e): void
     {
-
         // TODO : externaliser la création du content dans une méthode séparée du style '$this->handleCaughtThrowable($throwable): string' qui retourne le texte à la méthode echo. Elle pourrait être aussi utilisée dans le middleware de ErroHandlerMiddleware pour créer le contenu de la réponse !!!!
         $content = '';
+
         try {
             //$this->log($t);
             //return $this->exposeDetails ? $renderer->renderVerbose($t) : $renderer->render($t);
 
             $formatter = new \Chiron\ErrorHandler\Formatter\WhoopsFormatter();
             $content = $formatter->format2($e);
-
         } catch (\Throwable $t) {
             $content = nl2br($t->getMessage());
         }
@@ -140,10 +126,8 @@ final class RegisterErrorHandler
     /**
      * Handle php shutdown and search for fatal errors.
      *
-     * @return void
      *
      * @throws FatalErrorException
-     *
      */
     public static function handleShutdown(): void
     {
@@ -151,12 +135,12 @@ final class RegisterErrorHandler
 
         if ($error !== null && self::isFatalError($error['type'])) {
             $exception = new FatalErrorException(
-                    $error['message'],
-                    0,
-                    $error['type'],
-                    $error['file'],
-                    $error['line']
-                );
+                $error['message'],
+                0,
+                $error['type'],
+                $error['file'],
+                $error['line']
+            );
 
             $this->handleException($exception);
         }
@@ -165,7 +149,8 @@ final class RegisterErrorHandler
     /**
      * Determine if the error type is fatal.
      *
-     * @param  int  $type
+     * @param int $type
+     *
      * @return bool
      */
     private static function isFatalError(int $type): bool

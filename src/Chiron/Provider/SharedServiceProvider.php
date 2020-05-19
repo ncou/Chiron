@@ -16,20 +16,13 @@ namespace Chiron\Provider;
 
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Application;
-use Chiron\PublishableCollection;
-use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use Chiron\Bootload\ServiceProvider\AbstractServiceProvider;
 use Chiron\Console\Console;
-use Chiron\Container\BindingInterface;
-use Chiron\Container\Container;
-use Chiron\Http\DispatcherInterface;
-use Chiron\Http\Http;
-use Chiron\Http\SapiDispatcher;
-use Chiron\Router\RouteCollector;
-use Psr\Container\ContainerInterface;
-use Chiron\Pipe\HttpDecorator;
 use Chiron\Http\Emitter\EmitterInterface;
 use Chiron\Http\Emitter\SapiEmitter;
+use Chiron\Http\Http;
+use Chiron\Pipe\HttpDecorator;
+use Chiron\PublishableCollection;
 
 /**
  * Chiron system services provider.

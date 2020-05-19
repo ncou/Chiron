@@ -23,7 +23,7 @@ final class ConsoleDispatcher extends AbstractDispatcher
     }
 
     /**
-     * @param Console   $console
+     * @param Console $console
      *
      * @return int
      */

@@ -37,9 +37,6 @@ final class Directories
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function set(string $name, string $path): self
     {
         //$path = strtr($path, '\\', '/');
@@ -55,9 +52,6 @@ final class Directories
         return $this;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function get(string $name): string
     {
         if (! $this->has($name)) {
@@ -68,17 +62,11 @@ final class Directories
         return $this->directories[$name];
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function has(string $name): bool
     {
         return array_key_exists($name, $this->directories);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     // TODO : renommer cette méthode en "all()" ????
     // TODO : renommer cette méthode en "toArray()" ????
     public function getAll(): array
@@ -136,12 +124,13 @@ final class Directories
     }
     */
 
-
     /**
-    * Normalize reference to directories
-    * @param  string path to directory
-    * @return string normalized path to directory
-    */
+     * Normalize reference to directories.
+     *
+     * @param  string path to directory
+     *
+     * @return string normalized path to directory
+     */
     /*
     public static function normalizeDir($sDir)
     {
@@ -151,7 +140,6 @@ final class Directories
         }
         return $sDir;
     }*/
-
 
 /*
     static public function normalizeDir($dirpath){
@@ -163,7 +151,7 @@ final class Directories
 */
 
     /**
-     * Normalizes dir by adding missing trailing slash
+     * Normalizes dir by adding missing trailing slash.
      *
      * @param string $sDir Directory
      *
@@ -178,7 +166,6 @@ final class Directories
 
         return $sDir;
     }*/
-
 
     /**
      * Normalizes given directory names by removing trailing slashes.
@@ -200,5 +187,4 @@ final class Directories
 
         return $dir;
     }*/
-
 }

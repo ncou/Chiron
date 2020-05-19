@@ -107,8 +107,6 @@ return [
 
     'cipher' => 'AES-256-CBC',
 
-
-
     /*
      * Configure basic information about the application.
      *
@@ -160,7 +158,6 @@ return [
         ],
     ],*/
 
-
     //https://github.com/cakephp/app/blob/5b832f14ea9a642b09a9f48da75c9e47bd32e9cd/config/bootstrap.php#L107
     /*
      * Set the default server timezone. Using UTC makes time calculations / conversions easier.
@@ -178,12 +175,6 @@ return [
      * formatted and sets the default language to use for translations.
      */
     //ini_set('intl.default_locale', Configure::read('App.defaultLocale'));
-
-
-
-
-
-
 
     'dispatchers' => [
         //Chiron\Dispatcher\ConsoleDispatcher::class,
@@ -205,6 +196,4 @@ return [
         //Bootloader\LoggerBootloader::class,
         //Bootloader\LoadRoutesBootloader::class,
     ],
-
-
 ];

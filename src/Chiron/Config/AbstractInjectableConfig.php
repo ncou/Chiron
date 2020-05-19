@@ -4,20 +4,10 @@ declare(strict_types=1);
 
 namespace Chiron\Config;
 
-use ArrayAccess;
-use ArrayIterator;
-use InvalidArgumentException;
-use IteratorAggregate;
-use LogicException;
+use Chiron\Config\Exception\ConfigException;
 use Closure;
-
-use Nette\Schema\Expect;
 use Nette\Schema\Processor;
 use Nette\Schema\Schema;
-use Nette\Schema\Context;
-use Chiron\Config\Config;
-use Chiron\Config\Exception\ConfigException;
-
 
 //https://github.com/jenssegers/lean/blob/master/src/Slim/Settings.php
 
@@ -49,7 +39,6 @@ abstract class AbstractInjectableConfig extends Config implements InjectableConf
         // user should redefine the protected value for the section name.
         if (! is_string(static::CONFIG_SECTION_NAME)) {
             throw new ConfigException(sprintf('The config section name should be defined (const %s::CONFIG_SECTION is missing)', static::class));
-
         }
         // handle the case when the user use a directory separator (windows ou linux value) in the linked file path. And remove the starting/ending char '.' if found.
         $section = trim(str_replace(['/', '\\'], '.', static::CONFIG_SECTION_NAME), '.');
@@ -96,7 +85,7 @@ abstract class AbstractInjectableConfig extends Config implements InjectableConf
     {
         // Force the return value to be an array (by default the processed schema return an stdObject)
         $schema = $this->getConfigSchema()->castTo('array');
-        $processor = new Processor;
+        $processor = new Processor();
 
         try {
             return $processor->processMultiple($schema, $configs);
@@ -107,7 +96,7 @@ abstract class AbstractInjectableConfig extends Config implements InjectableConf
 
     /**
      * Helper used for the Nette/Schema assert() validation.
-     * Check if the array is associative (all keys should be strings)
+     * Check if the array is associative (all keys should be strings).
      *
      * @return Closure
      */
@@ -120,7 +109,7 @@ abstract class AbstractInjectableConfig extends Config implements InjectableConf
 
     /**
      * Helper used for the Nette/Schema assert() validation.
-     * Check if the array is a zero-based integer indexed array
+     * Check if the array is a zero-based integer indexed array.
      *
      * @return Closure
      */

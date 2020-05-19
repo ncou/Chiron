@@ -4,20 +4,15 @@ declare(strict_types=1);
 
 namespace Chiron\Bootload;
 
-use Chiron\Boot\Directories;
-use Chiron\Boot\Environment;
+use Chiron\Application;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
-use Chiron\Bootloader\CommandBootloader;
 use Chiron\Bootloader\ApplicationBootloader;
+use Chiron\Bootloader\CommandBootloader;
 use Chiron\Bootloader\DotEnvBootloader;
-use Chiron\Bootloader\HttpBootloader;
-use Chiron\Bootloader\PublishableCollectionBootloader;
 use Chiron\Bootloader\PackageManifestBootloader;
-use Chiron\Bootloader\RouteCollectorBootloader;
-use Chiron\Bootloader\ViewBootloader;
-use Chiron\Config\InjectableConfigMutation;
-use Chiron\Config\ConfigManager;
+use Chiron\Bootloader\PublishableCollectionBootloader;
 use Chiron\Config\InjectableConfigInterface;
+use Chiron\Config\InjectableConfigMutation;
 use Chiron\Container\Container;
 use Chiron\Provider\ConfigManagerServiceProvider;
 use Chiron\Provider\ErrorHandlerServiceProvider;
@@ -26,9 +21,6 @@ use Chiron\Provider\LoggerServiceProvider;
 use Chiron\Provider\MiddlewaresServiceProvider;
 use Chiron\Provider\RoadRunnerServiceProvider;
 use Chiron\Provider\ServerRequestCreatorServiceProvider;
-use Chiron\Application;
-use Chiron\Invoker\Invoker;
-use InvalidArgumentException;
 
 // TODO : éviter de passer deux fois les mémes services (provider ou bootloader) on ne chargera que la 1er fois. Ce cas peut se produire si l'utilisateur utilise le module autodiscovery + un ajout manuel des services.
 // TODO : passer la classe en "final" et passer les propriétes de classe de protected ou public à private !!!!
@@ -86,10 +78,6 @@ class Configurator // implements SingletonInterface
         // TODO : vérifier si le bootloader ApplicationBootloader ne doit pas être ajouté en dernier !!!!!
         $this->addBootloader(new ApplicationBootloader());
 
-
-
-
-
         // TODO : on devrait pouvoir déplacer ces bootloader dans le fichier core.php !!!!
         //$this->addBootloader(new CommandBootloader());
         //$this->addBootloader(new PublishableCollectionBootloader());
@@ -146,7 +134,6 @@ class Configurator // implements SingletonInterface
     {
         // TODO : finir de coder cette méthode pour ajouter une command dans la console !!!!
     }
-
 
     /*******************************************************************************
      * Bootloader

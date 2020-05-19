@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron\Dispatcher;
 
+use Chiron\ErrorHandler\ErrorHandler;
 use Chiron\Http\Http;
 use Spiral\RoadRunner\PSR7Client;
-use Chiron\ErrorHandler\ErrorHandler;
 use Throwable;
 
 //https://github.com/spiral/framework/blob/master/src/Http/RrDispatcher.php
@@ -22,9 +22,9 @@ final class RrDispatcher extends AbstractDispatcher
     }
 
     /**
-     * @param Http   $http
+     * @param Http         $http
      * @param PSR7Client   $client
-     * @param ErrorHandler   $errorHandler
+     * @param ErrorHandler $errorHandler
      */
     protected function perform(Http $http, PSR7Client $client, ErrorHandler $errorHandler): void
     {

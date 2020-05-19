@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron\Console\Command;
 
+use Chiron\Boot\Filesystem;
 use Chiron\Console\AbstractCommand;
 use Chiron\Console\ExitCode;
-use Chiron\Boot\Filesystem;
 use Chiron\PublishableCollection;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -22,8 +22,7 @@ final class PublishCommand extends AbstractCommand
     /**
      * Create a new command instance.
      *
-     * @param  Filesystem  $files
-     * @return void
+     * @param Filesystem $files
      */
     // TODO : lui passer un Directories en paramétre dans le constructeur, pour utiliser ensuite le ->get('root') pour retirer une partie du chemin et obtenir un chemin relatif lors de l'affichage des infos dans la console
     public function __construct(Filesystem $filesystem)
@@ -42,46 +41,44 @@ final class PublishCommand extends AbstractCommand
     // TODO : réfléchir si on passe directement le $files dans le constructeur pour déplacer l'appel à la méthode normalizePath dans la méthode "status()" histoire que le code soit plus lisible
     public function perform(PublishableCollection $publishable): int
     {
+        /*
+                $this->hr();
+                $this->newLine();
 
-/*
-        $this->hr();
-        $this->newLine();
+                $this->listing(['Copied successfull', 'Foo', 'Bar']);
 
-        $this->listing(['Copied successfull', 'Foo', 'Bar']);
+                $this->getOutput()->write('<info>toto</>');
 
-        $this->getOutput()->write('<info>toto</>');
+                $this->getOutput()->write('<error>toto</>');
 
-        $this->getOutput()->write('<error>toto</>');
+                $this->getOutput()->write('<comment>toto</>');
 
-        $this->getOutput()->write('<comment>toto</>');
+                $this->newLine();
+                $this->getOutput()->write('<fg=default;bg=default> // </>titi');
+                $this->newLine();
 
-        $this->newLine();
-        $this->getOutput()->write('<fg=default;bg=default> // </>titi');
-        $this->newLine();
+                $this->getOutput()->write('<default>toto</>');
+                $this->getOutput()->write('<fg=white;bg=red>toto</>');
 
-        $this->getOutput()->write('<default>toto</>');
-        $this->getOutput()->write('<fg=white;bg=red>toto</>');
+                $this->getOutput()->write('<blue>toto</>');
+                $this->getOutput()->write('<green>toto</>');
 
-        $this->getOutput()->write('<blue>toto</>');
-        $this->getOutput()->write('<green>toto</>');
+                $this->newLine();
+                //$this->getOutput()->writeln(['foo' => 'a', 'bar', 'baz']);
+                $this->text(['foo', 'bar', 'baz']);
 
-        $this->newLine();
-        //$this->getOutput()->writeln(['foo' => 'a', 'bar', 'baz']);
-        $this->text(['foo', 'bar', 'baz']);
+                $this->newLine();
+                $this->alert('the roof is on fire');
+                $this->newLine();
+                $this->alert2('the roof is on fire');
+                $this->newLine();
+                $this->alert3('the roof is on fire');
+                $this->newLine();
 
-        $this->newLine();
-        $this->alert('the roof is on fire');
-        $this->newLine();
-        $this->alert2('the roof is on fire');
-        $this->newLine();
-        $this->alert3('the roof is on fire');
-        $this->newLine();
+                $this->write($this->time('123456'));
 
-        $this->write($this->time('123456'));
-
-        $this->newLine();
-*/
-
+                $this->newLine();
+        */
 
         foreach ($publishable as $from => $to) {
             if ($this->filesystem->isDirectory($from)) {
@@ -101,9 +98,8 @@ final class PublishCommand extends AbstractCommand
     /**
      * Publish the directory to the given directory.
      *
-     * @param  string  $from
-     * @param  string  $to
-     * @return void
+     * @param string $from
+     * @param string $to
      */
     // TODO : pourquoi cette méthode est public ???
     public function publishDirectory(string $from, string $to)
@@ -116,9 +112,8 @@ final class PublishCommand extends AbstractCommand
     /**
      * Publish the file to the given path.
      *
-     * @param  string  $from
-     * @param  string  $to
-     * @return void
+     * @param string $from
+     * @param string $to
      */
     // TODO : pourquoi cette méthode est public ???
     public function publishFile(string $from, string $to)
@@ -132,8 +127,7 @@ final class PublishCommand extends AbstractCommand
     /**
      * Create the directory to house the published files if needed.
      *
-     * @param  string  $directory
-     * @return void
+     * @param string $directory
      */
     private function createParentDirectory(string $directory)
     {
@@ -145,10 +139,9 @@ final class PublishCommand extends AbstractCommand
     /**
      * Write a status message to the console.
      *
-     * @param  string  $from
-     * @param  string  $to
-     * @param  string  $type
-     * @return void
+     * @param string $from
+     * @param string $to
+     * @param string $type
      */
     private function status(string $from, string $to, string $type)
     {
@@ -156,6 +149,6 @@ final class PublishCommand extends AbstractCommand
         $from = str_replace(directory('root'), '', $this->filesystem->normalizePath($from));
         $to = str_replace(directory('root'), '', $this->filesystem->normalizePath($to));
 
-        $this->line('<info> ✔ Copied '.$type.'</info> <comment>['.$from.']</comment> <info>To</info> <comment>['.$to.']</comment>');
+        $this->line('<info> ✔ Copied ' . $type . '</info> <comment>[' . $from . ']</comment> <info>To</info> <comment>[' . $to . ']</comment>');
     }
 }

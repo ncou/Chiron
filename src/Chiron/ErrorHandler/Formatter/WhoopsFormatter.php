@@ -8,9 +8,8 @@ use Chiron\Support\VarDumper;
 use function class_exists;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
-use Whoops\Handler\PrettyPageHandler;
-use Whoops\Handler\PlainTextHandler;
 use Whoops\Handler\HandlerInterface as WhoopsHandlerInterface;
+use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run as Whoops;
 
 // ajouter les informations sur la request de l'application !!!!

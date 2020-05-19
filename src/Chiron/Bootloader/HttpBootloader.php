@@ -16,12 +16,9 @@ class HttpBootloader extends AbstractBootloader
             $http->addMiddlewares($middleware);
         }*/
 
-
         //$a = 10/0;
         //throw new \RuntimeException("FOOBAR !!!!!!!!!!!!!!");
         //@strpos();
-
-
 
         $http->addMiddlewares($httpConfig->getMiddlewares());
 

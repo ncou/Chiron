@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron;
 
-use Chiron\Boot\Directories;
-use Chiron\Boot\Filesystem;
-use RuntimeException;
 use ArrayIterator;
+use Chiron\Boot\Filesystem;
 use Countable;
 use IteratorAggregate;
 use Transversable;
@@ -47,7 +45,7 @@ final class PublishableCollection implements IteratorAggregate, Countable
     }
 
     /**
-     * Gets the iterator
+     * Gets the iterator.
      *
      * @return ArrayIterator
      */
@@ -55,6 +53,4 @@ final class PublishableCollection implements IteratorAggregate, Countable
     {
         return new ArrayIterator($this->publishable);
     }
-
-
 }
