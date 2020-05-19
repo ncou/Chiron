@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Config;
 
+use Chiron\Config\AbstractInjectableConfig;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
-use Chiron\Config\AbstractInjectableConfig;
 
 class HttpConfig extends AbstractInjectableConfig
 {

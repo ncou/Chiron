@@ -6,7 +6,6 @@ namespace Chiron\Config;
 
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
-use Chiron\Config\AbstractInjectableConfig;
 
 class CoreConfig extends AbstractInjectableConfig
 {
@@ -17,7 +16,7 @@ class CoreConfig extends AbstractInjectableConfig
         // TODO : virer le otherItem expect mixed !!!!
         return Expect::structure([
             'dispatchers'       => Expect::listOf('string'),
-            'providers'       => Expect::listOf('string'),
+            'providers'         => Expect::listOf('string'),
             'bootloaders'       => Expect::listOf('string'),
         ])->otherItems(Expect::mixed());
     }

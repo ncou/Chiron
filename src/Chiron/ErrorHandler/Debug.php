@@ -343,10 +343,6 @@ final class Debug
         return html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
-
-    /**
-     * @inheritdoc
-     */
     /*
     public function getMessage(\Throwable $e): string
     {
@@ -357,6 +353,7 @@ final class Debug
      * Normalized exception stacktrace.
      *
      * @param \Throwable $e
+     *
      * @return array
      */
     /*
@@ -379,7 +376,6 @@ final class Debug
 
         return $stacktrace;
     }*/
-
 
 // Polyfill PHP8.0
     /*

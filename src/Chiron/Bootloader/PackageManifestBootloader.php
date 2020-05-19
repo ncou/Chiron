@@ -3,9 +3,9 @@
 namespace Chiron\Bootloader;
 
 use Chiron\Bootload\AbstractBootloader;
-use Chiron\PackageManifest;
 use Chiron\Bootload\Configurator;
 use Chiron\Container\Container;
+use Chiron\PackageManifest;
 
 class PackageManifestBootloader extends AbstractBootloader
 {
@@ -13,11 +13,7 @@ class PackageManifestBootloader extends AbstractBootloader
     // TODO : lui passer aussi un objet Factory pour permettre de convertir les classename de string en new instance.
     public function boot(PackageManifest $manifest, Configurator $configurator, Container $factory)
     {
-
-
         //die(var_dump($manifest->getProviders()));
-
-
 
         // register the providers / aliases / bootloaders found in the composer packages manifest.
         foreach ($manifest->getProviders() as $provider) {

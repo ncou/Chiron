@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Bootload;
 
-use Psr\Container\ContainerInterface;
 use Chiron\Invoker\Invoker;
+use Psr\Container\ContainerInterface;
 
 abstract class AbstractBootloader implements BootloaderInterface
 {

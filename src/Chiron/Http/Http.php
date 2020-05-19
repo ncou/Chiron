@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Chiron\Http;
 
 use Chiron\Container\SingletonInterface;
+use Chiron\Facade\HttpDecorator;
 use Chiron\Router\RequestHandler;
-use Chiron\Router\RouterInterface;
 use Chiron\Router\RoutingHandler;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Chiron\Facade\HttpDecorator;
 
 // TODO : faire étendre cette classe de la classe Pipeline::class ?????
 // TODO : utiliser une SplPriorityQueue pour ajouter des middlewares dans cette classe ????

@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Emitter;
 
-use Chiron\Http\Psr\Stream;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use InvalidArgumentException;
+use Psr\Http\Message\ResponseInterface;
 
 //https://github.com/cakephp/cakephp/blob/master/src/Http/ResponseEmitter.php
 
@@ -105,7 +103,7 @@ final class SapiEmitter implements EmitterInterface
     /**
      * Emit the message body.
      *
-     * @param \Psr\Http\Message\ResponseInterface $response  The response to emit
+     * @param \Psr\Http\Message\ResponseInterface $response The response to emit
      */
     private function emitBody(ResponseInterface $response): void
     {
@@ -124,6 +122,7 @@ final class SapiEmitter implements EmitterInterface
      * Asserts response body data is empty or http status code doesn't require a body.
      *
      * @param ResponseInterface $response
+     *
      * @return bool
      */
     private function isResponseEmpty(ResponseInterface $response): bool

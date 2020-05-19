@@ -10,12 +10,10 @@ use Chiron\Config\Config;
 use Chiron\Config\ConfigManager;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
+use Chiron\Invoker\CallableResolver;
 use Chiron\Invoker\Support\Invokable2;
 use Closure;
 use Psr\Container\ContainerInterface;
-
-
-use Chiron\Invoker\CallableResolver;
 
 // TODO : créer une classe pour fabriquer l'application, et notamment pour injecter les routes et les middlewares si ils sont indiqués sous forme de texte dans la config => https://github.com/zendframework/zend-expressive/blob/85e2f607109ed8608f4004e622b2aad3bcaa8a4d/src/Container/ApplicationConfigInjectionDelegator.php
 
@@ -33,21 +31,17 @@ class ConfigManagerServiceProvider implements ServiceProviderInterface
      */
     public function register(BindingInterface $container): void
     {
+        /*
+                $callableResolver = new CallableResolver($container);
+                //$callable = $callableResolver->resolve_SAVE([$this, 'configManager']);
+                $callable = $callableResolver->resolve_SAVE([$this, 'configManager']);
 
-/*
-        $callableResolver = new CallableResolver($container);
-        //$callable = $callableResolver->resolve_SAVE([$this, 'configManager']);
-        $callable = $callableResolver->resolve_SAVE([$this, 'configManager']);
-
-        die(var_dump(is_callable($callable)));
-*/
+                die(var_dump(is_callable($callable)));
+        */
 
         $container->share(ConfigManager::class, new Invokable2([$this, 'configManager']));
 
         //$container->share(ConfigManager::class, new Invokable(Closure::fromCallable([$this, 'configManager'])));
-
-
-
 
         // register object
         //$container->share(ConfigManager::class, new Invokable(Closure::fromCallable([$this, 'configManager'])));

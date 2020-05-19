@@ -5,18 +5,8 @@ declare(strict_types=1);
 namespace Chiron\Bootload\ServiceProvider;
 
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
-use Chiron\Application;
-use Chiron\PublishableCollection;
-use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
-use Chiron\Console\Console;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
-use Chiron\Http\DispatcherInterface;
-use Chiron\Http\Http;
-use Chiron\Http\SapiDispatcher;
-use Chiron\Router\RouteCollector;
-use Psr\Container\ContainerInterface;
-use Chiron\Pipe\HttpDecorator;
 
 abstract class AbstractServiceProvider implements ServiceProviderInterface
 {

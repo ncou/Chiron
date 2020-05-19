@@ -10,13 +10,13 @@ namespace Chiron\Provider;
 
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
-use Chiron\Invoker\Support\Invokable;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
+use Chiron\Invoker\Support\Invokable;
+use Closure;
 use Spiral\Goridge\StreamRelay;
 use Spiral\RoadRunner\PSR7Client;
 use Spiral\RoadRunner\Worker;
-use Closure;
 
 // TODO : code à améliorer : https://github.com/spiral/framework/blob/98654e9d217f7d4ca994f27c68cfde0b70ac67d5/src/Bootloader/ServerBootloader.php#L31
 

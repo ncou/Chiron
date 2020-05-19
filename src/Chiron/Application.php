@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Chiron;
 
-use Chiron\Exception\ApplicationException;
 use Chiron\Boot\Directories;
 use Chiron\Boot\Environment;
+use Chiron\Bootload\BootloaderInterface;
 use Chiron\Bootload\Configurator;
+use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use Chiron\Container\SingletonInterface;
 use Chiron\Dispatcher\DispatcherInterface;
-use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
-use Chiron\Bootload\BootloaderInterface;
-use Chiron\Http\Http;
 use Chiron\ErrorHandler\RegisterErrorHandler;
+use Chiron\Exception\ApplicationException;
 
 /**
  * This constant defines the framework installation directory.
@@ -26,7 +25,7 @@ use Chiron\ErrorHandler\RegisterErrorHandler;
 // TODO : il faudrait pas une méthode setDispatchers($array) / getDispatchers(): array ????
 // TODO : ajouter des méthodes set/getName() pour le nom de l'application idem pour get/setVersion()
 // TODO : créer une classe d'exception dédiée à l'pplication ???? ApplicationException qui étendrait de RuntimeException. Elle serai levée si le rootPath est manquant ou si aucun dispatcher n'est trouvé.
-class Application// implements SingletonInterface
+class Application // implements SingletonInterface
 {
     /** @var DispatcherInterface[] */
     private $dispatchers = [];
@@ -85,10 +84,6 @@ class Application// implements SingletonInterface
         throw new ApplicationException('Unable to locate active dispatcher.');
     }
 
-
-
-
-
     public function addProvider(ServiceProviderInterface $provider): void
     {
         $this->configurator->addProvider($provider);
@@ -109,20 +104,6 @@ class Application// implements SingletonInterface
     {
         $this->configurator->addMutation($todo);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     // TODO : utiliser le $basePath dans le code du mapDirectories() (il faudrait que le paramétre soit une tableau) !!!!
     // TODO : ajouter un rtrim($basepath, '\/') sur le basePath ?????
@@ -147,7 +128,6 @@ class Application// implements SingletonInterface
         // TODO : il faudrait plutot faire un $instance = new static($configurator); et immédiatement stocker cette instance de Application dans le container en utilisant la clés seft::class et static::class pour binder l'instance en singleton !!!!
         return $configurator->getContainer()->get(static::class);
     }
-
 
     /**
      * Normalizes directory list and adds all required aliases.
@@ -200,24 +180,22 @@ class Application// implements SingletonInterface
             throw new ApplicationException('The ' . $directories['runtime'] . ' directory must be present and writable.');
         }
 
-
         return $directories;
     }
 
-
-/*
-//https://github.com/laravel/framework/blob/7.x/src/Illuminate/Foundation/Application.php#L303
-    protected function bindPathsInContainer()
-    {
-        $this->instance('path', $this->path());
-        $this->instance('path.base', $this->basePath());
-        $this->instance('path.lang', $this->langPath());
-        $this->instance('path.config', $this->configPath());
-        $this->instance('path.public', $this->publicPath());
-        $this->instance('path.storage', $this->storagePath());
-        $this->instance('path.database', $this->databasePath());
-        $this->instance('path.resources', $this->resourcePath());
-        $this->instance('path.bootstrap', $this->bootstrapPath());
-    }
-    */
+    /*
+    //https://github.com/laravel/framework/blob/7.x/src/Illuminate/Foundation/Application.php#L303
+        protected function bindPathsInContainer()
+        {
+            $this->instance('path', $this->path());
+            $this->instance('path.base', $this->basePath());
+            $this->instance('path.lang', $this->langPath());
+            $this->instance('path.config', $this->configPath());
+            $this->instance('path.public', $this->publicPath());
+            $this->instance('path.storage', $this->storagePath());
+            $this->instance('path.database', $this->databasePath());
+            $this->instance('path.resources', $this->resourcePath());
+            $this->instance('path.bootstrap', $this->bootstrapPath());
+        }
+        */
 }

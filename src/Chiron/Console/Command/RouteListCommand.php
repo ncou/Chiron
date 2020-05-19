@@ -4,26 +4,20 @@ declare(strict_types=1);
 
 namespace Chiron\Console\Command;
 
-use Chiron\Boot\Filesystem;
 use Chiron\Console\AbstractCommand;
 use Chiron\Console\ExitCode;
-use Chiron\Encrypter\Config\EncrypterConfig;
-use Chiron\Support\Security;
-use Symfony\Component\Console\Input\InputOption;
-use Chiron\Router\RouterInterface;
-use Chiron\Router\Route;
 use Chiron\Router\Method;
-use Throwable;
+use Chiron\Router\Route;
+use Chiron\Router\RouterInterface;
+use Chiron\Router\Target\Action;
+use Chiron\Router\Target\Callback;
+use Chiron\Router\Target\Controller;
+use Chiron\Router\Target\Group;
+use Chiron\Router\Target\Namespaced;
 use Closure;
 use ReflectionException;
 use ReflectionFunction;
 use ReflectionObject;
-use Chiron\Router\Target\Action;
-use Chiron\Router\Target\Controller;
-use Chiron\Router\Target\Group;
-use Chiron\Router\Target\Namespaced;
-use Chiron\Router\Target\Callback;
-
 
 // TODO : déporter cette commande dans le package du Router (cad déplacer cette classe dans le projet Router).
 final class RouteListCommand extends AbstractCommand
@@ -37,56 +31,48 @@ final class RouteListCommand extends AbstractCommand
 
     public function perform(RouterInterface $router): int
     {
-
         //die(var_dump($this->input->hasParameterOption(['-n'], true)));
         //die(var_dump($this->input->hasParameterOption(['--no-interaction'], true)));
 
-
         //$this->call('hello:world');
-
-
 
         // TODO : corriger ce cas là car on se retrouve avec un séparateur qui n'est plus jaune car l'instruction de reset "\e[0m" coupe le style initialement appliqué.
         //$this->alert5("\033[2;35m". "\033[41m". 'TEST_couleur' . "\e[0m");
-
-
 
         //$this->alert5("\033[2;35m". "\033[41m". 'TEST_couleur' . "\033[0m");
         //$this->alert5("\033[2;35m". "\033[41m". 'TEST_couleur' . "\033[0m");
         //$this->alert4("<bg=red>". 'TEST_couleur' . "</>");
 
-/*
-        $this->line('TEST_1', 'emergency');
-        $this->line('TEST_2', 'alert');
-        $this->line('TEST_3', 'critical');
+        /*
+                $this->line('TEST_1', 'emergency');
+                $this->line('TEST_2', 'alert');
+                $this->line('TEST_3', 'critical');
 
 
-        $this->line('TEST_4', 'error');
-        $this->line('TEST_5', 'caution');
-        $this->line('TEST_6', 'warning');
-        $this->line('TEST_7', 'info');
-        $this->line('TEST_7_Debug', 'fg=cyan');
+                $this->line('TEST_4', 'error');
+                $this->line('TEST_5', 'caution');
+                $this->line('TEST_6', 'warning');
+                $this->line('TEST_7', 'info');
+                $this->line('TEST_7_Debug', 'fg=cyan');
 
-        $this->line('TEST_8', 'success');
-        $this->line('TEST_9', 'comment');
-        $this->line('TEST_10', 'question');
+                $this->line('TEST_8', 'success');
+                $this->line('TEST_9', 'comment');
+                $this->line('TEST_10', 'question');
 
-        $this->line('TEST_11', 'notice');
+                $this->line('TEST_11', 'notice');
 
-        $this->line('TEST_12', 'default');
-
-
-        $this->line('<info>TEST</info>_<comment>comment</comment>');
-
-        $this->line('TEST_99', 'foobar');
-
-        $this->line("\033[2;35m". "\033[41m". 'TEST_couleur' . "\e[0m");
-        $this->line("\033[41m" . "\033[2;35m". 'TEST_couleur' . "\e[0m");
-
-        $this->line('TEST_couleur', "\033[2;35m");
-*/
+                $this->line('TEST_12', 'default');
 
 
+                $this->line('<info>TEST</info>_<comment>comment</comment>');
+
+                $this->line('TEST_99', 'foobar');
+
+                $this->line("\033[2;35m". "\033[41m". 'TEST_couleur' . "\e[0m");
+                $this->line("\033[41m" . "\033[2;35m". 'TEST_couleur' . "\e[0m");
+
+                $this->line('TEST_couleur', "\033[2;35m");
+        */
 
         $grid = $this->table(['Method:', 'Path:', 'Handler:']);
 
@@ -95,7 +81,7 @@ final class RouteListCommand extends AbstractCommand
                 [
                     $this->getAllowedMethods($route),
                     $this->getPath($route),
-                    $this->getHandler($route)
+                    $this->getHandler($route),
                 ]
             );
         }
@@ -107,6 +93,7 @@ final class RouteListCommand extends AbstractCommand
 
     /**
      * @param Route $route
+     *
      * @return string
      */
     private function getAllowedMethods(Route $route): string
@@ -122,15 +109,19 @@ final class RouteListCommand extends AbstractCommand
             switch (strtolower($verb)) {
                 case 'get':
                     $verb = '<fg=green>GET</>';
+
                     break;
                 case 'post':
                     $verb = '<fg=blue>POST</>';
+
                     break;
                 case 'put':
                     $verb = '<fg=yellow>PUT</>';
+
                     break;
                 case 'delete':
                     $verb = '<fg=red>DELETE</>';
+
                     break;
             }
 
@@ -142,6 +133,7 @@ final class RouteListCommand extends AbstractCommand
 
     /**
      * @param Route $route
+     *
      * @return string
      */
     private function getPath(Route $route): string
@@ -167,10 +159,11 @@ final class RouteListCommand extends AbstractCommand
     }
 
     /**
-     * @param Route           $route
-     * @return string
+     * @param Route $route
      *
      * @throws ReflectionException
+     *
+     * @return string
      */
     private function getHandler(Route $route): string
     {
@@ -193,7 +186,7 @@ final class RouteListCommand extends AbstractCommand
                 return sprintf(
                     '%s->%s',
                     $this->getValue($handler, 'controller'),
-                    join('|', (array) $this->getValue($handler, 'action'))
+                    implode('|', (array) $this->getValue($handler, 'action'))
                 );
 
             case $handler instanceof Controller:
@@ -224,6 +217,7 @@ final class RouteListCommand extends AbstractCommand
     /**
      * @param object $object
      * @param string $property
+     *
      * @return mixed
      */
     private function getValue(object $object, string $property)

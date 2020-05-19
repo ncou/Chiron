@@ -2,14 +2,10 @@
 
 namespace Chiron\Console\Command;
 
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Chiron\Console\AbstractCommand;
-use Chiron\Console\ExitCode;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class ServeCommand extends AbstractCommand
 {
@@ -80,12 +76,12 @@ class ServeCommand extends AbstractCommand
 
         //passthru('"' . PHP_BINARY . '"' . " -S {$address} -t \"{$documentRoot}\" $router");
 
-/*
-// TODO : utiliser ce bout de code pour vérifier que l'executable "rr" ou "rr.exe" est installé à la racine du projet. si c'est le cas on pourra executer le serveur RoadRunner !!!!
-        if (@is_executable($php = PHP_BINDIR.('\\' === \DIRECTORY_SEPARATOR ? '\\php.exe' : '/php'))) {
-            return $php;
-        }
-*/
+        /*
+        // TODO : utiliser ce bout de code pour vérifier que l'executable "rr" ou "rr.exe" est installé à la racine du projet. si c'est le cas on pourra executer le serveur RoadRunner !!!!
+                if (@is_executable($php = PHP_BINDIR.('\\' === \DIRECTORY_SEPARATOR ? '\\php.exe' : '/php'))) {
+                    return $php;
+                }
+        */
         passthru('"D:\xampp\htdocs\nano5\rr.exe" serve -v -d');
         //passthru('".\rr.exe" serve -v -d');
     }

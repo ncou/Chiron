@@ -97,7 +97,6 @@ class CheckMaintenanceMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-
         /*
         // TODO : ajouter le header "Retry-After" avec une gestion des options, genre durée de la maintenance, et durée avant de faire un refresh !!!!
         // https://github.com/php-middleware/maintenance/blob/master/src/MaintenanceMiddleware.php
