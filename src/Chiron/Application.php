@@ -13,6 +13,7 @@ use Chiron\Dispatcher\DispatcherInterface;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use Chiron\Bootload\BootloaderInterface;
 use Chiron\Http\Http;
+use Chiron\ErrorHandler\RegisterErrorHandler;
 
 /**
  * This constant defines the framework installation directory.
@@ -125,27 +126,21 @@ class Application// implements SingletonInterface
 
     // TODO : utiliser le $basePath dans le code du mapDirectories() (il faudrait que le paramétre soit une tableau) !!!!
     // TODO : ajouter un rtrim($basepath, '\/') sur le basePath ?????
-    public static function init(string $basePath = null): self
+    // TODO : ajouter un paramétre boolen $debug pour savoir si on active ou non le error handler->register()
+    //public static function init(string $basePath = null): self
+    public static function init(array $directories): self
     {
-        // TODO : code à améliorer pour l'instant c'est pour faire des tests avec des erreurs en mode "console"
-        // TODO : il faudra mettre la lancement du error handler (le call à la fonction register) en tout début d'execution du code, pour gérer aussi les erreurs lorsqu'on enregistre les services providers par exemple. il faudra donc déplacer le code dans le composer Configurator.
-        //if (PHP_SAPI === 'cli') {
-            // TODO : ajouter une fonction statique pour executer le handler un truc du style "ErroHandler::register()" et utiliser un booléen pour conditionner l'execution du  errorhandler::register()
-            $error = new \Chiron\ErrorHandler\RegisterErrorHandler();
-            $error->register();
-        //}
-
+        RegisterErrorHandler::register();
 
         $configurator = new Configurator();
 
         // TODO : à déporter ce bout de code pour initialiser le Directories et le Environement classe dans un serviceprovider cad dans un fichier séparé !!!!
         // TODO : passer un array directory en paramétre de la fonction init() plutot qu'un basePath, cela évitera d'utiliser un tableau vide.
-        $directories = [];
+        //$directories = [];
         $configurator->getContainer()->share(Directories::class, new Directories(static::mapDirectories($directories)));
 
         // TODO : déplacer ce bout de code dans la classe SharedServiceProvider. Ca permet juste d'économiser un peu de mémoire en évitant de refaire une instanciation à chaque fois.
         $configurator->getContainer()->share(Environment::class);
-
 
         //return new static($configurator);
         // TODO : attention faire un test si cela fonctionne correctement dans le cas ou l'utilisateur créé une classe "App" par exemple qui extends de Application::class
@@ -177,28 +172,36 @@ class Application// implements SingletonInterface
         }
 
         if (! isset($directories['app'])) {
-            $directories['app'] = $directories['root'] . '/app/';
+            $directories['app'] = $directories['root'] . '/app';
         }
 
-        // TODO : virer les slash à la fin c'est à dire ne pas mettre '/runtime/' mais '/runtime'
+        // TODO : utiliser un DIRECTORY_SEPARATOR au lieu de mettre un "/" en dur dans les chemins
         // TODO : utiliser le répertoire 'var' à la place de runtime + modifier la console command RuntimeCommand qui permet de vérifier les droits en lecture/écriture du répertoire
         // TODO : il faudrait pas ajouter un répertoire pour les logs ???? => https://github.com/spiral/app/blob/85705bb7a0dafd010a83fa4bcc7323b019d8dda3/app/src/Bootloader/LoggingBootloader.php#L29
         // TODO : déplacer le répertoire template dans le répertoire ressources ???? éventuellement le renommer en views au lieu de templates !!!!
-        return array_merge([
+        $directories = array_merge([
             // public root
-            'public'    => $directories['root'] . '/public/',
+            'public'    => $directories['root'] . '/public',
             // vendor libraries
-            'vendor'    => $directories['root'] . '/vendor/',
+            'vendor'    => $directories['root'] . '/vendor',
             // templates libraries
-            'templates'    => $directories['root'] . '/templates/',
+            'templates'    => $directories['root'] . '/templates',
             // data directories
-            'runtime'   => $directories['root'] . '/runtime/',
-            'cache'     => $directories['root'] . '/runtime/cache/',
+            'runtime'   => $directories['root'] . '/runtime',
+            'cache'     => $directories['root'] . '/runtime/cache',
             // application directories
             //'config'    => $directories['app'] . '/config/',
-            'config'    => $directories['root'] . '/config/',
-            'resources' => $directories['app'] . '/resources/',
+            'config'    => $directories['root'] . '/config',
+            'resources' => $directories['app'] . '/resources',
         ], $directories);
+
+        if (! is_writable($directories['runtime'])) {
+            // TODO : faire un normalizePath sur le répertoire car quand on l'affiche on a des slash et antislash et la présence éventuelle de '/../' dans le chemin.
+            throw new ApplicationException('The ' . $directories['runtime'] . ' directory must be present and writable.');
+        }
+
+
+        return $directories;
     }
 
 

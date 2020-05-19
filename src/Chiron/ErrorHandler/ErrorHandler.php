@@ -22,12 +22,6 @@ use Throwable;
 //https://github.com/laravel/framework/blob/26e5af1baa32adb1c418660e054445a98aeebf7f/src/Illuminate/Foundation/Exceptions/Handler.php
 //https://github.com/symfony/error-handler/blob/948260b0c4c846138b6b0ad9423291acbbf08fa8/ErrorHandler.php#L713
 
-
-
-
-
-
-
 //https://github.com/narrowspark/framework/blob/ccda2dca0c312dbea08814d1372c1802920ebcca/src/Viserio/Component/Exception/ErrorHandler.php
 //https://github.com/narrowspark/framework/blob/ccda2dca0c312dbea08814d1372c1802920ebcca/src/Viserio/Component/Exception/Http/Handler.php
 //https://github.com/narrowspark/framework/blob/d56a37a9271908ac1ed039331bbf17a8913449f5/src/Viserio/Component/Exception/Console/Handler.php

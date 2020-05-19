@@ -8,13 +8,12 @@ use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Chiron\Config\AbstractInjectableConfig;
 
-class AppConfig extends AbstractInjectableConfig
+class CoreConfig extends AbstractInjectableConfig
 {
-    protected const CONFIG_SECTION_NAME = 'app';
+    protected const CONFIG_SECTION_NAME = 'core';
 
     protected function getConfigSchema(): Schema
     {
-        // TODO : on ne devrait pas pouvoir stocker de dispatcher dans le fichier app.php, car c'est plutot défini dans core.php. Par contre il mnaque la partie "commands" pour la console !!!!!
         // TODO : virer le otherItem expect mixed !!!!
         return Expect::structure([
             'dispatchers'       => Expect::listOf('string'),

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Chiron\Bootloader;
 
-use Chiron\Bootload\BootloaderInterface;
+use Chiron\Bootload\AbstractBootloader;
 use Chiron\Console\Config\ConsoleConfig;
 use Chiron\Console\Console;
 
-class CommandBootloader implements BootloaderInterface
+class CommandBootloader extends AbstractBootloader
 {
     public function boot(Console $console, ConsoleConfig $config): void
     {

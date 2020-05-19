@@ -93,7 +93,7 @@ final class PackageManifest
     }
 
     // TODO : améliorer le code en utilisant le fichier filesystem pour écrire le contenu du fichier + effectuer le test du répertoire "writable".
-    private function write(array $manifest)
+    private function write(array $manifest): void
     {
         if (! is_writable($this->runtimeDir)) {
             throw new RuntimeException('The ' . $this->runtimeDir . ' directory must be present and writable.');

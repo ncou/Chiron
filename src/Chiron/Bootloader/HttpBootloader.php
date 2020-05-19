@@ -2,12 +2,11 @@
 
 namespace Chiron\Bootloader;
 
-//use Chiron\Http\Psr\Response;
-use Chiron\Bootload\BootloaderInterface;
+use Chiron\Bootload\AbstractBootloader;
 use Chiron\Http\Config\HttpConfig;
 use Chiron\Http\Http;
 
-class HttpBootloader implements BootloaderInterface
+class HttpBootloader extends AbstractBootloader
 {
     public function boot(Http $http, HttpConfig $httpConfig)
     {

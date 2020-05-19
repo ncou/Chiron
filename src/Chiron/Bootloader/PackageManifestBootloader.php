@@ -2,36 +2,42 @@
 
 namespace Chiron\Bootloader;
 
-//use Chiron\Http\Psr\Response;
-use Chiron\Bootload\BootloaderInterface;
+use Chiron\Bootload\AbstractBootloader;
 use Chiron\PackageManifest;
 use Chiron\Bootload\Configurator;
+use Chiron\Container\Container;
 
-class PackageManifestBootloader implements BootloaderInterface
+class PackageManifestBootloader extends AbstractBootloader
 {
     // TODO : il faudra plutot lui passer un object Application::class plutot que le Configurator::class en paramétre de fonction pour ajouter les commands/mutations/providers/booloaders
     // TODO : lui passer aussi un objet Factory pour permettre de convertir les classename de string en new instance.
-    public function boot(PackageManifest $manifest, Configurator $configurator)
+    public function boot(PackageManifest $manifest, Configurator $configurator, Container $factory)
     {
+
+
+        //die(var_dump($manifest->getProviders()));
+
+
+
         // register the providers / aliases / bootloaders found in the composer packages manifest.
         foreach ($manifest->getProviders() as $provider) {
             // TODO : à finir de coder et tester !!!!
-            //$configurator->addProvider($provider);
+            $configurator->addProvider($factory->get($provider));
         }
 
         foreach ($manifest->getAliases() as $alias) {
             // TODO : à finir de coder et tester !!!!
-            $configurator->addAlias($alias);
+            $configurator->addAlias($factory->get($alias));
         }
 
         foreach ($manifest->getBootloaders() as $bootloader) {
             // TODO : à finir de coder et tester !!!!
-            $configurator->addBootloader($bootloader);
+            $configurator->addBootloader($factory->get($bootloader));
         }
 
         foreach ($manifest->getCommands() as $command) {
             // TODO : à finir de coder et tester !!!!
-            $configurator->addCommand($command);
+            $configurator->addCommand($factory->get($command));
         }
     }
 }

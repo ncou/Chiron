@@ -33,7 +33,7 @@ final class PublishCommand extends AbstractCommand
         $this->filesystem = $filesystem;
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDescription('Publish ressources.')
         ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite any existing files');
@@ -105,6 +105,7 @@ final class PublishCommand extends AbstractCommand
      * @param  string  $to
      * @return void
      */
+    // TODO : pourquoi cette méthode est public ???
     public function publishDirectory(string $from, string $to)
     {
         foreach ($this->filesystem->files($from) as $file) {
@@ -119,6 +120,7 @@ final class PublishCommand extends AbstractCommand
      * @param  string  $to
      * @return void
      */
+    // TODO : pourquoi cette méthode est public ???
     public function publishFile(string $from, string $to)
     {
         if (! $this->filesystem->exists($to) || $this->option('force')) {

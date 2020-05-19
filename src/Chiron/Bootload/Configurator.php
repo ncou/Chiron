@@ -30,8 +30,10 @@ use Chiron\Application;
 use Chiron\Invoker\Invoker;
 use InvalidArgumentException;
 
+// TODO : éviter de passer deux fois les mémes services (provider ou bootloader) on ne chargera que la 1er fois. Ce cas peut se produire si l'utilisateur utilise le module autodiscovery + un ajout manuel des services.
 // TODO : passer la classe en "final" et passer les propriétes de classe de protected ou public à private !!!!
 // TODO : enregistrer aussi les alias : https://github.com/laravel/framework/blob/5.8/src/Illuminate/Foundation/Application.php#L1128
+// TODO : renommer cette classe en "ServiceManager" ????
 class Configurator // implements SingletonInterface
 {
     /**
@@ -47,7 +49,7 @@ class Configurator // implements SingletonInterface
     /** @var array */
     public $bootloaders = [];
 
-    // TODO : passer un object de type "Container" ou "ContainerInterface" dans ce constructeur plutot que de l'initialiser ici. il faudra reporter la création du container dans la méthode Application::init()
+    // TODO : passer un object de type "Container" ou "ContainerInterface" dans ce constructeur plutot que de l'initialiser ici. il faudra reporter la création du container dans la méthode Application::init() ou dans un ContainerFactory::create() qui initialisera aussi les services de base à injecter dans le container (c'est à dire le code qui est actuellement dans ce constructeur ci dessous)
     public function __construct()
     {
         // TODO : vérifier si on ajoute un sharedByDefault=true lors de la création du container (paramétre dans le constructeur)
@@ -61,13 +63,18 @@ class Configurator // implements SingletonInterface
         // ### Add default service Providers ###
         //TODO : il y a surement des services à ne pas charger si on est en mode console !!! et inversement il y en a surement à charger uniquement en mode console !!!
         $this->addProvider(new ConfigManagerServiceProvider());
+
+        // TODO : théoriquement tout cela peut être déplacé dans le core.php
+        /*
         $this->addProvider(new ServerRequestCreatorServiceProvider());
         $this->addProvider(new HttpFactoriesServiceProvider());
         $this->addProvider(new LoggerServiceProvider());
         $this->addProvider(new MiddlewaresServiceProvider());
         $this->addProvider(new ErrorHandlerServiceProvider());
         $this->addProvider(new RoadRunnerServiceProvider());
-        // TODO : à virer c'est un test !!!!!
+        */
+
+        // TODO : à remplacer par l'utilisation de l'interface Container\SingletonInterface::class
         $this->addProvider(new \Chiron\Provider\SharedServiceProvider());
 
         // ### Add default Mutations ###
@@ -79,10 +86,14 @@ class Configurator // implements SingletonInterface
         // TODO : vérifier si le bootloader ApplicationBootloader ne doit pas être ajouté en dernier !!!!!
         $this->addBootloader(new ApplicationBootloader());
 
-        // TODO : on devrait pouvoir déplacer ces bootloader dans le fichier app.php !!!!
-        $this->addBootloader(new CommandBootloader());
-        $this->addBootloader(new PublishableCollectionBootloader());
-        $this->addBootloader(new PackageManifestBootloader());
+
+
+
+
+        // TODO : on devrait pouvoir déplacer ces bootloader dans le fichier core.php !!!!
+        //$this->addBootloader(new CommandBootloader());
+        //$this->addBootloader(new PublishableCollectionBootloader());
+        //$this->addBootloader(new PackageManifestBootloader());
     }
 
     // TODO : il faudrait pas initialiser le container avant de le retourner ??? ou alors cela risque de poser problémes ?????
@@ -145,40 +156,23 @@ class Configurator // implements SingletonInterface
     {
         // if you add a bootloader after the application run(), we execute the bootloader, else we add it to the stack for an execution later.
         if ($this->isBooted) {
-            $this->bootload($bootloader);
+            $bootloader->bootload($this->container);
         } else {
             $this->bootloaders[] = $bootloader;
         }
     }
 
     /**
-     * Boot the application's service providers.
+     * Boot the application's service bootloaders.
      */
-    // TODO : ajouter une sécurité en passant cette méthode en protected, et depuis la classe Application faire une reflection pour la rendre public et appeller cette méthode ??? cela éviterai quelle ne soit appellée manuellement par l'utilisateur avant la méthode run() de l'application ????
     public function boot(): void
     {
         if (! $this->isBooted) {
             $this->isBooted = true;
 
             foreach ($this->bootloaders as $bootloader) {
-                $this->bootload($bootloader);
+                $bootloader->bootload($this->container);
             }
-        }
-    }
-
-    /**
-     * Boot the given bootloader.
-     *
-     * @param BootloaderInterface $provider
-     *
-     * @return mixed
-     */
-    // TODO : déporter le invoker de la méthode boot dans une classe AbstractBootloader, on devrait seulement executer la méthode boot() avec en paramétre le container !!!
-    protected function bootload(BootloaderInterface $provider): void
-    {
-        if (method_exists($provider, 'boot')) {
-            // TODO : améliorer le code pour créer une seule fois l'objet Invoker ca consommera moins de mémoire (surtout qu'on a beaucoup de bootloader à executer)
-            (new Invoker($this->container))->invoke([$provider, 'boot']);
         }
     }
 }

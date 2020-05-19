@@ -8,6 +8,7 @@ use Chiron\Container\Container;
 use Chiron\ErrorHandler\Formatter\FormatterInterface;
 use Chiron\ErrorHandler\Formatter\PlainTextFormatter;
 use Chiron\Http\Exception\HttpException;
+use Chiron\ErrorHandler\Exception\FatalErrorException;
 //use Chiron\Http\Psr\Response;
 use Exception;
 use Psr\Http\Message\ResponseFactoryInterface;
@@ -38,29 +39,16 @@ use ErrorException;
 final class RegisterErrorHandler
 {
     /**
-     * Bootstrap the given application.
-     *
-     * @param  \Illuminate\Contracts\Foundation\Application  $app
-     * @return void
+     * Register this error handler.
      */
-    // TODO : passer les méthodes en static !!!
-    public function register()
+    public static function register(): void
     {
         error_reporting(E_ALL);
         ini_set('display_errors', 'Off');
 
-        set_error_handler([$this, 'handleError']);
-        set_exception_handler([$this, 'handleException']);
-        register_shutdown_function([$this, 'handleShutdown']);
-    }
-
-    /**
-     * Unregisters this error handler by restoring the PHP error and exception handlers.
-     */
-    public function unregister(): void
-    {
-        restore_error_handler();
-        restore_exception_handler();
+        set_error_handler([self::class, 'handleError']);
+        set_exception_handler([self::class, 'handleException']);
+        register_shutdown_function([self::class, 'handleShutdown']);
     }
 
     /**
@@ -70,12 +58,12 @@ final class RegisterErrorHandler
      * @param  string  $message
      * @param  string  $file
      * @param  int  $line
-     * @param  array  $context
+     *
      * @return void
      *
      * @throws \ErrorException
      */
-    public function handleError($level, $message, $file = '', $line = 0, $context = [])
+    public static function handleError(int $level, string $message, string $file = '', int $line = 0): void
     {
         if (error_reporting() & $level) {
             throw new ErrorException($message, 0, $level, $file, $line);
@@ -85,14 +73,10 @@ final class RegisterErrorHandler
     /**
      * Handle an uncaught exception from the application.
      *
-     * Note: Most exceptions can be handled via the try / catch block in
-     * the HTTP and Console kernels. But, fatal error exceptions must
-     * be handled differently since they are not normal exceptions.
-     *
      * @param  \Throwable  $e
      * @return void
      */
-    public function handleException(Throwable $e)
+    public static function handleException(Throwable $e): void
     {
         // disable error capturing to avoid recursive errors while handling exceptions
         //$this->unregister();
@@ -103,11 +87,10 @@ final class RegisterErrorHandler
             //
         }
 
-        //if ($this->runningInConsole()) {
-        if (PHP_SAPI === 'cli') {
-            $this->renderForConsole($e);
+        if (php_sapi_name() === 'cli') {
+            self::renderForConsole($e);
         } else {
-            $this->renderHttpResponse($e);
+            self::renderHttpResponse($e);
         }
     }
 
@@ -117,11 +100,10 @@ final class RegisterErrorHandler
      * @param  \Throwable  $e
      * @return void
      */
-    protected function renderForConsole(Throwable $e)
+    private static function renderForConsole(Throwable $e): void
     {
-        (new Console(Container::$instance))->renderThrowable($e, new ConsoleOutput());
-
-        //$this->getExceptionHandler()->renderForConsole(new ConsoleOutput, $e);
+        $console = new Console(Container::$instance);
+        $console->renderThrowable($e, new ConsoleOutput());
     }
 
     /**
@@ -132,7 +114,7 @@ final class RegisterErrorHandler
      */
     // TODO : code à améliorer !!!!!!
     // TODO : regarder ici comment c'est fait (initialiser un SapiEmitter::class) :    https://github.com/cakephp/cakephp/blob/master/src/Error/ErrorHandler.php#L205
-    protected function renderHttpResponse(Throwable $e)
+    private static function renderHttpResponse(Throwable $e): void
     {
 
         // TODO : externaliser la création du content dans une méthode séparée du style '$this->handleCaughtThrowable($throwable): string' qui retourne le texte à la méthode echo. Elle pourrait être aussi utilisée dans le middleware de ErroHandlerMiddleware pour créer le contenu de la réponse !!!!
@@ -156,28 +138,28 @@ final class RegisterErrorHandler
     }
 
     /**
-     * Handle the PHP shutdown event.
+     * Handle php shutdown and search for fatal errors.
      *
      * @return void
-     */
-    public function handleShutdown()
-    {
-        if (! is_null($error = error_get_last()) && $this->isFatalError($error['type'])) {
-            // TODO : code à corriger car cela ne fonctionnera pas !!!!!! exemple qui fonctionne : https://github.com/yiisoft/yii-web/blob/master/src/ErrorHandler/ErrorHandler.php#L125
-            $this->handleException($this->fatalErrorFromPhpError($error, 0));
-        }
-    }
-
-    /**
-     * Create a new fatal error instance from an error array.
      *
-     * @param  array  $error
-     * @param  int|null  $traceOffset
-     * @return \Symfony\Component\ErrorHandler\Error\FatalError
+     * @throws FatalErrorException
+     *
      */
-    protected function fatalErrorFromPhpError(array $error, $traceOffset = null)
+    public static function handleShutdown(): void
     {
-        return new FatalError($error['message'], 0, $error, $traceOffset);
+        $error = error_get_last();
+
+        if ($error !== null && self::isFatalError($error['type'])) {
+            $exception = new FatalErrorException(
+                    $error['message'],
+                    0,
+                    $error['type'],
+                    $error['file'],
+                    $error['line']
+                );
+
+            $this->handleException($exception);
+        }
     }
 
     /**
@@ -186,23 +168,8 @@ final class RegisterErrorHandler
      * @param  int  $type
      * @return bool
      */
-    // TODO : exemple : https://github.com/yiisoft/yii-web/blob/master/src/ErrorHandler/ErrorException.php#L42
-    protected function isFatalError(int $type): bool
+    private static function isFatalError(int $type): bool
     {
-        return in_array($type, [E_COMPILE_ERROR, E_CORE_ERROR, E_ERROR, E_PARSE]);
-        //E_ERROR | E_USER_ERROR | E_COMPILE_ERROR | E_CORE_ERROR | E_PARSE;
-        //[E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING]
+        return in_array($type, [E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING]);
     }
-
-    /**
-     * Get an instance of the exception handler.
-     *
-     * @return \Illuminate\Contracts\Debug\ExceptionHandler
-     */
-    /*
-    protected function getExceptionHandler()
-    {
-        return $this->app->make(ExceptionHandler::class);
-    }*/
-
 }

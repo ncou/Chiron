@@ -5,7 +5,7 @@ namespace Chiron\Bootloader;
 //use Chiron\Http\Psr\Response;
 
 use Chiron\Boot\Directories;
-use Chiron\Bootload\BootloaderInterface;
+use Chiron\Bootload\AbstractBootloader;
 use Chiron\Config\Config;
 use Dotenv\Dotenv;
 use Dotenv\Environment\Adapter\EnvConstAdapter;
@@ -24,7 +24,7 @@ use Dotenv\Exception\InvalidFileException;
 /**
  * DotEnv service provider. Should be executed before the config service provider !
  */
-class DotEnvBootloader implements BootloaderInterface
+class DotEnvBootloader extends AbstractBootloader
 {
     /*
     // TODO : vérifier si l'application n'a pas besoin de certaines variables d'environnement. si c'est le cas et qu'il n'y a pas de valeur par défaut il faudra lever une erreur si elles ne sont pas définies et que dotenv n'est pasinstallé (et donc qu'elles ne peuxvent pas être lues depuis un fichier.env).

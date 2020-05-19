@@ -2,12 +2,11 @@
 
 namespace Chiron\Bootloader;
 
-//use Chiron\Http\Psr\Response;
-use Chiron\Bootload\BootloaderInterface;
+use Chiron\Bootload\AbstractBootloader;
 use Chiron\Boot\Directories;
 use Chiron\PublishableCollection;
 
-class PublishableCollectionBootloader implements BootloaderInterface
+class PublishableCollectionBootloader extends AbstractBootloader
 {
     public function boot(PublishableCollection $publishable, Directories $directories)
     {
