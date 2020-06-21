@@ -79,13 +79,13 @@ final class EnvironmentBootloader extends AbstractBootloader
     private static function createDotenv(string $path): Dotenv
     {
         // TODO : il faudrait vérifier si il y a une variable d'environnement qui définie le nom du fichier (.env) à lire ?
-        // default file name for the .env file.
+        // default file name for the .env file. => ca ne marchera pas car on n'a pas encore chargé les variables d'environnement qui sont dans le .env !!!!
         $name = '.env';
 
         return Dotenv::create(
             $path,
             $name,
-            new DotenvFactory([new EnvConstAdapter(), new ServerConstAdapter(), new PutenvAdapter()])
+            new DotenvFactory([new ServerConstAdapter(), new EnvConstAdapter()])
         );
     }
 

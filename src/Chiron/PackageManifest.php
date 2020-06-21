@@ -8,6 +8,7 @@ use Chiron\Boot\Directories;
 use Chiron\Boot\Filesystem;
 use RuntimeException;
 
+// TODO : on devrait surement forcer un refresh de ce fichier packages.php lorsque l'utilisateur fait un "composer -dump-update" c'est à dire qu'il faudrait lancer la commande de clean du cache à ce moment là !!!
 // TODO : on devrait aussi gérer les "inflectors" (c'est les mutations) à ajouter au container.
 final class PackageManifest
 {
