@@ -61,6 +61,13 @@ class ServeCommand extends AbstractCommand
             return self::EXIT_CODE_ADDRESS_TAKEN_BY_ANOTHER_PROCESS;
         }
 
+
+
+        // TODO : à virer c'est un test
+        //$router = 'D:\xampp\htdocs\nano5\rewrite2.php';
+
+
+
         if ($router !== null && ! file_exists($router)) {
             $io->error("Routing file \"$router\" does not exist.");
 
@@ -74,7 +81,7 @@ class ServeCommand extends AbstractCommand
         }
         $output->writeLn('Quit the server with CTRL-C or COMMAND-C.');
 
-        //passthru('"' . PHP_BINARY . '"' . " -S {$address} -t \"{$documentRoot}\" $router");
+        passthru('"' . PHP_BINARY . '"' . " -S {$address} -t \"{$documentRoot}\" $router");
 
         /*
         // TODO : utiliser ce bout de code pour vérifier que l'executable "rr" ou "rr.exe" est installé à la racine du projet. si c'est le cas on pourra executer le serveur RoadRunner !!!!
@@ -82,7 +89,7 @@ class ServeCommand extends AbstractCommand
                     return $php;
                 }
         */
-        passthru('"D:\xampp\htdocs\nano5\rr.exe" serve -v -d');
+        //passthru('"D:\xampp\htdocs\nano5\rr.exe" serve -v -d');
         //passthru('".\rr.exe" serve -v -d');
     }
 

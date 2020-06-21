@@ -47,7 +47,7 @@ class ServerRequestCreatorServiceProvider implements ServiceProviderInterface
         };*/
 
         /*
-                $container->add(ServerRequestCreatorInterface::class, function ($container) {
+                $container->bind(ServerRequestCreatorInterface::class, function ($container) {
 
 
                     $serverRequestFactory = $container->get(ServerRequestFactoryInterface::class);
@@ -65,8 +65,8 @@ class ServerRequestCreatorServiceProvider implements ServiceProviderInterface
                 });
         */
 
-        // TODO : utiliser un singleton/share() plutot que add car ca éconoisera de la mémoire, plutot que d'intancier à chaque fois une nouvelle classe.
-        $container->add(ServerRequestCreatorInterface::class, ServerRequestCreator::class);
+        // TODO : utiliser un singleton() plutot que add car ca éconoisera de la mémoire, plutot que d'intancier à chaque fois une nouvelle classe.
+        $container->bind(ServerRequestCreatorInterface::class, ServerRequestCreator::class);
 
         // *** register alias ***
         $container->alias(ServerRequestCreator::class, ServerRequestCreatorInterface::class);

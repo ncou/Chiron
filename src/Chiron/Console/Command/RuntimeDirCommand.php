@@ -51,7 +51,7 @@ final class RuntimeDirCommand extends AbstractCommand
     {
         $this->write('Verifying runtime directory... ');
 
-        $runtimeDirectory = $this->directories->get('runtime');
+        $runtimeDirectory = $this->directories->get('@runtime');
 
         if (! $this->filesystem->exists($runtimeDirectory)) {
             $this->filesystem->ensureDirectory($runtimeDirectory);

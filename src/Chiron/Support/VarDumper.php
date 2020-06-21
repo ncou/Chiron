@@ -35,6 +35,8 @@ use Yiisoft\Arrays\ArrayableInterface;
 
 //https://github.com/symfony/var-exporter/blob/master/Internal/Exporter.php#L188
 
+//https://github.com/cakephp/cakephp/blob/master/src/Error/Debugger.php#L508
+
 class VarDumper
 {
     private static $objects;

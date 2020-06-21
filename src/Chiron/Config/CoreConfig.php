@@ -15,15 +15,9 @@ class CoreConfig extends AbstractInjectableConfig
     {
         // TODO : virer le otherItem expect mixed !!!!
         return Expect::structure([
-            'dispatchers'       => Expect::listOf('string'),
             'providers'         => Expect::listOf('string'),
             'bootloaders'       => Expect::listOf('string'),
         ])->otherItems(Expect::mixed());
-    }
-
-    public function getDispatchers(): array
-    {
-        return $this->get('dispatchers');
     }
 
     public function getProviders(): array

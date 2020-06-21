@@ -40,6 +40,7 @@ final class RrDispatcher extends AbstractDispatcher
             }
 
             $client->respond($response);
+            //gc_collect_cycles();
         }
     }
 }

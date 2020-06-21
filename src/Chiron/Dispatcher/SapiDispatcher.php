@@ -42,6 +42,7 @@ final class SapiDispatcher extends AbstractDispatcher
             $response = $errorHandler->renderException($e, $request, $verbose);
         }
 
+        // TODO : il faudrait pas remonter le emit dans le try/catch pour éviter de traiter l'erreur dans le error handler générique (celui dans RegisterErrorHandler) mais d'utiliser celui qui est dans le catch. notamment pour afficher une erreur 500 classique si l'utilisateur a déjà envoyé les headers (send_headers())
         // emit the response without the body if the request is a 'GET' http method.
         $withoutBody = $request->getMethod() === Method::HEAD;
         $emitter->emit($response, $withoutBody);

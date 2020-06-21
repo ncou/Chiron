@@ -56,6 +56,14 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+
+        ini_set('intl.default_locale', 'en_US');
+        setlocale(LC_ALL, 'C.UTF-8');
+        locale_set_default('en_US');
+        \Locale::setDefault('de-DE');
+
+        echo 'locale='.var_dump(Locale::getDefault());
+
         $io = new SymfonyStyle($input, $output);
 
         /** @var KernelInterface $kernel */

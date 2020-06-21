@@ -15,8 +15,8 @@ class PackageManifestTest extends \PHPUnit\Framework\TestCase
         @unlink(__DIR__ . '/fixtures/packages.php');
 
         $dirs = new Directories([]);
-        $dirs->set('vendor', __DIR__ . '/fixtures/vendor');
-        $dirs->set('runtime', __DIR__ . '/fixtures');
+        $dirs->set('@vendor', __DIR__ . '/fixtures/vendor');
+        $dirs->set('@runtime', __DIR__ . '/fixtures');
         $manifest = new PackageManifest(new Filesystem(), $dirs);
 
         $this->assertEquals(['foo', 'bar', 'baz'], $manifest->providers());

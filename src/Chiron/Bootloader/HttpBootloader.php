@@ -6,9 +6,9 @@ use Chiron\Bootload\AbstractBootloader;
 use Chiron\Http\Config\HttpConfig;
 use Chiron\Http\Http;
 
-class HttpBootloader extends AbstractBootloader
+final class HttpBootloader extends AbstractBootloader
 {
-    public function boot(Http $http, HttpConfig $httpConfig)
+    public function boot(Http $http, HttpConfig $httpConfig): void
     {
         // add the middlewares.
         /*

@@ -20,6 +20,7 @@ use Throwable;
 
 // TODO : example : https://github.com/bolt/common/blob/2.0/src/Thrower.php
 // TODO : classe à renommer en "Debugger" ???
+// TODO : classe à virer elle ne sert plus à rien (cf classe RegisterErrorHandler !!!)
 final class Debug
 {
     /**

@@ -95,6 +95,8 @@ class ErrorHandler implements ErrorHandlerInterface
      */
     // TODO : mettre l'exception et la request directement dans des varaibles de la classe pour éviter de devoir à chaque fois les passer en paramétre aux fonctions. Ca permettra de déplacer ce bout de code directement dans la méthode createResponse()
     // TODO : méthode à renommer en 'render()' et modifier aussi la signature dans le fichier d'interface !!!!
+    // TODO : prévoir une fonction renderVerbose() qui éviterai d'utiliser le booléen.
+    // TODO : prévoir une fonction withRequest ou setRequest, avec une request pas défaut à null et qui serait utilisée seulement si on passe explicitement la request à cette classe.
     public function renderException(Throwable $e, ServerRequestInterface $request, bool $displayErrorDetails): ResponseInterface
     {
         $formatter = $this->getFilteredFormatter($e, $request, $displayErrorDetails);

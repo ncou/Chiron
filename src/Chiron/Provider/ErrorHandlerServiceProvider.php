@@ -56,14 +56,14 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
     public function register(BindingInterface $container): void
     {
         // TODO : améliorer le cas du html avec une erreur 404, le lien javascript pour revenir à la page d'accueil ne fonctionne pas bien si on a un basePath différent de "/"
-        $container->add(HtmlFormatter::class, function () {
+        $container->bind(HtmlFormatter::class, function () {
             $path = __DIR__ . '/../../../resources/error.html';
 
             return new HtmlFormatter(realpath($path));
         });
 
         // TODO : il faudrait plutot binder l'interface ErrorHandlerInterface et pas directement la classe ErrorHandler, cela permettra à l'utilisateur de faire un override du module de gestion des erreurs/exceptions.
-        $container->add(ErrorHandler::class, function ($container) {
+        $container->bind(ErrorHandler::class, function (ContainerInterface $container) {
             // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
             $errorHandler = new ErrorHandler($container->get('responseFactory'));
 
@@ -93,7 +93,7 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
 
         // TODO : à virer c'est un test
         /*
-                $container->add(ErrorHandler::class, function ($container) {
+                $container->bind(ErrorHandler::class, function ($container) {
                     $errorHandler = new ErrorHandler($container->get('responseFactory'));
 
                     $errorHandler->setDefaultFormatter(new PlainTextFormatter());
@@ -121,7 +121,7 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
         }
         */
 
-        $container->share(ErrorManager::class, new Invokable(Closure::fromCallable([$this, 'errorManager'])));
+        $container->singleton(ErrorManager::class, new Invokable(Closure::fromCallable([$this, 'errorManager'])));
     }
 
     // TODO : éventuellement séparer cette méthode en deux parties, une pour enregistrer la classe et la seconde pour configurer la partie "bindHandler" ce sera plus propre

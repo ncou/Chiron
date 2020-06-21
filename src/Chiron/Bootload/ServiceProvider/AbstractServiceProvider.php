@@ -29,7 +29,7 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
     {
         foreach (static::BINDINGS as $key => $value) {
             $key = is_int($key) ? $value : $key;
-            $container->add($key, $value);
+            $container->bind($key, $value);
         }
     }
 
@@ -37,7 +37,7 @@ abstract class AbstractServiceProvider implements ServiceProviderInterface
     {
         foreach (static::SINGLETONS as $key => $value) {
             $key = is_int($key) ? $value : $key;
-            $container->share($key, $value);
+            $container->singleton($key, $value);
         }
     }
 

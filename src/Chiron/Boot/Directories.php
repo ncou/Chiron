@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace Chiron\Boot;
 
+use Chiron\Container\SingletonInterface;
 use InvalidArgumentException;
 
+//https://github.com/swoft-cloud/swoft-framework/blob/master/src/Concern/PathAliasTrait.php
+
 //https://github.com/yiisoft/aliases/blob/master/src/Aliases.php
+//https://github.com/yiisoft/aliases/blob/master/tests/AliasesTest.php
 
 // TODO : NormalizePath ***************************
 //https://github.com/yiisoft/files/blob/0ce2ab3b36fc1dac90d1c1f6dee7882f7c7fbb76/src/FileHelper.php#L107
@@ -22,56 +26,235 @@ use InvalidArgumentException;
  * Manage application directories set.
  */
 // TODO : permettre d'utiliser les helpers ArrayAccess pour faire un truc du genre "$directories['config']"
-final class Directories
+final class Directories implements SingletonInterface
 {
     /** @var array */
-    private $directories = [];
+    private $aliases = [];
 
-    /**
-     * @param array $directories
-     */
-    public function __construct(array $directories)
+    public function init(array $paths = [])
     {
-        foreach ($directories as $name => $directory) {
-            $this->set($name, $directory);
+        $this->aliases = [];
+        $this->add($paths);
+    }
+
+    public function add(array $paths): void
+    {
+        foreach ($paths as $alias => $path) {
+        	if (! is_string($alias)) {
+                throw new InvalidArgumentException(sprintf('Method "%s()" expects an associative array.', __METHOD__));
+            }
+            $this->set($alias, $path);
         }
     }
 
-    public function set(string $name, string $path): self
+    /**
+     * Register alias
+     *
+     * @param string $alias
+     * @param string $path
+     *
+     * @return void
+     */
+    // TODO : il faut virer le trailing slash de fin de chaine ('/' ou '\')
+    // TODO : attention si on passe un $alias à chaine vide cela va péter !!!! Lever une exception, idem si $path est vide car ca n'a pas de sens !!!
+    // TODO : lever une exception si dans $alias on trouve un spéarateur "/" ou "\" car on doit pas pouvoir enregistrer un alias du type "@root/config" => "xxx/xxx"
+    public function set(string $alias, string $path): void
+    {
+        // TODO : lever une erreur si la chaine $path est vide. non ??? idem pour $alias ou si $alias est uniquement un caractére '@' ou si il y a des alias de '@root/folder'. Il faudrait surement aussi virer les slash et antislash (\/) à la fin du paramétre $path.
+
+        if (! $this->isAlias($alias)) {
+            $alias = '@' . $alias;
+        }
+
+        // TODO : déplacer ce bout de code dans une méthode privée normalizeDir() ????
+        //$path = str_replace('\\', '/', $path);
+        //$path = rtrim($path, '/') . '/';
+
+        $this->aliases[$alias] = $path;
+    }
+
+    /**
+     * Get alias real name
+     *
+     * @param string $alias
+     *
+     * @return string
+     */
+    // TODO : on doit faire quoi si l'utilisateur fait un get d'un alias vide ??? On léve une exception InvalidArgument ???
+    // TODO : faire un normalizePath() pour résoudre les chemins du style './../xxxx'
+    public function get(string $alias): string
+    {
+    	if (! $this->isAlias($alias)) {
+            return $alias;
+        }
+
+        // TODO : attention ca va mal marcher si on utilise le séparateur de répertoire sous windows '\' !!!!
+        // TODO : déplacer ce bout de code dans une fonction privée séparée ???? un getRoot(): string ???? ou findAlias()
+        $pos = strpos($alias, '/');
+        $root = $pos === false ? $alias : substr($alias, 0, $pos);
+
+        if (! isset($this->aliases[$root])) {
+            throw new InvalidArgumentException(sprintf('Invalid directory path alias "%s".', $root));
+        }
+        // use methode get() to resolve chained aliases.
+        $rootPath = $this->get($this->aliases[$root]);
+
+        return str_replace($root, $rootPath, $alias);
+    }
+
+    /**
+     * Whether the alias exists
+     *
+     * @param string $alias
+     *
+     * @return bool
+     * @throws InvalidArgumentException
+     */
+    // TODO : lever une erreur si l'utilisateur essaye de faire un has() sur une chaine vide ou égale à @ ????
+    // TODO : lever une erreur si l'utilisateur essaye de faire un has() sur un alias+chemin. exemple : ->has('@root/runtime')
+    public function has(string $alias): bool
+    {
+        if (! $this->isAlias($alias)) {
+            $alias = '@' . $alias;
+        }
+
+        return isset($this->aliases[$alias]);
+    }
+
+    /**
+     * Remove alias.
+     * @param string $alias
+     */
+    // TODO : lever une erreur si l'utilisateur essaye de faire un remove() sur une chaine vide ou égale à @ ????
+    // TODO : lever une erreur si l'utilisateur essaye de faire un remove() sur un alias+chemin. exemple : ->remove('@root/runtime')
+    public function remove(string $alias): void
+    {
+        if (! $this->isAlias($alias)) {
+            $alias = '@' . $alias;
+        }
+
+        if ($this->aliases[$alias]) {
+            unset($this->aliases[$alias]);
+        }
+    }
+
+    /**
+     * Returns all path aliases translated into an actual paths.
+     *
+     * @return array Actual paths indexed by alias name.
+     */
+    public function all(): array
+    {
+        $result = [];
+        foreach ($this->aliases as $alias => $path) {
+            // resolve the alias path.
+            $result[$alias] = $this->get($path);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Aliases should start with an '@' character.
+     *
+     * @param string $alias
+     *
+     * @return bool
+     */
+    private function isAlias(string $alias): bool
+    {
+        return !strncmp($alias, '@', 1);
+    }
+
+
+
+
+
+
+
+
+
+
+
+    public function exists(string $alias): bool
+    {
+        return file_exists($this->get($alias));
+    }
+
+    public function writable(string $alias): bool
+    {
+        return is_writable($this->get($alias));
+    }
+
+    // TODO : retourner un chemin relatif (cad en supprimant le début du chemin qui correspond au chemin '@root')
+    public function relative(string $path, string $baseDir = '@root'): bool
+    {
+        // exemple : return self::formatPath($directories->get('logs'), $directories->get('root'));
+    }
+
+    // TODO : utiliser la méthode Path::relativePath() ou Filesystem::relativePath()
+    private static function formatPath(string $path, string $baseDir): string
+    {
+        return preg_replace('~^' . preg_quote($baseDir, '~') . '~', '.', $path);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function set_OLD(string $alias, string $path): void
     {
         //$path = strtr($path, '\\', '/');
         $path = str_replace(['\\', '//'], '/', $path);
+        //$path = str_replace(['\\', '/'], '/', $path);
         // TODO : réfléchier si on laisse le '/' à la fin !!!!!
-        $this->directories[$name] = rtrim($path, '/') . '/';
+        $this->paths[$alias] = rtrim($path, '/') . '/';
 
         // ou plus simple ===> $path = rtrim(strtr($path, '/\\', '//'), '/'); ou encore : $dir = str_replace('\\', '/', $dir);
 
         // rtrim($test, "\/");
         //rtrim(strtr($mask, '\\', '/'), '/');
 
-        return $this;
+        //return $this;
     }
 
-    public function get(string $name): string
+    public function get_OLD(string $alias): string
     {
-        if (! $this->has($name)) {
+        if (! $this->has($alias)) {
             // TODO : créer une classe DirectoryException ????
-            throw new InvalidArgumentException("Undefined directory '{$name}'");
+            // TODO : lever plutot une ApplicationException !!!! + faire un sprintf pour le message
+            throw new InvalidArgumentException("Undefined directory '{$alias}'");
         }
 
-        return $this->directories[$name];
+        return $this->paths[$alias];
     }
 
-    public function has(string $name): bool
+    public function has_OLD(string $alias): bool
     {
-        return array_key_exists($name, $this->directories);
+        return isset($this->paths[$alias]);
     }
 
-    // TODO : renommer cette méthode en "all()" ????
-    // TODO : renommer cette méthode en "toArray()" ????
-    public function getAll(): array
+    public function paths_OLD(): array
     {
-        return $this->directories;
+        return $this->paths;
     }
 
     /**
@@ -82,14 +265,26 @@ final class Directories
      * @return string
      */
     // TODO : attention il y a un risque que cela ne fonctionne pas car on ajoute un '/' à la fin du directory, donc si on remplace '@root/test' la valeur @root vaudra surement '/exemple/' et donc on aura deux '//' avec un résultat du genre : '/exemple//test'
-    public function path(string $target): string
+    public function path_OLD(string $target): string
     {
-        foreach ($this->directories as $alias => $value) {
+        foreach ($this->paths as $alias => $value) {
             $target = str_replace("@{$alias}", $value, $target);
         }
 
         return $target;
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Normalizes given directory names by removing trailing slashes.

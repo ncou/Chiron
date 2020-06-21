@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Config;
 
 use Chiron\Container\Container;
-use Chiron\Facade\Config;
+use Chiron\Facade\Configure;
 
 // TODO : déplacer cette classe dans un répertoire "Container\Mutation\" pour y stocker toutes les mutations utilisées par le container
 final class InjectableConfigMutation
@@ -14,11 +14,11 @@ final class InjectableConfigMutation
     {
         $section = $config->getConfigSectionName();
 
-        if (Config::hasConfig($section)) {
+        if (Configure::hasConfig($section)) {
             // the section subset could be empty.
             $subset = $config->getSectionSubsetName();
             // get the data array for section and subset-section.
-            $data = Config::getConfigData($section, $subset);
+            $data = Configure::getConfigData($section, $subset);
             // inject in the config the configuration file data.
             $config->setData($data);
         }

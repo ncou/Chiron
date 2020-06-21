@@ -177,23 +177,15 @@ return [
     //ini_set('intl.default_locale', Configure::read('App.defaultLocale'));
 
     'dispatchers' => [
-        //Chiron\Dispatcher\ConsoleDispatcher::class,
-        //Chiron\Dispatcher\SapiDispatcher::class,
-        //Chiron\Dispatcher\RrDispatcher::class,
+        Chiron\Dispatcher\ConsoleDispatcher::class,
+        Chiron\Dispatcher\SapiDispatcher::class,
+        Chiron\Dispatcher\RrDispatcher::class,
         //Chiron\Dispatcher\ReactDispatcher::class,
     ],
 
     'providers' => [
-        //Chiron\Router\FastRoute\Provider\FastRouteRouterServiceProvider::class,
-        //Chiron\Views\Provider\PhpRendererServiceProvider::class,
-        //Providers\DatabaseServiceProvider::class,
     ],
 
     'bootloaders' => [
-        //Chiron\Bootloader\ViewBootloader::class,
-        //Chiron\Bootloader\HttpBootloader::class,
-        //Chiron\Bootloader\RouteCollectorBootloader::class,
-        //Bootloader\LoggerBootloader::class,
-        //Bootloader\LoadRoutesBootloader::class,
     ],
 ];

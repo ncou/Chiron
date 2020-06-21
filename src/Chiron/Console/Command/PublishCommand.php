@@ -146,8 +146,8 @@ final class PublishCommand extends AbstractCommand
     private function status(string $from, string $to, string $type)
     {
         // TODO : remplacer ce bout de code par la méthode filesystem->relativePath($from, $rootPath) qui se charge de normaliser + retirer une partie du path
-        $from = str_replace(directory('root'), '', $this->filesystem->normalizePath($from));
-        $to = str_replace(directory('root'), '', $this->filesystem->normalizePath($to));
+        $from = str_replace(directory('@root'), '', $this->filesystem->normalizePath($from));
+        $to = str_replace(directory('@root'), '', $this->filesystem->normalizePath($to));
 
         $this->line('<info> ✔ Copied ' . $type . '</info> <comment>[' . $from . ']</comment> <info>To</info> <comment>[' . $to . ']</comment>');
     }

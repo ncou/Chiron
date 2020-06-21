@@ -24,11 +24,15 @@ use Psr\Log\NullLogger;
 //use Monolog\Logger;
 //use Monolog\Handler\StreamHandler;
 
+
+
 //https://github.com/spiral/monolog-bridge/blob/master/src/Bootloader/MonologBootloader.php
 
 //https://github.com/browscap/browscap-php/blob/5f1436b74a100088c66423e8715de598f50e66d1/src/Helper/LoggerHelper.php
 //https://github.com/browscap/http-access-log-parser/blob/f263af3d9e87b7f93ad89192f1ee2395ee023187/src/Helper/LoggerHelper.php
 //https://github.com/reactive-apps/app/blob/master/config/di/logger.php
+
+// TODO : créer un Logger par défaut minimaliste et ne pas utiliser le NullLogger !!!!! => https://github.com/slimphp/Slim/blob/1df2f0d78589f1a7b5199c873ab1e7ec57fe3e0a/Slim/Logger.php
 
 /**
  * Chiron system services provider.
@@ -44,7 +48,8 @@ class LoggerServiceProvider implements ServiceProviderInterface
      */
     public function register(BindingInterface $container): void
     {
-        $container->add(LoggerInterface::class, function () {
+        $container->bind(LoggerInterface::class, function () {
+            // TODO : créer un Logger par défaut minimaliste et ne pas utiliser le NullLogger !!!!! => https://github.com/slimphp/Slim/blob/1df2f0d78589f1a7b5199c873ab1e7ec57fe3e0a/Slim/Logger.php
             return new NullLogger();
         });
 

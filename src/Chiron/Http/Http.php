@@ -14,7 +14,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 // TODO : faire étendre cette classe de la classe Pipeline::class ?????
 // TODO : utiliser une SplPriorityQueue pour ajouter des middlewares dans cette classe ????
-// TODO : classe à renommer en HttpRunner ????
+// TODO : classe à renommer en HttpRunner ???? et ajouter une méthode run() qui effectue un reset de l'index à 0 et execute ensuite la méthode handle() [exemple : https://github.com/middlewares/utils/blob/master/src/Dispatcher.php#L44]
+// TODO : créer un constructeur et lui passer l'objet MiddlewareDecorator, et utiliser la méthode decorate de cette classe lorsqu'on ajoute un middleware au tableau.
+// TODO : virer l'interface RequestHandlerInterface une fois que la classe est renommée en HttpRunner + renommer la méthode handle() en run()
 final class Http implements RequestHandlerInterface, SingletonInterface
 {
     private $handler;
@@ -22,6 +24,7 @@ final class Http implements RequestHandlerInterface, SingletonInterface
     /**
      * @var array MiddlewareInterface[]
      */
+    // TODO : attention le @var est faux, pour l'instant la variuable $stack peut contenir des callable, des string...etc
     private $stack = [];
 
     /**
@@ -76,6 +79,7 @@ final class Http implements RequestHandlerInterface, SingletonInterface
      * @return ResponseInterface
      */
     // TODO : améliorer le code, initialiser l'objet Pipeline::class dans le constructeur + ajouter un setter pour injecter directement le middleware (utiliser un MiddlewareDecorator pour toujours avoir des objets MiddlewareInterface), et la méthode getStackMiddleware ne servira plus à rien !!!!
+    // TODO : Méthode à renommer en "run()"
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $this->seedRequestHandler();

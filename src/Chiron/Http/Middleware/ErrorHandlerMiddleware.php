@@ -66,7 +66,6 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Middleware;
 
-use Chiron\ErrorHandler\Debug;
 use Chiron\ErrorHandler\ErrorManager;
 use Chiron\Http\Psr\Response;
 use Psr\Http\Message\ResponseInterface;
@@ -93,7 +92,7 @@ class ErrorHandlerMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
-            $response = Debug::call([$handler, 'handle'], $request);
+            $response = $handler->handle($request);
         } catch (Throwable $exception) {
             $response = $this->manager->renderException($exception, $request);
         }

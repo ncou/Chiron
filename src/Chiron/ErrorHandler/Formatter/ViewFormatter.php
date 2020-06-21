@@ -70,9 +70,9 @@ class ViewFormatter extends AbstractFormatter
      */
     public function format(ServerRequestInterface $request, Throwable $exception): string
     {
-        $data['status'] = $statusCode = $this->getErrorStatusCode($e);
-        $data['title'] = $this->getErrorTitle($e);
-        $data['detail'] = $this->getErrorDetail($e);
+        $data['status'] = $statusCode = $this->getErrorStatusCode($exception);
+        $data['title'] = $this->getErrorTitle($exception);
+        $data['detail'] = $this->getErrorDetail($exception);
 
         // add some context attributes that can be used by the view.
         $data['throwable'] = $exception;

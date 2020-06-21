@@ -17,6 +17,7 @@ use Nette\Schema\Schema;
 // TODO : il faudrait pas aussi ajouter une interface Countable ???? => https://github.com/slimphp/Slim/blob/3.x/Slim/Collection.php
 // TODO : Il faudra que cette méthode get() ou getData() supporte la DotNotation pour aller chercher des clés du genre : getData('buffer.channel1.size')
 // TODO : il faudra faire une vérification du modéle de données lorsqu'on appel la méthode injectConfig, voir même une verif lorsqu'on appellera la méthode getData(). Il faudrait éventuellement lever une exception si on manipule une classe de config sans avoir appeller auparavent la méthode injectConfig, car on se retrouvera avec un tableau vide !!!!
+// TODO : séparezr cette classe en deux classes, une plutot générique pour la gestion des configs qui sont validées par le schéma (cad sans les méthodes getConfigSectionName et getSectionSubsetName) et la déplacer dans le package Config + une classe orienté projet avec les 2 méthodes getConfigSectionname et getSectionSubsetName + une méthode inject qui sera un proxy pour la méthode setData(), et mettre cette classe dans le répertoire Boot. Et remplacer les appels à une exception ConfigException par une excetpion ApplicationException
 abstract class AbstractInjectableConfig extends Config implements InjectableConfigInterface
 {
     /** @var string */
@@ -90,6 +91,7 @@ abstract class AbstractInjectableConfig extends Config implements InjectableConf
         try {
             return $processor->processMultiple($schema, $configs);
         } catch (\Nette\Schema\ValidationException $e) {
+            // TODO : faire une reflection de la méthode getConfigSchema pour afficher dans l'exception (en faisant un replace de $line et $file) l'endroit ou cela a planté ???
             throw new ConfigException(sprintf('Schema validation inside %s::class failed [%s]', static::class, $e->getMessage()));
         }
     }

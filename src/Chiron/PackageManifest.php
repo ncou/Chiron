@@ -40,8 +40,8 @@ final class PackageManifest
     {
         $this->filesystem = $filesystem;
         // TODO : utiliser plutot le répertoire cache plutot que 'runtime'
-        $this->runtimeDir = $directories->get('runtime');
-        $this->vendorDir = $directories->get('vendor');
+        $this->runtimeDir = $directories->get('@runtime');
+        $this->vendorDir = $directories->get('@vendor');
 
         // TODO : attention le directories ajoute d'office un '/' à la fin du répertoire, donc ici on aura deux fois '//packages.php'. A corriger !!!!
         $this->manifestPath = $this->runtimeDir . '/packages.php';

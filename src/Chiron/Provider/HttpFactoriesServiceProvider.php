@@ -42,18 +42,18 @@ class HttpFactoriesServiceProvider implements ServiceProviderInterface
     public function register(BindingInterface $container): void
     {
         // *** register factories ***
-        $container->add(ResponseFactoryInterface::class, function () {
+        $container->bind(ResponseFactoryInterface::class, function () {
             $factory = Psr17FactoryFinder::findResponseFactory();
             $headers = []; // TODO : aller rechercher dans la classe httpConfig les headers de base à injecter dans la réponse.
 
             return new ResponseFactory($factory, $headers);
         });
 
-        $container->add(RequestFactoryInterface::class, Psr17FactoryFinder::findRequestFactory());
-        $container->add(ServerRequestFactoryInterface::class, Psr17FactoryFinder::findServerRequestFactory());
-        $container->add(UriFactoryInterface::class, Psr17FactoryFinder::findUriFactory());
-        $container->add(UploadedFileFactoryInterface::class, Psr17FactoryFinder::findUploadedFileFactory());
-        $container->add(StreamFactoryInterface::class, Psr17FactoryFinder::findStreamFactory());
+        $container->bind(RequestFactoryInterface::class, Psr17FactoryFinder::findRequestFactory());
+        $container->bind(ServerRequestFactoryInterface::class, Psr17FactoryFinder::findServerRequestFactory());
+        $container->bind(UriFactoryInterface::class, Psr17FactoryFinder::findUriFactory());
+        $container->bind(UploadedFileFactoryInterface::class, Psr17FactoryFinder::findUploadedFileFactory());
+        $container->bind(StreamFactoryInterface::class, Psr17FactoryFinder::findStreamFactory());
 
         // *** register alias ***
         $this->registerAlias($container);

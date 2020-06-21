@@ -23,6 +23,7 @@ use Chiron\Http\Emitter\SapiEmitter;
 use Chiron\Http\Http;
 use Chiron\Pipe\HttpDecorator;
 use Chiron\PublishableCollection;
+use Chiron\Config\Configure;
 
 /**
  * Chiron system services provider.
@@ -32,14 +33,20 @@ use Chiron\PublishableCollection;
 final class SharedServiceProvider extends AbstractServiceProvider
 {
     protected const SINGLETONS = [
-        Application::class,
+        //Application::class,
         Console::class,
         PublishableCollection::class,
-        Http::class,
+        //Http::class,
+        //Configure::class,
+        //Directories
+        //Environment
+        //RouteCollector
+
         // save some memory
-        HttpDecorator::class,
+        //HttpDecorator::class,
         //\Nyholm\Psr7Server\ServerRequestCreatorInterface::class,
         //EmitterInterface::class => SapiEmitter::class,
+
     ];
 
     /*

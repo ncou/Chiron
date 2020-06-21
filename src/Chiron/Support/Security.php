@@ -2,6 +2,8 @@
 
 namespace Chiron\Support;
 
+//https://github.com/codeigniter4/CodeIgniter4/blob/fed757bee042cf987fea6851753941498e7b73e1/system/Security/Security.php
+
 class Security
 {
     /**
@@ -58,4 +60,45 @@ class Security
 
         return strtoupper($key);
     }
+
+
+    /**
+     * Sanitize Filename
+     *
+     * Tries to sanitize filenames in order to prevent directory traversal attempts
+     * and other security threats, which is particularly useful for files that
+     * were supplied via user input.
+     *
+     * If it is acceptable for the user input to include relative paths,
+     * e.g. file/in/some/approved/folder.txt, you can set the second optional
+     * parameter, $relative_path to TRUE.
+     *
+     * @param string  $str           Input file name
+     * @param boolean $relative_path Whether to preserve paths
+     *
+     * @return string
+     */
+    //https://github.com/codeigniter4/CodeIgniter4/blob/fed757bee042cf987fea6851753941498e7b73e1/system/Security/Security.php#L366
+    /*
+    public function sanitizeFilename(string $str, bool $relative_path = false): string
+    {
+        $bad = $this->filenameBadChars;
+
+        if (! $relative_path)
+        {
+            $bad[] = './';
+            $bad[] = '/';
+        }
+
+        $str = remove_invisible_characters($str, false);
+
+        do
+        {
+            $old = $str;
+            $str = str_replace($bad, '', $str);
+        }
+        while ($old !== $str);
+
+        return stripslashes($str);
+    }*/
 }

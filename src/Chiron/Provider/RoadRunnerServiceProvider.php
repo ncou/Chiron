@@ -33,7 +33,7 @@ class RoadRunnerServiceProvider implements ServiceProviderInterface
     public function register(BindingInterface $container): void
     {
         // *** register factories ***
-        $container->add(PSR7Client::class, new Invokable(Closure::fromCallable([$this, 'psr7Client'])));
+        $container->bind(PSR7Client::class, new Invokable(Closure::fromCallable([$this, 'psr7Client'])));
     }
 
     private function psr7Client(): PSR7Client

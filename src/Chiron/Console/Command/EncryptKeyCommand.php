@@ -11,6 +11,7 @@ use Chiron\Encrypter\Config\EncrypterConfig;
 use Chiron\Support\Security;
 use Symfony\Component\Console\Input\InputOption;
 
+// TODO : passer les méthodes "perform" en protected pour chaque classe de type "Command"
 final class EncryptKeyCommand extends AbstractCommand
 {
     protected static $defaultName = 'encrypt:key';
