@@ -12,7 +12,6 @@ namespace Chiron\Provider;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
-use Chiron\Invoker\Support\Invokable;
 use Closure;
 use Spiral\Goridge\StreamRelay;
 use Spiral\RoadRunner\PSR7Client;
@@ -33,7 +32,7 @@ class RoadRunnerServiceProvider implements ServiceProviderInterface
     public function register(BindingInterface $container): void
     {
         // *** register factories ***
-        $container->bind(PSR7Client::class, new Invokable(Closure::fromCallable([$this, 'psr7Client'])));
+        $container->bind(PSR7Client::class, Closure::fromCallable([$this, 'psr7Client']));
     }
 
     private function psr7Client(): PSR7Client

@@ -36,7 +36,6 @@ use Chiron\ErrorHandler\Formatter\XmlFormatter;
 use Chiron\ErrorHandler\Reporter\LoggerReporter;
 use Chiron\Http\Exception\Client\NotFoundHttpException;
 use Chiron\Http\Exception\Server\ServiceUnavailableHttpException;
-use Chiron\Invoker\Support\Invokable;
 use Chiron\Views\TemplateRendererInterface;
 use Closure;
 use Psr\Container\ContainerInterface;
@@ -121,7 +120,7 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
         }
         */
 
-        $container->singleton(ErrorManager::class, new Invokable(Closure::fromCallable([$this, 'errorManager'])));
+        $container->singleton(ErrorManager::class, Closure::fromCallable([$this, 'errorManager']));
     }
 
     // TODO : éventuellement séparer cette méthode en deux parties, une pour enregistrer la classe et la seconde pour configurer la partie "bindHandler" ce sera plus propre
