@@ -14,7 +14,7 @@
         "psr/log": "^1.0",
         "nette/schema": "^1.0",
         "chiron/config": "^1.4",
-        "chiron/console": "^0.6",
+        "chiron/console": "^0.7",
         "chiron/container": "^3.5",
         "chiron/injector": "^0.2",
         "chiron/filesystem": "^1.1",
