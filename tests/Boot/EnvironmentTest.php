@@ -53,6 +53,28 @@ class EnvironmentTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Environment names must be a non empty string.
+     */
+    public function testAddEmpty(): void
+    {
+        $env = $this->getEnv();
+
+        $env->add(['' => 'foobar']);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     * @expectedExceptionMessage Environment names must be a non empty string.
+     */
+    public function testSetEmpty(): void
+    {
+        $env = $this->getEnv();
+
+        $env->set('', 'foobar');
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Method "Chiron\Boot\Environment::add()" expects an associative array.
      */
     public function testAddInvalidArray(): void

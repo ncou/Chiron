@@ -49,11 +49,11 @@ class HttpFactoriesServiceProvider implements ServiceProviderInterface
             return new ResponseFactory($factory, $headers);
         });
 
-        $container->bind(RequestFactoryInterface::class, Psr17FactoryFinder::findRequestFactory());
-        $container->bind(ServerRequestFactoryInterface::class, Psr17FactoryFinder::findServerRequestFactory());
-        $container->bind(UriFactoryInterface::class, Psr17FactoryFinder::findUriFactory());
-        $container->bind(UploadedFileFactoryInterface::class, Psr17FactoryFinder::findUploadedFileFactory());
-        $container->bind(StreamFactoryInterface::class, Psr17FactoryFinder::findStreamFactory());
+        $container->bind(RequestFactoryInterface::class, [Psr17FactoryFinder::class, 'findRequestFactory']);
+        $container->bind(ServerRequestFactoryInterface::class, [Psr17FactoryFinder::class, 'findServerRequestFactory']);
+        $container->bind(UriFactoryInterface::class, [Psr17FactoryFinder::class, 'findUriFactory']);
+        $container->bind(UploadedFileFactoryInterface::class, [Psr17FactoryFinder::class, 'findUploadedFileFactory']);
+        $container->bind(StreamFactoryInterface::class, [Psr17FactoryFinder::class, 'findStreamFactory']);
 
         // *** register alias ***
         $this->registerAlias($container);

@@ -39,6 +39,7 @@ final class SapiDispatcher extends AbstractDispatcher
         try {
             $response = $http->handle($request);
         } catch (Throwable $e) {
+            // TODO : il faudrait plutot utiliser le RegisterErrorHandler::renderException($e) pour générer le body de la réponse !!!!
             $response = $errorHandler->renderException($e, $request, $verbose);
         }
 

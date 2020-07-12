@@ -10,6 +10,22 @@ class Hello extends AbstractCommand
 {
     protected static $defaultName = 'hello:world';
 
+    protected static $TOTO = 'toto value is toto';
+
+    protected const TITI = 'titi is back';
+
+
+
+
+
+
+
+
+
+
+
+
+
     protected function configure()
     {
         $this->setDescription('Outputs "Hello World"');
@@ -17,12 +33,12 @@ class Hello extends AbstractCommand
 
     public function perform()
     {
-        $this->getOutput()->writeln('Arguments dans le input : ' . (string) $this->input);
+        //$this->writeln('Arguments dans le input : ' . (string) $this->input);
 
-        $this->getOutput()->writeln('Hello World');
-        $this->line('FOO', 'error');
+        $this->writeln('Hello World');
+        //$this->line('FOO', 'error');
 
-        $this->output->title('FOOBAR');
+        //$this->output->title('FOOBAR');
 
         //$this->output->confirm('FOOBARBAZ ????', true);
 

@@ -21,6 +21,10 @@ use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Chiron\Bootloader\EnvironmentBootloader;
+
+use Chiron\Boot\Path;
+
 /**
  * A console command to display information about the current installation.
  */
@@ -62,6 +66,7 @@ final class AboutCommand extends AbstractCommand
             new TableSeparator(),
             ['<info>PHP</>'],
             new TableSeparator(),
+            // TODO : déplacer ces informations dans une classe System et on utiliserai des méthodes du style getPhpVersion() ...etc pour avoir les infos. idem pour l'OS.
             ['Version', PHP_VERSION],
             ['Architecture', (PHP_INT_SIZE * 8) . ' bits'],
             ['Intl locale', class_exists('Locale', false) && \Locale::getDefault() ? \Locale::getDefault() : 'n/a'],
@@ -72,7 +77,7 @@ final class AboutCommand extends AbstractCommand
         ];
 
         // TODO : utiliser plutot un foreach et la méthode $table->addRow();
-        if ($dotenv = $environement->get('CHIRON_DOTENV_VARS')) {
+        if ($dotenv = $environement->get(EnvironmentBootloader::DOTENV)) {
             $rows = array_merge($rows, [
                 new TableSeparator(),
                 ['<info>Environment (.env)</>'],
@@ -95,11 +100,13 @@ final class AboutCommand extends AbstractCommand
     // TODO : utiliser la méthode Path::relativePath() ou Filesystem::relativePath()
     private static function formatPath(string $path, string $baseDir): string
     {
-        return preg_replace('~^' . preg_quote($baseDir, '~') . '~', '.', $path);
+        return Path::getRelativePath2($baseDir, $path);
+        //return preg_replace('~^' . preg_quote($baseDir, '~') . '~', './', $path);
     }
 
     //https://github.com/cakephp/filesystem/blob/master/Folder.php#L658
     //https://github.com/JBZoo/Utils/blob/5a2b7c01f48318585212fa9876c8c48c8817d974/src/FS.php#L222
+    // TODO : déplacer cette fonction dans la classe filesystem::class ou path::class ?
     private static function formatFileSize(string $path): string
     {
         if (is_file($path)) {

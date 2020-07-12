@@ -74,7 +74,7 @@ class Application
     private $dispatchers = [];
 
     /**
-     * Private constructor. Use the method 'create' or 'init' to construct the application.
+     * Private constructor. Use the method 'create()' or 'init()' to construct the application.
      *
      * @param Container $container
      */
@@ -97,6 +97,7 @@ class Application
      * @param DispatcherInterface $dispatcher
      */
     // TODO : il faudrait gérer le cas ou l'on souhaite ajouter un dispatcher au dessus de la stack. Ajouter un paramétre 'bool $onTop = false' à cette méthode ????
+    // TODO : permettre de gérer les dispatchers dans les fichiers composer.json (partie "extra") et les charger via le packagemanifest ????
     public function addDispatcher(DispatcherInterface $dispatcher): void
     {
         $this->dispatchers[] = $dispatcher;
@@ -183,6 +184,7 @@ class Application
     public static function init(array $paths, array $values = [], bool $handleErrors = true): self
     {
         // TODO : attention il faudrait pouvoir faire un register une seule fois pour les error handlers !!!!
+        // used to handle errors in the bootloaders processing.
         if ($handleErrors) {
             RegisterErrorHandler::enable();
         }

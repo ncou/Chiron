@@ -85,7 +85,7 @@ final class RegisterErrorHandler
      */
     //https://github.com/yiisoft/yii2-framework/blob/master/base/ErrorHandler.php#L85
     /*
-    public function unregister()
+    public function unregister(): void
     {
         if ($this->_registered) {
             restore_error_handler();
@@ -150,7 +150,7 @@ final class RegisterErrorHandler
     private static function renderForConsole(Throwable $e): void
     {
         $message = sprintf(
-            "<error>%s</error> %s in %s on line %d\n<comment>Stack trace:</comment>\n%s",
+            "<error>%s</error> %s in %s on line %d\n<comment>Stack trace:</comment>\n%s\n",
             get_class($e),
             $e->getMessage(),
             $e->getFile(),
@@ -158,6 +158,7 @@ final class RegisterErrorHandler
             $e->getTraceAsString()
         );
 
+        // TODO : faire un fwrite(STDERR, $message) ?
         $stderr = new StreamOutput(fopen('php://stderr', 'w'));
         $stderr->write($message);
 
@@ -212,6 +213,8 @@ final class RegisterErrorHandler
         http_response_code(500);
 
         echo $content;
+
+        //exit(1);
     }
 
     /**

@@ -15,11 +15,27 @@ class ConsoleConfig extends AbstractInjectableConfig
     protected function getConfigSchema(): Schema
     {
         // TODO : il faudrait plutot utiliser un Expect::listOf('string') car ce n'est pas un tableau associatif
-        return Expect::structure(['commands' => Expect::arrayOf('string')]);
+        return Expect::structure([
+            'commands' => Expect::arrayOf('string'),
+            'name' => Expect::string(),
+            'version' => Expect::string()
+        ]);
     }
 
     public function getCommands(): array
     {
         return $this->get('commands');
+    }
+
+    public function getName(): string
+    {
+        //return $this->get('name') ?? 'UNKNOWN';
+        return $this->get('name');
+    }
+
+    public function getVersion(): string
+    {
+        //return $this->get('version') ?? 'UNKNOWN';
+        return $this->get('version');
     }
 }

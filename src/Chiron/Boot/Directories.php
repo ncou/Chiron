@@ -25,6 +25,7 @@ use InvalidArgumentException;
 /**
  * Manage application directories set.
  */
+// TODO : permettre de faire un getIterator sur cette classe, pour utiliser cette classe comme un tableau !!!!
 // TODO : permettre d'utiliser les helpers ArrayAccess pour faire un truc du genre "$directories['config']"
 final class Directories implements SingletonInterface
 {
@@ -37,6 +38,9 @@ final class Directories implements SingletonInterface
         $this->add($paths);
     }
 
+    /**
+     * @param array $paths An array with directories aliases as keys and paths as values
+     */
     public function add(array $paths): void
     {
         foreach ($paths as $alias => $path) {
@@ -48,10 +52,10 @@ final class Directories implements SingletonInterface
     }
 
     /**
-     * Register alias
+     * Register directory alias
      *
-     * @param string $alias
-     * @param string $path
+     * @param string $alias Targeted directory alias
+     * @param string $path Targeted directory path
      *
      * @return void
      */
@@ -62,7 +66,7 @@ final class Directories implements SingletonInterface
     {
         // TODO : lever une erreur si la chaine $path est vide. non ??? idem pour $alias ou si $alias est uniquement un caractére '@' ou si il y a des alias de '@root/folder'. Il faudrait surement aussi virer les slash et antislash (\/) à la fin du paramétre $path.
 
-        if (! $this->isAlias($alias)) {
+        if (! self::isAlias($alias)) {
             $alias = '@' . $alias;
         }
 
@@ -70,72 +74,9 @@ final class Directories implements SingletonInterface
         //$path = str_replace('\\', '/', $path);
         //$path = rtrim($path, '/') . '/';
 
+        $path = self::normalizeDir($path);
+
         $this->aliases[$alias] = $path;
-    }
-
-    /**
-     * Get alias real name
-     *
-     * @param string $alias
-     *
-     * @return string
-     */
-    // TODO : on doit faire quoi si l'utilisateur fait un get d'un alias vide ??? On léve une exception InvalidArgument ???
-    // TODO : faire un normalizePath() pour résoudre les chemins du style './../xxxx'
-    public function get(string $alias): string
-    {
-    	if (! $this->isAlias($alias)) {
-            return $alias;
-        }
-
-        // TODO : attention ca va mal marcher si on utilise le séparateur de répertoire sous windows '\' !!!!
-        // TODO : déplacer ce bout de code dans une fonction privée séparée ???? un getRoot(): string ???? ou findAlias()
-        $pos = strpos($alias, '/');
-        $root = $pos === false ? $alias : substr($alias, 0, $pos);
-
-        if (! isset($this->aliases[$root])) {
-            throw new InvalidArgumentException(sprintf('Invalid directory path alias "%s".', $root));
-        }
-        // use methode get() to resolve chained aliases.
-        $rootPath = $this->get($this->aliases[$root]);
-
-        return str_replace($root, $rootPath, $alias);
-    }
-
-    /**
-     * Whether the alias exists
-     *
-     * @param string $alias
-     *
-     * @return bool
-     * @throws InvalidArgumentException
-     */
-    // TODO : lever une erreur si l'utilisateur essaye de faire un has() sur une chaine vide ou égale à @ ????
-    // TODO : lever une erreur si l'utilisateur essaye de faire un has() sur un alias+chemin. exemple : ->has('@root/runtime')
-    public function has(string $alias): bool
-    {
-        if (! $this->isAlias($alias)) {
-            $alias = '@' . $alias;
-        }
-
-        return isset($this->aliases[$alias]);
-    }
-
-    /**
-     * Remove alias.
-     * @param string $alias
-     */
-    // TODO : lever une erreur si l'utilisateur essaye de faire un remove() sur une chaine vide ou égale à @ ????
-    // TODO : lever une erreur si l'utilisateur essaye de faire un remove() sur un alias+chemin. exemple : ->remove('@root/runtime')
-    public function remove(string $alias): void
-    {
-        if (! $this->isAlias($alias)) {
-            $alias = '@' . $alias;
-        }
-
-        if ($this->aliases[$alias]) {
-            unset($this->aliases[$alias]);
-        }
     }
 
     /**
@@ -155,15 +96,101 @@ final class Directories implements SingletonInterface
     }
 
     /**
+     * Get directory alias real path
+     *
+     * @param string $alias
+     *
+     * @return string Associated path for the given alias
+     */
+    // TODO : on doit faire quoi si l'utilisateur fait un get d'un alias vide ??? On léve une exception InvalidArgument ???
+    // TODO : faire un normalizePath() pour résoudre les chemins du style './../xxxx'
+    public function get(string $alias): string
+    {
+    	if (! self::isAlias($alias)) {
+            return $alias;
+        }
+
+        // TODO : attention ca va mal marcher si on utilise le séparateur de répertoire sous windows '\' !!!!
+        $pos = strpos($alias, '/');
+        $root = $pos === false ? $alias : substr($alias, 0, $pos);
+
+        if (! isset($this->aliases[$root])) {
+            throw new InvalidArgumentException(sprintf('Invalid directory path alias "%s".', $root));
+        }
+        // use method get() to resolve chained aliases.
+        $rootPath = $this->get($this->aliases[$root]);
+        // remove trailing slashes in chained aliases.
+        $rootPath = $pos === false ? $rootPath : rtrim($rootPath, '/');
+
+        return str_replace($root, $rootPath, $alias);
+    }
+
+    /**
+     * Whether the alias exists
+     *
+     * @param string $alias
+     *
+     * @return bool
+     * @throws InvalidArgumentException
+     */
+    // TODO : lever une erreur si l'utilisateur essaye de faire un has() sur une chaine vide ou égale à @ ????
+    // TODO : lever une erreur si l'utilisateur essaye de faire un has() sur un alias+chemin. exemple : ->has('@root/runtime')
+    public function has(string $alias): bool
+    {
+        if (! self::isAlias($alias)) {
+            $alias = '@' . $alias;
+        }
+
+        return isset($this->aliases[$alias]);
+    }
+
+    /**
+     * Remove alias.
+     * @param string $alias
+     */
+    // TODO : lever une erreur si l'utilisateur essaye de faire un remove() sur une chaine vide ou égale à @ ????
+    // TODO : lever une erreur si l'utilisateur essaye de faire un remove() sur un alias+chemin. exemple : ->remove('@root/runtime')
+    public function remove(string $alias): void
+    {
+        if (! self::isAlias($alias)) {
+            $alias = '@' . $alias;
+        }
+
+        if ($this->aliases[$alias]) {
+            unset($this->aliases[$alias]);
+        }
+    }
+
+    /**
      * Aliases should start with an '@' character.
      *
      * @param string $alias
      *
      * @return bool
      */
-    private function isAlias(string $alias): bool
+    private static function isAlias(string $alias): bool
     {
-        return !strncmp($alias, '@', 1);
+        return strncmp($alias, '@', 1) === 0;
+    }
+
+    /**
+     * Normalize reference to directories.
+     * Enforce a trailing slash.
+     *
+     * @param  string $dir path to directory
+     *
+     * @return string normalized path to directory
+     */
+    // TODO : déplacer cette méthode dans la classe Path::class ???? et l'utiliser aussi dans la classe Framework->path() pour normaliser le chemin du répertoire !!!!
+    private static function normalizeDir($dir): string
+    {
+        $dir = str_replace(DIRECTORY_SEPARATOR, '/', $dir);
+
+        if (substr($dir, -1) !== '/') {
+            $dir .= '/';
+        }
+
+        return $dir;
     }
 
 
@@ -175,7 +202,7 @@ final class Directories implements SingletonInterface
 
 
 
-
+/*
     public function exists(string $alias): bool
     {
         return file_exists($this->get($alias));
@@ -185,6 +212,7 @@ final class Directories implements SingletonInterface
     {
         return is_writable($this->get($alias));
     }
+*/
 
     // TODO : retourner un chemin relatif (cad en supprimant le début du chemin qui correspond au chemin '@root')
     public function relative(string $path, string $baseDir = '@root'): bool

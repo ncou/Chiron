@@ -21,8 +21,5 @@ final class HttpBootloader extends AbstractBootloader
         //@strpos();
 
         $http->addMiddlewares($httpConfig->getMiddlewares());
-
-        // TODO : C'est un test, à virer !!!!
-        $http->addMiddlewares(new \Middlewares\MiddlewareOne());
     }
 }

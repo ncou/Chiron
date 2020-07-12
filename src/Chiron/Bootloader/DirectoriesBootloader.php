@@ -33,13 +33,12 @@ final class DirectoriesBootloader extends AbstractBootloader
         $directories->init(self::mapDirectories($this->paths));
         // insert the chiron framwork path for later use.
         $directories->set('framework', Framework::path());
-        // some folders should be presents and writable.
+        // some folders should be presents and writables.
         self::assertWritableDir($directories, ['@runtime', '@cache', '@logs']);
     }
 
     /**
      * Normalizes directory list and adds all required aliases.
-     * Also enforce the correct order for the alias (ex : @root should be declared before @root/xxxx)
      *
      * @param array $paths
      *
@@ -57,17 +56,17 @@ final class DirectoriesBootloader extends AbstractBootloader
         // TODO : il faudrait pas ajouter un répertoire pour les logs ???? => https://github.com/spiral/app/blob/85705bb7a0dafd010a83fa4bcc7323b019d8dda3/app/src/Bootloader/LoggingBootloader.php#L29
         return array_merge([
             // root folders
-            '@app'          => '@root/app',
-            '@config'       => '@root/config',
-            '@public'       => '@root/public',
-            '@resources'    => '@root/resources',
-            '@runtime'      => '@root/runtime',
-            '@vendor'       => '@root/vendor',
+            '@app'          => '@root/app/',
+            '@config'       => '@root/config/',
+            '@public'       => '@root/public/',
+            '@resources'    => '@root/resources/',
+            '@runtime'      => '@root/runtime/',
+            '@vendor'       => '@root/vendor/',
             // ressources folders
-            '@views'        => '@resources/views',
+            '@views'        => '@resources/views/',
             // runtime folders
-            '@cache'        => '@runtime/cache',
-            '@logs'         => '@runtime/logs',
+            '@cache'        => '@runtime/cache/',
+            '@logs'         => '@runtime/logs/',
         ], $aliases);
     }
 

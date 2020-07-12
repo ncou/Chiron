@@ -25,8 +25,12 @@ use Chiron\Exception\ApplicationException;
 
 //https://github.com/symfony/symfony/blob/8b337fc94a97f7c74ca989e8049113abf0e30c83/src/Symfony/Component/Dotenv/Tests/DotenvTest.php#L378
 
+// TODO : faire la montée de version en v5.0 de vlucas/dotenv.
+// TODO : déplacer le fichier .env à la racine du projet (@root) et non pas dans le répertoire @app !!!!!!!!!!!!!!!! Penser à modifier le script composer qui copie le fichier .env.example
 final class EnvironmentBootloader extends AbstractBootloader
 {
+    /** @var string */
+    public const DOTENV = 'CHIRON_DOTENV_VARS';
     /** @var array */
     private $values;
 
@@ -42,8 +46,8 @@ final class EnvironmentBootloader extends AbstractBootloader
     public function boot(Environment $environment, Directories $directories): void
     {
         $loadedVars = self::loadDotEnvFile($directories->get('@app'));
-        // store the keys present in the dotenv file to display them when using the AboutCommand.
-        $this->values['CHIRON_DOTENV_VARS'] = $loadedVars;
+        // store the vars present in the dotenv file to display them when using the AboutCommand.
+        $this->values[self::DOTENV] = $loadedVars;
         // initialise the environment values (using array $this->values as override).
         $environment->init($this->values);
     }
@@ -61,41 +65,13 @@ final class EnvironmentBootloader extends AbstractBootloader
             return [];
         }
 
+        $dotenv = Dotenv::createImmutable($path, '.env');
+
         try {
             // Load environment file in given directory path, silently failing if it doesn't exist.
-            return self::createDotenv($path)->safeLoad();
+            return $dotenv->safeLoad();
         } catch (InvalidFileException $e) {
             throw new ApplicationException('The environment file (.env) is invalid!');
         }
     }
-
-    /**
-     * Create a Dotenv instance.
-     *
-     * @param string $path
-     *
-     * @return \Dotenv\Dotenv
-     */
-    private static function createDotenv(string $path): Dotenv
-    {
-        // TODO : il faudrait vérifier si il y a une variable d'environnement qui définie le nom du fichier (.env) à lire ?
-        // default file name for the .env file. => ca ne marchera pas car on n'a pas encore chargé les variables d'environnement qui sont dans le .env !!!!
-        $name = '.env';
-
-        return Dotenv::create(
-            $path,
-            $name,
-            new DotenvFactory([new ServerConstAdapter(), new EnvConstAdapter()])
-        );
-    }
-
-        /*
-    // TODO : vérifier si l'application n'a pas besoin de certaines variables d'environnement. si c'est le cas et qu'il n'y a pas de valeur par défaut il faudra lever une erreur si elles ne sont pas définies et que dotenv n'est pasinstallé (et donc qu'elles ne peuvent pas être lues depuis un fichier.env).
-    if (!isset($_SERVER['APP_ENV'])) {
-        if (!class_exists(Dotenv::class)) {
-            throw new \RuntimeException('APP_ENV environment variable is not defined. You need to define environment variables for configuration or add "vlucas/dotenv" as a Composer dependency to load variables from a .env file.');
-        }
-        (new Dotenv())->load(__DIR__.'/../.env');
-    }
-    */
 }

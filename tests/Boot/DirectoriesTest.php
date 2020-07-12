@@ -17,9 +17,10 @@ class DirectoriesTest extends \PHPUnit\Framework\TestCase
 {
     public function testInit(): void
     {
-        $dirs = $this->getDirs(['@foo' => 'bar']);
+        $dirs = $this->getDirs(['@foo' => 'bar', '@baz' => 'zab/']);
 
-        $this->assertSame('bar', $dirs->get('@foo'));
+        $this->assertSame('bar/', $dirs->get('@foo'));
+        $this->assertSame('zab/', $dirs->get('@baz'));
     }
 
 
@@ -27,9 +28,10 @@ class DirectoriesTest extends \PHPUnit\Framework\TestCase
     {
         $dirs = $this->getDirs();
 
-        $dirs->add(['@foo' => 'bar']);
+        $dirs->add(['@foo' => 'bar', '@baz' => 'zab/']);
 
-        $this->assertSame('bar', $dirs->get('@foo'));
+        $this->assertSame('bar/', $dirs->get('@foo'));
+        $this->assertSame('zab/', $dirs->get('@baz'));
     }
 
     /**
@@ -70,9 +72,9 @@ class DirectoriesTest extends \PHPUnit\Framework\TestCase
 
     public function testAll(): void
     {
-        $expect = ['@root' => 'foo','@base' => 'foo','@config' => 'foo/bar'];
+        $expect = ['@root' => 'foo/','@base' => 'foo/','@config' => 'foo/bar/'];
 
-        $dirs = $this->getDirs(['@root' => 'foo', '@base' => '@root', '@config' => '@base/bar']);
+        $dirs = $this->getDirs(['@root' => 'foo/', '@base' => '@root', '@config' => '@base/bar']);
 
         $this->assertEquals($dirs->all(), $expect);
     }
@@ -80,22 +82,22 @@ class DirectoriesTest extends \PHPUnit\Framework\TestCase
 
     public function testChainedPaths(): void
     {
-        $dirs = $this->getDirs(['@first' => 'path1', '@firstClone' => '@first', '@second' => '@first/path2', '@third' => '@second/path3']);
+        $dirs = $this->getDirs(['@first' => 'path1/', '@firstClone' => '@first', '@second' => '@first/path2/', '@third' => '@second/path3/']);
 
-        $this->assertEquals($dirs->get('@first'), 'path1');
-        $this->assertEquals($dirs->get('@firstClone'), 'path1');
-        $this->assertEquals($dirs->get('@second'), 'path1/path2');
-        $this->assertEquals($dirs->get('@third'), 'path1/path2/path3');
+        $this->assertEquals($dirs->get('@first'), 'path1/');
+        $this->assertEquals($dirs->get('@firstClone'), 'path1/');
+        $this->assertEquals($dirs->get('@second'), 'path1/path2/');
+        $this->assertEquals($dirs->get('@third'), 'path1/path2/path3/');
     }
 
     public function testChainedPathsReverseOrder(): void
     {
-        $dirs = $this->getDirs(['@third' => '@second/path3', '@second' => '@first/path2', '@firstClone' => '@first', '@first' => 'path1']);
+        $dirs = $this->getDirs(['@third' => '@second/path3/', '@second' => '@first/path2/', '@firstClone' => '@first', '@first' => 'path1/']);
 
-        $this->assertEquals($dirs->get('@first'), 'path1');
-        $this->assertEquals($dirs->get('@firstClone'), 'path1');
-        $this->assertEquals($dirs->get('@second'), 'path1/path2');
-        $this->assertEquals($dirs->get('@third'), 'path1/path2/path3');
+        $this->assertEquals($dirs->get('@first'), 'path1/');
+        $this->assertEquals($dirs->get('@firstClone'), 'path1/');
+        $this->assertEquals($dirs->get('@second'), 'path1/path2/');
+        $this->assertEquals($dirs->get('@third'), 'path1/path2/path3/');
     }
 
 
@@ -119,7 +121,8 @@ class DirectoriesTest extends \PHPUnit\Framework\TestCase
     public function dataProvider(): array
     {
         return [
-            ['@alias', 'value', 'value'],
+            ['@without_slash', 'value', 'value/'],
+            ['@with_slash', 'value/', 'value/'],
         ];
     }
 

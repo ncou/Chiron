@@ -104,7 +104,11 @@ final class PublishCommand extends AbstractCommand
     // TODO : pourquoi cette méthode est public ???
     public function publishDirectory(string $from, string $to)
     {
+        // TODO : ajouter un booléen à la méthode "->files()" pour savoir si le retour est un tableau d'object SPlFileInfo ou on son cast le retour en un tableau de string !!!!
         foreach ($this->filesystem->files($from) as $file) {
+            // cast SplFileInfo object to string.
+            $file = (string) $file;
+            // copy file or folder.
             $this->publishFile($file, $to . '/' . $this->filesystem->basename($file));
         }
     }

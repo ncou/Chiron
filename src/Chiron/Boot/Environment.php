@@ -32,6 +32,7 @@ use InvalidArgumentException;
 // TODO : ajouter dans cette classe une méthode pour vérifier si on est en mode console (cad is_cli) + ajouter cela dans le fichier functions.php
 // TODO : il va falloir que cette classe soit en shared si on souhaite ajouter des key/data dans cette classe sans forcément les ajouter dans $ENV et $SERVER !!!!!
 // TODO : créer une méthode add() qui attend un tableau de valeurs et qui fait un arra_merge avec le tableau $this->values ????
+// TODO : permettre d'utiliser les helpers ArrayAccess pour faire un truc du genre "$directories['config']"
 final class Environment implements SingletonInterface
 {
     /** @var array */
@@ -44,6 +45,11 @@ final class Environment implements SingletonInterface
     {
         $this->values = [];
         $this->add(array_merge($_SERVER, $_ENV, $values));
+    }
+
+    public function all(): array
+    {
+        return $this->values;
     }
 
     /**
@@ -69,11 +75,9 @@ final class Environment implements SingletonInterface
         return isset($this->values[$name]);
     }
 
-    public function all(): array
-    {
-        return $this->values;
-    }
-
+    /**
+     * @param array $values An array with environments names as keys and datas as values
+     */
     public function add(array $values): void
     {
         foreach ($values as $name => $value) {
@@ -86,9 +90,18 @@ final class Environment implements SingletonInterface
 
     }
 
+    /**
+     * @param string $name
+     * @param mixed $value
+     */
     // TODO : lever une erreur si $name est une chaine vide.
     public function set(string $name, $value): void
     {
+        // empty name value is not logical !
+        if ($name === '') {
+            throw new InvalidArgumentException('Environment names must be a non empty string.');
+        }
+
         $this->values[$name] = self::normalize($value);
     }
 
