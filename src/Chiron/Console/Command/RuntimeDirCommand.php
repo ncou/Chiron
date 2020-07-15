@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Console\Command;
 
 use Chiron\Boot\Directories;
-use Chiron\Boot\Filesystem;
+use Chiron\Filesystem\Filesystem;
 use Chiron\Console\AbstractCommand;
 use Chiron\Console\ExitCode;
 

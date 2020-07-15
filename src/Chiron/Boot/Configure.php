@@ -7,7 +7,7 @@ namespace Chiron\Boot;
 use Chiron\Container\SingletonInterface;
 use Chiron\Config\Loader\LoaderInterface;
 use Chiron\Config\Exception\ConfigException;
-use Chiron\Boot\Filesystem;
+use Chiron\Filesystem\Filesystem;
 use Chiron\Config\ConfigLoader;
 use Chiron\Config\Loader\PhpLoader;
 use Chiron\Config\Loader\IniLoader;

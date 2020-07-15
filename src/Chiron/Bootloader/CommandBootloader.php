@@ -21,6 +21,9 @@ use Chiron\Console\Command\EncryptKeyCommand;
 use Chiron\Console\Command\PublishCommand;
 use Chiron\Console\Command\RouteListCommand;
 use Chiron\Console\Command\ServeCommand;
+use Chiron\Console\Command\TwigClearCommand;
+use Chiron\Console\Command\TwigCompileCommand;
+use Chiron\Console\Command\CacheClearCommand;
 
 
 final class CommandBootloader extends AbstractBootloader
@@ -59,5 +62,11 @@ final class CommandBootloader extends AbstractBootloader
         // TODO : charger ces commandes uniquement si il y a un RouterInterface de présent (cad un class_exist === true) ???? ou alors tester avec un $container->has('RouterInterface')
         $console->addCommand(RouteListCommand::getDefaultName(), RouteListCommand::class);
         $console->addCommand(ServeCommand::getDefaultName(), ServeCommand::class);
+
+        $console->addCommand(CacheClearCommand::getDefaultName(), CacheClearCommand::class);
+
+        $console->addCommand(TwigClearCommand::getDefaultName(), TwigClearCommand::class);
+        $console->addCommand(TwigCompileCommand::getDefaultName(), TwigCompileCommand::class);
     }
 }
+

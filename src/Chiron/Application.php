@@ -194,6 +194,8 @@ class Application
 
         $app->addBootloader(new DirectoriesBootloader($paths));
         $app->addBootloader(new EnvironmentBootloader($values));
+        // init the configuration with the user settings.
+        $app->addBootloader(new ConfigureBootloader($app->container));
 
         self::configure($app);
 
@@ -203,10 +205,47 @@ class Application
     // TODO : il y a surement des services à ne pas charger si on est en mode console !!! et inversement il y en a surement à charger uniquement en mode console !!!
     private static function configure(Application $app): void
     {
-        // TODO : changer le nom de la classe MutationsBootloader en CoreMutationsBootloader car sinon le nom est trop générique !!!!
-        $app->addBootloader(new MutationsBootloader());
-        $app->addBootloader(new ConfigureBootloader());
-        $app->addBootloader(new CoreBootloader());
+        //$app->addBootloader(new CoreBootloader());
+        self::coreSettings_A_VIRER($app);
         // TODO : ajouter un appel à ApplicationBootLoader() ici juste aprés le CoreBootLoader ????
+    }
+
+
+    private static function coreSettings_A_VIRER(Application $app): void
+    {
+        // TODO : normalement on devrait avoir un tableau vide et les providers ci dessous seraient chargés soit par le PackageManifest qui scan les packages, soit via le app.php pour le dernier provider (database)
+
+
+        //************************
+        //******  PROVIDER *******
+        //************************
+        $app->addProvider(new \Chiron\Provider\ServerRequestCreatorServiceProvider());
+        $app->addProvider(new \Chiron\Provider\HttpFactoriesServiceProvider());
+        $app->addProvider(new \Chiron\Provider\LoggerServiceProvider());
+        $app->addProvider(new \Chiron\Provider\ErrorHandlerServiceProvider());
+        $app->addProvider(new \Chiron\Provider\RoadRunnerServiceProvider());
+
+        // TODO : cela doit être déplace dans le fichier composer.json des packages fastrouterouter et phprenderer
+        //Chiron\Router\FastRoute\Provider\FastRouteRouterServiceProvider::class,
+        //Chiron\Views\Provider\PhpRendererServiceProvider::class,
+
+        //**************************
+        //******  BOOTLOADER *******
+        //**************************
+        $app->addBootloader(new \Chiron\Bootloader\PublishableCollectionBootloader());
+        $app->addBootloader(new \Chiron\Bootloader\PackageManifestBootloader());
+
+            // TODO : attention si il y a des bootloaders chargés via le packagemanifest qui ajoutent une commande dans la console, si cette commande utilise le même nom que les commandes par défaut  définies dans la classe CommandBootloader, elles vont être écrasées !!!! faut il faire un test dans cette classe si la command est déjà définie dans la console on ne l'ajoute pas ????? ou alors écrase la commande d'office ????
+        $app->addBootloader(new \Chiron\Bootloader\CommandBootloader());
+
+
+
+            // TODO : déplacer ces bootloader dans les packages templates/router/http et ajouter dans le composer.json une balise extra avec les informations pour charger ces classes.
+            //Chiron\Bootloader\ViewBootloader::class,
+        $app->addBootloader(new \Chiron\Bootloader\HttpBootloader());
+            //Chiron\Bootloader\RouteCollectorBootloader::class,
+
+        $app->addBootloader(new \Chiron\Bootloader\ConsoleBootloader());
+        $app->addBootloader(new \Chiron\Bootloader\ApplicationBootloader());
     }
 }

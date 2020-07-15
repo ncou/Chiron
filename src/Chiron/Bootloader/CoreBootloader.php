@@ -10,6 +10,8 @@ use Chiron\Config\AppConfig;
 use Chiron\Config\CoreConfig;
 use Chiron\Container\Container;
 
+// TODO : classe à virer !!!!!
+
 final class CoreBootloader extends AbstractBootloader
 {
     // TODO : lui passer plutot un FactoryInterface en paramétre et non pas un container, ce qui permettrait de faire un "make()" pour créer les classes des providers/bootloaders/commands...etc !!!

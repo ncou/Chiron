@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron;
 
 use ArrayIterator;
-use Chiron\Boot\Filesystem;
+use Chiron\Filesystem\Filesystem;
 use Countable;
 use IteratorAggregate;
 use Transversable;

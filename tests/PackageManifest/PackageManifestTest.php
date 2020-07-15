@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Tests\PackageManifest;
 
 use Chiron\Boot\Directories;
-use Chiron\Boot\Filesystem;
+use Chiron\Filesystem\Filesystem;
 use Chiron\PackageManifest;
 
 class PackageManifestTest extends \PHPUnit\Framework\TestCase

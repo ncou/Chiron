@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron;
 
 use Chiron\Boot\Directories;
-use Chiron\Boot\Filesystem;
+use Chiron\Filesystem\Filesystem;
 use RuntimeException;
 
 // TODO : on devrait surement forcer un refresh de ce fichier packages.php lorsque l'utilisateur fait un "composer -dump-update" c'est à dire qu'il faudrait lancer la commande de clean du cache à ce moment là !!!

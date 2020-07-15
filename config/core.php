@@ -1,5 +1,7 @@
 <?php
 
+// TODO : classe à virer !!!!
+
 return [
 
     // TODO : normalement on devrait avoir un tableau vide et les providers ci dessous seraient chargés soit par le PackageManifest qui scan les packages, soit via le app.php pour le dernier provider (database)

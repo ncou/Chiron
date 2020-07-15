@@ -17,7 +17,7 @@
         "chiron/console": "^0.8",
         "chiron/container": "^3.5",
         "chiron/injector": "^0.2",
-        "chiron/filesystem": "^1.1",
+        "chiron/filesystem": "^1.2",
         "chiron/pipeline": "^3.3",
         "chiron/psr17factoryfinder": "^0.1",
         "nyholm/psr7-server": "^0.3",

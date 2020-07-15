@@ -8,23 +8,19 @@ use Chiron\Config\AbstractInjectableConfig;
 
 class EncrypterConfig extends AbstractInjectableConfig
 {
-    /** @var array */
-    protected $config = [
-        'key'        => '',
-    ];
+    protected const CONFIG_SECTION_NAME = 'encrypter';
 
-    public function inject(array $config): void
+    protected function getConfigSchema(): Schema
     {
-        parent::merge($config);
-    }
-
-    public function getConfigSection(): string
-    {
-        return 'encrypter';
+        return Expect::structure([
+            'key' => Expect::string()->default(env('APP_KEY'))
+        ]);
     }
 
     public function getKey(): string
     {
-        return $this->config['key'];
+        return $this->get('key');
     }
+
+
 }
