@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Encrypter\Config;
 
+use Nette\Schema\Expect;
+use Nette\Schema\Schema;
 use Chiron\Config\AbstractInjectableConfig;
 
 class EncrypterConfig extends AbstractInjectableConfig
