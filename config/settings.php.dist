@@ -1,0 +1,8 @@
+<?php
+
+return [
+	'debug'		=> true,
+    'charset'	=> 'UTF-8',
+    'locale'	=> 'en_US',
+    'timezone'	=> 'UTC',
+];
