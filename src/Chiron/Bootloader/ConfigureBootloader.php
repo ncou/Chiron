@@ -25,9 +25,7 @@ final class ConfigureBootloader extends AbstractBootloader
 
     public function boot(Configure $configure, Directories $directories): void
     {
-        // init the default values with the framework configs files.
-        //$configure->loadFromDirectory($directories->get('@framework/config'));
-        // merge the user "app" configs files in the general settings.
+        // add the user configs files in the general settings.
         $configure->loadFromDirectory($directories->get('@config'));
     }
 }

@@ -6,7 +6,6 @@ namespace Chiron\Console\Command;
 
 use Chiron\Console\AbstractCommand;
 use Chiron\PackageManifest;
-use Chiron\Console\ExitCode;
 
 //https://github.com/laravel/framework/blob/7.x/src/Illuminate/Foundation/Console/PackageDiscoverCommand.php
 
@@ -44,6 +43,6 @@ class PackageDiscoverCommand extends AbstractCommand
 
         $this->info('Package manifest generated successfully.');
 
-        return ExitCode::OK;
+        return self::SUCCESS;
     }
 }

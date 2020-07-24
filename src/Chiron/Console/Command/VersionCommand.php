@@ -6,7 +6,6 @@ namespace Chiron\Console\Command;
 
 use Chiron\Filesystem\Filesystem;
 use Chiron\Console\AbstractCommand;
-use Chiron\Console\ExitCode;
 use Chiron\Encrypter\Config\EncrypterConfig;
 use Chiron\Support\Security;
 use Symfony\Component\Console\Input\InputOption;
@@ -37,6 +36,6 @@ final class VersionCommand extends AbstractCommand
     {
         $this->write(Application::VERSION);
 
-        return ExitCode::OK;
+        return self::SUCCESS;
     }
 }

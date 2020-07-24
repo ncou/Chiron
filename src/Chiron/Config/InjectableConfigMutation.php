@@ -19,7 +19,9 @@ final class InjectableConfigMutation
             $subset = $config->getSectionSubsetName();
             // get the data array for section and subset-section.
             $data = Configure::getConfigData($section, $subset);
+
             // inject in the config the configuration file data.
+            // TODO : il faudra peut etre faire un try/catch et transformer l'exception en ApplicationException. Je pense que si on injecte des mauvaises données on aura une exception car le schema sera invalid.
             $config->setData($data);
         }
     }

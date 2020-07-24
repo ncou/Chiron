@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Chiron\Console\Command;
 
 use Chiron\Console\AbstractCommand;
-use Chiron\Console\ExitCode;
 use Chiron\Router\Method;
 use Chiron\Router\Route;
 use Chiron\Router\RouterInterface;
@@ -88,7 +87,7 @@ final class RouteListCommand extends AbstractCommand
 
         $grid->render();
 
-        return ExitCode::OK;
+        return self::SUCCESS;
     }
 
     /**

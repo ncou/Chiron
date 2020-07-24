@@ -7,7 +7,6 @@ namespace Chiron\Console\Command;
 use Chiron\Boot\Directories;
 use Chiron\Filesystem\Filesystem;
 use Chiron\Console\AbstractCommand;
-use Chiron\Console\ExitCode;
 
 //https://github.com/yiisoft/yii-demo/blob/master/src/Installer.php#L16
 
@@ -57,7 +56,7 @@ final class RuntimeDirCommand extends AbstractCommand
             $this->filesystem->ensureDirectory($runtimeDirectory);
             $this->writeln('<comment>created</comment>');
 
-            return ExitCode::OK;
+            return self::SUCCESS;
         }
 
         $this->writeln('<info>exists</info>');
@@ -92,6 +91,6 @@ final class RuntimeDirCommand extends AbstractCommand
 
         $this->writeln('Runtime directory permissions were updated.');
 
-        return ExitCode::OK;
+        return self::SUCCESS;
     }
 }

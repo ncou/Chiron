@@ -6,7 +6,6 @@ namespace Chiron\Console\Command;
 
 use Chiron\Filesystem\Filesystem;
 use Chiron\Console\AbstractCommand;
-use Chiron\Console\ExitCode;
 use Chiron\Encrypter\Config\EncrypterConfig;
 use Chiron\Support\Security;
 use Symfony\Component\Console\Input\InputOption;
@@ -32,13 +31,13 @@ final class EncryptKeyCommand extends AbstractCommand
         $filepath = $this->option('mount');
         if ($filepath === null) {
             // Only show the generated key, if the optional "mount" file path is not defined.
-            return ExitCode::OK;
+            return self::SUCCESS;
         }
 
         if ($filesystem->missing($filepath)) {
             $this->sprintf('<error>Unable to find `%s`</error>', $filepath);
 
-            return ExitCode::NOINPUT;
+            return self::FAILURE;
         }
 
         $content = $filesystem->read($filepath);
@@ -48,6 +47,6 @@ final class EncryptKeyCommand extends AbstractCommand
 
         $this->writeln('<comment>Encryption key has been updated.</comment>');
 
-        return ExitCode::OK;
+        return self::SUCCESS;
     }
 }

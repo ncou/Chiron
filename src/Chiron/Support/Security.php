@@ -4,13 +4,22 @@ namespace Chiron\Support;
 
 //https://github.com/codeigniter4/CodeIgniter4/blob/fed757bee042cf987fea6851753941498e7b73e1/system/Security/Security.php
 
-class Security
+final class Security
 {
     /**
-     * Get random bytes from a secure source.
+     * Generate a random security key.
      *
-     * This method will fall back to an insecure source an trigger a warning
-     * if it cannot find a secure source of random data.
+     * @return string Random bytes in hexadecimal.
+     */
+    public static function generateKey(): string
+    {
+        $key = bin2hex(static::randomBytes());
+
+        return strtoupper($key);
+    }
+
+    /**
+     * Get random bytes from a secure source.
      *
      * @param int $length The number of bytes you want.
      *
@@ -52,13 +61,6 @@ class Security
         }
 
         return $password;
-    }
-
-    public static function generateKey(): string
-    {
-        $key = bin2hex(static::randomBytes());
-
-        return strtoupper($key);
     }
 
 

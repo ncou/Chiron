@@ -1,5 +1,8 @@
 <?php
 
+declare(strict_types=1);
+
+// TODO : ajouter un champ "environment" ??? qui contiendrait "developement" / "production" par exemple !!!!
 return [
 	'debug'		=> true,
     'charset'	=> 'UTF-8',

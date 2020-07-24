@@ -10,9 +10,13 @@ use Chiron\Dispatcher\ConsoleDispatcher;
 use Chiron\Dispatcher\SapiDispatcher;
 use Chiron\Dispatcher\RrDispatcher;
 
+// PAsser les classes de config en "final" !!!!
 class AppConfig extends AbstractInjectableConfig
 {
     protected const CONFIG_SECTION_NAME = 'app';
+
+
+    // TODO : ajouter un nom ("name") pour l'application ???? exemple lorsqu'on affichera dans la console la version de l'application. Potentiellement stocker cette valeur dans la classe SettingsConfig
 
     protected function getConfigSchema(): Schema
     {

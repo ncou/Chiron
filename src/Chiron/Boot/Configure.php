@@ -28,7 +28,7 @@ use LogicException;
 // TODO : on devrait pas créer une classe ConfigFactory qui se charge de créer les objets Config ??? https://github.com/zendframework/zend-config/blob/master/src/Factory.php
 // TODO : renommer la classe en Configure::class et laisser les méthode load() qui chargera aussi bien un fichier qu'un répertoire. + has() et get() & getConfig() pour avoir un retour d'objet mais aussi de tableau data et la méthode add() qui permet de charger les données d'une config depuis un array.
 // TODO : renommer en "Configure::class" + faire un helper dans les fonction de type config_item($item, $section) ou config($section)
-// TODO : Déplacer la classe dans le répertoire Boot du framework ????
+// TODO : améliorer le code, surtout la méthode read/check/has/set/merge etc...
 final class Configure implements SingletonInterface
 {
     /** @var Config[] */
@@ -60,8 +60,7 @@ final class Configure implements SingletonInterface
     public function getConfig(string $section, ?string $subset = null): ConfigInterface
     {
         if (! $this->hasConfig($section)) {
-            // TODO : afficher le nom de la section recherchée dans le message de l'exception. Ca sera plus simple pour débugger !!!
-            throw new ConfigException('Config not found in the manager !');
+            throw new ConfigException(sprintf('Config section "%s" not found in the manager !', $section));
         }
 
         $config = $this->sections[$section];

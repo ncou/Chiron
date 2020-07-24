@@ -34,7 +34,7 @@ class CommandLoader implements CommandLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function get(string $name): Command
+    public function get($name): Command
     {
         if (!$this->has($name)) {
             throw new CommandNotFoundException(sprintf('Command "%s" does not exist.', $name));
@@ -53,7 +53,7 @@ class CommandLoader implements CommandLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function has(string $name): bool
+    public function has($name): bool
     {
         return isset($this->commandMap[$name]) && $this->container->has($this->commandMap[$name]);
     }

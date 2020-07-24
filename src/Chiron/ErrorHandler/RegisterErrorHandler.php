@@ -64,6 +64,8 @@ final class RegisterErrorHandler
     {
         error_reporting(E_ALL);
         ini_set('display_errors', 'Off');
+        ini_set('html_errors', 'Off');
+
         self::register();
     }
 
@@ -129,6 +131,7 @@ final class RegisterErrorHandler
      */
     public static function handleException(Throwable $e): void
     {
+        // TODO : tester avec roaddunner voir ce que ca donne, car cela simule une console.
         if (php_sapi_name() === 'cli') {
             self::renderForConsole($e);
         } else {
@@ -181,6 +184,7 @@ final class RegisterErrorHandler
             //$this->log($t);
             //return $this->exposeDetails ? $renderer->renderVerbose($t) : $renderer->render($t);
 
+            // TODO : utiliser ce Whoops formatter uniquement si le package Whoops est installé !!!!
             $formatter = new \Chiron\ErrorHandler\Formatter\WhoopsFormatter();
             $content = $formatter->format2($e);
         } catch (Throwable $t) {
@@ -253,4 +257,28 @@ final class RegisterErrorHandler
     {
         return in_array($type, [E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING]);
     }
+
+
+    /**
+     * Returns the last PHP error as plain string.
+     */
+    //https://github.com/nette/utils/blob/ab8eea12b8aacc7ea5bdafa49b711c2988447994/src/Utils/Helpers.php#L34
+    /*
+    private static function getLastError(): string
+    {
+        $message = error_get_last()['message'] ?? '';
+        $message = ini_get('html_errors') ? static::htmlToText($message) : $message;
+        $message = preg_replace('#^\w+\(.*?\): #', '', $message);
+
+        return $message;
+    }*/
+
+    /**
+     * Converts given HTML code to plain text.
+     */
+    /*
+    private static function htmlToText(string $html): string
+    {
+        return html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }*/
 }

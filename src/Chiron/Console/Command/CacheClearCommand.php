@@ -7,7 +7,6 @@ namespace Chiron\Console\Command;
 use Chiron\Boot\Directories;
 use Chiron\Filesystem\Filesystem;
 use Chiron\Console\AbstractCommand;
-use Chiron\Console\ExitCode;
 use Chiron\PublishableCollection;
 use Symfony\Component\Console\Input\InputOption;
 use Chiron\Views\Config\TwigConfig;

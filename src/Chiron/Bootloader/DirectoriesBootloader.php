@@ -10,6 +10,7 @@ use Chiron\Console\Config\ConsoleConfig;
 use Chiron\Console\Console;
 use Chiron\Framework;
 use Chiron\Exception\ApplicationException;
+use Chiron\Views\TemplateRendererInterface;
 
 // TODO : passer les méthodes "boot()" en protected !!!! ou alors si ce n'est pas le cas, il faut supprimer le Closure::fromCallable qu'on utilise avant d'appeller le invoker dans la méthode bootload() car ce wrapping ne sert que dans le cas ou la méthode à appeller est private ou protected !!!!
 final class DirectoriesBootloader extends AbstractBootloader
@@ -34,7 +35,7 @@ final class DirectoriesBootloader extends AbstractBootloader
         // insert the chiron framwork path for later use.
         $directories->set('framework', Framework::path());
         // some folders should be presents and writables.
-        self::assertWritableDir($directories, ['@runtime', '@cache', '@logs']);
+        self::assertWritableDir($directories, ['@runtime', '@cache']);
     }
 
     /**
@@ -54,20 +55,22 @@ final class DirectoriesBootloader extends AbstractBootloader
         }
 
         // TODO : il faudrait pas ajouter un répertoire pour les logs ???? => https://github.com/spiral/app/blob/85705bb7a0dafd010a83fa4bcc7323b019d8dda3/app/src/Bootloader/LoggingBootloader.php#L29
-        return array_merge([
-            // root folders
+        $default = [
             '@app'          => '@root/app/',
             '@config'       => '@root/config/',
             '@public'       => '@root/public/',
             '@resources'    => '@root/resources/',
             '@runtime'      => '@root/runtime/',
             '@vendor'       => '@root/vendor/',
-            // ressources folders
-            '@views'        => '@resources/views/',
-            // runtime folders
             '@cache'        => '@runtime/cache/',
-            '@logs'         => '@runtime/logs/',
-        ], $aliases);
+        ];
+
+        // if a view engine is installed, we add the default 'views' folder.
+        if (interface_exists(TemplateRendererInterface::class)) {
+            $default['@views'] = '@resources/views/';
+        }
+
+        return array_merge($default, $aliases);
     }
 
     /**

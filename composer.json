@@ -12,7 +12,6 @@
         "ext-mbstring": "*",
         "ext-intl": "*",
         "psr/log": "^1.0",
-        "nette/schema": "^1.0",
         "chiron/config": "^1.4",
         "chiron/console": "^0.8",
         "chiron/container": "^3.5",

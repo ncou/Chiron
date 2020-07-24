@@ -10,10 +10,4 @@ interface InjectableConfigInterface
     public function getConfigSectionName(): string;
 
     public function getSectionSubsetName(): ?string;
-
-    public function setData(array $data): void;
-
-    public function addData(array $data): void;
-
-    public function resetData(): void;
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Chiron\Dispatcher;
 
 use Chiron\Console\Console;
-use Chiron\Console\ExitCode;
 use Throwable;
 
 /**
@@ -37,7 +36,8 @@ final class ConsoleDispatcher extends AbstractDispatcher
             //$console->handleException($e);
             $this->handleException($e);
 
-            return ExitCode::UNSPECIFIED_ERROR;
+            // return the default error code.
+            return 1;
         }
     }
 

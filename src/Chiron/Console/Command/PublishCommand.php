@@ -6,7 +6,6 @@ namespace Chiron\Console\Command;
 
 use Chiron\Filesystem\Filesystem;
 use Chiron\Console\AbstractCommand;
-use Chiron\Console\ExitCode;
 use Chiron\PublishableCollection;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -92,7 +91,7 @@ final class PublishCommand extends AbstractCommand
             }
         }
 
-        return ExitCode::OK;
+        return self::SUCCESS;
     }
 
     /**

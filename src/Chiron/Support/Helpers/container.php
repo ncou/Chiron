@@ -6,36 +6,9 @@ use Chiron\Boot\Directories;
 use Chiron\Boot\Environment;
 use Chiron\Container\Container;
 use Psr\Container\ContainerExceptionInterface;
-
-if (! function_exists('directory')) {
-    /**
-     * Get directory alias value. Uses application core from the current global scope.
-     *
-     * @param string $alias Directory alias, ie. "config".
-     *
-     * @return string
-     */
-    // TODO : ajouter un second paramétre de type string, qui correspondra à une partie de l'url à concaténer, par exemple : directory('runtime', 'logs/error.txt') ca donnera un résultat "xxxx/app/runtime/logs/error.txt"
-    function directory(string $alias): string
-    {
-        return container(Directories::class)->get($alias);
-    }
-}
-
-if (! function_exists('env')) {
-    /**
-     * Gets the value of an environment variable. Uses application core from the current global scope.
-     *
-     * @param string $key
-     * @param mixed  $default
-     *
-     * @return mixed
-     */
-    function env(string $key, $default = null)
-    {
-        return container(Environment::class)->get($key, $default);
-    }
-}
+use Chiron\Config\SettingsConfig;
+use Chiron\Boot\Configure;
+use Chiron\Config\ConfigInterface;
 
 if (! function_exists('container')) {
     /**
@@ -62,5 +35,72 @@ if (! function_exists('container')) {
         } catch (ContainerExceptionInterface $e) {
             throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+}
+
+if (! function_exists('directory')) {
+    /**
+     * Get directory alias value.
+     *
+     * @param string $alias Directory alias, ie. "@config".
+     *
+     * @return string
+     */
+    function directory(string $alias): string
+    {
+        // TODO : utiliser la facade ???
+        return container(Directories::class)->get($alias);
+    }
+}
+
+if (! function_exists('env')) {
+    /**
+     * Gets the value of an environment variable.
+     *
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return mixed
+     */
+    function env(string $key, $default = null)
+    {
+        // TODO : utiliser la facade ???
+        return container(Environment::class)->get($key, $default);
+    }
+}
+
+if (! function_exists('configure')) {
+    /**
+     * Get the specified configuration object.
+     *
+     * @param  string  $section
+     * @param  string|null  $subset
+     *
+     * @return \Chiron\Config\ConfigInterface
+     */
+    function configure(string $section, ?string $subset = null): ConfigInterface
+    {
+        // TODO : utiliser la facade ????
+        return container(Configure::class)->getConfig($section, $subset);
+    }
+}
+
+if (! function_exists('setting')) {
+    /**
+     * Get the specified value in the settings config.
+     *
+     * @param  string  $key
+     * @param  mixed  $default
+     * @return mixed
+     */
+    function setting(string $key)
+    {
+        $config = configure('settings');
+
+        if (! $config->has($key)) {
+            throw new InvalidArgumentException(sprintf('The provided settings key [%s] doesn\'t exists.', $key));
+        }
+
+        return $config->get($key);
     }
 }

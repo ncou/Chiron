@@ -8,7 +8,6 @@ use Chiron\Filesystem\Filesystem;
 use Chiron\Boot\Directories;
 use Chiron\Boot\Environment;
 use Chiron\Console\AbstractCommand;
-use Chiron\Console\ExitCode;
 use Chiron\Encrypter\Config\EncrypterConfig;
 use Chiron\Support\Security;
 use Symfony\Component\Console\Input\InputOption;
@@ -62,7 +61,6 @@ final class AboutCommand extends AbstractCommand
             // TODO : afficher tous les dossiers de l'application. cad ceux qui sont listés dans l'objet Directories::class
 
             ['Cache directory', self::formatPath($directories->get('@cache'), $directories->get('@root')) . ' (<comment>' . self::formatFileSize($directories->get('@cache')) . '</>)'],
-            ['Logs directory', self::formatPath($directories->get('@logs'), $directories->get('@root')) . ' (<comment>' . self::formatFileSize($directories->get('@logs')) . '</>)'],
             new TableSeparator(),
             ['<info>PHP</>'],
             new TableSeparator(),
@@ -94,7 +92,7 @@ final class AboutCommand extends AbstractCommand
         $table->render();
 
 
-        return ExitCode::OK;
+        return self::SUCCESS;
     }
 
     // TODO : utiliser la méthode Path::relativePath() ou Filesystem::relativePath()

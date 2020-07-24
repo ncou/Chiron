@@ -7,6 +7,7 @@ namespace Chiron\Http\Config;
 use Chiron\Config\AbstractInjectableConfig;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
+use Chiron\Config\Helper\Validator;
 
 class HttpConfig extends AbstractInjectableConfig
 {
@@ -18,7 +19,7 @@ class HttpConfig extends AbstractInjectableConfig
             'bufferSize'        => Expect::int()->default(8 * 1024 * 1024),
             'protocol'          => Expect::string()->default('1.1'),
             'basePath'          => Expect::string()->default('/'),
-            'headers'           => Expect::arrayOf('string')->assert(static::isArrayAssociative(), 'expect associative array'),
+            'headers'           => Expect::arrayOf('string')->assert([Validator::class, 'isArrayAssociative'], 'associative array'),
             'middlewares'       => Expect::listOf('string'),
         ]);
     }

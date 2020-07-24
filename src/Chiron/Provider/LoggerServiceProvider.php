@@ -10,6 +10,11 @@
 
 //https://github.com/userfrosting/UserFrosting/blob/master/app/system/ServicesProvider.php
 //https://github.com/slimphp/Slim/blob/3.x/Slim/DefaultServicesProvider.php
+
+//https://github.com/yiisoft/yii-demo/blob/b8eca58c301b2326908362ae4f7801a7357c3a56/src/Provider/LoggerProvider.php
+
+//https://github.com/mouyong/foundation-sdk/blob/c40068866c6fe9c7359f3f85b754190d1e3f311e/src/Log.php#L28
+
 declare(strict_types=1);
 
 namespace Chiron\Provider;
@@ -48,14 +53,12 @@ class LoggerServiceProvider implements ServiceProviderInterface
      */
     public function register(BindingInterface $container): void
     {
-        $container->bind(LoggerInterface::class, function () {
-            // TODO : créer un Logger par défaut minimaliste et ne pas utiliser le NullLogger !!!!! => https://github.com/slimphp/Slim/blob/1df2f0d78589f1a7b5199c873ab1e7ec57fe3e0a/Slim/Logger.php
-            return new NullLogger();
-        });
+        // TODO : créer un Logger par défaut minimaliste et ne pas utiliser le NullLogger !!!!! => https://github.com/slimphp/Slim/blob/1df2f0d78589f1a7b5199c873ab1e7ec57fe3e0a/Slim/Logger.php
+        $container->bind(LoggerInterface::class, NullLogger::class);
 
         // add alias
-        $container->alias('logger', LoggerInterface::class);
-        $container->alias('log', LoggerInterface::class);
+        //$container->alias('logger', LoggerInterface::class);
+        //$container->alias('log', LoggerInterface::class);
     }
 
     /*

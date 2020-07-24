@@ -16,6 +16,7 @@ final class PackageManifestBootloader extends AbstractBootloader
      * @param Application $application
      * @param FactoryInterface $factory
      */
+    // TODO : créer une fonction "factory()" dans le fichier function.php pour permettre d'initialiser les classes sans avoir à passer en paramétre un FactoryInterface !!!!
     public function boot(PackageManifest $manifest, Application $application, FactoryInterface $factory): void
     {
         foreach ($manifest->getProviders() as $provider) {

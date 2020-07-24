@@ -8,6 +8,8 @@
  *
  * @see      http://docs.phalconslayer.com
  */
+
+
 if (! function_exists('di')) {
     /**
      * This calls our default dependency injection.
@@ -65,5 +67,25 @@ if (! function_exists('resolve')) {
         \Clarity\Services\Mapper::resolveBinding(di(), $alias);
 
         return di()->get($alias);
+    }
+}
+
+
+if (! function_exists('dd')) {
+    function dd($var)
+    {
+        @ob_end_clean();
+        $backtrace = debug_backtrace();
+        echo "\n<pre>\n";
+        if (isset($backtrace[0]['file'])) {
+            $filename = $backtrace[0]['file'];
+            $filename = explode('\\' , $filename);
+            echo end($filename) . "\n\n";
+        }
+        echo "---------------------------------\n\n";
+        var_dump($var);
+        echo "</pre>\n";
+
+        die(1);
     }
 }

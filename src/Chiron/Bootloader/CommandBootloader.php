@@ -11,23 +11,33 @@ use Chiron\Console\Console;
 use Chiron\Container\Container;
 use Chiron\Console\CommandLoader\CommandLoader;
 
-
+/*
 use Chiron\Console\Command\Hello;
 use Chiron\Console\Command\VersionCommand;
-use Chiron\Console\Command\AboutCommand;
 use Chiron\Console\Command\RuntimeDirCommand;
-use Chiron\Console\Command\PackageDiscoverCommand;
-use Chiron\Console\Command\EncryptKeyCommand;
-use Chiron\Console\Command\PublishCommand;
-use Chiron\Console\Command\RouteListCommand;
-use Chiron\Console\Command\ServeCommand;
-use Chiron\Console\Command\TwigClearCommand;
-use Chiron\Console\Command\TwigCompileCommand;
-use Chiron\Console\Command\CacheClearCommand;
+*/
 
 
 final class CommandBootloader extends AbstractBootloader
 {
+    private $commands = [
+        // TODO : à déplacer dans un package d'encodage dédié ?
+        \Chiron\Console\Command\EncryptKeyCommand::class,
+
+        \Chiron\Console\Command\AboutCommand::class,
+        \Chiron\Console\Command\PackageDiscoverCommand::class,
+        \Chiron\Console\Command\PublishCommand::class,
+
+        // TODO : charger ces commandes uniquement si il y a un RouterInterface de présent (cad un class_exist === true) ???? ou alors tester avec un $container->has('RouterInterface')
+        \Chiron\Console\Command\RouteListCommand::class,
+        \Chiron\Console\Command\ServeCommand::class,
+
+        \Chiron\Console\Command\CacheClearCommand::class,
+        // les charger depuis le composer Twig !!!!
+        //\Chiron\Console\Command\TwigClearCommand::class,
+        //\Chiron\Console\Command\TwigCompileCommand::class,
+    ];
+
     public function boot(Console $console): void
     {
 
@@ -52,21 +62,10 @@ final class CommandBootloader extends AbstractBootloader
         //$console->addCommand(VersionCommand::getDefaultName(), VersionCommand::class);
         //$console->addCommand(RuntimeDirCommand::getDefaultName(), RuntimeDirCommand::class);
 
-        // TODO : à déplacer dans un package d'encodage dédié ?
-        $console->addCommand(EncryptKeyCommand::getDefaultName(), EncryptKeyCommand::class);
+        foreach ($this->commands as $command) {
+            $console->addCommand($command::getDefaultName(), $command);
+        }
 
-        $console->addCommand(AboutCommand::getDefaultName(), AboutCommand::class);
-        $console->addCommand(PackageDiscoverCommand::getDefaultName(), PackageDiscoverCommand::class);
-        $console->addCommand(PublishCommand::getDefaultName(), PublishCommand::class);
-
-        // TODO : charger ces commandes uniquement si il y a un RouterInterface de présent (cad un class_exist === true) ???? ou alors tester avec un $container->has('RouterInterface')
-        $console->addCommand(RouteListCommand::getDefaultName(), RouteListCommand::class);
-        $console->addCommand(ServeCommand::getDefaultName(), ServeCommand::class);
-
-        $console->addCommand(CacheClearCommand::getDefaultName(), CacheClearCommand::class);
-
-        $console->addCommand(TwigClearCommand::getDefaultName(), TwigClearCommand::class);
-        $console->addCommand(TwigCompileCommand::getDefaultName(), TwigCompileCommand::class);
     }
 }
 

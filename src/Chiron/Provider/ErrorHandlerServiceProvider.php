@@ -45,6 +45,7 @@ use Throwable;
 /**
  * Chiron error handler services provider.
  */
+// TODO : passer les classes de "Provider/Bootloader" en final !!!!
 class ErrorHandlerServiceProvider implements ServiceProviderInterface
 {
     /**
@@ -123,7 +124,8 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
         $container->singleton(ErrorManager::class, Closure::fromCallable([$this, 'errorManager']));
     }
 
-    // TODO : éventuellement séparer cette méthode en deux parties, une pour enregistrer la classe et la seconde pour configurer la partie "bindHandler" ce sera plus propre
+    // TODO : éventuellement séparer cette méthode en deux parties, une pour enregistrer la classe et la seconde pour configurer la partie "bindHandler" ce sera plus propre.
+    // TODO : attention le logger n'est pas utilisé dans le code de la méthode "errorManager()" il faudra aussi vérifier que le LoggerInterface est correctement initialisé car si on ajoute un bridge pour Monolog il faudra s'assurer que celui ci est bien initialisé et qu'il n'y aura pas d'erreurs lors de la récupération du LoggerInterface !!!!
     private function errorManager(Environment $env, ErrorHandler $handler, LoggerInterface $logger): ErrorManager
     {
         //$manager = new ErrorManager($container->get('config')->app['debug']);

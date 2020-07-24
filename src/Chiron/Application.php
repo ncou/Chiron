@@ -11,7 +11,7 @@ use Chiron\ErrorHandler\RegisterErrorHandler;
 use Chiron\Exception\ApplicationException;
 use Chiron\Container\Container;
 
-use Chiron\Bootloader\CoreBootloader;
+use Chiron\Bootloader\SettingsBootloader;
 use Chiron\Bootloader\EnvironmentBootloader;
 use Chiron\Bootloader\ConfigureBootloader;
 use Chiron\Bootloader\DirectoriesBootloader;
@@ -110,11 +110,13 @@ class Application
      */
     // TODO : améliorer le code : https://github.com/laravel/framework/blob/5.8/src/Illuminate/Foundation/Application.php#L594
     //public function register($provider)
+    // TODO : permettre à l'utilisateur de passe un tableau de string ou de ServiceProviderInterface. et appeller cette nouvelle méthode addProviders()
     public function addProvider(ServiceProviderInterface $provider): void
     {
         $provider->register($this->container);
     }
 
+    // TODO : permettre à l'utilisateur de passe un tableau de string ou de BootloaderInterface. et appeller cette nouvelle méthode addBootloaders()
     public function addBootloader(BootloaderInterface $bootloader): void
     {
         // if you add a bootloader after the application run(), we execute the bootloader, else we add it to the stack for an execution later.
@@ -181,6 +183,7 @@ class Application
     // TODO : ajouter un paramétre boolen $debug pour savoir si on active ou non le error handler->register()
     // TODO : tester le cas ou on appel plusieurs fois cette méthode. Il faudra surement éviter de réinsérer plusieurs fois les bootloaders et autres service provider
     // TODO : passer en paramétre un tableau de "environment" values qui permettra d'initialiser le bootloader DotEnvBootloader::class
+    // TODO : permettre de passer en paramétre une liste de "providers" ??? ca permettrait de facilement initialiser l'application avec une redéfinition de certains service par l'utilisateur !!!
     public static function init(array $paths, array $values = [], bool $handleErrors = true): self
     {
         // TODO : attention il faudrait pouvoir faire un register une seule fois pour les error handlers !!!!
@@ -194,8 +197,15 @@ class Application
 
         $app->addBootloader(new DirectoriesBootloader($paths));
         $app->addBootloader(new EnvironmentBootloader($values));
-        // init the configuration with the user settings.
+
+        // TODO : il faudrait surement ajouter ici un bootloader pour gérer la copie des fichiers (c'est à dire le publisher) uniquement ceux qui sont définis dans le composer.json. Et ensuite avoir le bootloader ConfigureBootloader juste aprés pour charger les fichiers potentiellement copiés.
+        //$app->addBootloader(new PublisherBootloader()); ????? Attention ce bootloader ne devra pas utiliser de fichiers de configuration car ils ne seront pas encore initialisés !!! (puisque la mutation est dans le bootloader suivant [ConfigureBootloader]). !!!! <=== attention ce TODO est faux, car le publisher sera executé depuis la command de la console (cad via le ConsoleDispatcher), donc on devra traverser tous les bootloaders avant de faire la copie des fichiers, donc cela ne fonctionnera pas !!!!!
+
+        // load the user configuration files from the '@config' folder.
         $app->addBootloader(new ConfigureBootloader($app->container));
+        // init the application settings (debug, charset, timezone...etc).
+        // TODO : permettre de faire un override des valeurs par défault des settings en lui passant un tableau dans le constructeur de la classe SettingsBootloader + uajouter un paramétre à la méthode application::init() cela permettrait lors des tests phpunit de facilement modifier ces valeurs !!!!
+        $app->addBootloader(new SettingsBootloader());
 
         self::configure($app);
 
@@ -205,29 +215,28 @@ class Application
     // TODO : il y a surement des services à ne pas charger si on est en mode console !!! et inversement il y en a surement à charger uniquement en mode console !!!
     private static function configure(Application $app): void
     {
-        //$app->addBootloader(new CoreBootloader());
-        self::coreSettings_A_VIRER($app);
-        // TODO : ajouter un appel à ApplicationBootLoader() ici juste aprés le CoreBootLoader ????
-    }
 
+        // NullLogger Service + LoggerAwareInterface mutation !!!!
+        $app->addProvider(new \Chiron\Provider\LoggerServiceProvider());
+        $app->container->inflector(\Psr\Log\LoggerAwareInterface::class, [\Chiron\Logger\LoggerAwareMutation::class, 'mutation']);
+
+        self::coreSettings_A_VIRER($app);
+    }
 
     private static function coreSettings_A_VIRER(Application $app): void
     {
         // TODO : normalement on devrait avoir un tableau vide et les providers ci dessous seraient chargés soit par le PackageManifest qui scan les packages, soit via le app.php pour le dernier provider (database)
 
+        // TODO : virer le fichier core.php + le CoreConfig.php
 
         //************************
         //******  PROVIDER *******
         //************************
         $app->addProvider(new \Chiron\Provider\ServerRequestCreatorServiceProvider());
         $app->addProvider(new \Chiron\Provider\HttpFactoriesServiceProvider());
-        $app->addProvider(new \Chiron\Provider\LoggerServiceProvider());
         $app->addProvider(new \Chiron\Provider\ErrorHandlerServiceProvider());
         $app->addProvider(new \Chiron\Provider\RoadRunnerServiceProvider());
 
-        // TODO : cela doit être déplace dans le fichier composer.json des packages fastrouterouter et phprenderer
-        //Chiron\Router\FastRoute\Provider\FastRouteRouterServiceProvider::class,
-        //Chiron\Views\Provider\PhpRendererServiceProvider::class,
 
         //**************************
         //******  BOOTLOADER *******
@@ -235,17 +244,21 @@ class Application
         $app->addBootloader(new \Chiron\Bootloader\PublishableCollectionBootloader());
         $app->addBootloader(new \Chiron\Bootloader\PackageManifestBootloader());
 
-            // TODO : attention si il y a des bootloaders chargés via le packagemanifest qui ajoutent une commande dans la console, si cette commande utilise le même nom que les commandes par défaut  définies dans la classe CommandBootloader, elles vont être écrasées !!!! faut il faire un test dans cette classe si la command est déjà définie dans la console on ne l'ajoute pas ????? ou alors écrase la commande d'office ????
+        // TODO : attention si il y a des bootloaders chargés via le packagemanifest qui ajoutent une commande dans la console, si cette commande utilise le même nom que les commandes par défaut  définies dans la classe CommandBootloader, elles vont être écrasées !!!! faut il faire un test dans cette classe si la command est déjà définie dans la console on ne l'ajoute pas ????? ou alors écrase la commande d'office ????
         $app->addBootloader(new \Chiron\Bootloader\CommandBootloader());
 
 
 
-            // TODO : déplacer ces bootloader dans les packages templates/router/http et ajouter dans le composer.json une balise extra avec les informations pour charger ces classes.
-            //Chiron\Bootloader\ViewBootloader::class,
+        // TODO : déplacer ces bootloader dans les packages templates/router/http et ajouter dans le composer.json une balise extra avec les informations pour charger ces classes.
+        //Chiron\Bootloader\ViewsBootloader::class,
         $app->addBootloader(new \Chiron\Bootloader\HttpBootloader());
-            //Chiron\Bootloader\RouteCollectorBootloader::class,
+        //Chiron\Bootloader\RouteCollectorBootloader::class,
 
         $app->addBootloader(new \Chiron\Bootloader\ConsoleBootloader());
         $app->addBootloader(new \Chiron\Bootloader\ApplicationBootloader());
+
+
+
+        //$app->addBootloader(new \Chiron\Bootloader\TestBootloader());
     }
 }
