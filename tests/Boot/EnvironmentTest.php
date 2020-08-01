@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Boot;
 
-use Chiron\Container\Container;
-use Chiron\Logger\LoggerManager;
 use Chiron\Boot\Environment;
-use InvalidArgumentException;
 
 class EnvironmentTest extends \PHPUnit\Framework\TestCase
 {
@@ -91,7 +88,7 @@ class EnvironmentTest extends \PHPUnit\Framework\TestCase
     {
         $env = $this->getEnv();
 
-        $env->set('key' , $value);
+        $env->set('key', $value);
 
         $this->assertSame($expected, $env->get('key'));
     }
@@ -120,7 +117,6 @@ class EnvironmentTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-
     protected function getEnv(array $values = []): Environment
     {
         $environment = new Environment();
@@ -128,5 +124,4 @@ class EnvironmentTest extends \PHPUnit\Framework\TestCase
 
         return $environment;
     }
-
 }

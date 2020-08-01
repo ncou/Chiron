@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace Chiron\Console\Command;
 
 use Chiron\Boot\Directories;
-use Chiron\Filesystem\Filesystem;
 use Chiron\Console\AbstractCommand;
-use Chiron\PublishableCollection;
-use Symfony\Component\Console\Input\InputOption;
-use Chiron\Views\Config\TwigConfig;
+use Chiron\Filesystem\Filesystem;
 
 // TODO : utiliser le mot "clean" plutot que clear ????
 final class CacheClearCommand extends AbstractCommand
@@ -36,19 +33,18 @@ final class CacheClearCommand extends AbstractCommand
         // TODO : ajouter un try catch des \Throwable et afficher une erreur si c'est le cas ????
         $deleted = $filesystem->deleteDirectory($cacheDir, true);
 
-/*
-        try {
-            $filesystem->deleteDirectory($cacheDir);
-        } catch (\Throwable $e) {
-            // @codeCoverageIgnoreStart
-            $this->sprintf(
-                "<fg=red>[ERROR] %s</fg=red>\n",
-                $e->getMessage()
-            );
-            // @codeCoverageIgnoreEnd
-        }
-*/
-
+        /*
+                try {
+                    $filesystem->deleteDirectory($cacheDir);
+                } catch (\Throwable $e) {
+                    // @codeCoverageIgnoreStart
+                    $this->sprintf(
+                        "<fg=red>[ERROR] %s</fg=red>\n",
+                        $e->getMessage()
+                    );
+                    // @codeCoverageIgnoreEnd
+                }
+        */
 
         if ($deleted === false) {
             $this->error('Application runtime cache failed to be cleaned.');
@@ -57,11 +53,11 @@ final class CacheClearCommand extends AbstractCommand
         }
 
         if ($this->isVerbose()) {
-                $this->sprintf(
-                    "<fg=green>[cleaned]</fg=green> `%s`\n",
-                    $cacheDir
-                );
-            }
+            $this->sprintf(
+                "<fg=green>[cleaned]</fg=green> `%s`\n",
+                $cacheDir
+            );
+        }
 
         $this->success('Application runtime cache cleaned.');
 

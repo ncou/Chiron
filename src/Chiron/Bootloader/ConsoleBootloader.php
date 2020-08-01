@@ -8,30 +8,12 @@ use Chiron\Bootload\AbstractBootloader;
 use Chiron\Console\Config\ConsoleConfig;
 use Chiron\Console\Console;
 
-use Chiron\Container\Container;
-use Chiron\Console\CommandLoader\CommandLoader;
-
-
-use Chiron\Console\Command\Hello;
-use Chiron\Console\Command\VersionCommand;
-use Chiron\Console\Command\AboutCommand;
-use Chiron\Console\Command\RuntimeDirCommand;
-use Chiron\Console\Command\PackageDiscoverCommand;
-use Chiron\Console\Command\EncryptKeyCommand;
-use Chiron\Console\Command\PublishCommand;
-use Chiron\Console\Command\RouteListCommand;
-use Chiron\Console\Command\ServeCommand;
-
-
 final class ConsoleBootloader extends AbstractBootloader
 {
     // TODO : il faudra peut etre passer par l'objet Application::class pour faire un addCommand(). A minima il faudra surement déplacer les "Commands" du fichier console.php vers app.php
     public function boot(Console $console, ConsoleConfig $config): void
     {
-
-
         //die(var_dump(\Chiron\Console\Command\Hello::getTITI()));
-
 
         $console->setName($config->getName());
         $console->setVersion($config->getVersion());

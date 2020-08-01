@@ -14,18 +14,6 @@ class Hello extends AbstractCommand
 
     protected const TITI = 'titi is back';
 
-
-
-
-
-
-
-
-
-
-
-
-
     protected function configure()
     {
         $this->setDescription('Outputs "Hello World"');

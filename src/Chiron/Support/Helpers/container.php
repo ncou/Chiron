@@ -2,13 +2,12 @@
 
 declare(strict_types=1);
 
+use Chiron\Boot\Configure;
 use Chiron\Boot\Directories;
 use Chiron\Boot\Environment;
+use Chiron\Config\ConfigInterface;
 use Chiron\Container\Container;
 use Psr\Container\ContainerExceptionInterface;
-use Chiron\Config\SettingsConfig;
-use Chiron\Boot\Configure;
-use Chiron\Config\ConfigInterface;
 
 if (! function_exists('container')) {
     /**
@@ -73,8 +72,8 @@ if (! function_exists('configure')) {
     /**
      * Get the specified configuration object.
      *
-     * @param  string  $section
-     * @param  string|null  $subset
+     * @param string      $section
+     * @param string|null $subset
      *
      * @return \Chiron\Config\ConfigInterface
      */
@@ -89,8 +88,9 @@ if (! function_exists('setting')) {
     /**
      * Get the specified value in the settings config.
      *
-     * @param  string  $key
-     * @param  mixed  $default
+     * @param string $key
+     * @param mixed  $default
+     *
      * @return mixed
      */
     function setting(string $key)

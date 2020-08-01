@@ -4,18 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Console\Command;
 
-use Chiron\Filesystem\Filesystem;
-use Chiron\Console\AbstractCommand;
-use Chiron\Encrypter\Config\EncrypterConfig;
-use Chiron\Support\Security;
-use Symfony\Component\Console\Input\InputOption;
 use Chiron\Application;
-use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Console\Helper\Helper;
-use Symfony\Component\Console\Helper\TableSeparator;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-
+use Chiron\Console\AbstractCommand;
 
 /**
  * Print out the version of Chiron in use.

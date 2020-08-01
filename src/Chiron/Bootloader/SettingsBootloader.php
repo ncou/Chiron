@@ -28,8 +28,6 @@ final class SettingsBootloader extends AbstractBootloader
         // TODO : ajouter un try/catch
         date_default_timezone_set($settings->getTimezone());
 
-
-
         /*
          * Set the default locale. This controls how dates, number and currency is
          * formatted and sets the default language to use for translations.
@@ -39,23 +37,15 @@ final class SettingsBootloader extends AbstractBootloader
         // TODO : on devrait pas faire un setlocale plutot ??? et surtout si le retour est faux on pourra lever une exception !!!!!
         //ini_set('intl.default_locale', $settings->getLocale());
 
-
-
-
         //ini_get('default_charset')
         //locale_get_default()
         //date_default_timezone_get()
-
-
-
-
 
         //date_default_timezone_set('UTC');
         //setlocale(LC_ALL, 'C.UTF-8');
         //mb_internal_encoding('UTF-8');
 
         // TODO : on peut utiliser cette fonctiuon : locale_set_default('XXXXX'); ????
-
 
 /*
 
@@ -73,5 +63,3 @@ final class SettingsBootloader extends AbstractBootloader
         */
     }
 }
-
-

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Chiron\Bootload;
 
 use Chiron\Injector\Injector;
-use Psr\Container\ContainerInterface;
 use Closure;
+use Psr\Container\ContainerInterface;
 
 abstract class AbstractBootloader implements BootloaderInterface
 {

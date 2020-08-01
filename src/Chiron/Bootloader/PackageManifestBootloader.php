@@ -2,8 +2,8 @@
 
 namespace Chiron\Bootloader;
 
-use Chiron\Bootload\AbstractBootloader;
 use Chiron\Application;
+use Chiron\Bootload\AbstractBootloader;
 use Chiron\Container\FactoryInterface;
 use Chiron\PackageManifest;
 
@@ -12,8 +12,8 @@ final class PackageManifestBootloader extends AbstractBootloader
     /**
      * Execute the providers & bootloaders classes found in the composer packages manifest.
      *
-     * @param PackageManifest $manifest
-     * @param Application $application
+     * @param PackageManifest  $manifest
+     * @param Application      $application
      * @param FactoryInterface $factory
      */
     // TODO : créer une fonction "factory()" dans le fichier function.php pour permettre d'initialiser les classes sans avoir à passer en paramétre un FactoryInterface !!!!

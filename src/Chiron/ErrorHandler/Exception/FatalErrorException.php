@@ -18,7 +18,7 @@ class FatalErrorException extends \ErrorException
 {
     /**
      * Display an empty stacktrace if there is not xdebug extension.
-     * Display xdebug stacktrace (minus 2 frames to avoid displaying handleShutdown function and FatalErrorException constructor)
+     * Display xdebug stacktrace (minus 2 frames to avoid displaying handleShutdown function and FatalErrorException constructor).
      */
     public function __construct($message = '', $code = 0, $severity = 1, $filename = __FILE__, $lineno = __LINE__, \Exception $previous = null)
     {
@@ -32,13 +32,13 @@ class FatalErrorException extends \ErrorException
 
             foreach ($stack as $row) {
                 $frame = [
-                    'file' => $row['file'],
-                    'line' => $row['line'],
+                    'file'     => $row['file'],
+                    'line'     => $row['line'],
                     'function' => $row['function'] ?? '*unknown*',
-                    'args' => [],
+                    'args'     => [],
                 ];
 
-                if (!empty($row['class'])) {
+                if (! empty($row['class'])) {
                     $frame['type'] = isset($row['type']) && $row['type'] === 'dynamic' ? '->' : '::';
                     $frame['class'] = $row['class'];
                 }
@@ -59,5 +59,4 @@ class FatalErrorException extends \ErrorException
         $traceReflector->setAccessible(true);
         $traceReflector->setValue($this, $trace);
     }
-
 }

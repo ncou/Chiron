@@ -8,8 +8,6 @@
  *
  * @see      http://docs.phalconslayer.com
  */
-
-
 if (! function_exists('di')) {
     /**
      * This calls our default dependency injection.
@@ -70,7 +68,6 @@ if (! function_exists('resolve')) {
     }
 }
 
-
 if (! function_exists('dd')) {
     function dd($var)
     {
@@ -79,13 +76,13 @@ if (! function_exists('dd')) {
         echo "\n<pre>\n";
         if (isset($backtrace[0]['file'])) {
             $filename = $backtrace[0]['file'];
-            $filename = explode('\\' , $filename);
+            $filename = explode('\\', $filename);
             echo end($filename) . "\n\n";
         }
         echo "---------------------------------\n\n";
         var_dump($var);
         echo "</pre>\n";
 
-        die(1);
+        exit(1);
     }
 }

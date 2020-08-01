@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Chiron\Console\Command;
 
 use Chiron\Boot\Directories;
-use Chiron\Filesystem\Filesystem;
 use Chiron\Console\AbstractCommand;
+use Chiron\Filesystem\Filesystem;
 
 //https://github.com/yiisoft/yii-demo/blob/master/src/Installer.php#L16
 

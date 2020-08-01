@@ -6,7 +6,6 @@ namespace Chiron\Bootloader;
 
 use Chiron\Application;
 use Chiron\Bootload\AbstractBootloader;
-use Chiron\Config\AppConfig;
 use Chiron\Config\CoreConfig;
 use Chiron\Container\Container;
 
@@ -26,4 +25,3 @@ final class CoreBootloader extends AbstractBootloader
         }
     }
 }
-

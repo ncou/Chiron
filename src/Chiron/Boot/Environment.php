@@ -56,7 +56,7 @@ final class Environment implements SingletonInterface
      * Gets the value of an environment variable.
      *
      * @param string $name
-     * @param mixed $default
+     * @param mixed  $default
      *
      * @return mixed
      */
@@ -87,12 +87,11 @@ final class Environment implements SingletonInterface
             }
             $this->set($name, $value);
         }
-
     }
 
     /**
      * @param string $name
-     * @param mixed $value
+     * @param mixed  $value
      */
     // TODO : lever une erreur si $name est une chaine vide.
     public function set(string $name, $value): void
@@ -104,7 +103,6 @@ final class Environment implements SingletonInterface
 
         $this->values[$name] = self::normalize($value);
     }
-
 
     /**
      * Normalize the value of the specified environment variable, translating

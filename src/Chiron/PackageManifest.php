@@ -16,12 +16,16 @@ final class PackageManifest
 {
     /** @var array */
     private $manifest;
+
     /** @var string */
     private $cacheDir;
+
     /** @var string */
     private $vendorDir;
+
     /** @var string */
     private $manifestPath;
+
     /** @var Filesystem */
     private $filesystem;
 

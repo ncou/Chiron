@@ -6,10 +6,8 @@ namespace Chiron\Bootloader;
 
 use Chiron\Boot\Directories;
 use Chiron\Bootload\AbstractBootloader;
-use Chiron\Console\Config\ConsoleConfig;
-use Chiron\Console\Console;
-use Chiron\Framework;
 use Chiron\Exception\ApplicationException;
+use Chiron\Framework;
 use Chiron\Views\TemplateRendererInterface;
 
 // TODO : passer les méthodes "boot()" en protected !!!! ou alors si ce n'est pas le cas, il faut supprimer le Closure::fromCallable qu'on utilise avant d'appeller le invoker dans la méthode bootload() car ce wrapping ne sert que dans le cas ou la méthode à appeller est private ou protected !!!!
@@ -101,7 +99,7 @@ final class DirectoriesBootloader extends AbstractBootloader
 
     /**
      * @param Directories $directories
-     * @param array $aliases
+     * @param array       $aliases
      */
     private static function assertWritableDir(Directories $directories, array $aliases): void
     {

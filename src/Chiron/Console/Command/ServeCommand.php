@@ -61,12 +61,8 @@ class ServeCommand extends AbstractCommand
             return self::EXIT_CODE_ADDRESS_TAKEN_BY_ANOTHER_PROCESS;
         }
 
-
-
         // TODO : à virer c'est un test
         //$router = 'D:\xampp\htdocs\nano5\rewrite2.php';
-
-
 
         if ($router !== null && ! file_exists($router)) {
             $io->error("Routing file \"$router\" does not exist.");
