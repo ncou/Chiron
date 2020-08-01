@@ -8,7 +8,7 @@ use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Chiron\Config\AbstractInjectableConfig;
 
-class EncrypterConfig extends AbstractInjectableConfig
+final class EncrypterConfig extends AbstractInjectableConfig
 {
     protected const CONFIG_SECTION_NAME = 'encrypter';
 
@@ -23,6 +23,4 @@ class EncrypterConfig extends AbstractInjectableConfig
     {
         return $this->get('key');
     }
-
-
 }

@@ -11,14 +11,36 @@ use Chiron\Router\RoutingHandler;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use SplPriorityQueue;
 
-// TODO : faire étendre cette classe de la classe Pipeline::class ?????
+// TODO : faire étendre cette classe de la classe Pipeline::class ????? ou fusionner le code ????
 // TODO : utiliser une SplPriorityQueue pour ajouter des middlewares dans cette classe ????
 // TODO : classe à renommer en HttpRunner ???? et ajouter une méthode run() qui effectue un reset de l'index à 0 et execute ensuite la méthode handle() [exemple : https://github.com/middlewares/utils/blob/master/src/Dispatcher.php#L44]
 // TODO : créer un constructeur et lui passer l'objet MiddlewareDecorator, et utiliser la méthode decorate de cette classe lorsqu'on ajoute un middleware au tableau.
 // TODO : virer l'interface RequestHandlerInterface une fois que la classe est renommée en HttpRunner + renommer la méthode handle() en run()
 final class Http implements RequestHandlerInterface, SingletonInterface
 {
+    // TODO : externaliser ces constantes dans une classe "Priority" ????
+    /** @var int */
+    public const MIN = -300;
+    /** @var int */
+    public const LOW = -200;
+    /** @var int */
+    public const BELOW_NORMAL = -100;
+    /** @var int */
+    public const NORMAL = 0;
+    /** @var int */
+    public const ABOVE_NORMAL = 100;
+    /** @var int */
+    public const HIGH = 200;
+    /** @var int */
+    public const MAX = 300;
+
+    /**
+     * @var int Seed used to ensure queue order for items of the same priority
+     */
+    private $serial = PHP_INT_MAX;
+
     private $handler;
 
     /**
@@ -27,6 +49,31 @@ final class Http implements RequestHandlerInterface, SingletonInterface
     // TODO : attention le @var est faux, pour l'instant la variuable $stack peut contenir des callable, des string...etc
     private $stack = [];
 
+    private $queue;
+
+    public function __construct() {
+        $this->queue = new SplPriorityQueue;
+    }
+
+    /**
+     * Insert middleware in the queue with a given priority.
+     *
+     * Utilizes {@var $serial} to ensure that values of equal priority are
+     * emitted in the same order in which they are inserted.
+     *
+     * @param string|callable|MiddlewareInterface|RequestHandlerInterface|ResponseInterface $middleware
+     * @param  int $priority
+     *
+     * @return self
+     */
+    // TODO : remonter l'appel au HttpDecorator::toMiddleware() dans cette méthode ci dessous !!!!
+    public function addMiddleware($middleware, int $priority = self::NORMAL): self
+    {
+        $this->queue->insert($middleware, [$priority, $this->serial--]);
+
+        return $this;
+    }
+
     /**
      * Add middleware to the beginning of the stack (Prepend).
      *
@@ -34,6 +81,7 @@ final class Http implements RequestHandlerInterface, SingletonInterface
      *
      * @return self
      */
+    /*
     public function addMiddlewaresOnTop($middlewares): self
     {
         // Keep the right order when adding an array to the top of the middlewares stack.
@@ -42,7 +90,7 @@ final class Http implements RequestHandlerInterface, SingletonInterface
         }
 
         return $this->add($middlewares, true);
-    }
+    }*/
 
     /**
      * Add middleware to the bottom of the stack by default (Append).
@@ -52,6 +100,7 @@ final class Http implements RequestHandlerInterface, SingletonInterface
      *
      * @return self
      */
+    /*
     public function addMiddlewares($middlewares, bool $onTop = false): self
     {
         if (! is_array($middlewares)) {
@@ -69,7 +118,7 @@ final class Http implements RequestHandlerInterface, SingletonInterface
         }
 
         return $this;
-    }
+    }*/
 
     /**
      * Execute the middleware stack seeded with the RoutingHandler as the last handler.
@@ -102,7 +151,12 @@ final class Http implements RequestHandlerInterface, SingletonInterface
         // TODO : déplacer le middleware de gestion des Errors ErrorHandlerMiddleware dans le répertoire "ErrorHandler", et forcer ici l'ajout au sommet da la pile des middleware et utilisant un décorateur pour résoudre le nom du middleware via le container.
         //****************************
 
+/*
         foreach ($this->stack as $middleware) {
+            $this->handler->pipe(HttpDecorator::toMiddleware($middleware));
+        }
+*/
+        foreach ($this->queue as $middleware) {
             $this->handler->pipe(HttpDecorator::toMiddleware($middleware));
         }
 

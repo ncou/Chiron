@@ -7,19 +7,14 @@ namespace Chiron\Bootloader;
 use Chiron\Bootload\AbstractBootloader;
 use Chiron\Console\Config\ConsoleConfig;
 use Chiron\Console\Console;
-
 use Chiron\Container\Container;
 use Chiron\Console\CommandLoader\CommandLoader;
 
-/*
-use Chiron\Console\Command\Hello;
-use Chiron\Console\Command\VersionCommand;
-use Chiron\Console\Command\RuntimeDirCommand;
-*/
 
 
 final class CommandBootloader extends AbstractBootloader
 {
+    // TODO : utiliser un fichier interne de config pour charger les commandes internes au framework ????
     private $commands = [
         // TODO : à déplacer dans un package d'encodage dédié ?
         \Chiron\Console\Command\EncryptKeyCommand::class,
@@ -33,9 +28,6 @@ final class CommandBootloader extends AbstractBootloader
         \Chiron\Console\Command\ServeCommand::class,
 
         \Chiron\Console\Command\CacheClearCommand::class,
-        // les charger depuis le composer Twig !!!!
-        //\Chiron\Console\Command\TwigClearCommand::class,
-        //\Chiron\Console\Command\TwigCompileCommand::class,
     ];
 
     public function boot(Console $console): void

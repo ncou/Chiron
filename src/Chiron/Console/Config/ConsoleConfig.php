@@ -9,7 +9,7 @@ use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Chiron\Framework;
 
-class ConsoleConfig extends AbstractInjectableConfig
+final class ConsoleConfig extends AbstractInjectableConfig
 {
     protected const CONFIG_SECTION_NAME = 'console';
 

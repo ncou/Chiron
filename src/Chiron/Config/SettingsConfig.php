@@ -11,7 +11,7 @@ use Chiron\Dispatcher\SapiDispatcher;
 use Chiron\Dispatcher\RrDispatcher;
 use Chiron\Config\Helper\Validator;
 
-class SettingsConfig extends AbstractInjectableConfig
+final class SettingsConfig extends AbstractInjectableConfig
 {
     protected const CONFIG_SECTION_NAME = 'settings';
 

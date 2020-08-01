@@ -10,8 +10,7 @@ use Chiron\Dispatcher\ConsoleDispatcher;
 use Chiron\Dispatcher\SapiDispatcher;
 use Chiron\Dispatcher\RrDispatcher;
 
-// PAsser les classes de config en "final" !!!!
-class AppConfig extends AbstractInjectableConfig
+final class AppConfig extends AbstractInjectableConfig
 {
     protected const CONFIG_SECTION_NAME = 'app';
 

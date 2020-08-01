@@ -9,7 +9,7 @@ use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 use Chiron\Config\Helper\Validator;
 
-class HttpConfig extends AbstractInjectableConfig
+final class HttpConfig extends AbstractInjectableConfig
 {
     protected const CONFIG_SECTION_NAME = 'http';
 
@@ -21,6 +21,7 @@ class HttpConfig extends AbstractInjectableConfig
             'basePath'          => Expect::string()->default('/'),
             'headers'           => Expect::arrayOf('string')->assert([Validator::class, 'isArrayAssociative'], 'associative array'),
             'middlewares'       => Expect::listOf('string'),
+            'handle_exception'  => Expect::bool(),
         ]);
     }
 
@@ -47,5 +48,10 @@ class HttpConfig extends AbstractInjectableConfig
     public function getMiddlewares(): array
     {
         return $this->get('middlewares');
+    }
+
+    public function getHandleException(): bool
+    {
+        return $this->get('handle_exception');
     }
 }
