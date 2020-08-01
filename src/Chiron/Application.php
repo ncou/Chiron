@@ -6,27 +6,14 @@ namespace Chiron;
 
 use Chiron\Bootload\BootloaderInterface;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
+use Chiron\Bootloader\ConfigureBootloader;
+use Chiron\Bootloader\DirectoriesBootloader;
+use Chiron\Bootloader\EnvironmentBootloader;
+use Chiron\Bootloader\SettingsBootloader;
+use Chiron\Container\Container;
 use Chiron\Dispatcher\DispatcherInterface;
 use Chiron\ErrorHandler\RegisterErrorHandler;
 use Chiron\Exception\ApplicationException;
-use Chiron\Container\Container;
-
-use Chiron\Bootloader\SettingsBootloader;
-use Chiron\Bootloader\EnvironmentBootloader;
-use Chiron\Bootloader\ConfigureBootloader;
-use Chiron\Bootloader\DirectoriesBootloader;
-use Chiron\Bootloader\PackageManifestBootloader;
-use Chiron\Bootloader\MutationsBootloader;
-use Chiron\Bootloader\PublishableCollectionBootloader;
-use Chiron\Config\InjectableConfigInterface;
-use Chiron\Config\InjectableConfigMutation;
-use Chiron\Provider\ConfigureServiceProvider;
-use Chiron\Provider\ErrorHandlerServiceProvider;
-use Chiron\Provider\HttpFactoriesServiceProvider;
-use Chiron\Provider\LoggerServiceProvider;
-use Chiron\Provider\MiddlewaresServiceProvider;
-use Chiron\Provider\RoadRunnerServiceProvider;
-use Chiron\Provider\ServerRequestCreatorServiceProvider;
 
 //https://github.com/swoft-cloud/swoft-framework/blob/0702d93baf8ee92bc4d1651fe0cda2a022197e98/src/SwoftApplication.php
 
@@ -51,8 +38,6 @@ use Chiron\Provider\ServerRequestCreatorServiceProvider;
 // TODO : ajouter une méthode pour trouver les commandes ajoutées à l'application, un "findCommand($name)".
 // Exemple : https://github.com/symfony/symfony/blob/master/src/Symfony/Bundle/FrameworkBundle/Console/Application.php#L112
 // Exemple : https://github.com/symfony/console/blob/master/Application.php#L595
-
-
 
 class Application
 {
@@ -215,7 +200,6 @@ class Application
     // TODO : il y a surement des services à ne pas charger si on est en mode console !!! et inversement il y en a surement à charger uniquement en mode console !!!
     private static function configure(Application $app): void
     {
-
         // NullLogger Service + LoggerAwareInterface mutation !!!!
         $app->addProvider(new \Chiron\Provider\LoggerServiceProvider());
         $app->container->inflector(\Psr\Log\LoggerAwareInterface::class, [\Chiron\Logger\LoggerAwareMutation::class, 'mutation']);
@@ -237,7 +221,6 @@ class Application
         $app->addProvider(new \Chiron\Provider\ErrorHandlerServiceProvider());
         $app->addProvider(new \Chiron\Provider\RoadRunnerServiceProvider());
 
-
         //**************************
         //******  BOOTLOADER *******
         //**************************
@@ -247,8 +230,6 @@ class Application
         // TODO : attention si il y a des bootloaders chargés via le packagemanifest qui ajoutent une commande dans la console, si cette commande utilise le même nom que les commandes par défaut  définies dans la classe CommandBootloader, elles vont être écrasées !!!! faut il faire un test dans cette classe si la command est déjà définie dans la console on ne l'ajoute pas ????? ou alors écrase la commande d'office ????
         $app->addBootloader(new \Chiron\Bootloader\CommandBootloader());
 
-
-
         // TODO : déplacer ces bootloader dans les packages templates/router/http et ajouter dans le composer.json une balise extra avec les informations pour charger ces classes.
         //Chiron\Bootloader\ViewsBootloader::class,
         $app->addBootloader(new \Chiron\Bootloader\HttpBootloader());
@@ -256,8 +237,6 @@ class Application
 
         $app->addBootloader(new \Chiron\Bootloader\ConsoleBootloader());
         $app->addBootloader(new \Chiron\Bootloader\ApplicationBootloader());
-
-
 
         //$app->addBootloader(new \Chiron\Bootloader\TestBootloader());
     }

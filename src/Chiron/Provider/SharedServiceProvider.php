@@ -17,13 +17,13 @@ namespace Chiron\Provider;
 //use Chiron\Http\Middleware\ErrorHandlerMiddleware;
 use Chiron\Application;
 use Chiron\Bootload\ServiceProvider\AbstractServiceProvider;
+use Chiron\Config\Configure;
 use Chiron\Console\Console;
 use Chiron\Http\Emitter\EmitterInterface;
 use Chiron\Http\Emitter\SapiEmitter;
 use Chiron\Http\Http;
 use Chiron\Pipe\HttpDecorator;
 use Chiron\PublishableCollection;
-use Chiron\Config\Configure;
 
 /**
  * Chiron system services provider.
@@ -46,7 +46,6 @@ final class SharedServiceProvider extends AbstractServiceProvider
         //HttpDecorator::class,
         //\Nyholm\Psr7Server\ServerRequestCreatorInterface::class,
         //EmitterInterface::class => SapiEmitter::class,
-
     ];
 
     /*

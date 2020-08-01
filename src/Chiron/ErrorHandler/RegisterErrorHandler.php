@@ -5,19 +5,14 @@ declare(strict_types=1);
 namespace Chiron\ErrorHandler;
 
 use Chiron\Console\Console;
-use Chiron\Container\Container;
 use Chiron\ErrorHandler\Exception\FatalErrorException;
-use Chiron\ErrorHandler\Exception\FatalErrorException2;
 use ErrorException;
 use Exception;
-use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\Console\Output\StreamOutput;
 use Throwable;
 
-
 //https://github.com/symfony/symfony/blob/c09128cf9f715a2b04e2b1132ee66a7303c18868/src/Symfony/Component/ErrorHandler/Debug.php
 //https://github.com/symfony/debug/blob/e3cb605c6d6a6c5757ac2515f560a53b6a8811e7/Debug.php
-
 
 //https://github.com/yiisoft/yii2-framework/blob/a741165ee91603518286fc28d4ee273ae3a0ef60/console/ErrorHandler.php
 //https://github.com/yiisoft/yii2-framework/blob/0c1efae085dbf4f92db3d82bb530ad14cbc5fe83/web/ErrorHandler.php
@@ -48,7 +43,6 @@ use Throwable;
 
 //https://github.com/laravel/framework/blob/0b12ef19623c40e22eff91a4b48cb13b3b415b25/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php#L35
 
-
 // TODO : classe à renommer en ErrorHandler !!!!
 // TODO : il faudrait trouver un mécanisme pour éviter que l'utilisateur appel plusieurs fois la méthode ::register eventuellement mettre un booleen de classe "isRegistered" qui est à vrai aprés le premier appel et on sortira de la méthode register() si on l'a déjà appellé une premiére fois.
 // Exemple => https://github.com/getsentry/sentry-php/blob/master/src/ErrorHandler.php#L72
@@ -56,7 +50,6 @@ use Throwable;
 // Exemple => https://github.com/zendframework/zend-log/blob/328de94cb3395382d077dbc09200b733e9596a06/src/Logger.php#L661
 final class RegisterErrorHandler
 {
-
     /**
      * Set the level to show all errors + disable internal php error display and register the error/exception/shutdown handlers.
      */
@@ -83,6 +76,7 @@ final class RegisterErrorHandler
 
     /**
      * Unregisters this error handler by restoring the PHP error and exception handlers.
+     *
      * @since 2.0.32 this will not do anything if the error handler was not registered
      */
     //https://github.com/yiisoft/yii2-framework/blob/master/base/ErrorHandler.php#L85
@@ -191,22 +185,18 @@ final class RegisterErrorHandler
             $content = nl2br($t->getMessage());
         }
 
+        /*
+                $message = sprintf(
+                    "<br/><strong>%s</strong> %s in %s on line %d<br/><i>Stack trace:</i><pre>%s</pre>",
+                    get_class($e),
+                    $e->getMessage(),
+                    $e->getFile(),
+                    $e->getLine(),
+                    $e->getTraceAsString()
+                );
 
-/*
-        $message = sprintf(
-            "<br/><strong>%s</strong> %s in %s on line %d<br/><i>Stack trace:</i><pre>%s</pre>",
-            get_class($e),
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine(),
-            $e->getTraceAsString()
-        );
-
-        $content = $message;
-*/
-
-
-
+                $content = $message;
+        */
 
         // TODO : à virer c'est un test !!!
         //$content = nl2br($e->getTraceAsString());
@@ -257,7 +247,6 @@ final class RegisterErrorHandler
     {
         return in_array($type, [E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING]);
     }
-
 
     /**
      * Returns the last PHP error as plain string.

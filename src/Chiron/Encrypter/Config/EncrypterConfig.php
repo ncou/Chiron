@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron\Encrypter\Config;
 
+use Chiron\Config\AbstractInjectableConfig;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
-use Chiron\Config\AbstractInjectableConfig;
 
 final class EncrypterConfig extends AbstractInjectableConfig
 {
@@ -15,7 +15,7 @@ final class EncrypterConfig extends AbstractInjectableConfig
     protected function getConfigSchema(): Schema
     {
         return Expect::structure([
-            'key' => Expect::string()->default(env('APP_KEY'))
+            'key' => Expect::string()->default(env('APP_KEY')),
         ]);
     }
 

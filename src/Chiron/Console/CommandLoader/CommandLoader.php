@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Chiron\Console\CommandLoader;
 
-use Psr\Container\ContainerInterface;
-use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Chiron\Console\AbstractCommand;
-use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
+use Symfony\Component\Console\Exception\CommandNotFoundException;
 
 /**
  * Loads commands from a PSR-11 container.
@@ -18,6 +18,7 @@ class CommandLoader implements CommandLoaderInterface
 {
     /** @var ContainerInterface */
     private $container;
+
     /** @var array An array with command names as keys and service ids as values */
     private $commandMap = [];
 
@@ -36,7 +37,7 @@ class CommandLoader implements CommandLoaderInterface
      */
     public function get($name): Command
     {
-        if (!$this->has($name)) {
+        if (! $this->has($name)) {
             throw new CommandNotFoundException(sprintf('Command "%s" does not exist.', $name));
         }
 

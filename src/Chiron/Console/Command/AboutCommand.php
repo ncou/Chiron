@@ -4,25 +4,16 @@ declare(strict_types=1);
 
 namespace Chiron\Console\Command;
 
-use Chiron\Filesystem\Filesystem;
+use Chiron\Application;
 use Chiron\Boot\Directories;
 use Chiron\Boot\Environment;
+use Chiron\Boot\Path;
+use Chiron\Bootloader\EnvironmentBootloader;
 use Chiron\Console\AbstractCommand;
-use Chiron\Encrypter\Config\EncrypterConfig;
-use Chiron\Support\Security;
-use Symfony\Component\Console\Input\InputOption;
-use Chiron\Application;
+use Chiron\Filesystem\Filesystem;
 use Chiron\Framework;
-
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\TableSeparator;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-
-use Chiron\Bootloader\EnvironmentBootloader;
-
-use Chiron\Boot\Path;
 
 /**
  * A console command to display information about the current installation.
@@ -90,7 +81,6 @@ final class AboutCommand extends AbstractCommand
         //$table->addRow();
 
         $table->render();
-
 
         return self::SUCCESS;
     }

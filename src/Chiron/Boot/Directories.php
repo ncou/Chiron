@@ -44,7 +44,7 @@ final class Directories implements SingletonInterface
     public function add(array $paths): void
     {
         foreach ($paths as $alias => $path) {
-        	if (! is_string($alias)) {
+            if (! is_string($alias)) {
                 throw new InvalidArgumentException(sprintf('Method "%s()" expects an associative array.', __METHOD__));
             }
             $this->set($alias, $path);
@@ -52,12 +52,10 @@ final class Directories implements SingletonInterface
     }
 
     /**
-     * Register directory alias
+     * Register directory alias.
      *
      * @param string $alias Targeted directory alias
-     * @param string $path Targeted directory path
-     *
-     * @return void
+     * @param string $path  Targeted directory path
      */
     // TODO : il faut virer le trailing slash de fin de chaine ('/' ou '\')
     // TODO : attention si on passe un $alias à chaine vide cela va péter !!!! Lever une exception, idem si $path est vide car ca n'a pas de sens !!!
@@ -96,7 +94,7 @@ final class Directories implements SingletonInterface
     }
 
     /**
-     * Get directory alias real path
+     * Get directory alias real path.
      *
      * @param string $alias
      *
@@ -106,7 +104,7 @@ final class Directories implements SingletonInterface
     // TODO : faire un normalizePath() pour résoudre les chemins du style './../xxxx'
     public function get(string $alias): string
     {
-    	if (! self::isAlias($alias)) {
+        if (! self::isAlias($alias)) {
             return $alias;
         }
 
@@ -126,12 +124,13 @@ final class Directories implements SingletonInterface
     }
 
     /**
-     * Whether the alias exists
+     * Whether the alias exists.
      *
      * @param string $alias
      *
-     * @return bool
      * @throws InvalidArgumentException
+     *
+     * @return bool
      */
     // TODO : lever une erreur si l'utilisateur essaye de faire un has() sur une chaine vide ou égale à @ ????
     // TODO : lever une erreur si l'utilisateur essaye de faire un has() sur un alias+chemin. exemple : ->has('@root/runtime')
@@ -146,6 +145,7 @@ final class Directories implements SingletonInterface
 
     /**
      * Remove alias.
+     *
      * @param string $alias
      */
     // TODO : lever une erreur si l'utilisateur essaye de faire un remove() sur une chaine vide ou égale à @ ????
@@ -177,7 +177,7 @@ final class Directories implements SingletonInterface
      * Normalize reference to directories.
      * Enforce a trailing slash.
      *
-     * @param  string $dir path to directory
+     * @param string $dir path to directory
      *
      * @return string normalized path to directory
      */
@@ -193,26 +193,17 @@ final class Directories implements SingletonInterface
         return $dir;
     }
 
+    /*
+        public function exists(string $alias): bool
+        {
+            return file_exists($this->get($alias));
+        }
 
-
-
-
-
-
-
-
-
-/*
-    public function exists(string $alias): bool
-    {
-        return file_exists($this->get($alias));
-    }
-
-    public function writable(string $alias): bool
-    {
-        return is_writable($this->get($alias));
-    }
-*/
+        public function writable(string $alias): bool
+        {
+            return is_writable($this->get($alias));
+        }
+    */
 
     // TODO : retourner un chemin relatif (cad en supprimant le début du chemin qui correspond au chemin '@root')
     public function relative(string $path, string $baseDir = '@root'): bool
@@ -225,28 +216,6 @@ final class Directories implements SingletonInterface
     {
         return preg_replace('~^' . preg_quote($baseDir, '~') . '~', '.', $path);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     public function set_OLD(string $alias, string $path): void
     {
@@ -301,18 +270,6 @@ final class Directories implements SingletonInterface
 
         return $target;
     }
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * Normalizes given directory names by removing trailing slashes.

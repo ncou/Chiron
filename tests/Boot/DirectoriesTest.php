@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Boot;
 
-use Chiron\Container\Container;
-use Chiron\Logger\LoggerManager;
 use Chiron\Boot\Directories;
-use InvalidArgumentException;
 
 // TODO : faire des tests en ajoutant une référence circulaire + un test avec un path vide '', et un test en ajoutant un path qu'on supprime ex : @root => 'toto' / @config => '@root/config' et ensuite on remove(@root) et on essaye de faire un get(@config).
 // TODO : test pour s'assurer que le slash de fin est bien supprimé, idem pour l'antislash.
@@ -22,7 +19,6 @@ class DirectoriesTest extends \PHPUnit\Framework\TestCase
         $this->assertSame('bar/', $dirs->get('@foo'));
         $this->assertSame('zab/', $dirs->get('@baz'));
     }
-
 
     public function testAdd(): void
     {
@@ -44,7 +40,6 @@ class DirectoriesTest extends \PHPUnit\Framework\TestCase
 
         $dirs->add([true]);
     }
-
 
     public function testHas(): void
     {
@@ -72,13 +67,12 @@ class DirectoriesTest extends \PHPUnit\Framework\TestCase
 
     public function testAll(): void
     {
-        $expect = ['@root' => 'foo/','@base' => 'foo/','@config' => 'foo/bar/'];
+        $expect = ['@root' => 'foo/', '@base' => 'foo/', '@config' => 'foo/bar/'];
 
         $dirs = $this->getDirs(['@root' => 'foo/', '@base' => '@root', '@config' => '@base/bar']);
 
         $this->assertEquals($dirs->all(), $expect);
     }
-
 
     public function testChainedPaths(): void
     {
@@ -100,11 +94,6 @@ class DirectoriesTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($dirs->get('@third'), 'path1/path2/path3/');
     }
 
-
-
-
-
-
     /**
      * @dataProvider dataProvider
      */
@@ -112,7 +101,7 @@ class DirectoriesTest extends \PHPUnit\Framework\TestCase
     {
         $dirs = $this->getDirs();
 
-        $dirs->set($alias , $path);
+        $dirs->set($alias, $path);
 
         $this->assertSame($expected, $dirs->get($alias));
     }
@@ -126,13 +115,6 @@ class DirectoriesTest extends \PHPUnit\Framework\TestCase
         ];
     }
 
-
-
-
-
-
-
-
     protected function getDirs(array $aliases = []): Directories
     {
         $directories = new Directories();
@@ -140,5 +122,4 @@ class DirectoriesTest extends \PHPUnit\Framework\TestCase
 
         return $directories;
     }
-
 }

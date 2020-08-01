@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Chiron;
 
 use ArrayIterator;
+use Chiron\Container\SingletonInterface;
 use Chiron\Filesystem\Filesystem;
 use Countable;
 use IteratorAggregate;
 use Transversable;
-use Chiron\Container\SingletonInterface;
 
 // TODO : on devrait pas en faire une classe générique du style "Collection" ??? car elle n'a rien de fonctionnelle rattaché aux fichiers "publiables"...
 

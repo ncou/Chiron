@@ -51,8 +51,9 @@ final class Http implements RequestHandlerInterface, SingletonInterface
 
     private $queue;
 
-    public function __construct() {
-        $this->queue = new SplPriorityQueue;
+    public function __construct()
+    {
+        $this->queue = new SplPriorityQueue();
     }
 
     /**
@@ -62,7 +63,7 @@ final class Http implements RequestHandlerInterface, SingletonInterface
      * emitted in the same order in which they are inserted.
      *
      * @param string|callable|MiddlewareInterface|RequestHandlerInterface|ResponseInterface $middleware
-     * @param  int $priority
+     * @param int                                                                           $priority
      *
      * @return self
      */
@@ -151,11 +152,11 @@ final class Http implements RequestHandlerInterface, SingletonInterface
         // TODO : déplacer le middleware de gestion des Errors ErrorHandlerMiddleware dans le répertoire "ErrorHandler", et forcer ici l'ajout au sommet da la pile des middleware et utilisant un décorateur pour résoudre le nom du middleware via le container.
         //****************************
 
-/*
-        foreach ($this->stack as $middleware) {
-            $this->handler->pipe(HttpDecorator::toMiddleware($middleware));
-        }
-*/
+        /*
+                foreach ($this->stack as $middleware) {
+                    $this->handler->pipe(HttpDecorator::toMiddleware($middleware));
+                }
+        */
         foreach ($this->queue as $middleware) {
             $this->handler->pipe(HttpDecorator::toMiddleware($middleware));
         }

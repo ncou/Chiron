@@ -16,7 +16,7 @@ final class Framework
     private const VERSION = '1.0.0';
 
     /**
-     * Chiron terminal logo
+     * Chiron terminal logo.
      *
      * @see http://patorjk.com/software/taag/#p=display&f=Slant&t=Chiron%201.0
      */
@@ -29,7 +29,7 @@ final class Framework
 ";
 
     /**
-     * Chiron terminal logo small
+     * Chiron terminal logo small.
      *
      * @see http://patorjk.com/software/taag/#p=display&f=Small%20Slant&t=Chiron%201.0
      */
@@ -41,7 +41,7 @@ final class Framework
 ";
 
     /**
-     * Chiron server start banner logo
+     * Chiron server start banner logo.
      */
     private const BANNER_LOGO = "
   _______   _                 ____                                   __
@@ -88,6 +88,7 @@ final class Framework
      * Return true if PHP running in CLI mode.
      *
      * @codeCoverageIgnore
+     *
      * @return bool
      */
     /*
@@ -106,7 +107,7 @@ final class Framework
     }*/
 
     /**
-     * Gets whether or not the application is running in a console
+     * Gets whether or not the application is running in a console.
      *
      * @return bool True if the application is running in a console, otherwise false
      */

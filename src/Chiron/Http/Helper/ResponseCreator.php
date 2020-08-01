@@ -4,22 +4,15 @@ declare(strict_types=1);
 
 namespace Chiron\Http\Helper;
 
-use Chiron\Container\SingletonInterface;
-use Chiron\Facade\HttpDecorator;
-use Chiron\Router\RequestHandler;
-use Chiron\Router\RoutingHandler;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\StreamFactoryInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\UriInterface;
-use Psr\Http\Message\StreamInterface;
 use InvalidArgumentException;
-use RuntimeException;
-use JsonSerializable;
-
 use const JSON_ERROR_NONE;
+use JsonSerializable;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\StreamInterface;
+use Psr\Http\Message\UriInterface;
+use RuntimeException;
 
 //https://github.com/laravel/framework/blob/7.x/src/Illuminate/Routing/ResponseFactory.php
 
@@ -27,6 +20,7 @@ final class ResponseCreator
 {
     /** @var ResponseFactoryInterface */
     private $responseFactory;
+
     /** @var StreamFactoryInterface */
     private $streamFactory;
 
@@ -74,18 +68,19 @@ final class ResponseCreator
     }
 
     /**
-     * Mount redirect headers into response
+     * Mount redirect headers into response.
      *
      * @param UriInterface|string $uri
      * @param int                 $code
-     * @return ResponseInterface
      *
      * @throws ResponseException
+     *
+     * @return ResponseInterface
      */
     // TODO : à utiliser dans le cadre du RedirectController utilisé par le RouteCollector ????
     public function redirect($uri, int $code = 302): ResponseInterface
     {
-        if (!is_string($uri) && !$uri instanceof UriInterface) {
+        if (! is_string($uri) && ! $uri instanceof UriInterface) {
             throw new InvalidArgumentException('Redirect allowed only for string or UriInterface uris');
         }
 
@@ -95,8 +90,8 @@ final class ResponseCreator
     /**
      * Write json data into response and set content-type header.
      *
-     * @param mixed    $data
-     * @param int $code
+     * @param mixed $data
+     * @param int   $code
      *
      * @return ResponseInterface
      */
@@ -129,11 +124,9 @@ final class ResponseCreator
         return $response->withHeader('Content-Type', $contentType);
     }
 
-
-
     /**
      * This method will trigger the client to download the specified file
-     * It will append the `Content-Disposition` header to the response object
+     * It will append the `Content-Disposition` header to the response object.
      *
      * @param string|resource|StreamInterface $file
      * @param string|null                     $name
@@ -179,7 +172,7 @@ final class ResponseCreator
 
     /**
      * This method prepares the response object to return a file response to the
-     * client without `Content-Disposition` header which defaults to `inline`
+     * client without `Content-Disposition` header which defaults to `inline`.
      *
      * You control the behavior of the `Content-Type` header declaration via `$contentType`
      * Use a string to override the header to a value of your choice. e.g.: `application/json`
@@ -189,10 +182,10 @@ final class ResponseCreator
      * @param string|resource|StreamInterface $file
      * @param bool|string                     $contentType
      *
-     * @return static
-     *
-     * @throws RuntimeException If the file cannot be opened.
+     * @throws RuntimeException         If the file cannot be opened.
      * @throws InvalidArgumentException If the mode is invalid.
+     *
+     * @return static
      */
     public function file($file, $contentType = true): ResponseInterface
     {

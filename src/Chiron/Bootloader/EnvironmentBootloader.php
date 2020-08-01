@@ -6,13 +6,9 @@ use Chiron\Boot\Directories;
 use Chiron\Boot\Environment;
 use Chiron\Bootload\AbstractBootloader;
 use Chiron\Config\Config;
-use Dotenv\Dotenv;
-use Dotenv\Environment\Adapter\EnvConstAdapter;
-use Dotenv\Environment\Adapter\PutenvAdapter;
-use Dotenv\Environment\Adapter\ServerConstAdapter;
-use Dotenv\Environment\DotenvFactory;
-use Dotenv\Exception\InvalidFileException;
 use Chiron\Exception\ApplicationException;
+use Dotenv\Dotenv;
+use Dotenv\Exception\InvalidFileException;
 
 //https://github.com/swoft-cloud/swoft-framework/blob/c222ba60ce2463c60926d1cf0209309c1844eb8c/src/Processor/EnvProcessor.php
 
@@ -31,6 +27,7 @@ final class EnvironmentBootloader extends AbstractBootloader
 {
     /** @var string */
     public const DOTENV = 'CHIRON_DOTENV_VARS';
+
     /** @var array */
     private $values;
 

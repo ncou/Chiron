@@ -4,16 +4,12 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Helper;
 
-use Chiron\Http\Emitter\ResponseEmitter;
-use Chiron\Http\Psr\Response;
-use Chiron\Tests\Utils\CallbackStream;
-use Chiron\Tests\Utils\HeaderStack;
-use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Chiron\Http\Helper\ResponseCreator;
 use Chiron\Http\Factory\ResponseFactory;
 use Chiron\Http\Factory\StreamFactory;
+use Chiron\Http\Helper\ResponseCreator;
+use Chiron\Http\Psr\Response;
 use InvalidArgumentException;
+use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 class ResponseCreatorTest extends TestCase
@@ -81,18 +77,6 @@ class ResponseCreatorTest extends TestCase
         $this->responseCreator->json($data, 200);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
     public function fileProvider()
     {
         return [
@@ -155,6 +139,7 @@ class ResponseCreatorTest extends TestCase
 
     /**
      * @dataProvider fileProvider
+     *
      * @param bool|string $contentType
      * @param string      $openAs
      * @param string      $expectedBody
@@ -167,15 +152,18 @@ class ResponseCreatorTest extends TestCase
         switch ($openAs) {
             case 'resource':
                 $file = fopen($path, 'r');
+
                 break;
 
             case 'stream':
                 $file = (new StreamFactory())->createStreamFromFile($path);
+
                 break;
 
             default:
             case 'string':
                 $file = $path;
+
                 break;
         }
 
@@ -187,7 +175,6 @@ class ResponseCreatorTest extends TestCase
         if (is_resource($file)) {
             fclose($file);
         }
-
     }
 
     public function testAttachmentThrowsInvalidArgumentException()
@@ -235,6 +222,7 @@ class ResponseCreatorTest extends TestCase
 
     /**
      * @dataProvider fileDownloadProvider
+     *
      * @param string|null $name
      * @param string      $openAs
      * @param string      $expectedContentDisposition
@@ -246,15 +234,18 @@ class ResponseCreatorTest extends TestCase
         switch ($openAs) {
             case 'resource':
                 $file = fopen($path, 'r');
+
                 break;
 
             case 'stream':
                 $file = (new StreamFactory())->createStreamFromFile($path);
+
                 break;
 
             default:
             case 'string':
                 $file = $path;
+
                 break;
         }
 
@@ -265,6 +256,5 @@ class ResponseCreatorTest extends TestCase
         if (is_resource($file)) {
             fclose($file);
         }
-
     }
 }

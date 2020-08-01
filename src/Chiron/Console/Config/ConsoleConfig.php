@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Chiron\Console\Config;
 
 use Chiron\Config\AbstractInjectableConfig;
+use Chiron\Framework;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
-use Chiron\Framework;
 
 final class ConsoleConfig extends AbstractInjectableConfig
 {
@@ -17,9 +17,9 @@ final class ConsoleConfig extends AbstractInjectableConfig
     {
         // TODO : il faudrait plutot utiliser un Expect::listOf('string') car ce n'est pas un tableau associatif
         return Expect::structure([
-            'name' => Expect::string()->default(Framework::banner()),
-            'version' => Expect::string()->default(Framework::version()),
-            'commands' => Expect::arrayOf('string')
+            'name'     => Expect::string()->default(Framework::banner()),
+            'version'  => Expect::string()->default(Framework::version()),
+            'commands' => Expect::arrayOf('string'),
         ]);
     }
 

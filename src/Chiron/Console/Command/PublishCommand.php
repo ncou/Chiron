@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Console\Command;
 
-use Chiron\Filesystem\Filesystem;
 use Chiron\Console\AbstractCommand;
+use Chiron\Filesystem\Filesystem;
 use Chiron\PublishableCollection;
 use Symfony\Component\Console\Input\InputOption;
 

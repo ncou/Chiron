@@ -29,8 +29,6 @@ use Psr\Log\NullLogger;
 //use Monolog\Logger;
 //use Monolog\Handler\StreamHandler;
 
-
-
 //https://github.com/spiral/monolog-bridge/blob/master/src/Bootloader/MonologBootloader.php
 
 //https://github.com/browscap/browscap-php/blob/5f1436b74a100088c66423e8715de598f50e66d1/src/Helper/LoggerHelper.php

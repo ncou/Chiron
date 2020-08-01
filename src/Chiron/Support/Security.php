@@ -63,9 +63,8 @@ final class Security
         return $password;
     }
 
-
     /**
-     * Sanitize Filename
+     * Sanitize Filename.
      *
      * Tries to sanitize filenames in order to prevent directory traversal attempts
      * and other security threats, which is particularly useful for files that
@@ -75,8 +74,8 @@ final class Security
      * e.g. file/in/some/approved/folder.txt, you can set the second optional
      * parameter, $relative_path to TRUE.
      *
-     * @param string  $str           Input file name
-     * @param boolean $relative_path Whether to preserve paths
+     * @param string $str           Input file name
+     * @param bool   $relative_path Whether to preserve paths
      *
      * @return string
      */

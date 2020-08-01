@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Chiron\Config;
 
+use Chiron\Config\Helper\Validator;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
-use Chiron\Dispatcher\ConsoleDispatcher;
-use Chiron\Dispatcher\SapiDispatcher;
-use Chiron\Dispatcher\RrDispatcher;
-use Chiron\Config\Helper\Validator;
 
 final class SettingsConfig extends AbstractInjectableConfig
 {

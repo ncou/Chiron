@@ -4,18 +4,12 @@ declare(strict_types=1);
 
 namespace Chiron\Boot;
 
-use Chiron\Container\SingletonInterface;
-use Chiron\Config\Loader\LoaderInterface;
-use Chiron\Config\Exception\ConfigException;
-use Chiron\Filesystem\Filesystem;
-use Chiron\Config\ConfigLoader;
-use Chiron\Config\Loader\PhpLoader;
-use Chiron\Config\Loader\IniLoader;
-use Chiron\Config\Loader\JsonLoader;
-use Chiron\Config\Loader\YmlLoader;
 use Chiron\Config\Config;
 use Chiron\Config\ConfigInterface;
-use LogicException;
+use Chiron\Config\ConfigLoader;
+use Chiron\Config\Exception\ConfigException;
+use Chiron\Container\SingletonInterface;
+use Chiron\Filesystem\Filesystem;
 
 //https://github.com/cakephp/cakephp/blob/master/src/Core/Configure.php
 
@@ -33,11 +27,12 @@ final class Configure implements SingletonInterface
 {
     /** @var Config[] */
     private $sections = [];
+
     /** @var Filesystem */
     private $filesystem;
+
     /** @var ConfigLoader */
     private $loader;
-
 
     // TODO : déplacer la ConfigLoader au niveau du paramétre du constructeur, cela laisse la possibilité d'utiliser un objet shared et instancié dans le container si par exemple l'utilisateur a décidé d'ajoputer un loaders spécifique dans le configloader par exemple. Idem pour l'objet Filesystem ????
     public function __construct()
@@ -136,8 +131,9 @@ final class Configure implements SingletonInterface
     /**
      * Generate the section name (nesting path + file name using dot separator).
      *
-     * @param  \SplFileInfo  $file
-     * @param  string  $path
+     * @param \SplFileInfo $file
+     * @param string       $path
+     *
      * @return string
      */
     //https://github.com/limingxinleo/x-phalcon-config-center/blob/master/src/Config/Center/Client.php#L40
@@ -147,7 +143,7 @@ final class Configure implements SingletonInterface
         $extension = '.' . $file->getExtension();
 
         if ($nested = trim(str_replace($path, '', $directory), DIRECTORY_SEPARATOR)) {
-            $nested = str_replace(DIRECTORY_SEPARATOR, '.', $nested).'.';
+            $nested = str_replace(DIRECTORY_SEPARATOR, '.', $nested) . '.';
         }
 
         return $nested . $file->getBasename($extension);
@@ -194,5 +190,4 @@ final class Configure implements SingletonInterface
 
         return $appender;
     }
-
 }
