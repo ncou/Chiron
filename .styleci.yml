@@ -9,7 +9,6 @@ enabled:
     - blank_line_before_continue
     - blank_line_before_declare
     - phpdoc_link_to_see
-    - phpdoc_return_self_reference
     - phpdoc_no_empty_return
     - const_visibility_required
     - not_operator_with_successor_space
