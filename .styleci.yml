@@ -17,7 +17,6 @@ enabled:
     - property_separation
     - standardize_increment
     - php_unit_ordered_covers
-    - php_unit_set_up_tear_down_visibility
 
 disabled:
     - concat_without_spaces
