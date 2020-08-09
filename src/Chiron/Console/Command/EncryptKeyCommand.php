@@ -10,6 +10,7 @@ use Chiron\Filesystem\Filesystem;
 use Chiron\Support\Security;
 use Symfony\Component\Console\Input\InputOption;
 
+// TODO : faire passer les classes de type command en "final" + virer les protected non nécessaires
 // TODO : passer les méthodes "perform" en protected pour chaque classe de type "Command"
 final class EncryptKeyCommand extends AbstractCommand
 {

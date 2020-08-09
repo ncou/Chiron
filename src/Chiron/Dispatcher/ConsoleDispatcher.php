@@ -41,19 +41,38 @@ final class ConsoleDispatcher extends AbstractDispatcher
         }
     }
 
-    private function handleException(Throwable $e): void
+    // TODO : externaliser ou utiliser le ErrorHandler pour gérer l'affichage de l'erreur => https://github.com/filp/whoops/blob/96b540726286e4d8f64f68efe6b260c8b4a00d6d/src/Whoops/Handler/PlainTextHandler.php
+    private function handleException(Throwable $exception): void
     {
-        $message = sprintf(
-            "%s %s in %s on line %d\nStack trace:\n%s\n",
-            get_class($e),
-            $e->getMessage(),
-            $e->getFile(),
-            $e->getLine(),
-            $e->getTraceAsString()
-        );
+        $message = $this->getExceptionOutput($exception);
+
+        $previous = $exception->getPrevious();
+        while ($previous) {
+            $message .= "\n\nCaused by:\n" . $this->getExceptionOutput($previous) . "\n";
+            $previous = $previous->getPrevious();
+        }
+
+        $message .= "\nStack trace:\n" . $exception->getTraceAsString() . "\n";
+
 
         //$stderr = new StreamOutput(fopen('php://stderr', 'w'));
         //$stderr->write($message);
         fwrite(STDERR, $message);
+    }
+
+    /**
+     * Get the exception as plain text.
+     * @param \Throwable $exception
+     * @return string
+     */
+    private function getExceptionOutput(Throwable $exception): string
+    {
+        return sprintf(
+            "%s: %s in file %s on line %d",
+            get_class($exception),
+            $exception->getMessage(),
+            $exception->getFile(),
+            $exception->getLine()
+        );
     }
 }

@@ -108,7 +108,8 @@ final class Directories implements SingletonInterface
             return $alias;
         }
 
-        // TODO : attention ca va mal marcher si on utilise le séparateur de répertoire sous windows '\' !!!!
+        $alias = strtr($alias, '\\', '/');
+
         $pos = strpos($alias, '/');
         $root = $pos === false ? $alias : substr($alias, 0, $pos);
 

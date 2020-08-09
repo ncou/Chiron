@@ -1,11 +1,9 @@
 <?php
 
-declare(strict_types=1);
-
 // TODO : ajouter un champ "environment" ??? qui contiendrait "developement" / "production" par exemple !!!!
 return [
-	'debug'		=> true,
-    'charset'	=> 'UTF-8',
-    'locale'	=> 'en_US',
-    'timezone'	=> 'UTC',
+	'debug'		=> env('APP_DEBUG', false),
+    'charset'	=> env('APP_ENCODING', 'UTF-8'),
+    'locale'	=> env('APP_DEFAULT_LOCALE', 'en_US'),
+    'timezone'	=> env('APP_DEFAULT_TIMEZONE', 'UTC'),
 ];

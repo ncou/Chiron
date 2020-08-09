@@ -12,13 +12,14 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use SplPriorityQueue;
+use Chiron\Container\BindingInterface;
 
 // TODO : faire étendre cette classe de la classe Pipeline::class ????? ou fusionner le code ????
 // TODO : utiliser une SplPriorityQueue pour ajouter des middlewares dans cette classe ????
 // TODO : classe à renommer en HttpRunner ???? et ajouter une méthode run() qui effectue un reset de l'index à 0 et execute ensuite la méthode handle() [exemple : https://github.com/middlewares/utils/blob/master/src/Dispatcher.php#L44]
 // TODO : créer un constructeur et lui passer l'objet MiddlewareDecorator, et utiliser la méthode decorate de cette classe lorsqu'on ajoute un middleware au tableau.
-// TODO : virer l'interface RequestHandlerInterface une fois que la classe est renommée en HttpRunner + renommer la méthode handle() en run()
-final class Http implements RequestHandlerInterface, SingletonInterface
+// TODO : renommer la classe en HttpRunner
+final class Http implements SingletonInterface
 {
     // TODO : externaliser ces constantes dans une classe "Priority" ????
     /** @var int */
@@ -43,16 +44,18 @@ final class Http implements RequestHandlerInterface, SingletonInterface
 
     private $handler;
 
+    private $binder;
+
     /**
      * @var array MiddlewareInterface[]
      */
     // TODO : attention le @var est faux, pour l'instant la variuable $stack peut contenir des callable, des string...etc
-    private $stack = [];
-
     private $queue;
 
-    public function __construct()
+    // TODO : initialiser l'objet Pipeline::class dans le constructeur, et ne plus utiliser la méthode seedRequestHandler en ajoutant au fur et à mesure les middlewares décorés dans la queue.
+    public function __construct(BindingInterface $binder)
     {
+        $this->binder = $binder;
         $this->queue = new SplPriorityQueue();
     }
 
@@ -128,16 +131,30 @@ final class Http implements RequestHandlerInterface, SingletonInterface
      *
      * @return ResponseInterface
      */
-    // TODO : améliorer le code, initialiser l'objet Pipeline::class dans le constructeur + ajouter un setter pour injecter directement le middleware (utiliser un MiddlewareDecorator pour toujours avoir des objets MiddlewareInterface), et la méthode getStackMiddleware ne servira plus à rien !!!!
-    // TODO : Méthode à renommer en "run()"
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    public function run(ServerRequestInterface $request): ResponseInterface
     {
         $this->seedRequestHandler();
+        $this->bindRequestInstance($request);
+
+        // TODO : à virer c'est un test !!!!
+        //$req = container(ServerRequestInterface::class);
+        //dd($req->getUri()->getPath());
+        //
+        $context = container(\Chiron\Http\RequestContext::class);
+        //dd($context->root());
+        //
+        //
+        //$urlGenerator = container(\Chiron\Router\UrlGeneratorInterface::class);
+        //dd($urlGenerator->getRoutes());
+        //dd($urlGenerator->relativeUrlFor('home', ['action' => 'index']));
+        //dd($urlGenerator->absoluteUrlFor(new \Nyholm\Psr7\Uri('http://127.0.0.1'), 'home', ['action' => 'index']));
+        //
+        //dd($urlGenerator->relativeUrlFor('dot_test'));
 
         return $this->handler->handle($request);
     }
 
-    // TODO : réfléchir si le code ne peux pas être amélioré !!! je n'aime pas trop qu'on utilise une variable de classe $this->handler. Réfléchir si il n'est pas possible de passer l'ensemble de cette classe comme un objet handler, regarder du côté de la classe Pipeline c'est ce qu'elle fait !!!!
+    // TODO : réfléchir si le code ne peux pas être amélioré !!! je n'aime pas trop qu'on utilise une variable de classe $this->handler.
     private function seedRequestHandler(): void
     {
         if ($this->handler) {
@@ -147,21 +164,20 @@ final class Http implements RequestHandlerInterface, SingletonInterface
 
         $this->handler = new RequestHandler();
 
-        //****************************
-        // TODO : injecter de force dans cette méthode le middleware ErrorHandlerMiddlware::class au sommet de la stack ???? ou alors passer par un Bootloader pour faire cet ajout de middlware avant l'execution de la stack ???
-        // TODO : déplacer le middleware de gestion des Errors ErrorHandlerMiddleware dans le répertoire "ErrorHandler", et forcer ici l'ajout au sommet da la pile des middleware et utilisant un décorateur pour résoudre le nom du middleware via le container.
-        //****************************
-
-        /*
-                foreach ($this->stack as $middleware) {
-                    $this->handler->pipe(HttpDecorator::toMiddleware($middleware));
-                }
-        */
         foreach ($this->queue as $middleware) {
             $this->handler->pipe(HttpDecorator::toMiddleware($middleware));
         }
 
-        // add the default routing handler at the bottom of the stack, to execute the MatchingRoute handler.
+        // add the default routing handler at the bottom of the stack.
         $this->handler->setFallback(HttpDecorator::toHandler(RoutingHandler::class));
+    }
+
+    /**
+     * Store a "fresh" request instance in the container.
+     */
+    private function bindRequestInstance(ServerRequestInterface $request): void
+    {
+        // Requests are considered immutable, so a simple "bind" is enough.
+        $this->binder->bind(ServerRequestInterface::class, $request);
     }
 }

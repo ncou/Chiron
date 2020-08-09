@@ -7,6 +7,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+//https://github.com/selfinvoking/laravel-rr/blob/master/app/Console/Commands/RoadRunnerCommand.php
+
 class ServeCommand extends AbstractCommand
 {
     public const EXIT_CODE_NO_DOCUMENT_ROOT = 2;
@@ -79,6 +81,10 @@ class ServeCommand extends AbstractCommand
 
         passthru('"' . PHP_BINARY . '"' . " -S {$address} -t \"{$documentRoot}\" $router");
 
+
+
+
+        //https://github.com/selfinvoking/laravel-rr/blob/master/app/Console/Commands/RoadRunnerCommand.php
         /*
         // TODO : utiliser ce bout de code pour vérifier que l'executable "rr" ou "rr.exe" est installé à la racine du projet. si c'est le cas on pourra executer le serveur RoadRunner !!!!
                 if (@is_executable($php = PHP_BINDIR.('\\' === \DIRECTORY_SEPARATOR ? '\\php.exe' : '/php'))) {

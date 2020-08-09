@@ -74,6 +74,9 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Throwable;
 
+// TODO : déplacer le middleware de gestion des Errors ErrorHandlerMiddleware dans le répertoire "ErrorHandler"
+// TODO : passer la classe en final ? + virer les propriétés protected ????
+
 class ErrorHandlerMiddleware implements MiddlewareInterface
 {
     /**

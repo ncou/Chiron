@@ -186,7 +186,7 @@ class Application
         // TODO : il faudrait surement ajouter ici un bootloader pour gérer la copie des fichiers (c'est à dire le publisher) uniquement ceux qui sont définis dans le composer.json. Et ensuite avoir le bootloader ConfigureBootloader juste aprés pour charger les fichiers potentiellement copiés.
         //$app->addBootloader(new PublisherBootloader()); ????? Attention ce bootloader ne devra pas utiliser de fichiers de configuration car ils ne seront pas encore initialisés !!! (puisque la mutation est dans le bootloader suivant [ConfigureBootloader]). !!!! <=== attention ce TODO est faux, car le publisher sera executé depuis la command de la console (cad via le ConsoleDispatcher), donc on devra traverser tous les bootloaders avant de faire la copie des fichiers, donc cela ne fonctionnera pas !!!!!
 
-        // load the user configuration files from the '@config' folder.
+        // add the config mutation + load the user configuration files from the '@config' folder.
         $app->addBootloader(new ConfigureBootloader($app->container));
         // init the application settings (debug, charset, timezone...etc).
         // TODO : permettre de faire un override des valeurs par défault des settings en lui passant un tableau dans le constructeur de la classe SettingsBootloader + uajouter un paramétre à la méthode application::init() cela permettrait lors des tests phpunit de facilement modifier ces valeurs !!!!

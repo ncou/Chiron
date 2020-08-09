@@ -9,6 +9,18 @@ use Chiron\Config\ConfigInterface;
 use Chiron\Container\Container;
 use Psr\Container\ContainerExceptionInterface;
 
+if (! function_exists('di')) {
+    /**
+     * Return the container instance.
+     *
+     * @return Container
+     */
+    function di(): Container
+    {
+         return  Container::$instance;
+    }
+}
+
 if (! function_exists('container')) {
     /**
      * Resolve given alias in the container.

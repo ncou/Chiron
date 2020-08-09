@@ -5,6 +5,7 @@ declare(strict_types=1);
 return [
     'bufferSize'        => 8 * 1024 * 1024,
     'protocol'          => '1.1',
+    //The base URL path of the Chiron installation. Will usually be "/" unless you have installed Chiron in a sub-directory.
     'basePath'          => '/',
     'headers'           => [],
     'middlewares'       => [],

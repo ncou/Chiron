@@ -22,6 +22,10 @@ use Whoops\Run as Whoops;
 //https://github.com/narrowspark/framework/blob/ccda2dca0c312dbea08814d1372c1802920ebcca/src/Viserio/Component/Exception/Displayer/WhoopsPrettyDisplayer.php
 //https://github.com/narrowspark/framework/blob/ccda2dca0c312dbea08814d1372c1802920ebcca/src/Viserio/Component/Exception/Displayer/WhoopsJsonDisplayer.php
 
+// TODO : ajouter une notion de "blacklist" pour ne pas afficher certaines balises dans la page whoops de debug (utile lorsqu'on oublie de changer le mode debug à false lorsqu'on pousse l'application en producion)
+//https://github.com/filp/whoops/blob/master/src/Whoops/Handler/PrettyPageHandler.php#L801
+//https://laravel.com/docs/5.8/configuration#hiding-environment-variables-from-debug
+
 class WhoopsFormatter implements FormatterInterface
 {
     public function format(ServerRequestInterface $request, Throwable $e): string

@@ -10,6 +10,8 @@ use Chiron\Dispatcher\SapiDispatcher;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 
+// TODO : ajouter des commentaires dans le fichier app. exemple : https://github.com/codeigniter4/CodeIgniter4/blob/8da88e04ae151ac6b06da431fb93ca086559b565/app/Config/App.php
+
 final class AppConfig extends AbstractInjectableConfig
 {
     protected const CONFIG_SECTION_NAME = 'app';
