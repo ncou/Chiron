@@ -13,7 +13,7 @@
         "ext-intl": "*",
         "psr/log": "^1.0",
         "chiron/config": "^1.4",
-        "chiron/console": "^0.8",
+        "chiron/console": "^0.9",
         "chiron/container": "^3.5",
         "chiron/injector": "^0.2",
         "chiron/filesystem": "^1.2",
