@@ -23,7 +23,7 @@ final class HttpConfig extends AbstractInjectableConfig
             'basePath'          => Expect::string()->default('/'),
             'headers'           => Expect::arrayOf('string')->assert([Validator::class, 'isArrayAssociative'], 'associative array'),
             'middlewares'       => Expect::listOf('string'),
-            'handle_exception'  => Expect::bool(),
+            'handle_exception'  => Expect::bool()->default(true),
         ]);
     }
 
