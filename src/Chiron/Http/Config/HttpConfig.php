@@ -16,8 +16,10 @@ final class HttpConfig extends AbstractInjectableConfig
     protected function getConfigSchema(): Schema
     {
         return Expect::structure([
+            // TODO : à virer on utilisera un service provider pour modifier la création de l'object et donc changer le constructeur.
             'bufferSize'        => Expect::int()->default(8 * 1024 * 1024),
             'protocol'          => Expect::string()->default('1.1'),
+            // TODO : champ à déplacer dans un fichier "routing.php" ???? car c'est pas vraiment un paramétrage du protocol http !!!!
             'basePath'          => Expect::string()->default('/'),
             'headers'           => Expect::arrayOf('string')->assert([Validator::class, 'isArrayAssociative'], 'associative array'),
             'middlewares'       => Expect::listOf('string'),

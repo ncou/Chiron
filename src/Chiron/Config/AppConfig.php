@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Chiron\Config;
 
-use Chiron\Dispatcher\ConsoleDispatcher;
-use Chiron\Dispatcher\RrDispatcher;
-use Chiron\Dispatcher\SapiDispatcher;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 
@@ -20,10 +17,10 @@ final class AppConfig extends AbstractInjectableConfig
 
     protected function getConfigSchema(): Schema
     {
-        // TODO : on ne devrait pas pouvoir stocker de dispatcher dans le fichier app.php, car c'est plutot défini dans core.php. Par contre il mnaque la partie "commands" pour la console !!!!!
+        // TODO : on ne devrait pas stocker de dispatcher dans le fichier app.php (ca devrait être un tableau vide), car c'est plutot défini dans core.php. Par contre il mnaque la partie "commands" pour la console !!!!!
         // TODO : virer le otherItem expect mixed !!!!
         return Expect::structure([
-            'dispatchers'       => Expect::listOf('string')->default([ConsoleDispatcher::class, SapiDispatcher::class, RrDispatcher::class]),
+            'dispatchers'       => Expect::listOf('string'),
             'providers'         => Expect::listOf('string'),
             'bootloaders'       => Expect::listOf('string'),
         ])->otherItems(Expect::mixed());

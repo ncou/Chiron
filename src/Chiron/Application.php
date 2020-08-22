@@ -83,6 +83,7 @@ class Application
      */
     // TODO : il faudrait gérer le cas ou l'on souhaite ajouter un dispatcher au dessus de la stack. Ajouter un paramétre 'bool $onTop = false' à cette méthode ????
     // TODO : permettre de gérer les dispatchers dans les fichiers composer.json (partie "extra") et les charger via le packagemanifest ????
+    // TODO : permettre de passer une string en paramétre et utiliser le container qui est aussi un FactoryInterface pour "créer" la classe passée en paramétre !!!
     public function addDispatcher(DispatcherInterface $dispatcher): void
     {
         $this->dispatchers[] = $dispatcher;
@@ -219,7 +220,7 @@ class Application
         $app->addProvider(new \Chiron\Provider\ServerRequestCreatorServiceProvider());
         $app->addProvider(new \Chiron\Provider\HttpFactoriesServiceProvider());
         $app->addProvider(new \Chiron\Provider\ErrorHandlerServiceProvider());
-        $app->addProvider(new \Chiron\Provider\RoadRunnerServiceProvider());
+        //$app->addProvider(new \Chiron\Provider\RoadRunnerServiceProvider());
 
         //**************************
         //******  BOOTLOADER *******

@@ -204,6 +204,7 @@ final class RegisterErrorHandler
         // TODO : il faudrait surement envoyer un header contenttype = "html" non ????
         // TODO : il faudrait pas vérifier que les headers ne sont pas déjà envoyés pour faire ce hhttp_response_code() ????
         // set preventive HTTP status code to 500 in case error handling somehow fails and headers are sent
+        //header('Content-Type: text/html; charset=utf-8');
         http_response_code(500);
 
         echo $content;
