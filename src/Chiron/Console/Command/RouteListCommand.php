@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Chiron\Console\Command;
 
 use Chiron\Console\AbstractCommand;
-use Chiron\Router\Method;
-use Chiron\Router\Route;
-use Chiron\Router\RouterInterface;
-use Chiron\Router\Target\Action;
-use Chiron\Router\Target\Callback;
-use Chiron\Router\Target\Controller;
-use Chiron\Router\Target\Group;
-use Chiron\Router\Target\Namespaced;
+use Chiron\Routing\Method;
+use Chiron\Routing\Route;
+use Chiron\Routing\RouteCollection;
+use Chiron\Routing\Target\Action;
+use Chiron\Routing\Target\Callback;
+use Chiron\Routing\Target\Controller;
+use Chiron\Routing\Target\Group;
+use Chiron\Routing\Target\Namespaced;
 use Closure;
 use ReflectionException;
 use ReflectionFunction;
@@ -28,7 +28,7 @@ final class RouteListCommand extends AbstractCommand
         $this->setDescription('List application routes.');
     }
 
-    public function perform(RouterInterface $router): int
+    public function perform(RouteCollection $routes): int
     {
         //die(var_dump($this->input->hasParameterOption(['-n'], true)));
         //die(var_dump($this->input->hasParameterOption(['--no-interaction'], true)));
@@ -75,7 +75,7 @@ final class RouteListCommand extends AbstractCommand
 
         $grid = $this->table(['Method:', 'Path:', 'Handler:']);
 
-        foreach ($router->getRoutes() as $route) {
+        foreach ($routes as $route) {
             $grid->addRow(
                 [
                     $this->getAllowedMethods($route),

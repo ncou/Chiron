@@ -6,8 +6,8 @@ namespace Chiron\Http;
 
 use Chiron\Container\SingletonInterface;
 use Chiron\Facade\HttpDecorator;
-use Chiron\Router\RequestHandler;
-use Chiron\Router\RoutingHandler;
+use Chiron\Routing\RequestHandler;
+use Chiron\Routing\RoutingHandler;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;

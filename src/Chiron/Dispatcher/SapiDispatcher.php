@@ -9,7 +9,7 @@ use Chiron\Facade\Request;
 use Chiron\Http\Emitter\EmitterInterface;
 use Chiron\Http\Emitter\SapiEmitter;
 use Chiron\Http\Http;
-use Chiron\Router\Method;
+use Chiron\Routing\Method;
 use Throwable;
 
 final class SapiDispatcher extends AbstractDispatcher
