@@ -20,15 +20,15 @@ final class PackageManifestBootloader extends AbstractBootloader
     public function boot(PackageManifest $manifest, Application $application, FactoryInterface $factory): void
     {
         foreach ($manifest->getProviders() as $provider) {
-            //if (class_exists($provider)) {
+            if (class_exists($provider)) {
                 $application->addProvider($factory->build($provider));
-            //}
+            }
         }
 
         foreach ($manifest->getBootloaders() as $bootloader) {
-            //if (class_exists($bootloader)) {
+            if (class_exists($bootloader)) {
                 $application->addBootloader($factory->build($bootloader));
-            //}
+            }
         }
     }
 }
