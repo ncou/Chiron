@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron;
+namespace Chiron\Composer;
 
 use Chiron\Boot\Directories;
 use Chiron\Filesystem\Filesystem;
@@ -51,7 +51,7 @@ final class PackageManifest
             if (! empty($package['extra']['chiron'])) {
                 $packageInfo = $package['extra']['chiron'];
 
-                $manifest[$package['name']] = [];
+                $manifest[$package['name']]['version'] = $package['version'];
 
                 // TODO : améliorer le code en le factorisant, il y a 4 fois le même bout de code pour un nom de balise différent !!!!
                 if (! empty($packageInfo['providers'])) {

@@ -5,7 +5,7 @@ namespace Chiron\Bootloader;
 use Chiron\Application;
 use Chiron\Bootload\AbstractBootloader;
 use Chiron\Container\FactoryInterface;
-use Chiron\PackageManifest;
+use Chiron\Composer\PackageManifest;
 
 final class PackageManifestBootloader extends AbstractBootloader
 {

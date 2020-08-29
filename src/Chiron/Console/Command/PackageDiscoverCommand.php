@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Console\Command;
 
 use Chiron\Console\AbstractCommand;
-use Chiron\PackageManifest;
+use Chiron\Composer\PackageManifest;
 
 //https://github.com/laravel/framework/blob/7.x/src/Illuminate/Foundation/Console/PackageDiscoverCommand.php
 
@@ -30,18 +30,19 @@ class PackageDiscoverCommand extends AbstractCommand
         }*/
 
         foreach ($manifest->getManifest() as $package => $extra) {
-            $this->line("Discovered Package: <info>{$package}</info>");
+            $this->line(sprintf(" - Discovering <info>%s</info> (<comment>%s</comment>)", $package, $extra['version']));
 
             if ($this->isVerbose()) {
-                $this->listing($extra['bootloaders'] ?? []);
                 $this->listing($extra['providers'] ?? []);
+                $this->listing($extra['bootloaders'] ?? []);
 
                 //$this->listing2($extra['bootloaders'] ?? [], 'fg=yellow');
                 //$this->listing2($extra['providers'] ?? [], 'fg=yellow');
+                $this->newline();
             }
         }
 
-        $this->info('Package manifest generated successfully.');
+        $this->success('Package manifest generated successfully.');
 
         return self::SUCCESS;
     }

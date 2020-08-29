@@ -6,7 +6,7 @@ namespace Chiron\Tests\PackageManifest;
 
 use Chiron\Boot\Directories;
 use Chiron\Filesystem\Filesystem;
-use Chiron\PackageManifest;
+use Chiron\Composer\PackageManifest;
 
 class PackageManifestTest extends \PHPUnit\Framework\TestCase
 {

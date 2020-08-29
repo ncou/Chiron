@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Facade;
 
+//https://github.com/lizhichao/one/blob/master/src/Facades/Facade.php
+
 /**
  * You must override the function "getFacadeAccessor" in your class and return the Container alias key used to retrieve the service.
  */

@@ -47,6 +47,8 @@ final class EnvironmentBootloader extends AbstractBootloader
         $this->values[self::DOTENV] = $loadedVars;
         // initialise the environment values (using array $this->values as override).
         $environment->init($this->values);
+
+        // TODO : on devrait pas faire une vérification qui les variable d'environnement de base sont bien présentes ? ca peut arriver si l'utilisateur n'utilise pas dotenv (ou que le fichier .env est effacé) et que les variables d'environnement n'existent pas sur la machine. Par exemple si la variable APP_KEY n'existe pas, on aura un plantage lors du changement de clés via la commande encrypt:key !!!!
     }
 
     /**
