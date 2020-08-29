@@ -42,7 +42,7 @@ final class EnvironmentBootloader extends AbstractBootloader
      */
     public function boot(Environment $environment, Directories $directories): void
     {
-        $loadedVars = self::loadDotEnvFile($directories->get('@app'));
+        $loadedVars = self::loadDotEnvFile($directories->get('@root'));
         // store the vars present in the dotenv file to display them when using the AboutCommand.
         $this->values[self::DOTENV] = $loadedVars;
         // initialise the environment values (using array $this->values as override).
