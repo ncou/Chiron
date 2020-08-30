@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Console\Command;
+namespace Chiron\Command;
 
 use Chiron\Boot\Directories;
 use Chiron\Console\AbstractCommand;

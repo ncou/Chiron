@@ -140,7 +140,7 @@ final class Http implements SingletonInterface
         //$req = container(ServerRequestInterface::class);
         //dd($req->getUri()->getPath());
         //
-        $context = container(\Chiron\Http\RequestContext::class);
+        //$context = container(\Chiron\Http\RequestContext::class);
         //dd($context->root());
         //
         //

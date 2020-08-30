@@ -1,6 +1,8 @@
 <?php
 
-namespace Chiron\Console\Command;
+declare(strict_types=1);
+
+namespace Chiron\Command;
 
 use Chiron\Console\AbstractCommand;
 use Symfony\Component\Console\Input\InputArgument;

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Console\Command;
+namespace Chiron\Command;
 
 use Chiron\Application;
 use Chiron\Boot\Directories;
 use Chiron\Boot\Environment;
-use Chiron\Boot\Path;
+use Chiron\Filesystem\Path;
 use Chiron\Bootloader\EnvironmentBootloader;
 use Chiron\Console\AbstractCommand;
 use Chiron\Filesystem\Filesystem;

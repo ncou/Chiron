@@ -212,8 +212,6 @@ class Application
     {
         // TODO : normalement on devrait avoir un tableau vide et les providers ci dessous seraient chargés soit par le PackageManifest qui scan les packages, soit via le app.php pour le dernier provider (database)
 
-        // TODO : virer le fichier core.php + le CoreConfig.php
-
         //************************
         //******  PROVIDER *******
         //************************
