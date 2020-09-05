@@ -18,7 +18,7 @@ final class ConsoleDispatcher extends AbstractDispatcher
     public function canDispatch(): bool
     {
         // only run in pure CLI more, ignore under RoadRunner/ReactPhp.
-        return PHP_SAPI === 'cli' && env('RR') === null && env('REACT_PHP') === null;
+        return PHP_SAPI === 'cli' && env('RR') === null && env('REACT_PHP') === null && env('WORKER_MAN') === null;
     }
 
     /**
