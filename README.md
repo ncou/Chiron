@@ -55,3 +55,13 @@ You can then run it with PHP's built-in webserver:
 If you want more flexibility, and install only the framework, use this Composer command instead:
 
     $ composer require chiron/chiron
+
+## Skeletons
+| App Type | Current Status | Install       
+| ---       | --- | ---
+chiron/app | [![Latest Stable Version](https://poser.pugx.org/chiron/app/version)](https://packagist.org/packages/chiron/app) | https://github.com/chironphp/app
+chiron/app-cli | [![Latest Stable Version](https://poser.pugx.org/chiron/app-cli/version)](https://packagist.org/packages/chiron/app-cli) | https://github.com/chironphp/app-cli
+
+License:
+--------
+MIT License (MIT). Please see [`LICENSE`](./LICENSE) for more information.
