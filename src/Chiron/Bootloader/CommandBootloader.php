@@ -11,18 +11,13 @@ final class CommandBootloader extends AbstractBootloader
 {
     // TODO : utiliser un fichier interne de config pour charger les commandes internes au framework ????
     private $commands = [
-        // TODO : à déplacer dans un package d'encodage dédié ?
-        \Chiron\Command\EncryptKeyCommand::class,
-
         \Chiron\Command\AboutCommand::class,
         \Chiron\Command\PackageDiscoverCommand::class,
         \Chiron\Command\PublishCommand::class,
-
-        // TODO : charger ces commandes uniquement si il y a un RouterInterface de présent (cad un class_exist === true) ???? ou alors tester avec un $container->has('RouterInterface')
-        \Chiron\Command\RouteListCommand::class,
-        \Chiron\Command\ServeCommand::class,
-
         \Chiron\Command\CacheClearCommand::class,
+
+        // TODO : à déplacer dans un package d'encodage dédié ?
+        \Chiron\Command\EncryptKeyCommand::class,
     ];
 
     public function boot(Console $console): void

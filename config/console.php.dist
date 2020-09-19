@@ -1,9 +1,0 @@
-<?php
-
-declare(strict_types=1);
-
-return [
-    'name' => Chiron\Framework::banner(),
-    'version' => Chiron\Framework::version(),
-    'commands' => [],
-];

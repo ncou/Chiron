@@ -11,7 +11,7 @@ use Chiron\Bootloader\DirectoriesBootloader;
 use Chiron\Bootloader\EnvironmentBootloader;
 use Chiron\Bootloader\SettingsBootloader;
 use Chiron\Container\Container;
-use Chiron\Dispatcher\DispatcherInterface;
+use Chiron\Core\Dispatcher\DispatcherInterface;
 use Chiron\ErrorHandler\RegisterErrorHandler;
 use Chiron\Exception\ApplicationException;
 
@@ -84,6 +84,7 @@ class Application
     // TODO : il faudrait gérer le cas ou l'on souhaite ajouter un dispatcher au dessus de la stack. Ajouter un paramétre 'bool $onTop = false' à cette méthode ????
     // TODO : permettre de gérer les dispatchers dans les fichiers composer.json (partie "extra") et les charger via le packagemanifest ????
     // TODO : permettre de passer une string en paramétre et utiliser le container qui est aussi un FactoryInterface pour "créer" la classe passée en paramétre !!!
+    // TODO : permettre de passer une string pour le dispatcher ca sera plus simple pour l'utilisateur. Idem pour l'ajout des providers et des bootloaders !!!!
     public function addDispatcher(DispatcherInterface $dispatcher): void
     {
         $this->dispatchers[] = $dispatcher;
@@ -97,12 +98,14 @@ class Application
     // TODO : améliorer le code : https://github.com/laravel/framework/blob/5.8/src/Illuminate/Foundation/Application.php#L594
     //public function register($provider)
     // TODO : permettre à l'utilisateur de passe un tableau de string ou de ServiceProviderInterface. et appeller cette nouvelle méthode addProviders()
+    // TODO : permettre de passer une string pour le dispatcher ca sera plus simple pour l'utilisateur. Idem pour l'ajout des providers et des bootloaders !!!!
     public function addProvider(ServiceProviderInterface $provider): void
     {
         $provider->register($this->container);
     }
 
     // TODO : permettre à l'utilisateur de passe un tableau de string ou de BootloaderInterface. et appeller cette nouvelle méthode addBootloaders()
+    // TODO : permettre de passer une string pour le dispatcher ca sera plus simple pour l'utilisateur. Idem pour l'ajout des providers et des bootloaders !!!!
     public function addBootloader(BootloaderInterface $bootloader): void
     {
         // if you add a bootloader after the application run(), we execute the bootloader, else we add it to the stack for an execution later.
@@ -215,26 +218,16 @@ class Application
         //************************
         //******  PROVIDER *******
         //************************
-        $app->addProvider(new \Chiron\Provider\ServerRequestCreatorServiceProvider());
-        $app->addProvider(new \Chiron\Provider\HttpFactoriesServiceProvider());
+        //$app->addProvider(new \Chiron\Provider\HttpFactoriesServiceProvider());
         $app->addProvider(new \Chiron\Provider\ErrorHandlerServiceProvider());
-        //$app->addProvider(new \Chiron\Provider\RoadRunnerServiceProvider());
 
         //**************************
         //******  BOOTLOADER *******
         //**************************
+        // TODO : attention si il y a des bootloaders chargés via le packagemanifest qui ajoutent une commande dans la console, si cette commande utilise le même nom que les commandes par défaut  définies dans la classe CommandBootloader, elles vont être écrasées !!!! faut il faire un test dans cette classe si la command est déjà définie dans la console on ne l'ajoute pas ????? ou alors écrase la commande d'office ???? ou alors lever une exception car on aura un doublon sur le nom de la commande ce qui n'est pas logique ????
+        $app->addBootloader(new \Chiron\Bootloader\CommandBootloader());
         $app->addBootloader(new \Chiron\Bootloader\PublishableCollectionBootloader());
         $app->addBootloader(new \Chiron\Bootloader\PackageManifestBootloader());
-
-        // TODO : attention si il y a des bootloaders chargés via le packagemanifest qui ajoutent une commande dans la console, si cette commande utilise le même nom que les commandes par défaut  définies dans la classe CommandBootloader, elles vont être écrasées !!!! faut il faire un test dans cette classe si la command est déjà définie dans la console on ne l'ajoute pas ????? ou alors écrase la commande d'office ????
-        $app->addBootloader(new \Chiron\Bootloader\CommandBootloader());
-
-        // TODO : déplacer ces bootloader dans les packages templates/router/http et ajouter dans le composer.json une balise extra avec les informations pour charger ces classes.
-        //Chiron\Bootloader\ViewsBootloader::class,
-        $app->addBootloader(new \Chiron\Bootloader\HttpBootloader());
-        //Chiron\Bootloader\RouteCollectorBootloader::class,
-
-        $app->addBootloader(new \Chiron\Bootloader\ConsoleBootloader());
         $app->addBootloader(new \Chiron\Bootloader\ApplicationBootloader());
 
         //$app->addBootloader(new \Chiron\Bootloader\TestBootloader());

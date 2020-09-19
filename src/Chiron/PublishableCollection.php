@@ -17,7 +17,6 @@ use Transversable;
 
 // TODO : il faudra faire un normalizePath sur la source et destination, cela évitera des problémes notamment avec le slash de fin de chaine.
 // TODO : renommer la classe en "Publisher" et importer les méthodes de copies des fichiers depuis cette classe. Exemple : ajouter une méthode ->publish() qui copiera les fichiers en utilisant un filesystem
-// TODO : ajouter l'interface SingletonInterface à cette classe, et retirer l'instruction ->singleton() de la classe SharedServiceProvider
 // TODO : éventuellement supprimer cette classe et déporter les instructions de copie des fichiers/répertoires dans le composer.json et utiliser le PackageManifest pour consolider la liste des fichiers à copier.
 final class PublishableCollection implements IteratorAggregate, Countable, SingletonInterface
 {

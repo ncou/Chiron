@@ -56,6 +56,18 @@ If you want more flexibility, and install only the framework, use this Composer 
 
     $ composer require chiron/chiron
 
+## Description
+
+## About Chiron
+
+## Features
+- PSR-{2,3,4,6,7,11,12,15,16,17} compliant
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+
+## Motivation
+Chiron was built with the purpose of understanding how major PHP frameworks operate under the hood. Most frameworks like Laravel implement techniques that can seem like "magic" unless you actually implement them yourself, an example being utilizing reflection API to plug in dependencies. Chiron has helped me so much with familarizing myself with quite a few advanced concepts in the PHP & OOP world.
+
 ## Skeletons
 | App Type | Current Status | Install       
 | ---       | --- | ---

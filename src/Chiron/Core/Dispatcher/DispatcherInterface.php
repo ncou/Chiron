@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Dispatcher;
+namespace Chiron\Core\Dispatcher;
 
 interface DispatcherInterface
 {

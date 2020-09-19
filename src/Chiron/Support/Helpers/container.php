@@ -8,6 +8,9 @@ use Chiron\Boot\Environment;
 use Chiron\Config\ConfigInterface;
 use Chiron\Container\Container;
 use Psr\Container\ContainerExceptionInterface;
+use Chiron\Container\FactoryInterface;
+
+//https://github.com/laravel/framework/blob/43bea00fd27c76c01fd009e46725a54885f4d2a5/src/Illuminate/Foundation/helpers.php#L645
 
 if (! function_exists('di')) {
     /**
@@ -17,7 +20,7 @@ if (! function_exists('di')) {
      */
     function di(): Container
     {
-         return  Container::$instance;
+         return Container::$instance;
     }
 }
 
@@ -31,6 +34,7 @@ if (! function_exists('container')) {
      *
      * @return mixed
      */
+    // TODO : permettre de ne rien passer en paramétre de la méthode container() et dans ce cas elle retournera l'instance du container, cela permet de faire des appels chainés : ex : container()->has('xxx')
     function container(string $alias, bool $forceNew = false)
     {
         //return (Container::$instance)->get($alias);
@@ -46,6 +50,21 @@ if (! function_exists('container')) {
         } catch (ContainerExceptionInterface $e) {
             throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
+    }
+}
+
+// TODO : fonction à renommer en make() ???? éventuellement faire une méthode plus générique nommée "factory()" et si on passe un paramétre de type classeName on appel la méthode make sur cette classe, sinon si il n'y a pas de paramétre on retour juste l'instance de la FactoryInterface ??? réfléchir pour voir si c'est une bonne idée !!!!
+if (! function_exists('resolve')) {
+    /**
+     * Resolve a className from the container.
+     *
+     * @param  string  $className
+     * @param  array  $arguments
+     * @return mixed
+     */
+    function resolve(string $className, array $arguments = [])
+    {
+        return container(FactoryInterface::class)->make($className, $arguments);
     }
 }
 
@@ -96,6 +115,7 @@ if (! function_exists('configure')) {
     }
 }
 
+// TODO : il faudrait plutot aller chercher l'object SettingsConfig dans le container et faire un toArray(), car si il n'y a pas de fichiers settings.php dans le répertoire utilisateur cette fonction ne marchera pas !!! en utilisant la classe SettingsConfig on sécurise l'appel et on aura accés aux valeurs par défaut pour chaque paramétrage de l'appli.
 if (! function_exists('setting')) {
     /**
      * Get the specified value in the settings config.

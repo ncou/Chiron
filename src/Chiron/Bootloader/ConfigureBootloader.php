@@ -18,6 +18,7 @@ final class ConfigureBootloader extends AbstractBootloader
         $container->inflector(InjectableConfigInterface::class, [InjectableConfigMutation::class, 'mutation']);
     }
 
+    // TODO : attention il faudrait gérer le cas ou le répertoire "config" n'existe pas, car sinon la méthode loadFromDirectory lévera une exception !!!
     public function boot(Configure $configure, Directories $directories): void
     {
         // add the user configs files in the general settings.
