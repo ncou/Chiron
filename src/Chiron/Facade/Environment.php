@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Chiron\Facade;
 
-use Chiron\Boot\Directories;
+use Chiron\Core\Facade\AbstractFacade;
 
-final class Directories extends AbstractFacade
+final class Environment extends AbstractFacade
 {
     /**
      * {@inheritdoc}
      */
     protected static function getFacadeAccessor(): string
     {
-        return Directories::class;
+        return \Chiron\Boot\Environment::class;
     }
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Facade;
+namespace Chiron\Core\Facade;
 
 use Chiron\Container\Container;
 use RuntimeException;

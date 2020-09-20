@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Facade;
 
-use Chiron\Boot\Directories;
+use Chiron\Core\Facade\AbstractFacade;
 
 final class Directories extends AbstractFacade
 {
@@ -13,6 +13,6 @@ final class Directories extends AbstractFacade
      */
     protected static function getFacadeAccessor(): string
     {
-        return Directories::class;
+        return \Chiron\Boot\Directories::class;
     }
 }

@@ -7,7 +7,7 @@ namespace Chiron\Command;
 use Chiron\Console\AbstractCommand;
 use Chiron\Encrypter\Config\EncrypterConfig;
 use Chiron\Filesystem\Filesystem;
-use Chiron\Support\Security;
+use Chiron\Core\Helper\Random;
 use Symfony\Component\Console\Input\InputOption;
 
 // TODO : faire passer les classes de type command en "final" + virer les protected non nécessaires
@@ -25,7 +25,7 @@ final class EncryptKeyCommand extends AbstractCommand
 
     public function perform(Filesystem $filesystem, EncrypterConfig $config): int
     {
-        $key = Security::generateKey();
+        $key = Random::generateId();
 
         $this->sprintf("<info>New encryption key:</info> <fg=cyan>%s</fg=cyan>\n", $key);
 

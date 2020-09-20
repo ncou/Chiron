@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Facade;
 
-use Chiron\Routing\Target\TargetFactory;
+use Chiron\Core\Facade\AbstractFacade;
 
 // TODO : à déplacer dans le package "chiron/routing"
 final class Target extends AbstractFacade
@@ -14,6 +14,6 @@ final class Target extends AbstractFacade
      */
     protected static function getFacadeAccessor(): string
     {
-        return TargetFactory::class;
+        return \Chiron\Routing\Target\TargetFactory::class;
     }
 }

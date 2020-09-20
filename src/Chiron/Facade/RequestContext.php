@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Facade;
 
+use Chiron\Core\Facade\AbstractFacade;
+
 final class RequestContext extends AbstractFacade
 {
     /**
@@ -11,6 +13,6 @@ final class RequestContext extends AbstractFacade
      */
     protected static function getFacadeAccessor(): string
     {
-        return Chiron\Http\RequestContext::class;
+        return \Chiron\Http\RequestContext::class;
     }
 }

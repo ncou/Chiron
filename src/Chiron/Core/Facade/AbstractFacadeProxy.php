@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Facade;
+namespace Chiron\Core\Facade;
 
 //https://github.com/lizhichao/one/blob/master/src/Facades/Facade.php
 
