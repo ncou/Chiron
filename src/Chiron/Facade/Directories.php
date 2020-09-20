@@ -13,6 +13,6 @@ final class Directories extends AbstractFacade
      */
     protected static function getFacadeAccessor(): string
     {
-        return \Chiron\Boot\Directories::class;
+        return \Chiron\Core\Directories::class;
     }
 }

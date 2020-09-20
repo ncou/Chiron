@@ -13,6 +13,6 @@ final class Configure extends AbstractFacade
      */
     protected static function getFacadeAccessor(): string
     {
-        return \Chiron\Boot\Configure::class;
+        return \Chiron\Core\Configure::class;
     }
 }

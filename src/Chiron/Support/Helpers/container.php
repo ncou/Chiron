@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Chiron\Boot\Configure;
-use Chiron\Boot\Directories;
-use Chiron\Boot\Environment;
+use Chiron\Core\Configure;
+use Chiron\Core\Directories;
+use Chiron\Core\Environment;
 use Chiron\Config\ConfigInterface;
 use Chiron\Container\Container;
 use Psr\Container\ContainerExceptionInterface;

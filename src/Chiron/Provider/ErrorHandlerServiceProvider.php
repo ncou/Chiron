@@ -21,7 +21,7 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Chiron\Boot\Environment;
+use Chiron\Core\Environment;
 use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;

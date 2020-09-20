@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Boot;
+namespace Chiron\Core;
 
 use Chiron\Container\SingletonInterface;
 use InvalidArgumentException;

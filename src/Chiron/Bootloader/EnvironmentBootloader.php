@@ -2,8 +2,8 @@
 
 namespace Chiron\Bootloader;
 
-use Chiron\Boot\Directories;
-use Chiron\Boot\Environment;
+use Chiron\Core\Directories;
+use Chiron\Core\Environment;
 use Chiron\Bootload\AbstractBootloader;
 use Chiron\Config\Config;
 use Chiron\Exception\ApplicationException;

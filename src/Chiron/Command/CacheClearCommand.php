@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Command;
 
-use Chiron\Boot\Directories;
+use Chiron\Core\Directories;
 use Chiron\Console\AbstractCommand;
 use Chiron\Filesystem\Filesystem;
 

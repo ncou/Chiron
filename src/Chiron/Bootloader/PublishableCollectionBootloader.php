@@ -2,7 +2,7 @@
 
 namespace Chiron\Bootloader;
 
-use Chiron\Boot\Directories;
+use Chiron\Core\Directories;
 use Chiron\Bootload\AbstractBootloader;
 use Chiron\PublishableCollection;
 

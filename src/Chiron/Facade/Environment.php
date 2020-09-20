@@ -13,6 +13,6 @@ final class Environment extends AbstractFacade
      */
     protected static function getFacadeAccessor(): string
     {
-        return \Chiron\Boot\Environment::class;
+        return \Chiron\Core\Environment::class;
     }
 }

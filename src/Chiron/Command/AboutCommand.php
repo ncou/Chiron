@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Chiron\Command;
 
 use Chiron\Application;
-use Chiron\Boot\Directories;
-use Chiron\Boot\Environment;
+use Chiron\Core\Directories;
+use Chiron\Core\Environment;
 use Chiron\Filesystem\Path;
 use Chiron\Bootloader\EnvironmentBootloader;
 use Chiron\Console\AbstractCommand;

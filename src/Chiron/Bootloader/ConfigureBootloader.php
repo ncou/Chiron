@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron\Bootloader;
 
-use Chiron\Boot\Configure;
-use Chiron\Boot\Directories;
+use Chiron\Core\Configure;
+use Chiron\Core\Directories;
 use Chiron\Bootload\AbstractBootloader;
 use Chiron\Config\InjectableConfigInterface;
 use Chiron\Config\InjectableConfigMutation;

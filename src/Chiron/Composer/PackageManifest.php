@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Composer;
 
-use Chiron\Boot\Directories;
+use Chiron\Core\Directories;
 use Chiron\Filesystem\Filesystem;
 use RuntimeException;
 
