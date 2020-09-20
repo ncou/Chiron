@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Boot;
 
-use Chiron\Boot\Environment;
+use Chiron\Core\Environment;
 
 class EnvironmentTest extends \PHPUnit\Framework\TestCase
 {
@@ -72,7 +72,7 @@ class EnvironmentTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Method "Chiron\Boot\Environment::add()" expects an associative array.
+     * @expectedExceptionMessage Method "Chiron\Core\Environment::add()" expects an associative array.
      */
     public function testAddInvalidArray(): void
     {

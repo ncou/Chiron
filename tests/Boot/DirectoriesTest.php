@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Boot;
 
-use Chiron\Boot\Directories;
+use Chiron\Core\Directories;
 
 // TODO : faire des tests en ajoutant une référence circulaire + un test avec un path vide '', et un test en ajoutant un path qu'on supprime ex : @root => 'toto' / @config => '@root/config' et ensuite on remove(@root) et on essaye de faire un get(@config).
 // TODO : test pour s'assurer que le slash de fin est bien supprimé, idem pour l'antislash.
@@ -32,7 +32,7 @@ class DirectoriesTest extends \PHPUnit\Framework\TestCase
 
     /**
      * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessage Method "Chiron\Boot\Directories::add()" expects an associative array.
+     * @expectedExceptionMessage Method "Chiron\Core\Directories::add()" expects an associative array.
      */
     public function testAddInvalidArray(): void
     {

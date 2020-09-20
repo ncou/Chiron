@@ -33,15 +33,19 @@
     },
     "autoload": {
         "psr-4": {
-            "Chiron\\": "src/Chiron/"
+            "Chiron\\": "src/"
         },
         "files": [
-            "src/Chiron/Support/Helpers/init.php"
+            "src/Support/Helpers/init.php"
         ]
     },
     "autoload-dev" : {
-        "files": ["tests/Http/OverwritePhpFunctions.php"],
-        "psr-4": { "Chiron\\Tests\\" : "tests/" }
+        "psr-4": {
+            "Chiron\\Tests\\" : "tests/"
+        },
+        "files": [
+            "tests/Http/OverwritePhpFunctions.php"
+        ]
     },
     "scripts": {
         "test": [

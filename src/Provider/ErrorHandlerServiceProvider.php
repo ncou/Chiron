@@ -58,7 +58,7 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
     {
         // TODO : améliorer le cas du html avec une erreur 404, le lien javascript pour revenir à la page d'accueil ne fonctionne pas bien si on a un basePath différent de "/"
         $container->bind(HtmlFormatter::class, function () {
-            $path = __DIR__ . '/../../../resources/error.html';
+            $path = __DIR__ . '/../../resources/error.html';
 
             return new HtmlFormatter(realpath($path));
         });

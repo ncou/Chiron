@@ -10,7 +10,7 @@ final class PublishableCollectionBootloader extends AbstractBootloader
 {
     public function boot(PublishableCollection $publishable, Directories $directories): void
     {
-        $configPath = __DIR__ . '/../../../config';
+        $configPath = __DIR__ . '/../../config';
 
         // TODO : faire un tableau avec from et to. et boucler dessus pour faire la copie, cela évitera d'avoir x fois l'instruction $publishable->add() !!!!
         // copy the configuration file template from the package "config" folder to the user "config" folder.
