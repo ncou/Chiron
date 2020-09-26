@@ -126,6 +126,7 @@ class Application
     // TODO : il faudrait pas faire une vérification sur un booléen type isRunning pour éviter d'appeller plusieurs fois cette méthode (notamment depuis un Bootloader qui récupére l'application et qui essayerai d'appeller cette méthode run() !!!!)
     public function run()
     {
+        // TODO : il faudrait surement mettre un try/catch autour de la méthode boot() et dans le catch utiliser la classe RegisterErrorHandler::handleException($e) pour afficher les erreurs, ca permettrait d'aoir une gestion des erreurs même si l'utilisateur n'a pas utilisé la méthode init() avec le paramétre $handleErrors à true !!!  https://github.com/spiral/framework/blob/e63b9218501ce882e661acac284b7167b79da30a/src/Boot/src/AbstractKernel.php#L146
         $this->boot();
 
         // TODO : mettre ce code dans une méthode private "dispatch()" ????

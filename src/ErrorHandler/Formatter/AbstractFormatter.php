@@ -17,7 +17,7 @@ abstract class AbstractFormatter implements FormatterInterface
 
     /** @var string */
     //protected $defaultErrorDetail = 'A website error has occurred. Sorry for the temporary inconvenience.';
-    protected $defaultErrorDetail = 'Whoops, looks like something went wrong.';
+    protected $defaultErrorDetail = 'Whoops, looks like something went wrong.'; //'Hm... Unfortunately, the server crashed. Apologies.'
 
     protected function getErrorTitle(Throwable $exception): string
     {

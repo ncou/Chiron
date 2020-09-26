@@ -11,6 +11,20 @@ use Exception;
 use Symfony\Component\Console\Output\StreamOutput;
 use Throwable;
 
+//https://github.com/slashtrace/slashtrace
+
+// ****
+// TODO : exemple avec un clearOutput des buffer avant d'afficher le message d'erreur :
+//https://github.com/cakephp/cakephp/blob/master/src/Error/ExceptionRenderer.php#L177
+//https://github.com/slashtrace/slashtrace/blob/2d61928910c5c26da614397e9279060e753475bd/src/DebugRenderer/DebugWebRenderer.php#L27
+// ****
+
+//https://github.com/cakephp/cakephp/blob/master/src/Error/ConsoleErrorHandler.php
+
+//https://github.com/narrowspark/framework/blob/master/src/Viserio/Component/Exception/ErrorHandler.php
+
+// CONSOLE Displayer : https://github.com/narrowspark/framework/blob/master/src/Viserio/Component/Exception/Console/Handler.php
+
 //https://github.com/symfony/symfony/blob/c09128cf9f715a2b04e2b1132ee66a7303c18868/src/Symfony/Component/ErrorHandler/Debug.php
 //https://github.com/symfony/debug/blob/e3cb605c6d6a6c5757ac2515f560a53b6a8811e7/Debug.php
 
@@ -58,6 +72,10 @@ final class RegisterErrorHandler
         error_reporting(E_ALL);
         ini_set('display_errors', 'Off');
         ini_set('html_errors', 'Off');
+        // TODO : voir si on doit aussi utiliser ces 2 setters !!!!
+        //ini_set('log_errors', '0');
+        //ini_set('zend.exception_ignore_args', '0');
+
 
         self::register();
     }
@@ -123,10 +141,12 @@ final class RegisterErrorHandler
      *
      * @param Throwable $e
      */
+    //https://github.com/slashtrace/slashtrace/blob/6509c3b9e67606dc25510d3f28de431f9cdadc97/src/EventHandler/DebugHandler.php#L71
     public static function handleException(Throwable $e): void
     {
         // TODO : tester avec roaddunner voir ce que ca donne, car cela simule une console.
-        if (php_sapi_name() === 'cli') {
+        // TODO : il faudrait pas aussi tester :    in_array(\PHP_SAPI, ['cli', 'phpdbg'], true)     https://github.com/symfony/error-handler/blob/master/ErrorHandler.php#L703
+        if (PHP_SAPI === 'cli') {
             self::renderForConsole($e);
         } else {
             self::renderHttpResponse($e);
@@ -159,7 +179,7 @@ final class RegisterErrorHandler
         $stderr = new StreamOutput(fopen('php://stderr', 'w'));
         $stderr->write($message);
 
-        exit(1);
+        exit(1); // TODO : il faudrait éventuellement renvoyer un exit(255) plutot !!!!  https://github.com/nette/tracy/blob/5e900c8c9aee84b3dbe6b5f2650ade578cc2dcfa/src/Tracy/Debugger/Debugger.php#L200
     }
 
     /**
@@ -198,6 +218,22 @@ final class RegisterErrorHandler
                 $content = $message;
         */
 
+
+/*
+//https://github.com/symfony/error-handler/blob/master/ErrorHandler.php#L701
+        if (!headers_sent()) {
+            http_response_code($exception->getStatusCode());
+
+            foreach ($exception->getHeaders() as $name => $value) {
+                header($name.': '.$value, false);
+            }
+        }
+
+        echo $exception->getAsString();
+*/
+
+
+
         // TODO : à virer c'est un test !!!
         //$content = nl2br($e->getTraceAsString());
 
@@ -222,7 +258,7 @@ final class RegisterErrorHandler
     {
         $error = error_get_last();
 
-        if ($error && self::isFatalError($error['type'])) {
+        if ($error && self::isLevelFatal($error['type'])) {
             $exception = new FatalErrorException(
                 $error['message'],
                 0,
@@ -232,6 +268,7 @@ final class RegisterErrorHandler
             );
 
             static::handleException($exception);
+            //exit(1);
         }
     }
 
@@ -240,35 +277,20 @@ final class RegisterErrorHandler
      *
      * @see https://www.php.net/manual/en/function.set-error-handler.php
      *
-     * @param int $type
+     * @param int $level
      *
      * @return bool
      */
-    private static function isFatalError(int $type): bool
+    //https://github.com/slashtrace/slashtrace/blob/master/src/Level.php#L16
+    private static function isLevelFatal(int $level): bool
     {
-        return in_array($type, [E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING]);
+        $errors = E_ERROR;
+        $errors |= E_PARSE;
+        $errors |= E_CORE_ERROR;
+        $errors |= E_CORE_WARNING;
+        $errors |= E_COMPILE_ERROR;
+        $errors |= E_COMPILE_WARNING;
+
+        return ($level & $errors) > 0;
     }
-
-    /**
-     * Returns the last PHP error as plain string.
-     */
-    //https://github.com/nette/utils/blob/ab8eea12b8aacc7ea5bdafa49b711c2988447994/src/Utils/Helpers.php#L34
-    /*
-    private static function getLastError(): string
-    {
-        $message = error_get_last()['message'] ?? '';
-        $message = ini_get('html_errors') ? static::htmlToText($message) : $message;
-        $message = preg_replace('#^\w+\(.*?\): #', '', $message);
-
-        return $message;
-    }*/
-
-    /**
-     * Converts given HTML code to plain text.
-     */
-    /*
-    private static function htmlToText(string $html): string
-    {
-        return html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-    }*/
 }
