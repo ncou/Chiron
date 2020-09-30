@@ -159,7 +159,9 @@ class ErrorManager implements LoggerAwareInterface
     private function logError(Throwable $e): void
     {
         if ($this->logger !== null) {
-            $class = $e instanceof ErrorException ? Debug::translateErrorCode($e->getSeverity()) : Debug::getClass($e);
+            //$class = $e instanceof ErrorException ? Debug::translateErrorCode($e->getSeverity()) : Debug::getClass($e);
+            $class = get_class($e);
+
             // replace invisible ascii characters (range 0-9 and 11-31 except the new line character 10) with a single space character.
             $message = preg_replace('#[\x00-\x09\x0B-\x1F]+#', ' ', $e->getMessage());
 
@@ -188,7 +190,8 @@ class ErrorManager implements LoggerAwareInterface
     private function renderInternalException(ServerRequestInterface $request, Throwable $exception, Throwable $originalException): ResponseInterface
     {
         // TODO : passer en paramétre du constructeur ce middleware un responseFactory. pour utiliser la méthode Psr $responseFactory->createResponse(500);
-        $response = new Response(500);
+        //$response = new Response(500);
+        $response = \Chiron\Facade\ResponseCreator::create(500); // TODO : attention ce code est risqué car il peut il y avoir une erreur !!!!
 
         $msg = "An Error occurred while handling another error:\n";
         $msg .= (string) $exception;

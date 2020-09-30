@@ -5,14 +5,16 @@ namespace Chiron\Core\Helper;
 final class Random
 {
     /**
-     * Generate a secure random unique identifier.
-     * Length is 32 chars in the range [0123456789abcdef].
+     * Generate a secure random unique hexadecimal identifier.
+     * Output characters is $length X 2 in the range [0123456789abcdef].
      *
-     * @return string Random bytes in hexadecimal.
+     * @param int $length
+     *
+     * @return string
      */
-    public static function generateId(): string
+    public static function generateId(int $length = 32): string
     {
-        return bin2hex(random_bytes((16)));
+        return bin2hex(random_bytes($length));
     }
 
     /**
@@ -23,7 +25,7 @@ final class Random
      *
      * @return string
      */
-    public static function generateString(int $length = 26, bool $easyToRead = true): string
+    public static function generateString(int $length = 32, bool $easyToRead = true): string
     {
         $alphabet = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
