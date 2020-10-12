@@ -16,6 +16,6 @@ final class PublishableCollectionBootloader extends AbstractBootloader
         // copy the configuration file template from the package "config" folder to the user "config" folder.
         $publishable->add($configPath . '/app.php.dist', $directories->get('@config/app.php'));
         $publishable->add($configPath . '/settings.php.dist', $directories->get('@config/settings.php'));
-        $publishable->add($configPath . '/encrypter.php.dist', $directories->get('@config/encrypter.php'));
+        $publishable->add($configPath . '/security.php.dist', $directories->get('@config/security.php'));
     }
 }

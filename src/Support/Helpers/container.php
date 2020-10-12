@@ -9,8 +9,11 @@ use Chiron\Config\ConfigInterface;
 use Chiron\Container\Container;
 use Psr\Container\ContainerExceptionInterface;
 use Chiron\Container\FactoryInterface;
+use Chiron\Core\Exception\ScopeException;
 
 //https://github.com/laravel/framework/blob/43bea00fd27c76c01fd009e46725a54885f4d2a5/src/Illuminate/Foundation/helpers.php#L645
+
+// TODO : ajouter les @throws ScopeException pour les différentes fonctions ci dessous !!!!!
 
 if (! function_exists('di')) {
     /**
@@ -42,13 +45,13 @@ if (! function_exists('container')) {
         $container = Container::$instance;
 
         if ($container === null) {
-            throw new RuntimeException('Container instance was not set.');
+            throw new ScopeException('Container instance was not set.');
         }
 
         try {
             return $container->get($alias, $forceNew);
         } catch (ContainerExceptionInterface $e) {
-            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
+            throw new ScopeException($e->getMessage(), $e->getCode(), $e);
         }
     }
 }
