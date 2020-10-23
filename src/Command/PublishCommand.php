@@ -9,6 +9,7 @@ use Chiron\Filesystem\Filesystem;
 use Chiron\PublishableCollection;
 use Symfony\Component\Console\Input\InputOption;
 
+// TODO : passer les méthodes "perform" en protected pour chaque classe de type "Command"
 final class PublishCommand extends AbstractCommand
 {
     /**

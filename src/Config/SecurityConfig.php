@@ -15,8 +15,12 @@ final class SecurityConfig extends AbstractInjectableConfig
 {
     protected const CONFIG_SECTION_NAME = 'security';
 
+    public const KEY_BYTES_SIZE = 32;
+    public const KEY_HEXA_SIZE = self::KEY_BYTES_SIZE * 2;
+
     protected function getConfigSchema(): Schema
     {
+        // TODO : ajouter une constante = 64 dans cette classe pour stocker la taille de la clés attendue.
         // Key should be an hexadecimal value (ctype_xdigit) with 64 chars (the hexa representation of a key on 32 bytes)
         // TODO : améliorer la vérification sur la longeur === 64 caractéres, il faudra surement utiliser un assert() avec un callable custom pour vérifier que strlen === 64
         return Expect::structure([
@@ -31,6 +35,6 @@ final class SecurityConfig extends AbstractInjectableConfig
 
     public function getRawKey(): string
     {
-        return hex2bin($this->get('key'));
+        return hex2bin($this->getKey());
     }
 }

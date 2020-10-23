@@ -17,7 +17,10 @@ final class CommandBootloader extends AbstractBootloader
         \Chiron\Command\CacheClearCommand::class,
 
         // TODO : à déplacer dans un package d'encodage dédié ?
-        \Chiron\Command\EncryptKeyCommand::class,
+        //\Chiron\Command\EncryptKeyCommand::class,
+        // TODO : c'est un test !!!!
+        \Chiron\Command\KeyGenerateCommand::class,
+        \Chiron\Command\KeyUpdateCommand::class,
     ];
 
     public function boot(Console $console): void

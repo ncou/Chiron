@@ -167,7 +167,7 @@ final class RegisterErrorHandler
     private static function renderForConsole(Throwable $e): void
     {
         $message = sprintf(
-            "<error>%s</error> %s in %s on line %d\n<comment>Stack trace:</comment>\n%s\n",
+            "<error>%s</error> %s \nIn %s on line %d\n<comment>Stack trace:</comment>\n%s\n",
             get_class($e),
             $e->getMessage(),
             $e->getFile(),

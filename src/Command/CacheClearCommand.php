@@ -8,6 +8,7 @@ use Chiron\Core\Directories;
 use Chiron\Console\AbstractCommand;
 use Chiron\Filesystem\Filesystem;
 
+// TODO : passer les méthodes "perform" en protected pour chaque classe de type "Command"
 // TODO : utiliser le mot "clean" plutot que clear ????
 final class CacheClearCommand extends AbstractCommand
 {

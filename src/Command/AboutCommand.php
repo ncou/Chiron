@@ -18,6 +18,7 @@ use Symfony\Component\Console\Helper\TableSeparator;
 /**
  * A console command to display information about the current installation.
  */
+// TODO : passer les méthodes "perform" en protected pour chaque classe de type "Command"
 final class AboutCommand extends AbstractCommand
 {
     protected static $defaultName = 'about';

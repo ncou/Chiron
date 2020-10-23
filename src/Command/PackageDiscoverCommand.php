@@ -9,6 +9,7 @@ use Chiron\Composer\PackageManifest;
 
 //https://github.com/laravel/framework/blob/7.x/src/Illuminate/Foundation/Console/PackageDiscoverCommand.php
 
+// TODO : passer les méthodes "perform" en protected pour chaque classe de type "Command"
 class PackageDiscoverCommand extends AbstractCommand
 {
     protected static $defaultName = 'package:discover';
