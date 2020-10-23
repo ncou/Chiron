@@ -7,7 +7,7 @@ namespace Chiron\Command;
 use Chiron\Console\AbstractCommand;
 use Chiron\Config\SecurityConfig;
 use Chiron\Filesystem\Filesystem;
-use Chiron\Core\Helper\Random;
+use Chiron\Core\Support\Security;
 use Symfony\Component\Console\Input\InputOption;
 use Chiron\Core\Environment;
 
@@ -33,7 +33,7 @@ final class KeyUpdateCommand extends AbstractCommand
         }
 
         if ($filesystem->missing($filepath)) {
-            $this->error(sprint('Unable to find file [`%s`].', $filepath));
+            $this->error(sprint('Unable to find file [%s].', $filepath));
 
             return self::FAILURE;
         }
@@ -61,7 +61,7 @@ final class KeyUpdateCommand extends AbstractCommand
     private function updateEnvironmentFile(Environment $environment, Filesystem $filesystem, string $filepath): bool
     {
         $oldKey = $environment->get('APP_KEY');
-        $newKey = Random::generateId(SecurityConfig::KEY_BYTES_SIZE);
+        $newKey = Security::generateKey(SecurityConfig::KEY_BYTES_SIZE, false);
 
         $content = preg_replace(
             sprintf('/^APP_KEY=%s/m', $oldKey),

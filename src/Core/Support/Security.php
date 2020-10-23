@@ -1,6 +1,8 @@
 <?php
 
-namespace Chiron\Core\Helper;
+namespace Chiron\Core\Support;
+
+use InvalidArgumentException;
 
 //https://github.com/ircmaxell/RandomLib/blob/master/lib/RandomLib/Generator.php
 
@@ -39,32 +41,44 @@ $number     = $random->number($n);
 
 // TODO : renommer la classe en "Security", et créer 2 méthode generateKey() qui retourn un randombyte et un generateId ou uniqueId qui génére une string aléatoire. Et aussi créer la méthode randomString($length, $alphabet) avec des constante pluc dans classe (style UPPER/LOWER/SYMBOLS/AMBIGUOIUS etc...)
 
-final class Random
+// TODO : créer des méthodes globales style uuid() ou generate_key() et generate_id() pour simplifier l'utilisation de ces méthodes !!!
+final class Security
 {
     /**
-     * Generate a secure random unique hexadecimal identifier.
-     * Output characters is $length X 2 in the range [0123456789abcdef].
+     * Generate a secure random unique key.
+     * If the $raw value is false an hexadecimal encoding is applied.
+     * In hexa, the string output length is $bytes X 2 in the range [0123456789abcdef].
      *
-     * @param int $bytes
+     * @param int $bytes Size in bytes for the generated key
+     * @param bool $raw Apply (or not) an hexa decimal encoding
      *
      * @return string
      */
-    // TODO : il faut vérifier que la longeur est supérieure à 0 !!!! Sinon lever un invalidArgumentException
-    public static function generateId(int $bytes = 32): string
+    public static function generateKey(int $bytes = 32, bool $raw = true): string
     {
-        return bin2hex(random_bytes($bytes));
+        if ($bytes < 1) {
+            throw new InvalidArgumentException('Invalid key bytes size value.');
+        }
+
+        $key = random_bytes($bytes);
+
+        return $raw ? $key : bin2hex($key);
     }
 
     /**
-     * Generate a random string.
+     * Generate a random string identifier.
      *
      * @param int $length      Length of the random string to generate
      * @param bool $easyToRead Prevent ambiguous characters in the result
      *
      * @return string
      */
-    public static function generateString(int $length = 32, bool $easyToRead = false): string
+    public static function generateId(int $length = 32, bool $easyToRead = false): string
     {
+        if ($length < 1) {
+            throw new InvalidArgumentException('Invalid identifier length value.');
+        }
+
         $alphabet = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
         if ($easyToRead) {
@@ -73,9 +87,9 @@ final class Random
         }
 
         $str = '';
-        $alphamax = strlen($alphabet) - 1;
+        $maxLength = strlen($alphabet) - 1;
         for ($i = 0; $i < $length; ++$i) {
-            $str .= $alphabet[random_int(0, $alphamax)];
+            $str .= $alphabet[random_int(0, $maxLength)];
         }
 
         return $str;
@@ -100,7 +114,7 @@ final class Random
      *
      * @return string
      */
-    public function uuid()
+    public static function uuid()
     {
         return implode('-', [
             bin2hex(random_bytes(4)),

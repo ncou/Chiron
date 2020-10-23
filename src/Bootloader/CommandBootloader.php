@@ -7,6 +7,7 @@ namespace Chiron\Bootloader;
 use Chiron\Bootload\AbstractBootloader;
 use Chiron\Console\Console;
 
+// TODO : il faudrait pas plutot utiliser la classe CommandLoader pour charger ces commandes ????
 final class CommandBootloader extends AbstractBootloader
 {
     // TODO : utiliser un fichier interne de config pour charger les commandes internes au framework ????
@@ -18,9 +19,8 @@ final class CommandBootloader extends AbstractBootloader
 
         // TODO : à déplacer dans un package d'encodage dédié ?
         //\Chiron\Command\EncryptKeyCommand::class,
-        // TODO : c'est un test !!!!
         \Chiron\Command\KeyGenerateCommand::class,
-        \Chiron\Command\KeyUpdateCommand::class,
+        \Chiron\Command\KeyUpdateCommand::class, // TODO : à déplacer dans un package sur chiron/dotenv-bridge ????
     ];
 
     public function boot(Console $console): void

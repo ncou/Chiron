@@ -7,10 +7,10 @@ namespace Chiron\Command;
 use Chiron\Console\AbstractCommand;
 use Chiron\Config\SecurityConfig;
 use Chiron\Filesystem\Filesystem;
-use Chiron\Core\Helper\Random;
+use Chiron\Core\Support\Security;
 use Symfony\Component\Console\Input\InputOption;
 
-//key:generate --iterations=true
+//key:generate --iterations=10
 //key:generate -i 10
 
 final class KeyGenerateCommand extends AbstractCommand
@@ -37,7 +37,7 @@ final class KeyGenerateCommand extends AbstractCommand
         $this->info("Generated security key(s)");
 
         for ($i = 0; $i < $iterations; $i++) {
-            $this->message(Random::generateId(SecurityConfig::KEY_BYTES_SIZE));
+            $this->message(Security::generateKey(SecurityConfig::KEY_BYTES_SIZE, false));
         }
 
         return self::SUCCESS;
