@@ -45,10 +45,12 @@ final class EnvironmentBootloader extends AbstractBootloader
         $loadedVars = self::loadDotEnvFile($directories->get('@root'));
         // store the vars present in the dotenv file to display them when using the AboutCommand.
         $this->values[self::DOTENV] = $loadedVars;
+        //$_ENV['SYMFONY_DOTENV_VARS'] = $_SERVER['SYMFONY_DOTENV_VARS'] = $loadedVars;
+
         // initialise the environment values (using array $this->values as override).
         $environment->init($this->values);
 
-        // TODO : on devrait pas faire une vérification qui les variable d'environnement de base sont bien présentes ? ca peut arriver si l'utilisateur n'utilise pas dotenv (ou que le fichier .env est effacé) et que les variables d'environnement n'existent pas sur la machine. Par exemple si la variable APP_KEY n'existe pas, on aura un plantage lors du changement de clés via la commande encrypt:key !!!!
+        // TODO : on devrait pas faire une vérification que les variable d'environnement de base sont bien présentes ? ca peut arriver si l'utilisateur n'utilise pas dotenv (ou que le fichier .env est effacé) et que les variables d'environnement n'existent pas sur la machine. Par exemple si la variable APP_KEY n'existe pas, on aura un plantage lors du changement de clés via la commande encrypt:key !!!!
     }
 
     /**

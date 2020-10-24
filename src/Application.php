@@ -209,6 +209,7 @@ class Application
         $app->addProvider(new \Chiron\Provider\LoggerServiceProvider());
         $app->container->inflector(\Psr\Log\LoggerAwareInterface::class, [\Chiron\Logger\LoggerAwareMutation::class, 'mutation']);
 
+        // TODO : forcer le chargement manuellement (cad en ajoutant le ConsoleDispatcherBootloader) du console Dispatcher car si il y a un probléme dans le fichier .../runtime/cache/packages.json (par exemple il existe mais il est vide ou obsoléte pour la version de la console) le PackageManifestBootLoader ne va pas recréer ce fichier de cache et donc il ne chargera pas le console dispatcher et on aura une erreur, par exemple si on essaye quand même de vider le cache via la commande "cache:clear" on aura une erreur pour indiquer qu'aucun dispatcher actif n'a été trouvé...
         self::coreSettings_A_VIRER($app);
     }
 

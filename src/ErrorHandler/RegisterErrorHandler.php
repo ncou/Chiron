@@ -11,6 +11,10 @@ use Exception;
 use Symfony\Component\Console\Output\StreamOutput;
 use Throwable;
 
+//https://github.com/awesomite/error-dumper/blob/master/src/Handlers/ErrorHandler.php
+//https://github.com/awesomite/error-dumper/blob/master/src/Views/ViewCli.php
+//https://github.com/awesomite/error-dumper/blob/master/src/Views/ViewHtml.php
+
 //https://github.com/slashtrace/slashtrace
 
 // ****
@@ -164,6 +168,7 @@ final class RegisterErrorHandler
     //https://github.com/spiral/boot/blob/b76445923be4959068be2e77d72c511709c25f99/src/ExceptionHandler.php#L95
     //https://github.com/yiisoft/yii2-framework/blob/a741165ee91603518286fc28d4ee273ae3a0ef60/console/ErrorHandler.php
     //https://github.com/spiral/exceptions/blob/master/src/ConsoleHandler.php#L68
+    //https://github.com/symfony/console/blob/5.x/Application.php#L808
     private static function renderForConsole(Throwable $e): void
     {
         $message = sprintf(
