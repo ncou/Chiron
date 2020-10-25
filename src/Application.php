@@ -157,19 +157,6 @@ class Application
         }
     }
 
-    // TODO : il faudrait surement récupérer l'instance déjà créée précédemment pour limiter la création de nouvelles instance à chaque appel de cette méthode. Eventuellement passer un booleen "$forceNew = false" en paramétre pour soit créer une nouvelle instance soit recuperer l'ancienne instance (via une propriété de classe public et statique $instance). Attention si on récupére l'instance il faudra faire un reset sur la valeur du boolen $this->isBooted car si l'utilisateur a fait un appel dans cette ordre : create/boot/init on va avoir un probléme lorsqu'on va vouloir faire le run()
-    // TODO : à renommer en getInstance() ????
-    public static function create(): self
-    {
-        $container = new Container();
-        $container->setAsGlobal();
-
-        $app = new self($container);
-        $container->singleton(self::class, $app);
-
-        return $app;
-    }
-
     // TODO : ajouter un paramétre boolen $debug pour savoir si on active ou non le error handler->register()
     // TODO : tester le cas ou on appel plusieurs fois cette méthode. Il faudra surement éviter de réinsérer plusieurs fois les bootloaders et autres service provider
     // TODO : passer en paramétre un tableau de "environment" values qui permettra d'initialiser le bootloader DotEnvBootloader::class
@@ -194,10 +181,24 @@ class Application
         // add the config mutation + load the user configuration files from the '@config' folder.
         $app->addBootloader(new ConfigureBootloader($app->container));
         // init the application settings (debug, charset, timezone...etc).
-        // TODO : permettre de faire un override des valeurs par défault des settings en lui passant un tableau dans le constructeur de la classe SettingsBootloader + uajouter un paramétre à la méthode application::init() cela permettrait lors des tests phpunit de facilement modifier ces valeurs !!!!
+        // TODO : permettre de faire un override des valeurs par défault des settings en lui passant un tableau dans le constructeur de la classe SettingsBootloader + ajouter un paramétre à la méthode application::init() cela permettrait lors des tests phpunit de facilement modifier ces valeurs !!!!
         $app->addBootloader(new SettingsBootloader());
 
         self::configure($app);
+
+        return $app;
+    }
+
+    // TODO : il faudrait surement récupérer l'instance déjà créée précédemment pour limiter la création de nouvelles instance à chaque appel de cette méthode. Eventuellement passer un booleen "$forceNew = false" en paramétre pour soit créer une nouvelle instance soit recuperer l'ancienne instance (via une propriété de classe public et statique $instance). Attention si on récupére l'instance il faudra faire un reset sur la valeur du boolen $this->isBooted car si l'utilisateur a fait un appel dans cette ordre : create/boot/init on va avoir un probléme lorsqu'on va vouloir faire le run()
+    // TODO : à renommer en getInstance() ????
+    // TODO : méthode à faire passer en privée ???
+    public static function create(): self
+    {
+        $container = new Container();
+        $container->setAsGlobal();
+
+        $app = new self($container);
+        $container->singleton(self::class, $app);
 
         return $app;
     }

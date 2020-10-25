@@ -32,6 +32,11 @@ final class Directories implements SingletonInterface
     /** @var array */
     private $aliases = [];
 
+    public function __construct(array $values = [])
+    {
+        $this->init($values);
+    }
+
     public function init(array $paths = [])
     {
         $this->aliases = [];

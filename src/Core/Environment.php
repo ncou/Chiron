@@ -38,6 +38,11 @@ final class Environment implements SingletonInterface
     /** @var array */
     private $values = [];
 
+    public function __construct(array $values = [])
+    {
+        $this->init($values);
+    }
+
     /**
      * @param array $values
      */

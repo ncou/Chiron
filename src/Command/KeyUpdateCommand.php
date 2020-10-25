@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Chiron\Command;
 
 use Chiron\Console\AbstractCommand;
-use Chiron\Config\SecurityConfig;
+use Chiron\Security\Config\SecurityConfig;
 use Chiron\Filesystem\Filesystem;
-use Chiron\Core\Support\Security;
+use Chiron\Security\Security;
 use Symfony\Component\Console\Input\InputOption;
 use Chiron\Core\Environment;
 
