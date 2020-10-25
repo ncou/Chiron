@@ -3,7 +3,7 @@
 namespace Chiron\Bootloader;
 
 use Chiron\Application;
-use Chiron\Bootload\AbstractBootloader;
+use Chiron\Core\Container\Bootloader\AbstractBootloader;
 use Chiron\Container\FactoryInterface;
 use Chiron\Composer\PackageManifest;
 

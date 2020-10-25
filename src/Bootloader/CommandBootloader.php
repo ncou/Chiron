@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Bootloader;
 
-use Chiron\Bootload\AbstractBootloader;
+use Chiron\Core\Container\Bootloader\AbstractBootloader;
 use Chiron\Console\Console;
 
 // TODO : il faudrait pas plutot utiliser la classe CommandLoader pour charger ces commandes ????

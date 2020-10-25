@@ -19,7 +19,7 @@ declare(strict_types=1);
 
 namespace Chiron\Provider;
 
-use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
+use Chiron\Core\Container\Provider\ServiceProviderInterface;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
 use Psr\Container\ContainerInterface;

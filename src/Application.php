@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Chiron;
 
-use Chiron\Bootload\BootloaderInterface;
-use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
+use Chiron\Core\Container\Bootloader\BootloaderInterface;
+use Chiron\Core\Container\Provider\ServiceProviderInterface;
 use Chiron\Bootloader\ConfigureBootloader;
 use Chiron\Bootloader\DirectoriesBootloader;
 use Chiron\Bootloader\EnvironmentBootloader;

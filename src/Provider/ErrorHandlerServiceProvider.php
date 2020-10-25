@@ -22,7 +22,7 @@ declare(strict_types=1);
 namespace Chiron\Provider;
 
 use Chiron\Core\Environment;
-use Chiron\Bootload\ServiceProvider\ServiceProviderInterface;
+use Chiron\Core\Container\Provider\ServiceProviderInterface;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
 use Chiron\ErrorHandler\ErrorHandler;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Bootloader;
 
 use Chiron\Application;
-use Chiron\Bootload\AbstractBootloader;
+use Chiron\Core\Container\Bootloader\AbstractBootloader;
 use Chiron\Config\AppConfig;
 use Chiron\Console\ConsoleDispatcher;
 use Chiron\Http\SapiDispatcher;

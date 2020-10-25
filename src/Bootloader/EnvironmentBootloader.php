@@ -4,7 +4,7 @@ namespace Chiron\Bootloader;
 
 use Chiron\Core\Directories;
 use Chiron\Core\Environment;
-use Chiron\Bootload\AbstractBootloader;
+use Chiron\Core\Container\Bootloader\AbstractBootloader;
 use Chiron\Config\Config;
 use Chiron\Exception\ApplicationException;
 use Dotenv\Dotenv;

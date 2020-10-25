@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Bootloader;
 
 use Chiron\Core\Directories;
-use Chiron\Bootload\AbstractBootloader;
+use Chiron\Core\Container\Bootloader\AbstractBootloader;
 use Chiron\Exception\ApplicationException;
 use Chiron\Framework;
 use Chiron\Views\TemplateRendererInterface;
