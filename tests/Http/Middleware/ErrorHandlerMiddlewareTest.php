@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Tests\Http\Middleware;
 
-use Chiron\ErrorHandler\ErrorHandler;
+use Chiron\ErrorHandler\HttpErrorHandler;
 use Chiron\Http\Exception\Client\BadRequestHttpException;
 use Chiron\Http\Exception\HttpException;
 use Chiron\Http\Factory\ResponseFactory;
@@ -57,7 +57,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
     {
         $debug = true;
         $middleware = new ErrorHandlerMiddleware($debug);
-        $errorHandler = new ErrorHandler(new ResponseFactory());
+        $errorHandler = new HttpErrorHandler(new ResponseFactory());
 
         $middleware->bindHandler(Throwable::class, $errorHandler);
 
@@ -183,7 +183,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
         // at the creation the handlers array is empty
         $this->assertAttributeCount(0, 'handlers', $middleware);
 
-        $errorHandler = new ErrorHandler(new ResponseFactory());
+        $errorHandler = new HttpErrorHandler(new ResponseFactory());
 
         $middleware->bindHandler(Throwable::class, $errorHandler);
         $middleware->bindHandler(Throwable::class, $errorHandler);
@@ -206,7 +206,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
         $middleware = $middleware = new ErrorHandlerMiddleware(true);
         $this->assertAttributeCount(0, 'handlers', $middleware);
 
-        $errorHandler = new ErrorHandler(new ResponseFactory());
+        $errorHandler = new HttpErrorHandler(new ResponseFactory());
         $middleware->bindHandler(Throwable::class, $errorHandler);
         $this->assertAttributeCount(1, 'handlers', $middleware);
 
@@ -226,7 +226,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
     public function testInvalidHandlerName()
     {
         $middleware = $middleware = new ErrorHandlerMiddleware(true);
-        $errorHandler = new ErrorHandler(new ResponseFactory());
+        $errorHandler = new HttpErrorHandler(new ResponseFactory());
 
         $middleware->bindHandler('/Foo/bar', $errorHandler);
     }
@@ -240,7 +240,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
         $factory->createResponse(Argument::type('int'))
                 ->willThrow(new RuntimeException('Exception internal'));
 
-        $errorHandler = new ErrorHandler($factory->reveal());
+        $errorHandler = new HttpErrorHandler($factory->reveal());
 
         $middleware->bindHandler(Throwable::class, $errorHandler);
 
@@ -267,7 +267,7 @@ class ErrorHandlerMiddlewareTest extends TestCase
         $factory->createResponse(Argument::type('int'))
                 ->willThrow(new RuntimeException('Exception internal'));
 
-        $errorHandler = new ErrorHandler($factory->reveal());
+        $errorHandler = new HttpErrorHandler($factory->reveal());
 
         $middleware->bindHandler(Throwable::class, $errorHandler);
 

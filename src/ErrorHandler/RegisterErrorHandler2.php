@@ -11,9 +11,6 @@ use Exception;
 use Symfony\Component\Console\Output\StreamOutput;
 use Throwable;
 
-// TODO : ajouter une fonction call qui wrap un error handler avant d'executer le callable !!!!
-//https://github.com/symfony/error-handler/blob/5.x/ErrorHandler.php#L165
-
 //https://github.com/symfony/debug/blob/2.5/ErrorHandler.php
 
 //https://github.com/spiral/framework/blob/99d5ffbdfec3e2c597681758d1216aba7a2923ba/src/Boot/tests/ExceptionsTest.php
@@ -76,21 +73,19 @@ use Throwable;
 // Exemple => https://github.com/getsentry/sentry-php/blob/master/src/ErrorHandler.php#L72
 // Exemple => https://github.com/symfony/phpunit-bridge/blob/master/DeprecationErrorHandler.php#L66
 // Exemple => https://github.com/zendframework/zend-log/blob/328de94cb3395382d077dbc09200b733e9596a06/src/Logger.php#L661
-final class RegisterErrorHandler
+final class RegisterErrorHandler2
 {
     /**
      * Set the level to show all errors + disable internal php error display and register the error/exception/shutdown handlers.
      */
-    //https://github.com/symfony/error-handler/blob/5.x/Debug.php#L21
     public static function enable(): void
     {
         error_reporting(E_ALL);
-        ini_set('display_errors', 'Off');
-        ini_set('html_errors', 'Off');
+        //ini_set('display_errors', 'Off');
+        //ini_set('html_errors', 'Off');
         // TODO : voir si on doit aussi utiliser ces 2 setters !!!!
         //ini_set('log_errors', '0');
         //ini_set('zend.exception_ignore_args', '0');
-
 
         self::register();
     }
@@ -104,7 +99,7 @@ final class RegisterErrorHandler
     {
         set_error_handler([self::class, 'handleError']);
         set_exception_handler([self::class, 'handleException']);
-        register_shutdown_function([self::class, 'handleShutdown']);
+        //register_shutdown_function([self::class, 'handleShutdown']);
     }
 
     /**
@@ -163,9 +158,13 @@ final class RegisterErrorHandler
     //https://github.com/slashtrace/slashtrace/blob/6509c3b9e67606dc25510d3f28de431f9cdadc97/src/EventHandler/DebugHandler.php#L71
     public static function handleException(Throwable $e): void
     {
+        //throw $e;
+
+
         // TODO : tester avec roaddunner voir ce que ca donne, car cela simule une console.
         // TODO : il faudrait pas aussi tester :    in_array(\PHP_SAPI, ['cli', 'phpdbg'], true)     https://github.com/symfony/error-handler/blob/master/ErrorHandler.php#L703
         // TODO : utiliser isset($_SERVER["REQUEST_URI"]) pour détecter si on est sur un mode "http" ????   https://github.com/filp/whoops/blob/master/src/Whoops/Util/Misc.php#L23
+
         if (PHP_SAPI === 'cli') {
             self::renderForConsole($e);
         } else {
@@ -235,11 +234,7 @@ final class RegisterErrorHandler
             $content = nl2br($t->getMessage());
         }
 
-
-
-/*
-
-
+        /*
                 $message = sprintf(
                     "<br/><strong>%s</strong> %s in %s on line %d<br/><i>Stack trace:</i><pre>%s</pre>",
                     get_class($e),
@@ -250,10 +245,7 @@ final class RegisterErrorHandler
                 );
 
                 $content = $message;
-*/
-
-
-
+        */
 
 
 /*

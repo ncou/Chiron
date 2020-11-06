@@ -26,6 +26,7 @@ abstract class AbstractDispatcher implements DispatcherInterface
      * @param ContainerInterface $container
      */
     // TODO : il faudrait plutot lui passer en paramétre un InvokerInterface ou une classe Injector::class pour récupérer directement l'injector, car la variable container ne sert à rien !!!!
+    // TODO : ou alors lui passer en paramétre un "Container" et donc on pourrait directement effectuer un ->call depuis ce container, plus besoin d'initialiser un Injector !!!!
     public function __construct(ContainerInterface $container)
     {
         $this->injector = new Injector($container);

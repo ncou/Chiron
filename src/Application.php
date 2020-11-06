@@ -137,7 +137,7 @@ class Application
         }
 
         // TODO : configurer le message dans le cas ou le tableau de dispatcher est vide c'est que l'application n'a pas été correctement initialisée ????
-        // TODO : créer une exception DispatcherNotFoundException qui héritera de ApplicationException.
+        // TODO : créer une exception DispatcherNotFoundException qui héritera de ApplicationException ou plutot d'une RuntimeException.
         throw new ApplicationException('Unable to locate active dispatcher.');
     }
 
@@ -152,6 +152,7 @@ class Application
             $this->isBooted = true;
 
             foreach ($this->bootloaders as $bootloader) {
+                //$bootloader->bootload();
                 $bootloader->bootload($this->container);
             }
         }
@@ -161,6 +162,7 @@ class Application
     // TODO : tester le cas ou on appel plusieurs fois cette méthode. Il faudra surement éviter de réinsérer plusieurs fois les bootloaders et autres service provider
     // TODO : passer en paramétre un tableau de "environment" values qui permettra d'initialiser le bootloader DotEnvBootloader::class
     // TODO : permettre de passer en paramétre une liste de "providers" ??? ca permettrait de facilement initialiser l'application avec une redéfinition de certains service par l'utilisateur !!!
+    // TODO : il faudrait automatiquement ajouter le ConsoleDispatcher à l'application car on aura toujours le package chiron/console de présent pour ce framework et on doit pourvoir utiliser la console, donc ajouter d'office cette classe au tableau des dispatchers ca nous fera gagner du temps (et donc la classe Console\Bootloader\ConsoleDispatcherBootloader n'est plus nécessaire !!!!)
     public static function init(array $paths, array $values = [], bool $handleErrors = true): self
     {
         // TODO : attention il faudrait pouvoir faire un register une seule fois pour les error handlers !!!!

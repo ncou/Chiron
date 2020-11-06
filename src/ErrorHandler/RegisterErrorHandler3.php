@@ -76,7 +76,7 @@ use Throwable;
 // Exemple => https://github.com/getsentry/sentry-php/blob/master/src/ErrorHandler.php#L72
 // Exemple => https://github.com/symfony/phpunit-bridge/blob/master/DeprecationErrorHandler.php#L66
 // Exemple => https://github.com/zendframework/zend-log/blob/328de94cb3395382d077dbc09200b733e9596a06/src/Logger.php#L661
-final class RegisterErrorHandler
+final class RegisterErrorHandler3
 {
     /**
      * Set the level to show all errors + disable internal php error display and register the error/exception/shutdown handlers.
@@ -87,6 +87,7 @@ final class RegisterErrorHandler
         error_reporting(E_ALL);
         ini_set('display_errors', 'Off');
         ini_set('html_errors', 'Off');
+
         // TODO : voir si on doit aussi utiliser ces 2 setters !!!!
         //ini_set('log_errors', '0');
         //ini_set('zend.exception_ignore_args', '0');
@@ -147,10 +148,12 @@ final class RegisterErrorHandler
     public static function handleError(int $level, string $message, string $file = '', int $line = 0): void
     {
         if (error_reporting() & $level) {
-            throw new ErrorException($message, 0, $level, $file, $line);
+            $errorAsException = new ErrorException($message, 0, $level, $file, $line);
+            self::cleanTrace($errorAsException);
+
+            throw $errorAsException;
         }
     }
-
 
     /**
      * Renders the given exception.
@@ -237,7 +240,7 @@ final class RegisterErrorHandler
 
 
 
-/*
+
 
 
                 $message = sprintf(
@@ -250,7 +253,7 @@ final class RegisterErrorHandler
                 );
 
                 $content = $message;
-*/
+
 
 
 
@@ -330,4 +333,73 @@ final class RegisterErrorHandler
 
         return ($level & $errors) > 0;
     }
+
+    /**
+     * Calls a function and turns any PHP error into \ErrorException.
+     *
+     * @return mixed What $function(...$arguments) returns
+     *
+     * @throws \ErrorException When $function(...$arguments) triggers a PHP error
+     */
+    public static function call(callable $function, ...$arguments)
+    {
+        set_error_handler(static function (int $type, string $message, string $file, int $line) {
+            $errorAsException = new ErrorException($message, 0, $type, $file, $line);
+            self::cleanTrace($errorAsException);
+
+            throw $errorAsException;
+        });
+
+        try {
+            return $function(...$arguments);
+        } finally {
+            restore_error_handler();
+        }
+    }
+
+    /**
+     * Cleans the trace by removing the frame added by the error handler.
+     *
+     * @param ErrorException $exception
+     */
+    // TODO : il faudra surement utilkiser cette méthode aprés la création de la classe FatalErrorException dans le shutdown handler et lui passer en paramétre le nombre de "frame" à supprimer de la stacktrace.
+    private static function cleanTrace(ErrorException $exception): void
+    {
+        $frames = $exception->getTrace();
+        // remove the first frame in the stacktrace.
+        array_splice($frames, 0, 1);
+
+        // Update exception trace[] private property.
+        $traceReflector = new \ReflectionProperty('Exception', 'trace');
+        $traceReflector->setAccessible(true);
+        $traceReflector->setValue($exception, $frames);
+    }
+
+/*
+    private function cleanTrace2(ErrorException $exception, string $file, int $line): array
+    {
+        $lightTrace = $backtrace = $exception->getTrace();
+
+        for ($i = 0; isset($backtrace[$i]); ++$i) {
+            if (isset($backtrace[$i]['file'], $backtrace[$i]['line']) && $backtrace[$i]['line'] === $line && $backtrace[$i]['file'] === $file) {
+                $lightTrace = \array_slice($lightTrace, 1 + $i);
+                break;
+            }
+        }
+
+
+        for ($i = \count($lightTrace) - 2; 0 < $i; --$i) {
+            if (self::class === ($lightTrace[$i]['class'] ?? null)) {
+                array_splice($lightTrace, --$i, 2);
+            }
+        }
+
+
+        // Update exception trace[] private property.
+        $traceReflector = new \ReflectionProperty('Exception', 'trace');
+        $traceReflector->setAccessible(true);
+        $traceReflector->setValue($exception, $lightTrace);
+    }
+    */
+
 }

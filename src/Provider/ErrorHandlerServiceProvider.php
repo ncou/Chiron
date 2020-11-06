@@ -25,7 +25,7 @@ use Chiron\Core\Environment;
 use Chiron\Core\Container\Provider\ServiceProviderInterface;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\Container;
-use Chiron\ErrorHandler\ErrorHandler;
+use Chiron\ErrorHandler\HttpErrorHandler;
 use Chiron\ErrorHandler\ErrorManager;
 use Chiron\ErrorHandler\Formatter\HtmlFormatter;
 use Chiron\ErrorHandler\Formatter\JsonFormatter;
@@ -64,9 +64,9 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
         });
 
         // TODO : il faudrait plutot binder l'interface ErrorHandlerInterface et pas directement la classe ErrorHandler, cela permettra à l'utilisateur de faire un override du module de gestion des erreurs/exceptions.
-        $container->bind(ErrorHandler::class, function (ContainerInterface $container) {
+        $container->bind(HttpErrorHandler::class, function (ContainerInterface $container) {
             // TODO : aller chercher la responsefactory directement dans le container plutot que de faire un new ResponseFactory !!!!
-            $errorHandler = new ErrorHandler($container->get('responseFactory'));
+            $errorHandler = new HttpErrorHandler($container->get('responseFactory'));
 
             //$errorHandler->addReporter($container->get(LoggerReporter::class));
 
@@ -127,7 +127,7 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
 
     // TODO : éventuellement séparer cette méthode en deux parties, une pour enregistrer la classe et la seconde pour configurer la partie "bindHandler" ce sera plus propre.
     // TODO : attention le logger n'est pas utilisé dans le code de la méthode "errorManager()" il faudra aussi vérifier que le LoggerInterface est correctement initialisé car si on ajoute un bridge pour Monolog il faudra s'assurer que celui ci est bien initialisé et qu'il n'y aura pas d'erreurs lors de la récupération du LoggerInterface !!!!
-    private function errorManager(SettingsConfig $config, ErrorHandler $handler, LoggerInterface $logger): ErrorManager
+    private function errorManager(SettingsConfig $config, HttpErrorHandler $handler, LoggerInterface $logger): ErrorManager
     {
         //$manager = new ErrorManager($container->get('config')->app['debug']);
         //$manager = new ErrorManager($container->get('config')->get('app.debug'));

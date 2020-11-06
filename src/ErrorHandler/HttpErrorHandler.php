@@ -31,7 +31,7 @@ use Throwable;
 //https://github.com/symfony/error-renderer/blob/master/ErrorRenderer.php
 
 // TODO : renommer la classe en DefaultErrorHandler
-class ErrorHandler implements ErrorHandlerInterface
+class HttpErrorHandler implements ErrorHandlerInterface
 {
     /** ResponseFactoryInterface */
     private $responseFactory;

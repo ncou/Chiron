@@ -26,7 +26,7 @@ class FatalErrorException extends \ErrorException
 
         $trace = [];
 
-        if (function_exists('xdebug_get_function_stack')) {
+        if (extension_loaded('xdebug') && xdebug_is_enabled()) {
             $stack = xdebug_get_function_stack();
             array_splice($stack, -2);
 
@@ -49,7 +49,7 @@ class FatalErrorException extends \ErrorException
             $trace = array_reverse($trace);
         }
 
-        // override the stacktrace.
+        // override the stacktrace (with an empty trace array, or an xdebug stacktrace array).
         $this->setTrace($trace);
     }
 
