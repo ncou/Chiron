@@ -13,6 +13,7 @@ final class Log extends AbstractFacade
      */
     protected static function getFacadeAccessor(): string
     {
+        // phpcs:ignore SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName
         return \Psr\Log\LoggerInterface::class;
     }
 }

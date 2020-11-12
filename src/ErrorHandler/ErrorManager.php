@@ -191,7 +191,7 @@ class ErrorManager implements LoggerAwareInterface
     {
         // TODO : passer en paramétre du constructeur ce middleware un responseFactory. pour utiliser la méthode Psr $responseFactory->createResponse(500);
         //$response = new Response(500);
-        $response = \Chiron\Facade\ResponseCreator::create(500); // TODO : attention ce code est risqué car il peut il y avoir une erreur !!!!
+        $response = \Chiron\ResponseCreator\Facade\ResponseCreator::create(500); // TODO : attention ce code est risqué car il peut il y avoir une erreur !!!!
 
         $msg = "An Error occurred while handling another error:\n";
         $msg .= (string) $exception;

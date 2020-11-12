@@ -19,6 +19,7 @@ final class Response extends AbstractFacade
      */
     protected static function getFacadeAccessor(): string
     {
+        // phpcs:ignore SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName
         return \Psr\Http\Message\ResponseFactoryInterface::class;
     }
 }

@@ -13,6 +13,7 @@ final class Environment extends AbstractFacade
      */
     protected static function getFacadeAccessor(): string
     {
+        // phpcs:ignore SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly.ReferenceViaFullyQualifiedName
         return \Chiron\Core\Environment::class;
     }
 }
