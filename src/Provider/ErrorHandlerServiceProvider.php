@@ -135,7 +135,12 @@ class ErrorHandlerServiceProvider implements ServiceProviderInterface
         //$manager = new ErrorManager(true);
 
         // TODO : améliorer le code, soit passer la classe SettingsConfig au constructeur de la classe ErrorManager, soit éclater ce code en deux partie avec un provider et un bootloader qui se chargera de faire le bindHandler et le setLogger. Voir même ne plus faire le setLogger si on utilise la mutation LoggerAware qui se chargera d'injecter automatiquement le logger par défaut !!! Ou alors ajouter la classe SingletonInterface au ErrorManager + créer une méthode setDebug() qui serait appellée par un bootloader, comme on fait pour Environement ou pour Directory.
-        $manager = new ErrorManager($config->getDebug());
+
+
+        $debug = $config->getDebug();
+        $debug = true;
+
+        $manager = new ErrorManager($debug);
 
         //$manager->bindHandler(Throwable::class, new \Chiron\Exception\WhoopsHandler());
 

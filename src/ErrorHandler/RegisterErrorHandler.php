@@ -219,6 +219,7 @@ final class RegisterErrorHandler
      */
     // TODO : code à améliorer !!!!!!
     // TODO : regarder ici comment c'est fait (initialiser un SapiEmitter::class) :    https://github.com/cakephp/cakephp/blob/master/src/Error/ErrorHandler.php#L205
+    // TODO : il faut surement virer la notion de headers "cache" lorsqu'on retourne une page d'erreur : https://github.com/aspnet/Diagnostics/blob/082d505977d72c75b68935c93c21feded6928e5f/src/Microsoft.AspNetCore.Diagnostics/ExceptionHandler/ExceptionHandlerMiddleware.cs#L105
     private static function renderHttpResponse(Throwable $e): void
     {
         // TODO : externaliser la création du content dans une méthode séparée du style '$this->handleCaughtThrowable($throwable): string' qui retourne le texte à la méthode echo. Elle pourrait être aussi utilisée dans le middleware de ErroHandlerMiddleware pour créer le contenu de la réponse !!!!

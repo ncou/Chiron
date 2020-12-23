@@ -6,7 +6,7 @@ use Chiron\Core\Directories;
 use Chiron\Core\Environment;
 use Chiron\Core\Container\Bootloader\AbstractBootloader;
 use Chiron\Config\Config;
-use Chiron\Exception\ApplicationException;
+use Chiron\Core\Exception\EnvironmentException;
 use Dotenv\Dotenv;
 use Dotenv\Exception\InvalidFileException;
 
@@ -43,12 +43,17 @@ final class EnvironmentBootloader extends AbstractBootloader
     public function boot(Environment $environment, Directories $directories): void
     {
         $loadedVars = self::loadDotEnvFile($directories->get('@root'));
+
         // store the vars present in the dotenv file to display them when using the AboutCommand.
         $this->values[self::DOTENV] = $loadedVars;
         //$_ENV['SYMFONY_DOTENV_VARS'] = $_SERVER['SYMFONY_DOTENV_VARS'] = $loadedVars;
 
         // initialise the environment values (using array $this->values as override).
         $environment->init($this->values);
+
+
+        //die(var_dump(env('APP_KEY')));
+        //die(var_dump(container(Environment::class)->get('APP_KEY')));
 
         // TODO : on devrait pas faire une vérification que les variable d'environnement de base sont bien présentes ? ca peut arriver si l'utilisateur n'utilise pas dotenv (ou que le fichier .env est effacé) et que les variables d'environnement n'existent pas sur la machine. Par exemple si la variable APP_KEY n'existe pas, on aura un plantage lors du changement de clés via la commande encrypt:key !!!!
     }
@@ -72,7 +77,7 @@ final class EnvironmentBootloader extends AbstractBootloader
             // Load environment file in given directory path, silently failing if it doesn't exist.
             return $dotenv->safeLoad();
         } catch (InvalidFileException $e) {
-            throw new ApplicationException('The environment file (.env) is invalid!');
+            throw new EnvironmentException('The environment file (.env) is invalid!');
         }
     }
 }

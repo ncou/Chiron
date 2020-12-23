@@ -15,7 +15,7 @@ final class ConfigureBootloader extends AbstractBootloader
 {
     public function __construct(Container $container)
     {
-        $container->inflector(InjectableConfigInterface::class, [InjectableConfigMutation::class, 'mutation']);
+        $container->mutation(InjectableConfigInterface::class, [InjectableConfigMutation::class, 'mutation']);
     }
 
     // TODO : attention il faudrait gérer le cas ou le répertoire "config" n'existe pas, car sinon la méthode loadFromDirectory lévera une exception !!!

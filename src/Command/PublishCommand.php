@@ -25,6 +25,7 @@ final class PublishCommand extends AbstractCommand
      * @param Filesystem $files
      */
     // TODO : lui passer un Directories en paramétre dans le constructeur, pour utiliser ensuite le ->get('root') pour retirer une partie du chemin et obtenir un chemin relatif lors de l'affichage des infos dans la console
+    // TODO : déplacer plutot le paramétre $filesystem directement dans les paramétres de la méthode "perform()" !!!
     public function __construct(Filesystem $filesystem)
     {
         parent::__construct();
@@ -153,6 +154,7 @@ final class PublishCommand extends AbstractCommand
         $from = str_replace(directory('@root'), '', $this->filesystem->normalizePath($from));
         $to = str_replace(directory('@root'), '', $this->filesystem->normalizePath($to));
 
+        // TODO : faire un sprintf()
         $this->line('<info> ✔ Copied ' . $type . '</info> <comment>[' . $from . ']</comment> <info>To</info> <comment>[' . $to . ']</comment>');
     }
 }

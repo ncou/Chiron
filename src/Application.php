@@ -39,6 +39,7 @@ use Chiron\Exception\ApplicationException;
 // Exemple : https://github.com/symfony/symfony/blob/master/src/Symfony/Bundle/FrameworkBundle/Console/Application.php#L112
 // Exemple : https://github.com/symfony/console/blob/master/Application.php#L595
 
+// TODO : passer la classe en final ? ou permettre de faire un extend de cette classe ???
 class Application
 {
     /**
@@ -125,6 +126,7 @@ class Application
      */
     // TODO : il faudrait pas faire une vérification sur un booléen type isRunning pour éviter d'appeller plusieurs fois cette méthode (notamment depuis un Bootloader qui récupére l'application et qui essayerai d'appeller cette méthode run() !!!!)
     // TODO : renommer la méthode en "start()"  ?????
+    // TODO : il faudrait s'inspirer de la méthode safelyBootAndGetHandler() qui fait un try/catch autour du boot avant de retourner la méthode qui sera executée : https://github.com/flarum/core/blob/master/src/Http/Server.php#L53
     public function run()
     {
         // TODO : il faudrait surement mettre un try/catch autour de la méthode boot() et dans le catch utiliser la classe RegisterErrorHandler::handleException($e) pour afficher les erreurs, ca permettrait d'aoir une gestion des erreurs même si l'utilisateur n'a pas utilisé la méthode init() avec le paramétre $handleErrors à true !!!  https://github.com/spiral/framework/blob/e63b9218501ce882e661acac284b7167b79da30a/src/Boot/src/AbstractKernel.php#L146
@@ -137,8 +139,7 @@ class Application
             }
         }
 
-        // TODO : configurer le message dans le cas ou le tableau de dispatcher est vide c'est que l'application n'a pas été correctement initialisée ????
-        // TODO : créer une exception DispatcherNotFoundException qui héritera de ApplicationException ou plutot d'une RuntimeException.
+        // TODO : lever aussi une ApplicationException en début de méthode (juste aprés l'appel à la méthode ->boot()) dans le cas le tableau de $this->dispatchers est vide, car cela signifie que l'application est mal initialisée, et donc afficher un message pour demander à l'utilisateur de définir à minima un dispatcher !!!!
         throw new ApplicationException('Unable to locate active dispatcher.');
     }
 
@@ -178,11 +179,15 @@ class Application
         $app->addBootloader(new DirectoriesBootloader($paths));
         $app->addBootloader(new EnvironmentBootloader($values));
 
+        //die(var_dump(env('APP_KEY')));
+        //die(var_dump(container(\Chiron\Core\Environment::class)));
+
+
         // TODO : il faudrait surement ajouter ici un bootloader pour gérer la copie des fichiers (c'est à dire le publisher) uniquement ceux qui sont définis dans le composer.json. Et ensuite avoir le bootloader ConfigureBootloader juste aprés pour charger les fichiers potentiellement copiés.
         //$app->addBootloader(new PublisherBootloader()); ????? Attention ce bootloader ne devra pas utiliser de fichiers de configuration car ils ne seront pas encore initialisés !!! (puisque la mutation est dans le bootloader suivant [ConfigureBootloader]). !!!! <=== attention ce TODO est faux, car le publisher sera executé depuis la command de la console (cad via le ConsoleDispatcher), donc on devra traverser tous les bootloaders avant de faire la copie des fichiers, donc cela ne fonctionnera pas !!!!!
 
         // add the config mutation + load the user configuration files from the '@config' folder.
-        $app->addBootloader(new ConfigureBootloader($app->container));
+        $app->addBootloader(new ConfigureBootloader($app->container)); // TODO : ce bootloader devrait pas être dans le package chiron/core ????
         // init the application settings (debug, charset, timezone...etc).
         // TODO : permettre de faire un override des valeurs par défault des settings en lui passant un tableau dans le constructeur de la classe SettingsBootloader + ajouter un paramétre à la méthode application::init() cela permettrait lors des tests phpunit de facilement modifier ces valeurs !!!!
         $app->addBootloader(new SettingsBootloader());
@@ -198,7 +203,6 @@ class Application
     public static function create(): self
     {
         $container = new Container();
-        $container->setAsGlobal();
 
         $app = new self($container);
         $container->singleton(self::class, $app);
@@ -209,9 +213,12 @@ class Application
     // TODO : il y a surement des services à ne pas charger si on est en mode console !!! et inversement il y en a surement à charger uniquement en mode console !!!
     private static function configure(Application $app): void
     {
+        // TODO : déplacer la partie Logger directement dans le composer.json pour charger la mutation et le service provider
         // NullLogger Service + LoggerAwareInterface mutation !!!!
-        $app->addProvider(new \Chiron\Provider\LoggerServiceProvider());
-        $app->container->inflector(\Psr\Log\LoggerAwareInterface::class, [\Chiron\Logger\LoggerAwareMutation::class, 'mutation']);
+        $app->addProvider(new \Chiron\Logger\Provider\LoggerServiceProvider());
+        $app->container->mutation(\Psr\Log\LoggerAwareInterface::class, [\Chiron\Logger\LoggerAwareMutation::class, 'mutation']);
+
+
 
         // TODO : forcer le chargement manuellement (cad en ajoutant le ConsoleDispatcherBootloader) du console Dispatcher car si il y a un probléme dans le fichier .../runtime/cache/packages.json (par exemple il existe mais il est vide ou obsoléte pour la version de la console) le PackageManifestBootLoader ne va pas recréer ce fichier de cache et donc il ne chargera pas le console dispatcher et on aura une erreur, par exemple si on essaye quand même de vider le cache via la commande "cache:clear" on aura une erreur pour indiquer qu'aucun dispatcher actif n'a été trouvé...
         self::coreSettings_A_VIRER($app);
@@ -221,14 +228,14 @@ class Application
     {
         // TODO : normalement on devrait avoir un tableau vide et les providers ci dessous seraient chargés soit par le PackageManifest qui scan les packages, soit via le app.php pour le dernier provider (database)
 
-        //************************
-        //******  PROVIDER *******
-        //************************
+        //**************************
+        //******** PROVIDER ********
+        //**************************
         //$app->addProvider(new \Chiron\Provider\HttpFactoriesServiceProvider());
-        $app->addProvider(new \Chiron\Provider\ErrorHandlerServiceProvider());
+        $app->addProvider(new \Chiron\Provider\ErrorHandlerServiceProvider()); // TODO : à déplacer dans le package http ??? ou alors créer un package séparé pour gérer les exceptions remontées par le module web !!!!
 
         //**************************
-        //******  BOOTLOADER *******
+        //******* BOOTLOADER *******
         //**************************
         // TODO : attention si il y a des bootloaders chargés via le packagemanifest qui ajoutent une commande dans la console, si cette commande utilise le même nom que les commandes par défaut  définies dans la classe CommandBootloader, elles vont être écrasées !!!! faut il faire un test dans cette classe si la command est déjà définie dans la console on ne l'ajoute pas ????? ou alors écrase la commande d'office ???? ou alors lever une exception car on aura un doublon sur le nom de la commande ce qui n'est pas logique ????
         $app->addBootloader(new \Chiron\Bootloader\CommandBootloader());

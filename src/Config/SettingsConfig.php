@@ -43,4 +43,18 @@ final class SettingsConfig extends AbstractInjectableConfig
     {
         return $this->get('timezone');
     }
+
+    /**
+     * Asserts that the locale is valid, throws an Exception if not.
+     *
+     * @throws InvalidArgumentException If the locale contains invalid characters
+     */
+    // TODO : utiliser cette fonction pour vérifier que la locale est bien valide !!!!  https://github.com/symfony/translation/blob/5.x/Translator.php#L447
+    /*
+    private function assertValidLocale(string $locale)
+    {
+        if (1 !== preg_match('/^[a-z0-9@_\\.\\-]*$/i', $locale)) {
+            throw new InvalidArgumentException(sprintf('Invalid "%s" locale.', $locale));
+        }
+    }*/
 }

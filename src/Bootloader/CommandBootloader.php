@@ -19,8 +19,8 @@ final class CommandBootloader extends AbstractBootloader
 
         // TODO : à déplacer dans un package d'encodage dédié ?
         //\Chiron\Command\EncryptKeyCommand::class,
-        \Chiron\Command\KeyGenerateCommand::class,
-        \Chiron\Command\KeyUpdateCommand::class, // TODO : à déplacer dans un package sur chiron/dotenv-bridge ????
+        //\Chiron\Command\KeyGenerateCommand::class,
+        //\Chiron\Command\KeyUpdateCommand::class, // TODO : à déplacer dans un package sur chiron/dotenv-bridge ????
     ];
 
     public function boot(Console $console): void
