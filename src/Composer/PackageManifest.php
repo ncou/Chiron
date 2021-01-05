@@ -70,6 +70,10 @@ final class PackageManifest
     // TODO : améliorer le code en utilisant le fichier filesystem pour écrire le contenu du fichier + effectuer le test du répertoire "writable".
     private function write(array $manifest): void
     {
+
+        // TODO : il faudrait surement faire un early exit si le tableau à écrire est vide !!!!
+
+
         // TODO : à virer
         if (! is_writable($this->cacheDir)) {
             // TODO : utiliser un sprintf()

@@ -192,6 +192,14 @@ class Application
         // TODO : permettre de faire un override des valeurs par défault des settings en lui passant un tableau dans le constructeur de la classe SettingsBootloader + ajouter un paramétre à la méthode application::init() cela permettrait lors des tests phpunit de facilement modifier ces valeurs !!!!
         $app->addBootloader(new SettingsBootloader());
 
+        // TODO : code provisoire !!!!
+        Container::$instance->singleton(\Chiron\Console\Console::class);
+        Container::$instance->singleton(\Symfony\Component\Console\CommandLoader\CommandLoaderInterface::class, \Chiron\Core\Console\CommandLoader::class);
+        $app->addBootloader(resolve(\Chiron\Core\Bootloader\ConsoleBootloader::class));
+        $app->addBootloader(resolve(\Chiron\Core\Bootloader\ConsoleDispatcherBootloader::class));
+        $app->addBootloader(resolve(\Chiron\Core\Bootloader\PublishConsoleBootloader::class));
+
+
         self::configure($app);
 
         return $app;

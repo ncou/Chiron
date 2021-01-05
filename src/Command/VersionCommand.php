@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Command;
 
 use Chiron\Application;
-use Chiron\Console\AbstractCommand;
+use Chiron\Core\Console\AbstractCommand;
 
 /**
  * Print out the version of Chiron in use.

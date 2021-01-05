@@ -12,6 +12,9 @@ require __DIR__ . '/misc2.php';
 require __DIR__ . '/facade.php';
 require __DIR__ . '/url.php';
 
+
+use Chiron\Support\Dump;
+
 function dd2()
 {
     $args = func_get_args();
@@ -32,4 +35,75 @@ function dd2()
     }
 
     echo "</pre>\n";
+}
+
+
+
+if (!function_exists('dd')) {
+    /**
+     * Dump the passed variables and end the script.
+     *
+     * @param  mixed
+     * @return void
+     */
+    function dd()
+    {
+        call_user_func_array('dump', func_get_args());
+
+        die(1);
+    }
+}
+
+if (!function_exists('dump')) {
+    /**
+     * Dump the passed variables without end the script.
+     *
+     * @param  mixed
+     * @return void
+     */
+    function dump()
+    {
+        array_map(function ($x) {
+            $string = (new Dump([], true))->variable($x);
+
+            echo (PHP_SAPI == 'cli' ? strip_tags($string) . PHP_EOL : $string);
+
+        }, func_get_args());
+    }
+}
+
+if (!function_exists('dump2')) {
+    /**
+     * Dump the passed variables without end the script.
+     *
+     * @param  mixed
+     * @return void
+     */
+    function dump2()
+    {
+        array_map(function ($x) {
+            $string = var_dump($x);
+
+            echo (PHP_SAPI == 'cli' ? strip_tags($string) . PHP_EOL : $string);
+
+        }, func_get_args());
+    }
+}
+
+if (!function_exists('dump3')) {
+    /**
+     * Dump the passed variables without end the script.
+     *
+     * @param  mixed
+     * @return void
+     */
+    function dump3()
+    {
+        array_map(function ($x) {
+            $string = (new Chiron\Support\VarDumper())->dump($x);
+
+            echo (PHP_SAPI == 'cli' ? strip_tags($string) . PHP_EOL : $string);
+
+        }, func_get_args());
+    }
 }

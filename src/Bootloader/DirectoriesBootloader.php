@@ -9,6 +9,7 @@ use Chiron\Core\Container\Bootloader\AbstractBootloader;
 use Chiron\Core\Exception\DirectoryException;
 use Chiron\Framework;
 use Chiron\Views\TemplateRendererInterface;
+use Chiron\Filesystem\Filesystem;
 
 // TODO : passer les méthodes "boot()" en protected !!!! ou alors si ce n'est pas le cas, il faut supprimer le Closure::fromCallable qu'on utilise avant d'appeller le invoker dans la méthode bootload() car ce wrapping ne sert que dans le cas ou la méthode à appeller est private ou protected !!!!
 final class DirectoriesBootloader extends AbstractBootloader
@@ -33,7 +34,11 @@ final class DirectoriesBootloader extends AbstractBootloader
         // insert the chiron framwork path for later use.
         $directories->set('framework', Framework::path());
         // some folders should be presents and writables.
-        self::assertWritableDir($directories, ['@runtime', '@cache']);
+        //self::assertWritableDir($directories, ['@runtime', '@cache']); // TODO : il faudrait plutot faire un Filesystem->ensureDirectoryExist(xxxx) pour forcer la création du répertoire si il n'existe pas !!!!
+
+        $filesystem = new Filesystem();
+        $filesystem->ensureDirectoryExists($directories->get('@runtime'));
+        $filesystem->ensureDirectoryExists($directories->get('@cache'));
     }
 
     /**
@@ -53,6 +58,7 @@ final class DirectoriesBootloader extends AbstractBootloader
         }
 
         // TODO : il faudrait pas ajouter un répertoire pour les logs ???? => https://github.com/spiral/app/blob/85705bb7a0dafd010a83fa4bcc7323b019d8dda3/app/src/Bootloader/LoggingBootloader.php#L29
+        // TODO : faire le ménage on doit pas avoir besoin de tous ces répertoires !!! notamment le répertoire '@public' qui ne sert à rien lorsqu'on fait une application en ligne de commandes !!!!
         $default = [
             '@app'          => '@root/app/',
             '@config'       => '@root/config/',
@@ -64,6 +70,7 @@ final class DirectoriesBootloader extends AbstractBootloader
         ];
 
         // if a view engine is installed, we add the default 'views' folder.
+        // TODO : améliorer ce bout de code !!!!
         if (interface_exists(TemplateRendererInterface::class)) {
             $default['@views'] = '@resources/views/';
         }

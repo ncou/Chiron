@@ -8,6 +8,8 @@ use Chiron\Config\Helper\Validator;
 use Nette\Schema\Expect;
 use Nette\Schema\Schema;
 
+// TODO : déplacer la partie "Settings" dans le package chiron/core car ca peut être utilisé par un bootloader ou un middleware en dehors  de l'application chiron !!!!
+// TODO : eventuellement renommer tous ce qui touche à "Settings" avec le nom "Core", ex: core.php.dist au lieu de settings.php.dist
 final class SettingsConfig extends AbstractInjectableConfig
 {
     protected const CONFIG_SECTION_NAME = 'settings';
@@ -24,7 +26,13 @@ final class SettingsConfig extends AbstractInjectableConfig
         ]);
     }
 
+    // TODO : conserver cette méthode (sachant que la méthode isDebug() est mieux !!!!) ????
     public function getDebug(): bool
+    {
+        return $this->get('debug');
+    }
+
+    public function isDebug(): bool
     {
         return $this->get('debug');
     }
