@@ -8,6 +8,8 @@ use Chiron\Core\Directories;
 use Chiron\Filesystem\Filesystem;
 use RuntimeException;
 
+// TODO : vérifier si les packages sont ordonnés => https://github.com/thecodingmachine/discovery/blob/c5d15800bdd7ddf8390d00eeb9e570142eb69f10/src/PackagesOrderer.php
+
 // TODO : on devrait surement forcer un refresh de ce fichier packages.php lorsque l'utilisateur fait un "composer -dump-update" c'est à dire qu'il faudrait lancer la commande de clean du cache à ce moment là !!!
 // TODO : on devrait aussi gérer les "inflectors" (c'est les mutations) à ajouter au container.
 // TODO : classe à renommer en PackageDiscover::class ????
@@ -75,8 +77,10 @@ final class PackageManifest
 
 
         // TODO : à virer
+        // Ensure the directory exists and is writable.
         if (! is_writable($this->cacheDir)) {
             // TODO : utiliser un sprintf()
+            // TODO : lever une ApplicationException::class
             throw new RuntimeException('The ' . $this->cacheDir . ' directory must be present and writable.');
         }
 
@@ -84,7 +88,7 @@ final class PackageManifest
         // TODO : utilise $this->files->write pour écrire le fichier, non ?????
         //file_put_contents($this->manifestPath, '<?php return ' . var_export($manifest, true) . ';');
 
-        $json = json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $json = json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); // TODO : vérifier l'utilité du unescaped_slashes car on a uniquement des antislash dans le nom des classes php qui sont stochées dans le fichier composer.jon !!!!
         file_put_contents($this->manifestPath, $json);
     }
 

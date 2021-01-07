@@ -36,6 +36,7 @@ final class DirectoriesBootloader extends AbstractBootloader
         // some folders should be presents and writables.
         //self::assertWritableDir($directories, ['@runtime', '@cache']); // TODO : il faudrait plutot faire un Filesystem->ensureDirectoryExist(xxxx) pour forcer la création du répertoire si il n'existe pas !!!!
 
+        // TODO : eventuellement lever une exception si on n'arrive pas à créer ces répertoires !!! cad faire un try/catch autour de ces 2 appels !!!
         $filesystem = new Filesystem();
         $filesystem->ensureDirectoryExists($directories->get('@runtime'));
         $filesystem->ensureDirectoryExists($directories->get('@cache'));
@@ -52,6 +53,7 @@ final class DirectoriesBootloader extends AbstractBootloader
     {
         $aliases = self::normalizeAliases($paths);
 
+        // TODO : je pense que root / public et runtime sont les 3 répertoires obligatoires, mais à vérifier !!!!
         // ensure mandatory directory alias '@root' is defined by the user.
         if (! isset($aliases['@root'])) {
             throw new DirectoryException('Missing required directory alias "@root".');
@@ -59,13 +61,14 @@ final class DirectoriesBootloader extends AbstractBootloader
 
         // TODO : il faudrait pas ajouter un répertoire pour les logs ???? => https://github.com/spiral/app/blob/85705bb7a0dafd010a83fa4bcc7323b019d8dda3/app/src/Bootloader/LoggingBootloader.php#L29
         // TODO : faire le ménage on doit pas avoir besoin de tous ces répertoires !!! notamment le répertoire '@public' qui ne sert à rien lorsqu'on fait une application en ligne de commandes !!!!
+        // TODO : ajouter de maniére séparé le chemin ver vendor !!!
         $default = [
             '@app'          => '@root/app/',
             '@config'       => '@root/config/',
             '@public'       => '@root/public/',
             '@resources'    => '@root/resources/',
             '@runtime'      => '@root/runtime/',
-            '@vendor'       => '@root/vendor/',
+            '@vendor'       => '@root/vendor/', // Assume a standard Composer directory structure unless specified
             '@cache'        => '@runtime/cache/',
         ];
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Bootloader;
 
 use Chiron\Core\Container\Bootloader\AbstractBootloader;
-use Chiron\Config\SettingsConfig;
+use Chiron\Core\Config\SettingsConfig;
 
 //https://github.com/cakephp/app/blob/master/config/bootstrap.php
 

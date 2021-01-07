@@ -15,6 +15,8 @@ use Chiron\Framework;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\TableSeparator;
 
+//https://github.com/flarum/core/blob/master/src/Foundation/Console/InfoCommand.php
+
 /**
  * A console command to display information about the current installation.
  */

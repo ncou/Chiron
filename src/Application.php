@@ -12,7 +12,7 @@ use Chiron\Bootloader\EnvironmentBootloader;
 use Chiron\Bootloader\SettingsBootloader;
 use Chiron\Container\Container;
 use Chiron\Core\Dispatcher\DispatcherInterface;
-use Chiron\ErrorHandler\RegisterErrorHandler;
+use Chiron\Debug\ErrorHandler;
 use Chiron\Exception\ApplicationException;
 
 //https://github.com/swoft-cloud/swoft-framework/blob/0702d93baf8ee92bc4d1651fe0cda2a022197e98/src/SwoftApplication.php
@@ -129,7 +129,7 @@ class Application
     // TODO : il faudrait s'inspirer de la méthode safelyBootAndGetHandler() qui fait un try/catch autour du boot avant de retourner la méthode qui sera executée : https://github.com/flarum/core/blob/master/src/Http/Server.php#L53
     public function run()
     {
-        // TODO : il faudrait surement mettre un try/catch autour de la méthode boot() et dans le catch utiliser la classe RegisterErrorHandler::handleException($e) pour afficher les erreurs, ca permettrait d'aoir une gestion des erreurs même si l'utilisateur n'a pas utilisé la méthode init() avec le paramétre $handleErrors à true !!!  https://github.com/spiral/framework/blob/e63b9218501ce882e661acac284b7167b79da30a/src/Boot/src/AbstractKernel.php#L146
+        // TODO : il faudrait surement mettre un try/catch autour de la méthode boot() et dans le catch utiliser la classe ErrorHandler::handleException($e) pour afficher les erreurs, ca permettrait d'aoir une gestion des erreurs même si l'utilisateur n'a pas utilisé la méthode init() avec le paramétre $handleErrors à true !!!  https://github.com/spiral/framework/blob/e63b9218501ce882e661acac284b7167b79da30a/src/Boot/src/AbstractKernel.php#L146
         $this->boot();
 
         // TODO : mettre ce code dans une méthode private "dispatch()" ????
@@ -170,7 +170,7 @@ class Application
         // TODO : attention il faudrait pouvoir faire un register une seule fois pour les error handlers !!!!
         // used to handle errors in the bootloaders processing.
         if ($handleErrors) {
-            RegisterErrorHandler::enable();
+            ErrorHandler::enable();
         }
 
         // TODO : il faudrait gérer le cas ou l'application est déjà "create" et qu'on récupére cette instance plutot que de rappeller la méthode. (c'est dans le cas ou l'utilisateur fait un App::create qu'il ajoute des providers ou autre et qu'ensuite il fasse un App::init pour finaliser l'initialisation !!!) Je suppose qu'il faudra garder un constante public de classe static avec l'instance (comme pour Container::$instance). Cela permettra aussi de créer une fonction globale "app()" qui retournera l'instance de la classe Application::class. Cela permettra en plus de la facade Facade\Application de passer par cette méthode pour injecter des bootloader par exemple.
@@ -198,6 +198,7 @@ class Application
         $app->addBootloader(resolve(\Chiron\Core\Bootloader\ConsoleBootloader::class));
         $app->addBootloader(resolve(\Chiron\Core\Bootloader\ConsoleDispatcherBootloader::class));
         $app->addBootloader(resolve(\Chiron\Core\Bootloader\PublishConsoleBootloader::class));
+        $app->addBootloader(resolve(\Chiron\Core\Bootloader\PublishSettingsBootloader::class));
 
 
         self::configure($app);
@@ -221,26 +222,13 @@ class Application
     // TODO : il y a surement des services à ne pas charger si on est en mode console !!! et inversement il y en a surement à charger uniquement en mode console !!!
     private static function configure(Application $app): void
     {
-        // TODO : déplacer la partie Logger directement dans le composer.json pour charger la mutation et le service provider
-        // NullLogger Service + LoggerAwareInterface mutation !!!!
-        $app->addProvider(new \Chiron\Logger\Provider\LoggerServiceProvider());
-        $app->container->mutation(\Psr\Log\LoggerAwareInterface::class, [\Chiron\Logger\LoggerAwareMutation::class, 'mutation']);
-
-
-
         // TODO : forcer le chargement manuellement (cad en ajoutant le ConsoleDispatcherBootloader) du console Dispatcher car si il y a un probléme dans le fichier .../runtime/cache/packages.json (par exemple il existe mais il est vide ou obsoléte pour la version de la console) le PackageManifestBootLoader ne va pas recréer ce fichier de cache et donc il ne chargera pas le console dispatcher et on aura une erreur, par exemple si on essaye quand même de vider le cache via la commande "cache:clear" on aura une erreur pour indiquer qu'aucun dispatcher actif n'a été trouvé...
-        self::coreSettings_A_VIRER($app);
-    }
-
-    private static function coreSettings_A_VIRER(Application $app): void
-    {
-        // TODO : normalement on devrait avoir un tableau vide et les providers ci dessous seraient chargés soit par le PackageManifest qui scan les packages, soit via le app.php pour le dernier provider (database)
 
         //**************************
         //******** PROVIDER ********
         //**************************
         //$app->addProvider(new \Chiron\Provider\HttpFactoriesServiceProvider());
-        $app->addProvider(new \Chiron\Provider\ErrorHandlerServiceProvider()); // TODO : à déplacer dans le package http ??? ou alors créer un package séparé pour gérer les exceptions remontées par le module web !!!!
+        //$app->addProvider(new \Chiron\Http\ErrorHandler\Provider\HttpErrorHandlerServiceProvider());
 
         //**************************
         //******* BOOTLOADER *******

@@ -8,7 +8,7 @@ use Chiron\Core\Configure;
 use Chiron\Core\Directories;
 use Chiron\Core\Container\Bootloader\AbstractBootloader;
 use Chiron\Config\InjectableConfigInterface;
-use Chiron\Config\InjectableConfigMutation;
+use Chiron\Core\Container\Mutation\InjectableConfigMutation;
 use Chiron\Container\Container;
 
 final class ConfigureBootloader extends AbstractBootloader
