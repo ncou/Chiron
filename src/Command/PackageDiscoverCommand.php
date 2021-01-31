@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Chiron\Command;
 
-use Chiron\Core\Console\AbstractCommand;
+use Chiron\Core\Command\AbstractCommand;
 use Chiron\Composer\PackageManifest;
 
 //https://github.com/laravel/framework/blob/7.x/src/Illuminate/Foundation/Console/PackageDiscoverCommand.php

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Command;
 
 use Chiron\Core\Directories;
-use Chiron\Core\Console\AbstractCommand;
+use Chiron\Core\Command\AbstractCommand;
 use Chiron\Filesystem\Filesystem;
 
 // TODO : passer les méthodes "perform" en protected pour chaque classe de type "Command"

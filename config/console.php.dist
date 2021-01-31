@@ -1,0 +1,10 @@
+<?php
+
+declare(strict_types=1);
+
+// TODO : attention on ne devrait pas accéder à la classe Framework car elle n'est pas dans le package "chiron/core" !!!! Mettre des valeurs en dure ???
+return [
+    'name' => Chiron\Framework::banner(), // Chiron CLI
+    'version' => Chiron\Framework::version(), // TODO : utiliser un numero de version ajouté comme constante prublic dans la classe Console::class ou alors passer la string 'UNKNOW' qui est la valeur par défaut de Symfoy/Console !!!
+    'commands' => [],
+];

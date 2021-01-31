@@ -14,6 +14,7 @@ use Chiron\Container\Container;
 use Chiron\Core\Dispatcher\DispatcherInterface;
 use Chiron\Debug\ErrorHandler;
 use Chiron\Exception\ApplicationException;
+use Chiron\Core\Container\ServiceManager;
 
 //https://github.com/swoft-cloud/swoft-framework/blob/0702d93baf8ee92bc4d1651fe0cda2a022197e98/src/SwoftApplication.php
 
@@ -48,16 +49,19 @@ class Application
      * @var bool
      */
     // TODO : renommer cette variable en $booted
-    private $isBooted = false;
+    //private $isBooted = false;
 
     /** @var Container */
     private $container;
 
     /** @var BootloaderInterface[] */
-    private $bootloaders = [];
+    //private $bootloaders = [];
 
     /** @var DispatcherInterface[] */
     private $dispatchers = [];
+
+    /** @var ServiceManager */
+    private $serviceManager;
 
     /**
      * Private constructor. Use the method 'create()' or 'init()' to construct the application.
@@ -67,6 +71,7 @@ class Application
     private function __construct(Container $container)
     {
         $this->container = $container;
+        $this->serviceManager = new ServiceManager($this->container);
     }
 
     // TODO : il faudrait pas initialiser le container avant de le retourner ??? ou alors cela risque de poser problémes ?????
@@ -102,19 +107,25 @@ class Application
     // TODO : permettre de passer une string pour le dispatcher ca sera plus simple pour l'utilisateur. Idem pour l'ajout des providers et des bootloaders !!!!
     public function addProvider(ServiceProviderInterface $provider): void
     {
-        $provider->register($this->container);
+        $this->serviceManager->addProvider($provider);
+
+        //$provider->register($this->container);
     }
 
     // TODO : permettre à l'utilisateur de passe un tableau de string ou de BootloaderInterface. et appeller cette nouvelle méthode addBootloaders()
     // TODO : permettre de passer une string pour le dispatcher ca sera plus simple pour l'utilisateur. Idem pour l'ajout des providers et des bootloaders !!!!
     public function addBootloader(BootloaderInterface $bootloader): void
     {
+        $this->serviceManager->addBootloader($bootloader);
+
+
         // if you add a bootloader after the application run(), we execute the bootloader, else we add it to the stack for an execution later.
+        /*
         if ($this->isBooted) {
             $bootloader->bootload($this->container);
         } else {
             $this->bootloaders[] = $bootloader;
-        }
+        }*/
     }
 
     /**
@@ -130,7 +141,8 @@ class Application
     public function run()
     {
         // TODO : il faudrait surement mettre un try/catch autour de la méthode boot() et dans le catch utiliser la classe ErrorHandler::handleException($e) pour afficher les erreurs, ca permettrait d'aoir une gestion des erreurs même si l'utilisateur n'a pas utilisé la méthode init() avec le paramétre $handleErrors à true !!!  https://github.com/spiral/framework/blob/e63b9218501ce882e661acac284b7167b79da30a/src/Boot/src/AbstractKernel.php#L146
-        $this->boot();
+        //$this->boot();
+        $this->serviceManager->boot();
 
         // TODO : mettre ce code dans une méthode private "dispatch()" ????
         foreach ($this->dispatchers as $dispatcher) {
@@ -194,12 +206,13 @@ class Application
 
         // TODO : code provisoire !!!!
         Container::$instance->singleton(\Chiron\Console\Console::class);
-        Container::$instance->singleton(\Symfony\Component\Console\CommandLoader\CommandLoaderInterface::class, \Chiron\Core\Console\CommandLoader::class);
-        $app->addBootloader(resolve(\Chiron\Core\Bootloader\ConsoleBootloader::class));
-        $app->addBootloader(resolve(\Chiron\Core\Bootloader\ConsoleDispatcherBootloader::class));
-        $app->addBootloader(resolve(\Chiron\Core\Bootloader\PublishConsoleBootloader::class));
-        $app->addBootloader(resolve(\Chiron\Core\Bootloader\PublishSettingsBootloader::class));
+        Container::$instance->singleton(\Symfony\Component\Console\CommandLoader\CommandLoaderInterface::class, \Chiron\Core\Command\CommandLoader::class);
 
+        $app->addBootloader(resolve(\Chiron\Bootloader\ConsoleDispatcherBootloader::class));
+        $app->addBootloader(resolve(\Chiron\Bootloader\PublishConsoleBootloader::class));
+        $app->addBootloader(resolve(\Chiron\Bootloader\ConsoleBootloader::class));
+
+        $app->addBootloader(resolve(\Chiron\Core\Bootloader\PublishSettingsBootloader::class));
 
         self::configure($app);
 
@@ -214,7 +227,7 @@ class Application
         $container = new Container();
 
         $app = new self($container);
-        $container->singleton(self::class, $app);
+        $container->singleton(self::class, $app); // TODO : déplacer ce bind singleton directement dans le constructeur ???
 
         return $app;
     }
@@ -235,7 +248,7 @@ class Application
         //**************************
         // TODO : attention si il y a des bootloaders chargés via le packagemanifest qui ajoutent une commande dans la console, si cette commande utilise le même nom que les commandes par défaut  définies dans la classe CommandBootloader, elles vont être écrasées !!!! faut il faire un test dans cette classe si la command est déjà définie dans la console on ne l'ajoute pas ????? ou alors écrase la commande d'office ???? ou alors lever une exception car on aura un doublon sur le nom de la commande ce qui n'est pas logique ????
         $app->addBootloader(new \Chiron\Bootloader\CommandBootloader());
-        $app->addBootloader(new \Chiron\Bootloader\PublishableCollectionBootloader());
+        $app->addBootloader(new \Chiron\Bootloader\PublishAppBootloader());
         $app->addBootloader(new \Chiron\Bootloader\PackageManifestBootloader());
         $app->addBootloader(new \Chiron\Bootloader\ApplicationBootloader());
 

@@ -9,7 +9,7 @@ use Chiron\Core\Directories;
 use Chiron\Core\Environment;
 use Chiron\Filesystem\Path;
 use Chiron\Bootloader\EnvironmentBootloader;
-use Chiron\Core\Console\AbstractCommand;
+use Chiron\Core\Command\AbstractCommand;
 use Chiron\Filesystem\Filesystem;
 use Chiron\Framework;
 use Symfony\Component\Console\Helper\Helper;
