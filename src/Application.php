@@ -141,8 +141,7 @@ class Application
     public function run()
     {
         // TODO : il faudrait surement mettre un try/catch autour de la méthode boot() et dans le catch utiliser la classe ErrorHandler::handleException($e) pour afficher les erreurs, ca permettrait d'aoir une gestion des erreurs même si l'utilisateur n'a pas utilisé la méthode init() avec le paramétre $handleErrors à true !!!  https://github.com/spiral/framework/blob/e63b9218501ce882e661acac284b7167b79da30a/src/Boot/src/AbstractKernel.php#L146
-        //$this->boot();
-        $this->serviceManager->boot();
+        $this->boot();
 
         // TODO : mettre ce code dans une méthode private "dispatch()" ????
         foreach ($this->dispatchers as $dispatcher) {
@@ -162,6 +161,9 @@ class Application
     // TODO : pourquoi ne pas mettre cette méthode en private ????
     public function boot(): void
     {
+        $this->serviceManager->boot();
+
+        /*
         if (! $this->isBooted) {
             $this->isBooted = true;
 
@@ -169,7 +171,7 @@ class Application
                 //$bootloader->bootload();
                 $bootloader->bootload($this->container);
             }
-        }
+        }*/
     }
 
     // TODO : ajouter un paramétre boolen $debug pour savoir si on active ou non le error handler->register()
@@ -177,14 +179,8 @@ class Application
     // TODO : passer en paramétre un tableau de "environment" values qui permettra d'initialiser le bootloader DotEnvBootloader::class
     // TODO : permettre de passer en paramétre une liste de "providers" ??? ca permettrait de facilement initialiser l'application avec une redéfinition de certains service par l'utilisateur !!!
     // TODO : il faudrait automatiquement ajouter le ConsoleDispatcher à l'application car on aura toujours le package chiron/console de présent pour ce framework et on doit pourvoir utiliser la console, donc ajouter d'office cette classe au tableau des dispatchers ca nous fera gagner du temps (et donc la classe Console\Bootloader\ConsoleDispatcherBootloader n'est plus nécessaire !!!!)
-    public static function init(array $paths, array $values = [], bool $handleErrors = true): self
+    public static function init(array $paths, array $values = []): self
     {
-        // TODO : attention il faudrait pouvoir faire un register une seule fois pour les error handlers !!!!
-        // used to handle errors in the bootloaders processing.
-        if ($handleErrors) {
-            ErrorHandler::enable();
-        }
-
         // TODO : il faudrait gérer le cas ou l'application est déjà "create" et qu'on récupére cette instance plutot que de rappeller la méthode. (c'est dans le cas ou l'utilisateur fait un App::create qu'il ajoute des providers ou autre et qu'ensuite il fasse un App::init pour finaliser l'initialisation !!!) Je suppose qu'il faudra garder un constante public de classe static avec l'instance (comme pour Container::$instance). Cela permettra aussi de créer une fonction globale "app()" qui retournera l'instance de la classe Application::class. Cela permettra en plus de la facade Facade\Application de passer par cette méthode pour injecter des bootloader par exemple.
         $app = self::create();
 

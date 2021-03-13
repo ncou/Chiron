@@ -60,6 +60,7 @@ final class EnvironmentBootloader extends AbstractBootloader
 
     /**
      * Read the dot env file and insert the values in $_ENV and $_SERVER.
+     * If the dot env file isn't presents the load fail silently and return an empty array.
      *
      * @param string $path The directory path containing the dot env file.
      *
@@ -73,6 +74,7 @@ final class EnvironmentBootloader extends AbstractBootloader
 
         $dotenv = Dotenv::createImmutable($path, '.env');
 
+        // TODO : vérifier que cela retourne bien un tableau vide si le fichier .env n'est pas trouvé (cad lors du silent fail).
         try {
             // Load environment file in given directory path, silently failing if it doesn't exist.
             return $dotenv->safeLoad();
