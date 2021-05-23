@@ -8,6 +8,8 @@ use Chiron\Core\Directories;
 use Chiron\Filesystem\Filesystem;
 use RuntimeException;
 
+//https://github.com/top-think/framework/blob/6.0/src/think/console/command/ServiceDiscover.php
+
 // TODO : vérifier si les packages sont ordonnés => https://github.com/thecodingmachine/discovery/blob/c5d15800bdd7ddf8390d00eeb9e570142eb69f10/src/PackagesOrderer.php
 
 // TODO : on devrait surement forcer un refresh de ce fichier packages.php lorsque l'utilisateur fait un "composer -dump-update" c'est à dire qu'il faudrait lancer la commande de clean du cache à ce moment là !!!
@@ -34,8 +36,9 @@ final class PackageManifest
     public function __construct(Filesystem $filesystem, Directories $directories)
     {
         $this->filesystem = $filesystem;
-        $this->cacheDir = $directories->get('@cache');
+
         $this->vendorDir = $directories->get('@vendor');
+        $this->cacheDir = $directories->get('@cache');
         $this->manifestPath = $this->cacheDir . 'packages.json';
     }
 
@@ -80,7 +83,7 @@ final class PackageManifest
         // Ensure the directory exists and is writable.
         if (! is_writable($this->cacheDir)) {
             // TODO : utiliser un sprintf()
-            // TODO : lever une ApplicationException::class
+            // TODO : lever une ApplicationException::class ou une ImproperlyConfiguredException ????
             throw new RuntimeException('The ' . $this->cacheDir . ' directory must be present and writable.');
         }
 

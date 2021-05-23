@@ -20,6 +20,7 @@ use Closure;
 //https://github.com/spiral/framework/blob/e865a013af9b75b712192c477b80066abb02ec0d/src/Framework/Command/PublishCommand.php
 //https://github.com/spiral/framework/blob/e865a013af9b75b712192c477b80066abb02ec0d/src/Framework/Module/Publisher.php
 
+// TODO : déplacer cette méthode dans le package chiron/core ????
 // TODO : passer les méthodes "perform" en protected pour chaque classe de type "Command"
 final class PublishCommand extends AbstractCommand
 {

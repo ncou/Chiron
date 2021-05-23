@@ -4,30 +4,30 @@ namespace Chiron\Bootloader;
 
 use Chiron\Application;
 use Chiron\Core\Container\Bootloader\AbstractBootloader;
-use Chiron\Container\FactoryInterface;
 use Chiron\Composer\PackageManifest;
+use Chiron\Service\ServiceManager;
+
+//https://github.com/top-think/framework/blob/4de6f58c5e12a1ca80c788887b5208a6705f85d3/src/think/initializer/RegisterService.php
 
 final class PackageManifestBootloader extends AbstractBootloader
 {
     /**
-     * Execute the providers & bootloaders classes found in the composer packages manifest.
+     * Add the services providers & bootloaders found in the composer packages manifest.
      *
      * @param PackageManifest  $manifest
-     * @param Application      $application
-     * @param FactoryInterface $factory
+     * @param ServiceManager      $services
      */
-    // TODO : créer une fonction "factory()" dans le fichier function.php pour permettre d'initialiser les classes sans avoir à passer en paramétre un FactoryInterface !!!!
-    public function boot(PackageManifest $manifest, Application $application, FactoryInterface $factory): void
+    public function boot(PackageManifest $manifest, ServiceManager $services): void
     {
         foreach ($manifest->getProviders() as $provider) {
             if (class_exists($provider)) {
-                $application->addProvider($factory->build($provider));
+                $services->addProvider($provider);
             }
         }
 
         foreach ($manifest->getBootloaders() as $bootloader) {
             if (class_exists($bootloader)) {
-                $application->addBootloader($factory->build($bootloader));
+                $services->addBootloader($bootloader);
             }
         }
     }

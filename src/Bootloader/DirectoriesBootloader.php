@@ -28,16 +28,17 @@ final class DirectoriesBootloader extends AbstractBootloader
     /**
      * @param Directories $directories
      */
-    public function boot(Directories $directories): void
+    public function boot(Directories $directories, Filesystem $filesystem): void
     {
+        // Use default directories structure if needed.
         $directories->init(self::mapDirectories($this->paths));
-        // insert the chiron framwork path for later use.
+        // Insert the chiron framwork path for later use.
         $directories->set('framework', Framework::path());
-        // some folders should be presents and writables.
+
+        // Some folders should be presents and writables.
         //self::assertWritableDir($directories, ['@runtime', '@cache']); // TODO : il faudrait plutot faire un Filesystem->ensureDirectoryExist(xxxx) pour forcer la création du répertoire si il n'existe pas !!!!
 
         // TODO : eventuellement lever une exception si on n'arrive pas à créer ces répertoires !!! cad faire un try/catch autour de ces 2 appels !!!
-        $filesystem = new Filesystem();
         $filesystem->ensureDirectoryExists($directories->get('@runtime'));
         $filesystem->ensureDirectoryExists($directories->get('@cache'));
     }
@@ -61,19 +62,18 @@ final class DirectoriesBootloader extends AbstractBootloader
 
         // TODO : il faudrait pas ajouter un répertoire pour les logs ???? => https://github.com/spiral/app/blob/85705bb7a0dafd010a83fa4bcc7323b019d8dda3/app/src/Bootloader/LoggingBootloader.php#L29
         // TODO : faire le ménage on doit pas avoir besoin de tous ces répertoires !!! notamment le répertoire '@public' qui ne sert à rien lorsqu'on fait une application en ligne de commandes !!!!
-        // TODO : ajouter de maniére séparé le chemin ver vendor !!!
+        // TODO : ajouter de maniére séparé le chemin vers vendor !!!
         $default = [
             '@app'          => '@root/app/',
             '@config'       => '@root/config/',
             '@public'       => '@root/public/',
             '@resources'    => '@root/resources/',
             '@runtime'      => '@root/runtime/',
-            '@vendor'       => '@root/vendor/', // Assume a standard Composer directory structure unless specified
+            '@vendor'       => '@root/vendor/', // Assume a standard Composer directory structure unless specified.
             '@cache'        => '@runtime/cache/',
         ];
 
         // if a view engine is installed, we add the default 'views' folder.
-        // TODO : améliorer ce bout de code !!!!
         if (interface_exists(TemplateRendererInterface::class)) {
             $default['@views'] = '@resources/views/';
         }
@@ -97,6 +97,7 @@ final class DirectoriesBootloader extends AbstractBootloader
                 throw new DirectoryException('Directories paths aliases must be an associative array.');
             }
             // check if alias doesn't start with '@'
+            // TODO : utiliser la méthode Str::startWith(xxxx)
             if (strncmp($alias, '@', 1) !== 0) {
                 $aliases['@' . $alias] = $path;
             } else {
