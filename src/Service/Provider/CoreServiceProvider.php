@@ -56,10 +56,10 @@ final class CoreServiceProvider implements ServiceProviderInterface
 
         // Insert the default application commands.
         $commands = [
+            //\Chiron\Discover\Command\PackageDiscoverCommand::class,
             \Chiron\Command\AboutCommand::class,
             \Chiron\Command\CacheClearCommand::class,
             \Chiron\Command\DebugConfigCommand::class,
-            \Chiron\Command\PackageDiscoverCommand::class,
             \Chiron\Command\PublishCommand::class,
             \Chiron\Command\ThanksCommand::class,
         ];

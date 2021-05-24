@@ -12,6 +12,7 @@
         "ext-mbstring": "*",
         "ext-intl": "*",
         "chiron/core": "^1.0",
+        "chiron/discover": "^1.0",
         "chiron/debug": "^1.0",
         "chiron/security": "^1.0"
     },
