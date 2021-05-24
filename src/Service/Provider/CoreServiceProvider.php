@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Provider;
+namespace Chiron\Service\Provider;
 
 use Chiron\Container\Container;
 use Chiron\Core\Container\Bootloader\BootloaderInterface;

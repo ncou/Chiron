@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Bootloader;
+namespace Chiron\Service\Bootloader;
 
 use Chiron\Core\Directories;
 use Chiron\Core\Container\Bootloader\AbstractBootloader;

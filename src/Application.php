@@ -6,22 +6,22 @@ namespace Chiron;
 
 use Chiron\Core\Container\Bootloader\BootloaderInterface;
 use Chiron\Core\Container\Provider\ServiceProviderInterface;
-use Chiron\Bootloader\ConfigureBootloader;
-use Chiron\Bootloader\DirectoriesBootloader;
-use Chiron\Bootloader\EnvironmentBootloader;
-use Chiron\Bootloader\SettingsBootloader;
+use Chiron\Service\Bootloader\ConfigureBootloader;
+use Chiron\Service\Bootloader\DirectoriesBootloader;
+use Chiron\Service\Bootloader\EnvironmentBootloader;
+use Chiron\Service\Bootloader\SettingsBootloader;
 use Chiron\Container\Container;
 use Chiron\Core\Dispatcher\DispatcherInterface;
 use Chiron\Debug\ErrorHandler;
 use Chiron\Exception\ApplicationException;
 use Chiron\Service\ServiceManager;
 use Chiron\Core\Container\ContainerFactory;
-use Chiron\Provider\CoreServiceProvider;
+use Chiron\Service\Provider\CoreServiceProvider;
 
 use Chiron\Config\InjectableConfigInterface;
 use Chiron\Core\Container\Mutation\InjectableConfigMutation;
-use Chiron\Bootloader\PackageManifestBootloader;
-use Chiron\Bootloader\ServicesBootloader;
+use Chiron\Service\Bootloader\PackageManifestBootloader;
+use Chiron\Service\Bootloader\ServicesBootloader;
 use Chiron\Dispatcher\ConsoleDispatcher;
 
 //https://github.com/swoft-cloud/swoft-framework/blob/0702d93baf8ee92bc4d1651fe0cda2a022197e98/src/SwoftApplication.php
@@ -76,7 +76,7 @@ final class Application
 
         // +++ Bind all the core services. +++
         $this->services->addProvider(new CoreServiceProvider());
-        // +++ Boot all the services. +++
+        // +++ Boot all the app services. +++
         $this->services->addBootloader(new DirectoriesBootloader($paths));
         $this->services->addBootloader(new EnvironmentBootloader($values));
 

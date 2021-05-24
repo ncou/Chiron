@@ -40,7 +40,7 @@ final class ServiceManager
     {
         $this->container = new Container();
         // Bind this ServiceManager instance as singleton in the container.
-        $this->container->singleton(ServiceManager::class, $this);
+        $this->container->singleton(self::class, $this);
     }
 
     /**
@@ -57,6 +57,7 @@ final class ServiceManager
         }
 
         // TODO : vérifier que c'est bien une instance ServiceProviderInterface::class sinon lever une exception !!!
+
         $provider->register($this->container);
     }
 

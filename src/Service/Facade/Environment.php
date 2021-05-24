@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Chiron\Facade;
+namespace Chiron\Service\Facade;
 
 use Chiron\Core\Facade\AbstractFacade;
 

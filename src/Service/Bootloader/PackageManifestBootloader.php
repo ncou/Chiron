@@ -1,6 +1,6 @@
 <?php
 
-namespace Chiron\Bootloader;
+namespace Chiron\Service\Bootloader;
 
 use Chiron\Application;
 use Chiron\Core\Container\Bootloader\AbstractBootloader;
