@@ -8,7 +8,7 @@ use Chiron\Application;
 use Chiron\Core\Directories;
 use Chiron\Core\Environment;
 use Chiron\Filesystem\Path;
-use Chiron\Bootloader\EnvironmentBootloader;
+use Chiron\Service\Bootloader\EnvironmentBootloader;
 use Chiron\Core\Command\AbstractCommand;
 use Chiron\Filesystem\Filesystem;
 use Chiron\Framework;

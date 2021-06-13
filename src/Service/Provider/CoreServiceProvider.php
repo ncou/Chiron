@@ -8,13 +8,15 @@ use Chiron\Container\Container;
 use Chiron\Core\Container\Bootloader\BootloaderInterface;
 use Chiron\Core\Container\Provider\ServiceProviderInterface;
 use Chiron\Container\BindingInterface;
+use Chiron\Container\ContainerAwareInterface;
 
 use Chiron\Core\Directories;
 
 use Chiron\Config\InjectableConfigInterface;
-use Chiron\Core\Container\Mutation\InjectableConfigMutation;
+use Chiron\Service\Mutation\InjectableConfigMutation;
+use Chiron\Service\Mutation\ContainerAwareMutation;
 
-use Chiron\Core\Publisher;
+use Chiron\Publisher\Publisher;
 use Chiron\Config\Configure;
 use Chiron\Console\Console;
 use Chiron\Core\Command\CommandLoader;
@@ -25,17 +27,28 @@ use Chiron\Config\Loader\PhpLoader;
 use Closure;
 use Chiron\Filesystem\Filesystem;
 
+use Chiron\Config\EventsConfig;
+use Chiron\Event\EventDispatcher;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Chiron\Event\ListenerProvider;
+use Psr\EventDispatcher\ListenerProviderInterface;
+
 final class CoreServiceProvider implements ServiceProviderInterface
 {
     public function register(BindingInterface $binder): void
     {
-        // TODO : ajouter aussi la mutation pour le ContainerAwareInterface pour injecter le container d'office !!!
-
         $binder->mutation(InjectableConfigInterface::class, [InjectableConfigMutation::class, 'mutation']);
+        $binder->mutation(ContainerAwareInterface::class, [ContainerAwareMutation::class, 'mutation']);
 
         $binder->singleton(Console::class, Closure::fromCallable([static::class, 'registerConsole']));
         $binder->singleton(Configure::class, Closure::fromCallable([static::class, 'registerConfigure']));
         $binder->singleton(Publisher::class, Closure::fromCallable([static::class, 'registerPublisher']));
+
+        // TODO : améliorer ces deux bindings ???? surtout qu'on devrait binder ces classes au niveau du package chiron/core !!!!
+        $binder->singleton(ListenerProvider::class, Closure::fromCallable([static::class, 'registerProvider']));
+        $binder->singleton(ListenerProviderInterface::class, \Chiron\Container\Reference::to(ListenerProvider::class)); // TODO : remplacer cette ligne par un ->alias()
+        $binder->singleton(EventDispatcher::class);
+        $binder->singleton(EventDispatcherInterface::class, EventDispatcher::class);
     }
 
     private static function registerConsole(Container $container, ConsoleConfig $config): Console
@@ -54,6 +67,7 @@ final class CoreServiceProvider implements ServiceProviderInterface
             $console->addCommand($command::getDefaultName(), $command);
         }
 
+        // TODO : mettre ce bout de code dans un BootLoader !!!!
         // Insert the default application commands.
         $commands = [
             //\Chiron\Discover\Command\PackageDiscoverCommand::class,
@@ -62,6 +76,7 @@ final class CoreServiceProvider implements ServiceProviderInterface
             \Chiron\Command\DebugConfigCommand::class,
             \Chiron\Command\PublishCommand::class,
             \Chiron\Command\ThanksCommand::class,
+            \Chiron\Command\EventsCommand::class,
         ];
 
         foreach ($commands as $command) {
@@ -88,10 +103,23 @@ final class CoreServiceProvider implements ServiceProviderInterface
         // TODO : utiliser plutot $directories->get('@framework/config/app.php.dist') au lieu d'utiliser le chemin __DIR__ ???? ou éventuellement la constante public CHIRON_PATH qui est définie dans la classe Application::class !!!
 
         // copy the configuration file template from the package "config" folder to the user "config" folder.
-        $publisher->add(__DIR__ . '/../../config/console.php.dist', $directories->get('@config/console.php'));
-        $publisher->add(__DIR__ . '/../../config/services.php.dist', $directories->get('@config/services.php'));
-        $publisher->add(__DIR__ . '/../../config/settings.php.dist', $directories->get('@config/settings.php'));
+        $publisher->add(__DIR__ . '/../../../config/console.php.dist', $directories->get('@config/console.php'));
+        $publisher->add(__DIR__ . '/../../../config/events.php.dist', $directories->get('@config/events.php'));
+        $publisher->add(__DIR__ . '/../../../config/services.php.dist', $directories->get('@config/services.php'));
+        $publisher->add(__DIR__ . '/../../../config/settings.php.dist', $directories->get('@config/settings.php'));
 
         return $publisher;
+    }
+
+    // TODO : utiliser un FactoryInterface pour créer la classe de type ProviderInterface qui correspond au listener !!!!
+    private static function registerProvider(EventsConfig $config): ListenerProvider
+    {
+        $provider = new ListenerProvider();
+
+        foreach ($config->getListeners() as $listener) {
+            $provider->attach(resolve($listener)); // TODO : utiliser plutot la fonction FactoryInterface::build()
+        }
+
+        return $provider;
     }
 }

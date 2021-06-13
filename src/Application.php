@@ -11,18 +11,17 @@ use Chiron\Service\Bootloader\DirectoriesBootloader;
 use Chiron\Service\Bootloader\EnvironmentBootloader;
 use Chiron\Service\Bootloader\SettingsBootloader;
 use Chiron\Container\Container;
-use Chiron\Core\Dispatcher\DispatcherInterface;
+use Chiron\Core\Engine\EngineInterface;
 use Chiron\Debug\ErrorHandler;
 use Chiron\Exception\ApplicationException;
 use Chiron\Service\ServiceManager;
 use Chiron\Core\Container\ContainerFactory;
 use Chiron\Service\Provider\CoreServiceProvider;
-
 use Chiron\Config\InjectableConfigInterface;
 use Chiron\Core\Container\Mutation\InjectableConfigMutation;
 use Chiron\Service\Bootloader\PackageManifestBootloader;
 use Chiron\Service\Bootloader\ServicesBootloader;
-use Chiron\Dispatcher\ConsoleDispatcher;
+use Chiron\Engine\ConsoleEngine;
 
 //https://github.com/swoft-cloud/swoft-framework/blob/0702d93baf8ee92bc4d1651fe0cda2a022197e98/src/SwoftApplication.php
 
@@ -48,8 +47,8 @@ use Chiron\Dispatcher\ConsoleDispatcher;
 
 final class Application
 {
-    /** @var DispatcherInterface[] */
-    private $dispatchers = [];
+    /** @var EngineInterface[] */
+    private $engines = [];
     /** @var ServiceManager */
     public $services;
 
@@ -96,7 +95,7 @@ final class Application
 
         $container = $this->services->container;
 
-        $this->addDispatcher(new ConsoleDispatcher($container));
+        $this->addEngine(new ConsoleEngine($container));
 
         // Register the application instance as singleton in the container.
         // TODO : déplacer cet appel directement dans le constructeur de la classe Application::class ????
@@ -105,17 +104,18 @@ final class Application
     }
 
     /**
-     * Add new dispatcher. This method must only be called before method `start` will be invoked.
+     * Add new engine. This method must only be called before method `start` will be invoked.
      *
-     * @param DispatcherInterface $dispatcher
+     * @param EngineInterface $engine
      */
     // TODO : il faudrait gérer le cas ou l'on souhaite ajouter un dispatcher au dessus de la stack. Ajouter un paramétre 'bool $onTop = false' à cette méthode ????
     // TODO : permettre de gérer les dispatchers dans les fichiers composer.json (partie "extra") et les charger via le packagemanifest ????
     // TODO : permettre de passer une string en paramétre et utiliser le container qui est aussi un FactoryInterface pour "créer" la classe passée en paramétre !!!
     // TODO : permettre de passer une string pour le dispatcher ca sera plus simple pour l'utilisateur. utiliser la fonction "resolve()" et vérifier que le type de retour est bien un objet qui implémente DispatcherInterface !!!!
-    public function addDispatcher(DispatcherInterface $dispatcher): void
+    // TODO : renommer les dispatcher en engine et appeller la méthode ignite() puis run() et isActive() sur le engine au lieu de la méthode dispatch()
+    public function addEngine(EngineInterface $engine): void
     {
-        $this->dispatchers[] = $dispatcher;
+        $this->engines[] = $engine;
     }
 
     /**
@@ -133,14 +133,14 @@ final class Application
         $this->services->boot();
 
         // Dispatch the request based on the environment values (ex: Console or Web dispatcher).
-        foreach ($this->dispatchers as $dispatcher) {
-            if ($dispatcher->canDispatch()) {
-                return $dispatcher->dispatch();
+        foreach ($this->engines as $engine) {
+            if ($engine->isActive()) {
+                return $engine->ignite();
             }
         }
 
         // TODO : lever aussi une ApplicationException en début de méthode (juste aprés l'appel à la méthode ->boot()) dans le cas le tableau de $this->dispatchers est vide, car cela signifie que l'application est mal initialisée, et donc afficher un message pour demander à l'utilisateur de définir à minima un dispatcher !!!!
         // TODO : utiliser plutot l'exception ImproperlyConfiguredException ???? qui est dans le package chiron/core, cela permettra de virer la classe ApplicationException !!!!
-        throw new ApplicationException('Unable to locate active dispatcher.');
+        throw new ApplicationException('Unable to locate active engine.');
     }
 }

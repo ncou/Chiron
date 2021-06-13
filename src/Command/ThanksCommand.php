@@ -27,6 +27,9 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 //https://github.com/symfony/thanks/blob/main/src/Command/FundCommand.php
 //https://github.com/symfony/thanks/blob/main/src/Command/ThanksCommand.php
 
+//https://github.com/humanmade/altis-local-chassis/blob/master/inc/class-command.php#L144
+//https://github.com/humanmade/altis-local-chassis/blob/master/inc/class-command.php#L179
+
 /**
  * A console command to display information about the current installation.
  */

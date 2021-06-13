@@ -8,6 +8,8 @@ use Chiron\Core\Directories;
 use Chiron\Core\Command\AbstractCommand;
 use Chiron\Filesystem\Filesystem;
 
+//https://github.com/top-think/framework/blob/6.0/src/think/console/command/Clear.php
+
 // TODO : passer les méthodes "perform" en protected pour chaque classe de type "Command"
 // TODO : utiliser le mot "clean" plutot que clear ????
 final class CacheClearCommand extends AbstractCommand
@@ -28,9 +30,10 @@ final class CacheClearCommand extends AbstractCommand
         if ($filesystem->missing($cacheDir)) {
             $this->writeln('Cache directory is missing, no cache to be cleaned.');
 
-            return 0;
+            return self::SUCCESS;
         }
 
+        // TODO : afficher une question pour confirmer avec l'utilisateur qu'on supprime le répertoire XXXX, et lui afficher le chemin pour qu'on ait bien conscience de ce qui va être supprimé !!!!
         // TODO : ajouter un try catch des \Throwable et afficher une erreur si c'est le cas ????
         $deleted = $filesystem->deleteDirectory($cacheDir, true);
 
@@ -50,18 +53,15 @@ final class CacheClearCommand extends AbstractCommand
         if ($deleted === false) {
             $this->error('Application runtime cache failed to be cleaned.');
 
-            return 1;
+            return self::FAILURE;
         }
 
         if ($this->isVerbose()) {
-            $this->sprintf(
-                "<fg=green>[cleaned]</fg=green> `%s`\n",
-                $cacheDir
-            );
+            $this->sprintf("<fg=green>[cleaned]</fg=green> `%s`\n",$cacheDir);
         }
 
         $this->success('Application runtime cache cleaned.');
 
-        return 0;
+        return self::SUCCESS;
     }
 }

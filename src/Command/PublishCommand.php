@@ -6,10 +6,10 @@ namespace Chiron\Command;
 
 use Chiron\Core\Command\AbstractCommand;
 use Chiron\Filesystem\Filesystem;
-use Chiron\Core\Publisher;
+use Chiron\Publisher\Publisher;
 use Chiron\Core\Directories;
 use Symfony\Component\Console\Input\InputOption;
-use Chiron\Core\Exception\PublishException;
+use Chiron\Publisher\Exception\PublisherException;
 use Closure;
 
 // DOCUMENTATION : https://stillat.com/blog/2016/12/07/laravel-artisan-vendor-command-the-vendorpublish-command
@@ -51,7 +51,7 @@ final class PublishCommand extends AbstractCommand
 
         try {
             $publisher->publish($this->option('force'));
-        } catch(PublishException $e){
+        } catch(PublisherException $e){
             $this->error($e->getMessage());
 
             return self::FAILURE;

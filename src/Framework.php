@@ -6,6 +6,8 @@ namespace Chiron;
 
 //https://github.com/swoft-cloud/swoft-component/blob/master/src/framework/src/Swoft.php
 
+// TODO : déplacer dans le répertoire chiron/core
+
 /**
  * Framework properties (name/version/path/logo).
  */
