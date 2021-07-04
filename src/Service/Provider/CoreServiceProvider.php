@@ -45,7 +45,7 @@ final class CoreServiceProvider implements ServiceProviderInterface
         $binder->singleton(Publisher::class, Closure::fromCallable([static::class, 'registerPublisher']));
 
         // TODO : améliorer ces deux bindings ???? surtout qu'on devrait binder ces classes au niveau du package chiron/core !!!!
-        $binder->singleton(ListenerProvider::class, Closure::fromCallable([static::class, 'registerProvider']));
+        $binder->singleton(ListenerProvider::class, Closure::fromCallable([static::class, 'registerListenerProvider']));
         $binder->singleton(ListenerProviderInterface::class, \Chiron\Container\Reference::to(ListenerProvider::class)); // TODO : remplacer cette ligne par un ->alias()
         $binder->singleton(EventDispatcher::class);
         $binder->singleton(EventDispatcherInterface::class, EventDispatcher::class);
@@ -75,7 +75,7 @@ final class CoreServiceProvider implements ServiceProviderInterface
             \Chiron\Command\CacheClearCommand::class,
             \Chiron\Command\DebugConfigCommand::class,
             \Chiron\Command\PublishCommand::class,
-            \Chiron\Command\ThanksCommand::class,
+            //\Chiron\Command\ThanksCommand::class,
             \Chiron\Command\EventsCommand::class,
         ];
 
@@ -112,7 +112,7 @@ final class CoreServiceProvider implements ServiceProviderInterface
     }
 
     // TODO : utiliser un FactoryInterface pour créer la classe de type ProviderInterface qui correspond au listener !!!!
-    private static function registerProvider(EventsConfig $config): ListenerProvider
+    private static function registerListenerProvider(EventsConfig $config): ListenerProvider
     {
         $provider = new ListenerProvider();
 

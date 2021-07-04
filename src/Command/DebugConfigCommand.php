@@ -11,7 +11,6 @@ use Chiron\Filesystem\Path;
 use Chiron\Bootloader\EnvironmentBootloader;
 use Chiron\Core\Command\AbstractCommand;
 use Chiron\Filesystem\Filesystem;
-use Chiron\Framework;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputArgument;

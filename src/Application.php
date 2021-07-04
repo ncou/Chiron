@@ -100,7 +100,6 @@ final class Application
         // Register the application instance as singleton in the container.
         // TODO : déplacer cet appel directement dans le constructeur de la classe Application::class ????
         $container->singleton(self::class, $this);
-
     }
 
     /**
@@ -129,12 +128,15 @@ final class Application
     // TODO : il faudrait s'inspirer de la méthode safelyBootAndGetHandler() qui fait un try/catch autour du boot avant de retourner la méthode qui sera executée : https://github.com/flarum/core/blob/master/src/Http/Server.php#L53
     public function start()
     {
+        // TODO : Eventuellement lever un événement de type ApplicationStartupEvent::class avec en paramétre le microtime pour connaitre l'heure de début de l'application.
         // TODO : il faudrait surement mettre un try/catch autour de la méthode boot() et dans le catch utiliser la classe ErrorHandler::handleException($e) pour afficher les erreurs, ca permettrait d'aoir une gestion des erreurs même si l'utilisateur n'a pas utilisé la méthode init() avec le paramétre $handleErrors à true !!!  https://github.com/spiral/framework/blob/e63b9218501ce882e661acac284b7167b79da30a/src/Boot/src/AbstractKernel.php#L146
         $this->services->boot();
 
         // Dispatch the request based on the environment values (ex: Console or Web dispatcher).
         foreach ($this->engines as $engine) {
             if ($engine->isActive()) {
+                // TODO : Lever ici un evenement de type EngineFoundEvent::class ou EngineMatchedEvent::class avec en paramétre le $engine pour avoir l'instance (et donc le getclassname) dans l'événement.
+                // TODO : Eventuellement lever un événement de type ApplicationShutdownEvent::class avec en paramétre le microtime pour connaitre l'heure de fin de l'application avant de retourner la réponse. https://github.com/yiisoft/yii-web/blob/master/src/Application.php#L46
                 return $engine->ignite();
             }
         }

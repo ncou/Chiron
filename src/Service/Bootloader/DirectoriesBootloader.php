@@ -33,7 +33,7 @@ final class DirectoriesBootloader extends AbstractBootloader
         // Use default directories structure if needed.
         $directories->init(self::mapDirectories($this->paths));
         // Insert the chiron framwork path for later use.
-        $directories->set('framework', Framework::path());
+        $directories->set('framework', Framework::path()); // TODO : pas vraiment utile, à virer !!!!
 
         // Some folders should be presents and writables.
         //self::assertWritableDir($directories, ['@runtime', '@cache']); // TODO : il faudrait plutot faire un Filesystem->ensureDirectoryExist(xxxx) pour forcer la création du répertoire si il n'existe pas !!!!
@@ -74,6 +74,7 @@ final class DirectoriesBootloader extends AbstractBootloader
         ];
 
         // if a view engine is installed, we add the default 'views' folder.
+        //https://github.com/spiral/framework/blob/master/src/Framework/Bootloader/Views/ViewsBootloader.php#L47
         if (interface_exists(TemplateRendererInterface::class)) {
             $default['@views'] = '@resources/views/';
         }

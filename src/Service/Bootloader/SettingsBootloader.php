@@ -28,6 +28,8 @@ final class SettingsBootloader extends AbstractBootloader
         // TODO : ajouter un try/catch
         date_default_timezone_set($settings->getTimezone());
 
+        //date_default_timezone_set('Europe/Paris');
+
         /*
          * Set the default locale. This controls how dates, number and currency is
          * formatted and sets the default language to use for translations.
