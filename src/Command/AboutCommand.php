@@ -11,10 +11,11 @@ use Chiron\Filesystem\Path;
 use Chiron\Service\Bootloader\EnvironmentBootloader;
 use Chiron\Core\Command\AbstractCommand;
 use Chiron\Filesystem\Filesystem;
-use Chiron\Framework;
+use Chiron\Core\Core;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\TableSeparator;
 
+//https://github.com/hhxsv5/laravel-s/blob/master/src/Illuminate/LaravelSCommand.php#L69
 //https://github.com/flarum/core/blob/master/src/Foundation/Console/InfoCommand.php
 
 /**
@@ -33,14 +34,14 @@ final class AboutCommand extends AbstractCommand
         $this->setDescription('Displays information about the current project');
     }
 
-    public function perform(Directories $directories, Environment $environement): int
+    public function perform(Directories $directories, Environment $environement, Core $core): int
     {
         $rows = [
             ['<info>Framework</>'],
             new TableSeparator(),
-            ['Name', Framework::name()],
-            ['Version', Framework::version()],
-            ['Path', Framework::path()],
+            ['Name', Core::NAME],
+            ['Version', Core::VERSION],
+            //['Path', Framework::path()],
             //['Long-Term Support', 4 === Kernel::MINOR_VERSION ? 'Yes' : 'No'],
             //['End of maintenance', Kernel::END_OF_MAINTENANCE . (self::isExpired(Kernel::END_OF_MAINTENANCE) ? ' <error>Expired</>' : '')],
             //['End of life', Kernel::END_OF_LIFE . (self::isExpired(Kernel::END_OF_LIFE) ? ' <error>Expired</>' : '')],

@@ -8,6 +8,10 @@ use Chiron\Container\Container;
 use Chiron\Core\Container\Bootloader\BootloaderInterface;
 use Chiron\Core\Container\Provider\ServiceProviderInterface;
 use Chiron\Core\Provider\CoreServiceProvider;
+use Chiron\Event\EventDispatcher;
+use Chiron\Event\ListenerProvider;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\ListenerProviderInterface;
 
 /**
  * Manages Services living inside the Container.
@@ -39,6 +43,7 @@ final class ServiceManager
     public function __construct()
     {
         $this->container = new Container();
+
         // Bind this ServiceManager instance as singleton in the container.
         $this->container->singleton(self::class, $this);
     }
@@ -53,7 +58,7 @@ final class ServiceManager
     public function addProvider($provider): void
     {
         if (is_string($provider)) {
-            $provider = $this->container->build($provider); // TODO : améliorer le code ? cad mettre dans une methode resolve, et eventuellement faire un try/catch pour convertir les exception en ServiceException !!!
+            $provider = $this->container->injector()->build($provider); // TODO : améliorer le code ? cad mettre dans une methode resolve, et eventuellement faire un try/catch pour convertir les exception en ServiceException !!!
         }
 
         // TODO : vérifier que c'est bien une instance ServiceProviderInterface::class sinon lever une exception !!!
@@ -70,13 +75,13 @@ final class ServiceManager
     public function addBootloader($bootloader): void
     {
         if (is_string($bootloader)) {
-            $bootloader = $this->container->build($bootloader); // TODO : améliorer le code ? cad mettre dans une methode resolve, et eventuellement faire un try/catch pour convertir les exception en ServiceException !!!
+            $bootloader = $this->container->injector()->build($bootloader); // TODO : améliorer le code ? cad mettre dans une methode resolve, et eventuellement faire un try/catch pour convertir les exception en ServiceException !!!
         }
 
         // TODO : vérifier que c'est bien une instance BootloaderInterface::class sinon lever une exception !!!
 
         if ($this->booted) {
-            $bootloader->bootload($this->container); // TODO : attention il faudrait pas gérer le cas ou il y a un doublon dans les bootloaders ajoutés ????
+            $bootloader->bootload($this->container->injector()); // TODO : attention il faudrait pas gérer le cas ou il y a un doublon dans les bootloaders ajoutés ????
         } else {
             $this->bootloaders[] = $bootloader;
         }
@@ -91,7 +96,7 @@ final class ServiceManager
             $this->booted = true;
 
             foreach ($this->bootloaders as $bootloader) {
-                $bootloader->bootload($this->container);
+                $bootloader->bootload($this->container->injector());
             }
         }
     }

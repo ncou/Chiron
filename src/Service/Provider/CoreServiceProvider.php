@@ -9,12 +9,14 @@ use Chiron\Core\Container\Bootloader\BootloaderInterface;
 use Chiron\Core\Container\Provider\ServiceProviderInterface;
 use Chiron\Container\BindingInterface;
 use Chiron\Container\ContainerAwareInterface;
+use Chiron\Event\EventDispatcherAwareInterface;
 
 use Chiron\Core\Directories;
 
 use Chiron\Config\InjectableConfigInterface;
 use Chiron\Service\Mutation\InjectableConfigMutation;
 use Chiron\Service\Mutation\ContainerAwareMutation;
+use Chiron\Service\Mutation\EventDispatcherAwareMutation;
 
 use Chiron\Publisher\Publisher;
 use Chiron\Config\Configure;
@@ -33,13 +35,18 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Chiron\Event\ListenerProvider;
 use Psr\EventDispatcher\ListenerProviderInterface;
 
+use Chiron\Core\Core;
+use Chiron\Config\SettingsConfig;
+
 final class CoreServiceProvider implements ServiceProviderInterface
 {
     public function register(BindingInterface $binder): void
     {
         $binder->mutation(InjectableConfigInterface::class, [InjectableConfigMutation::class, 'mutation']);
         $binder->mutation(ContainerAwareInterface::class, [ContainerAwareMutation::class, 'mutation']);
+        $binder->mutation(EventDispatcherAwareInterface::class, [EventDispatcherAwareMutation::class, 'mutation']);
 
+        $binder->singleton(Core::class, Closure::fromCallable([static::class, 'registerCore']));
         $binder->singleton(Console::class, Closure::fromCallable([static::class, 'registerConsole']));
         $binder->singleton(Configure::class, Closure::fromCallable([static::class, 'registerConfigure']));
         $binder->singleton(Publisher::class, Closure::fromCallable([static::class, 'registerPublisher']));
@@ -49,6 +56,11 @@ final class CoreServiceProvider implements ServiceProviderInterface
         $binder->singleton(ListenerProviderInterface::class, \Chiron\Container\Reference::to(ListenerProvider::class)); // TODO : remplacer cette ligne par un ->alias()
         $binder->singleton(EventDispatcher::class);
         $binder->singleton(EventDispatcherInterface::class, EventDispatcher::class);
+    }
+
+    private static function registerCore(SettingsConfig $config): Core
+    {
+        return new Core($config->isDebug());
     }
 
     private static function registerConsole(Container $container, ConsoleConfig $config): Console
@@ -75,8 +87,8 @@ final class CoreServiceProvider implements ServiceProviderInterface
             \Chiron\Command\CacheClearCommand::class,
             \Chiron\Command\DebugConfigCommand::class,
             \Chiron\Command\PublishCommand::class,
-            //\Chiron\Command\ThanksCommand::class,
-            \Chiron\Command\EventsCommand::class,
+            \Chiron\Command\ThanksCommand::class,
+            \Chiron\Command\EventListCommand::class,
         ];
 
         foreach ($commands as $command) {
@@ -117,7 +129,7 @@ final class CoreServiceProvider implements ServiceProviderInterface
         $provider = new ListenerProvider();
 
         foreach ($config->getListeners() as $listener) {
-            $provider->attach(resolve($listener)); // TODO : utiliser plutot la fonction FactoryInterface::build()
+            $provider->add(resolve($listener)); // TODO : utiliser plutot la fonction FactoryInterface::build()
         }
 
         return $provider;

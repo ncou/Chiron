@@ -10,6 +10,10 @@ use Chiron\Core\Exception\EnvironmentException;
 use Dotenv\Dotenv;
 use Dotenv\Exception\InvalidFileException;
 
+// TODO : Exemple avec une classe qui remplace des valeurs dans le fichier .dotEnv
+//https://github.com/YasinSabir/gulive/blob/37c80420f66fa8cbff9e70ebfa4c24afe5587716/public/install_files/php/Installer.php#L265
+//https://github.com/YasinSabir/gulive/blob/37c80420f66fa8cbff9e70ebfa4c24afe5587716/common/Settings/DotEnvEditor.php#L5
+
 //https://github.com/swoft-cloud/swoft-framework/blob/c222ba60ce2463c60926d1cf0209309c1844eb8c/src/Processor/EnvProcessor.php
 
 //https://github.com/Anlamas/beejee/blob/master/src/Core/Config/ConfigServiceProvider.php

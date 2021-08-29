@@ -25,7 +25,7 @@ final class ConsoleEngine extends AbstractEngine
      */
     public function isActive(): bool
     {
-        // only run in pure CLI more, ignore under RoadRunner/ReactPhp/WorkerMan.
+        // only run in pure CLI mode, ignore under RoadRunner/ReactPhp/WorkerMan.
         return PHP_SAPI === 'cli'
             && env('RR') === null
             && env('REACT_PHP') === null

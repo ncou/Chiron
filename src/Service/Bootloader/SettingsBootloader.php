@@ -5,14 +5,19 @@ declare(strict_types=1);
 namespace Chiron\Service\Bootloader;
 
 use Chiron\Core\Container\Bootloader\AbstractBootloader;
-use Chiron\Core\Config\SettingsConfig;
+use Chiron\Config\SettingsConfig;
 
 //https://github.com/cakephp/app/blob/master/config/bootstrap.php
+//https://github.com/craftcms/cms/blob/develop/bootstrap/console.php#L26
+//https://github.com/craftcms/cms/blob/develop/bootstrap/web.php#L23
+//https://github.com/rahulbaruah/xcraft-akaunting/blob/20ee7e7a49bc8cb04db77c4ad05c01e41ed57fc9/app/Utilities/Installer.php#L106
+//https://github.com/abisb123/aka_abi/blob/c42a2c8b4263d2d3a2cd9392a0e6aaf1b18c6d55/app/Utilities/Installer.php#L131
 
 final class SettingsBootloader extends AbstractBootloader
 {
     // TODO : faire un gros try/catch sur les exceptions Throwable pour les 3 instructions ? et lever une ApplicationException si on rencontre une erreur ????
     // TODO : on fait rien avec le booléen debug ???? on devrait pas initialiser un error handler ou un truc dans le genre ???
+    // TODO : ajouter en paramétre la classe Core::class et initialiser la valeur du debug via une $core->setDebug($settings->isDebug()), et donc le singleton dans le CoreServiceProvider pour définir l'instance Core ne seravira plus à rien !!!!
     public function boot(SettingsConfig $settings): void
     {
         /*

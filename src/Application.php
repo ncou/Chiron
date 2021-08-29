@@ -10,6 +10,7 @@ use Chiron\Service\Bootloader\ConfigureBootloader;
 use Chiron\Service\Bootloader\DirectoriesBootloader;
 use Chiron\Service\Bootloader\EnvironmentBootloader;
 use Chiron\Service\Bootloader\SettingsBootloader;
+use Chiron\Service\Bootloader\EventsBootloader;
 use Chiron\Container\Container;
 use Chiron\Core\Engine\EngineInterface;
 use Chiron\Debug\ErrorHandler;
@@ -22,6 +23,21 @@ use Chiron\Core\Container\Mutation\InjectableConfigMutation;
 use Chiron\Service\Bootloader\PackageManifestBootloader;
 use Chiron\Service\Bootloader\ServicesBootloader;
 use Chiron\Engine\ConsoleEngine;
+
+// TODO : créer un StartEvent ou StartupEvent, ainsi qu'un TerminateEvent ou ShutdownEvent ou ExitEvent ou StopEvent/EndEvent. créer un InitEvent/InitializeEvent ???
+
+//Exemple avec tous les events gérés dans Symfony :
+//-------------------------------------------------
+//https://symfony.com/doc/current/reference/events.html
+
+
+// TODO : créer une méthode close() qui fait un exit avec le message passer en paramétre ? et eventuellement appeller un event du genre ApplicationCloseEvent::class
+//https://github.com/ventoviro/windwalker-application/blob/master/AbstractApplication.php#L64
+//https://github.com/yiisoft/yii-web/blob/master/src/Application.php#L46
+
+// TODO : Exemple d'événements :
+//https://github.com/ventoviro/windwalker-core/tree/a68508411be9c85003a1081e862eda67c897fd8e/src/Core/Events
+//https://github.com/yiisoft/yii-web/tree/master/src/Event
 
 //https://github.com/swoft-cloud/swoft-framework/blob/0702d93baf8ee92bc4d1651fe0cda2a022197e98/src/SwoftApplication.php
 
@@ -52,15 +68,9 @@ final class Application
     /** @var ServiceManager */
     public $services;
 
-    /**
-     * Private constructor. Use method 'init()' to build the app.
-     *
-     * @param Container $container
-     */
     // TODO : ca serait bien de passer directement un ServiceManager dans le constructeur plutot qu'on objet container qu'on ne devrait pas manipuler directement dans cette classe !!!!
     // TODO : passer le constructeur en public et lever une exception si on essaye d'instancier cette classe sans passer par la méthode static::create() !!!! éventuellement utiliser cette classe d'utilitaire pour limiter les appels statics et le constructeur : https://github.com/nette/utils/blob/0e350ef848fa9586eac0748479ca013e8fab6cbd/src/StaticClass.php
     // TODO : ajouter automatiquement le ConsoleDispatcher dans le tableau $this->dispatchers[] ??? ca éviterai de faire un appel au ConsoleDispatcherBootloader !!!
-
 
     // TODO : ajouter un paramétre boolen $debug pour savoir si on active ou non le error handler->register()
     // TODO : tester le cas ou on appel plusieurs fois cette méthode. Il faudra surement éviter de réinsérer plusieurs fois les bootloaders et autres service provider
@@ -95,7 +105,8 @@ final class Application
 
         $container = $this->services->container;
 
-        $this->addEngine(new ConsoleEngine($container));
+        // TODO : lever un évenement de type "InitEvent" en attachant l'application comme paramétre, et c'est à ce moment là que le listener ajouterai le ConsoleEngine !!!!
+        $this->addEngine(new ConsoleEngine($container->injector()));
 
         // Register the application instance as singleton in the container.
         // TODO : déplacer cet appel directement dans le constructeur de la classe Application::class ????
@@ -145,4 +156,78 @@ final class Application
         // TODO : utiliser plutot l'exception ImproperlyConfiguredException ???? qui est dans le package chiron/core, cela permettra de virer la classe ApplicationException !!!!
         throw new ApplicationException('Unable to locate active engine.');
     }
+
+    /**
+     * is utilized for reading data from inaccessible members.
+     *
+     * @param   $name  string
+     *
+     * @return  mixed
+     */
+    //https://github.com/ventoviro/windwalker-application/blob/master/AbstractApplication.php#L222
+    /*
+    public function __get($name)
+    {
+        $allowNames = [
+            'config',
+        ];
+
+        if (in_array($name, $allowNames)) {
+            return $this->$name;
+        }
+
+        throw new \UnexpectedValueException('Property: ' . $name . ' not found in ' . get_called_class());
+    }*/
+
+    /**
+     * is utilized for reading data from inaccessible members.
+     *
+     * @param   $name  string
+     *
+     * @return  mixed
+     */
+    //https://github.com/ventoviro/windwalker-application/blob/master/AbstractWebApplication.php#L400
+    /*
+    public function __get($name)
+    {
+        $allowNames = [
+            'environment',
+            'server',
+        ];
+
+        if (in_array($name, $allowNames, true)) {
+            return $this->$name;
+        }
+
+        $getters = [
+            'uri',
+            'request',
+            'browser',
+            'platform',
+        ];
+
+        if (in_array(strtolower($name), $getters, true)) {
+            $method = 'get' . ucfirst($name);
+
+            return $this->$method();
+        }
+
+        return parent::__get($name);
+    }*/
+
+
+    /**
+     * Method to close the application.
+     *
+     * @param   integer|string $message The exit code (optional; default is 0).
+     *
+     * @return  void
+     *
+     * @since   2.0
+     */
+    /*
+    public function close($message = 0)
+    {
+        exit($message);
+    }*/
 }

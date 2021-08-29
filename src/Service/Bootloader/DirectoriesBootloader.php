@@ -7,7 +7,7 @@ namespace Chiron\Service\Bootloader;
 use Chiron\Core\Directories;
 use Chiron\Core\Container\Bootloader\AbstractBootloader;
 use Chiron\Core\Exception\DirectoryException;
-use Chiron\Framework;
+//use Chiron\Framework;
 use Chiron\Views\TemplateRendererInterface;
 use Chiron\Filesystem\Filesystem;
 
@@ -33,7 +33,7 @@ final class DirectoriesBootloader extends AbstractBootloader
         // Use default directories structure if needed.
         $directories->init(self::mapDirectories($this->paths));
         // Insert the chiron framwork path for later use.
-        $directories->set('framework', Framework::path()); // TODO : pas vraiment utile, à virer !!!!
+        //$directories->set('framework', Framework::path()); // TODO : pas vraiment utile, à virer !!!! // TODO : attention il faudrait pas plutot mettre un "@" devant "framework" ????
 
         // Some folders should be presents and writables.
         //self::assertWritableDir($directories, ['@runtime', '@cache']); // TODO : il faudrait plutot faire un Filesystem->ensureDirectoryExist(xxxx) pour forcer la création du répertoire si il n'existe pas !!!!
@@ -113,6 +113,7 @@ final class DirectoriesBootloader extends AbstractBootloader
      * @param Directories $directories
      * @param array       $aliases
      */
+    // TODO : à virer !!!
     private static function assertWritableDir(Directories $directories, array $aliases): void
     {
         foreach ($aliases as $alias) {
