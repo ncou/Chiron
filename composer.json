@@ -21,8 +21,7 @@
         "phpstan/phpstan-phpunit": "^0.12",
         "chiron/coding-standard": "^3.0",
         "filp/whoops": "^2.2",
-        "chiron/template": "^1.1",
-        "nyholm/psr7": "^1.1"
+        "nyholm/psr7": "^1.4"
     },
     "suggest": {
         "filp/whoops": "Enables use of the debug displayer."
@@ -40,13 +39,14 @@
     "scripts": {
         "test": [
             "@phpunit",
-            "@phpcs",
-            "@phpstan"
+            "@phpstan",
+            "@check-style"
         ],
         "phpunit": "phpunit --colors=always",
-        "phpcs": "phpcs src",
-        "phpstan": "phpstan analyse src --level=0",
-        "test-coverage": "phpunit --coverage-clover clover.xml"
+        "test-coverage": "phpunit --coverage-clover clover.xml",
+        "phpstan": "phpstan analyse --ansi",
+        "check-style": "phpcs src tests",
+        "fix-style": "phpcbf src tests"
     },
     "minimum-stability": "dev",
     "prefer-stable": true
