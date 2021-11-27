@@ -6,7 +6,7 @@ use Chiron\Core\Directories;
 use Chiron\Core\Environment;
 use Chiron\Core\Container\Bootloader\AbstractBootloader;
 use Chiron\Config\Config;
-use Chiron\Core\Exception\EnvironmentException;
+use Chiron\Core\Exception\ImproperlyConfiguredException;
 use Dotenv\Dotenv;
 use Dotenv\Exception\InvalidFileException;
 
@@ -68,6 +68,8 @@ final class EnvironmentBootloader extends AbstractBootloader
      *
      * @param string $path The directory path containing the dot env file.
      *
+     * @throws ImproperlyConfiguredException
+     *
      * @return array The keys/values readed in the dot env file
      */
     private static function loadDotEnvFile(string $path): array
@@ -83,7 +85,7 @@ final class EnvironmentBootloader extends AbstractBootloader
             // Load environment file in given directory path, silently failing if it doesn't exist.
             return $dotenv->safeLoad();
         } catch (InvalidFileException $e) {
-            throw new EnvironmentException('The environment file (.env) is invalid!');
+            throw new ImproperlyConfiguredException('The environment file (.env) is invalid!');
         }
     }
 }

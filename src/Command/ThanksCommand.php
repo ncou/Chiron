@@ -19,6 +19,9 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 //https://github.com/loophp/launcher/blob/master/src/Launcher.php
 
+//https://github.com/mezzio/mezzio-skeleton/blob/3.11.x/src/MezzioInstaller/OptionalPackages.php#L204
+//https://github.com/mezzio/mezzio-skeleton/blob/3.11.x/src/MezzioInstaller/OptionalPackages.php#L234
+
 //https://stackoverflow.com/questions/29078380/how-do-i-run-a-symfony-console-command-after-composer-install
 //https://github.com/sensiolabs/SensioDistributionBundle/blob/master/Composer/ScriptHandler.php
 
@@ -42,6 +45,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 // TODO : passer les méthodes "perform" en protected pour chaque classe de type "Command"
 final class ThanksCommand extends AbstractCommand
 {
+    // TODO : renommer en chiron:thanks
     protected static $defaultName = 'thanks';
 
     /** @var array<int, string> */

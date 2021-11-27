@@ -6,7 +6,7 @@ namespace Chiron\Service\Bootloader;
 
 use Chiron\Core\Directories;
 use Chiron\Core\Container\Bootloader\AbstractBootloader;
-use Chiron\Core\Exception\DirectoryException;
+use Chiron\Core\Exception\ImproperlyConfiguredException;
 //use Chiron\Framework;
 use Chiron\Views\TemplateRendererInterface;
 use Chiron\Filesystem\Filesystem;
@@ -57,7 +57,7 @@ final class DirectoriesBootloader extends AbstractBootloader
         // TODO : je pense que root / public et runtime sont les 3 répertoires obligatoires, mais à vérifier !!!!
         // ensure mandatory directory alias '@root' is defined by the user.
         if (! isset($aliases['@root'])) {
-            throw new DirectoryException('Missing required directory alias "@root".');
+            throw new ImproperlyConfiguredException('Missing required directory alias "@root".');
         }
 
         // TODO : il faudrait pas ajouter un répertoire pour les logs ???? => https://github.com/spiral/app/blob/85705bb7a0dafd010a83fa4bcc7323b019d8dda3/app/src/Bootloader/LoggingBootloader.php#L29
@@ -95,7 +95,7 @@ final class DirectoriesBootloader extends AbstractBootloader
 
         foreach ($paths as $alias => $path) {
             if (! is_string($alias)) {
-                throw new DirectoryException('Directories paths aliases must be an associative array.');
+                throw new ImproperlyConfiguredException('Directories paths aliases must be an associative array.');
             }
             // check if alias doesn't start with '@'
             // TODO : utiliser la méthode Str::startWith(xxxx)
@@ -120,11 +120,11 @@ final class DirectoriesBootloader extends AbstractBootloader
             $path = $directories->get($alias);
 
             if (! is_dir($path)) {
-                throw new DirectoryException(sprintf('Directory "%s" (%s) does\'t exist.', $alias, $path));
+                throw new ImproperlyConfiguredException(sprintf('Directory "%s" (%s) does\'t exist.', $alias, $path));
             }
 
             if (! is_writable($path)) {
-                throw new DirectoryException(sprintf('Directory "%s" (%s) isn\'t writable.', $alias, $path));
+                throw new ImproperlyConfiguredException(sprintf('Directory "%s" (%s) isn\'t writable.', $alias, $path));
             }
         }
     }

@@ -14,7 +14,7 @@ use Chiron\Service\Bootloader\EventsBootloader;
 use Chiron\Container\Container;
 use Chiron\Core\Engine\EngineInterface;
 use Chiron\Debug\ErrorHandler;
-use Chiron\Exception\ApplicationException;
+use Chiron\Core\Exception\ImproperlyConfiguredException;
 use Chiron\Service\ServiceManager;
 use Chiron\Core\Container\ContainerFactory;
 use Chiron\Service\Provider\CoreServiceProvider;
@@ -61,6 +61,7 @@ use Chiron\Engine\ConsoleEngine;
 // Exemple : https://github.com/symfony/symfony/blob/master/src/Symfony/Bundle/FrameworkBundle/Console/Application.php#L112
 // Exemple : https://github.com/symfony/console/blob/master/Application.php#L595
 
+// TOD : au lieu d'avoir la variable de classe public il faudrait plutot avoir une méthode public getContainer() dans cette classe.
 final class Application
 {
     /** @var EngineInterface[] */
@@ -78,13 +79,14 @@ final class Application
     // TODO : permettre de passer en paramétre une liste de "providers" ??? ca permettrait de facilement initialiser l'application avec une redéfinition de certains service par l'utilisateur !!!
     // TODO : il faudrait automatiquement ajouter le ConsoleDispatcher à l'application car on aura toujours le package chiron/console de présent pour ce framework et on doit pourvoir utiliser la console, donc ajouter d'office cette classe au tableau des dispatchers ca nous fera gagner du temps (et donc la classe Console\Bootloader\ConsoleDispatcherBootloader n'est plus nécessaire !!!!)
     // TODO : déplacer tout ce code directement dans le constructeur ? En passant le constructeur en public, car je ne pense pas qu'il y ait un interet particulier à garder une méthode static init !!!!
+    // TODO : il faudrait surement gérer une structure de répertoires par défaut si on ne passe pas de valeur pour le paramétre $paths !!!
     public function __construct(array $paths, array $values = [])
     {
         // TODO : il faudrait gérer le cas ou l'application est déjà "create" et qu'on récupére cette instance plutot que de rappeller la méthode. (c'est dans le cas ou l'utilisateur fait un App::create qu'il ajoute des providers ou autre et qu'ensuite il fasse un App::init pour finaliser l'initialisation !!!) Je suppose qu'il faudra garder un constante public de classe static avec l'instance (comme pour Container::$instance). Cela permettra aussi de créer une fonction globale "app()" qui retournera l'instance de la classe Application::class. Cela permettra en plus de la facade Facade\Application de passer par cette méthode pour injecter des bootloader par exemple.
         $this->services = new ServiceManager(); // TODO : créer une méthode privée self::create() qui retournerait l'application crééer, on pourrait aussi mettre dans cette fonction les lignes de code qui permettent de charger le CoseServiceProvider, et la ligne qui fait le bindsingleton de l'instance $app. Eventuellement utiliser aussi cette méthode pour faire le addDispatcher(new ConsoleDispatcher()) !!!
 
         // +++ Bind all the core services. +++
-        $this->services->addProvider(new CoreServiceProvider());
+        $this->services->addProvider(new CoreServiceProvider()); // TODO : il faudrait créer dans ce CoreServiceProvider une partie pour binder en singleton une classe ServiceManager et qui utiliserait le ServicesConfig pour initialiser cette classe !!!! cela permettra de supprimer la classe ServicesBootloader (en fait on ferait comme pour les fichiers de config events et console/settings !!!!)
         // +++ Boot all the app services. +++
         $this->services->addBootloader(new DirectoriesBootloader($paths));
         $this->services->addBootloader(new EnvironmentBootloader($values));
@@ -102,14 +104,14 @@ final class Application
         $this->services->addBootloader(new PackageManifestBootloader());
         $this->services->addBootloader(new ServicesBootloader());
 
-
         $container = $this->services->container;
 
         // TODO : lever un évenement de type "InitEvent" en attachant l'application comme paramétre, et c'est à ce moment là que le listener ajouterai le ConsoleEngine !!!!
         $this->addEngine(new ConsoleEngine($container->injector()));
 
-        // Register the application instance as singleton in the container.
-        // TODO : déplacer cet appel directement dans le constructeur de la classe Application::class ????
+        // TODO : il faudrait récupérer ici le eventdispatcher et faire un trigger sur l'événement InitApplicationEvent::class avec l'instance de l'application à stocker dans ce event. On ajoutera un listener dans les packages Sapi/Roadrunner/Workerman/ReactPHP pour injecter le EngineInterface pour ces différents packages.
+
+        // Bind the application instance as singleton in the container.
         $container->singleton(self::class, $this);
     }
 
@@ -121,8 +123,7 @@ final class Application
     // TODO : il faudrait gérer le cas ou l'on souhaite ajouter un dispatcher au dessus de la stack. Ajouter un paramétre 'bool $onTop = false' à cette méthode ????
     // TODO : permettre de gérer les dispatchers dans les fichiers composer.json (partie "extra") et les charger via le packagemanifest ????
     // TODO : permettre de passer une string en paramétre et utiliser le container qui est aussi un FactoryInterface pour "créer" la classe passée en paramétre !!!
-    // TODO : permettre de passer une string pour le dispatcher ca sera plus simple pour l'utilisateur. utiliser la fonction "resolve()" et vérifier que le type de retour est bien un objet qui implémente DispatcherInterface !!!!
-    // TODO : renommer les dispatcher en engine et appeller la méthode ignite() puis run() et isActive() sur le engine au lieu de la méthode dispatch()
+    // TODO : permettre de passer une string pour le engine ca sera plus simple pour l'utilisateur. utiliser la fonction "resolve()" et vérifier que le type de retour est bien un objet qui implémente EngineInterface !!!!
     public function addEngine(EngineInterface $engine): void
     {
         $this->engines[] = $engine;
@@ -131,7 +132,7 @@ final class Application
     /**
      * Start application and process user requests using selected dispatcher or throw an exception.
      *
-     * @throws RuntimeException
+     * @throws ImproperlyConfiguredException
      *
      * @return mixed Could be an 'int' for command-line dispatcher or 'void' for web dispatcher.
      */
@@ -142,6 +143,10 @@ final class Application
         // TODO : Eventuellement lever un événement de type ApplicationStartupEvent::class avec en paramétre le microtime pour connaitre l'heure de début de l'application.
         // TODO : il faudrait surement mettre un try/catch autour de la méthode boot() et dans le catch utiliser la classe ErrorHandler::handleException($e) pour afficher les erreurs, ca permettrait d'aoir une gestion des erreurs même si l'utilisateur n'a pas utilisé la méthode init() avec le paramétre $handleErrors à true !!!  https://github.com/spiral/framework/blob/e63b9218501ce882e661acac284b7167b79da30a/src/Boot/src/AbstractKernel.php#L146
         $this->services->boot();
+
+        // TODO : récupérer le EventDispatcher dans le service->container et trigger l'evenement ApplicationStartedEvent::class avec en paramétre le $this pour qu'on puisse manipuler l'application (par exemple pour ajouter un engine !!!!). ou l'event ApplicationBootedEvent::class
+
+
 
         // Dispatch the request based on the environment values (ex: Console or Web dispatcher).
         foreach ($this->engines as $engine) {
@@ -154,7 +159,8 @@ final class Application
 
         // TODO : lever aussi une ApplicationException en début de méthode (juste aprés l'appel à la méthode ->boot()) dans le cas le tableau de $this->dispatchers est vide, car cela signifie que l'application est mal initialisée, et donc afficher un message pour demander à l'utilisateur de définir à minima un dispatcher !!!!
         // TODO : utiliser plutot l'exception ImproperlyConfiguredException ???? qui est dans le package chiron/core, cela permettra de virer la classe ApplicationException !!!!
-        throw new ApplicationException('Unable to locate active engine.');
+        // TODO : créer une exception EngineNotFoundException ???? eventuellement la faire étendre de l'exception ImproperlyConfiguredException ????
+        throw new ImproperlyConfiguredException('Unable to locate active engine for application.'); // TODO : afficher le contenu du tableau $this->engines ? genre on affiche un message différent si il est vide, et sinon on affiche une liste des classname en utilisant un array_map + un explode($engines, ',') ????
     }
 
     /**

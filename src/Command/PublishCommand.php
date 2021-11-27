@@ -12,6 +12,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Chiron\Publisher\Exception\PublisherException;
 use Closure;
 
+//https://github.com/hyperf/devtool/blob/master/src/VendorPublishCommand.php
+
 // DOCUMENTATION : https://stillat.com/blog/2016/12/07/laravel-artisan-vendor-command-the-vendorpublish-command
 
 //https://github.com/laravelista/lumen-vendor-publish/blob/master/src/VendorPublishCommand.php

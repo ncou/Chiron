@@ -20,10 +20,13 @@ use Symfony\Component\Console\Input\InputOption;
 use Chiron\Event\ListenerData;
 use ReflectionObject;
 
+// TODO : exemple avec un filtre sur les noms => https://github.com/symfony/framework-bundle/blob/4a8f8840cc4c162cf1d31b22902db4c169b87517/Command/DebugAutowiringCommand.php
+
 // TODO : améliorer le filtrage des évents via l'option --events     https://symfony.com/doc/current/event_dispatcher.html#debugging-event-listeners
 
 // TODO : https://github.com/symfony/symfony/blob/e34cd7dd2c6d0b30d24cad443b8f964daa841d71/src/Symfony/Bundle/FrameworkBundle/Command/EventDispatcherDebugCommand.php
 
+//https://github.com/hyperf/devtool/blob/master/src/Describe/ListenersCommand.php
 //https://github.com/hyperf/hyperf/blob/2aa967ed6b0f55c4f8a09e0e69a85d5a4bf72f27/src/devtool/src/Describe/ListenersCommand.php
 
 // TODO : afficher aussi la priorité de chaque event, éventuellement faire un sort sur la priorité pour afficher le détail des listeners à executer dans l'ordre des priorité, cela pourra aider lors du debug !!!!
@@ -82,7 +85,7 @@ final class EventListCommand extends AbstractCommand
                 continue;
             }
 
-            $data[$event] = $this->describesCallables($listeners);
+            $data[$event] = $this->describesCallables($listeners); // TODO : utiliser la méthode Support\Callback::toString pour avoir la description du callable !!!
         }
 
         return $data;
@@ -97,6 +100,7 @@ final class EventListCommand extends AbstractCommand
      */
     // TODO : code à améliorer !!! et à déplacer dans une classe de type VarDumper ???
     // TODO : fonction à renommer en exportCallables ????
+    // TODO : utiliser la méthode Support\Callback::toString pour avoir la description du callable !!!
     private function describesCallables(array $callables): array
     {
         $data = [];
@@ -107,7 +111,8 @@ final class EventListCommand extends AbstractCommand
             }
             if (is_object($callable)) {
                 if($callable instanceof \Closure) {
-                    $data[] = 'Closure()'; // TODO : éventuellement afficher le fichier+ligne de la closure en utilisant une reflection !!!
+                    $data[] = 'Closure()'; // TODO : éventuellement afficher le fichier+ligne de la closure en utilisant une reflection !!! regarder la méthode getClosureSignature ici : https://github.com/yiisoft/injector/blob/master/src/ArgumentException.php#L40
+                    // TODO : eventuellement faire un unwrap de la closure pour retrouver la méthode source lorsqu'on a fait un Closure::fromCallable => https://github.com/nette/utils/blob/master/src/Utils/Callback.php#L120
                 } else {
                     $data[] = get_class($callable);
                 }

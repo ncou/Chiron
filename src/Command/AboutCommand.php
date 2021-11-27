@@ -15,6 +15,8 @@ use Chiron\Core\Core;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\TableSeparator;
 
+//https://github.com/matriphe/larinfo/tree/master/src
+
 //https://github.com/hhxsv5/laravel-s/blob/master/src/Illuminate/LaravelSCommand.php#L69
 //https://github.com/flarum/core/blob/master/src/Foundation/Console/InfoCommand.php
 
@@ -24,6 +26,7 @@ use Symfony\Component\Console\Helper\TableSeparator;
 // TODO : passer les méthodes "perform" en protected pour chaque classe de type "Command"
 final class AboutCommand extends AbstractCommand
 {
+    // TODO : renommer la commande en "info" ???? + renommer la commande !!!!
     protected static $defaultName = 'about';
 
     /**
@@ -98,7 +101,7 @@ final class AboutCommand extends AbstractCommand
 
     //https://github.com/cakephp/filesystem/blob/master/Folder.php#L658
     //https://github.com/JBZoo/Utils/blob/5a2b7c01f48318585212fa9876c8c48c8817d974/src/FS.php#L222
-    // TODO : déplacer cette fonction dans la classe filesystem::class ou path::class ?
+    // TODO : déplacer cette fonction dans la classe Filesystem::class ou Path::class ?
     private static function formatFileSize(string $path): string
     {
         if (is_file($path)) {
