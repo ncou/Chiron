@@ -165,7 +165,9 @@ final class EventListCommand extends AbstractCommand
      *
      * @return mixed
      */
-    //https://github.com/nette/web-addons.nette.org/blob/e985a240f30d2d4314f97cb2fa9699476d0c0a68/tests/libs/Access/Property.php
+    // https://github.com/nette/web-addons.nette.org/blob/e985a240f30d2d4314f97cb2fa9699476d0c0a68/tests/libs/Access/Property.php
+    // https://github.com/symfony/property-access/blob/4bb27fab0c8b0cabdff8cc24ed4019bfbb380e96/PropertyAccessor.php#L486
+    // https://github.com/windwalker-io/utilities/blob/master/src/Reflection/ReflectAccessor.php#L186
     private function getValue(object $object, string $property)
     {
         $r = new ReflectionObject($object);

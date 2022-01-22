@@ -7,11 +7,6 @@ namespace Chiron\Service;
 use Chiron\Container\Container;
 use Chiron\Core\Container\Bootloader\BootloaderInterface;
 use Chiron\Core\Container\Provider\ServiceProviderInterface;
-use Chiron\Core\Provider\CoreServiceProvider;
-use Chiron\Event\EventDispatcher;
-use Chiron\Event\ListenerProvider;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\EventDispatcher\ListenerProviderInterface;
 
 /**
  * Manages Services living inside the Container.

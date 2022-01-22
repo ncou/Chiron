@@ -37,6 +37,7 @@ final class AboutCommand extends AbstractCommand
         $this->setDescription('Displays information about the current project');
     }
 
+    // TODO : virer le paramétre Core car on peut directement accéder aux champs statiques de cette classe donc pas la peine de l'initialiser !!!!
     public function perform(Directories $directories, Environment $environement, Core $core): int
     {
         $rows = [

@@ -67,7 +67,7 @@ final class Application
     /** @var EngineInterface[] */
     private $engines = [];
     /** @var ServiceManager */
-    public $services;
+    public $services; // TODO : virer la notion de public car ce n'est pas utilisé dans les packages !!!!
 
     // TODO : ca serait bien de passer directement un ServiceManager dans le constructeur plutot qu'on objet container qu'on ne devrait pas manipuler directement dans cette classe !!!!
     // TODO : passer le constructeur en public et lever une exception si on essaye d'instancier cette classe sans passer par la méthode static::create() !!!! éventuellement utiliser cette classe d'utilitaire pour limiter les appels statics et le constructeur : https://github.com/nette/utils/blob/0e350ef848fa9586eac0748479ca013e8fab6cbd/src/StaticClass.php

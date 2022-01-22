@@ -22,7 +22,7 @@ use Chiron\Support\Dump;
 use Chiron\Support\VarDumper;
 use Chiron\Support\VarDumper2;
 
-//https://github.com/symfony/framework-bundle/blob/5.x/Command/ConfigDebugCommand.php
+//https://github.com/symfony/framework-bundle/blob/4e3b7215071f02e930b00f69741dfd4dab3c31e7/Command/ConfigDebugCommand.php
 
 /**
  * A console command to display config files (usefull for debug purpose).
@@ -137,6 +137,9 @@ final class DebugConfigCommand extends AbstractCommand
      * @param mixed $var   variable to be exported
      * @param int   $level depth level
      */
+    // TODO : améliorer le code avec cette classe :
+    // https://github.com/hechoendrupal/drupal/blob/eeff134d76964e4c4612398955077559e2740fe1/lib/Drupal/Component/Utility/Variable.php
+    // https://github.com/drupal/core-utility/blob/8.8.x/Variable.php
     private function dump($var, int $level, string &$result): void
     {
         switch (gettype($var)) {

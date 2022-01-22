@@ -28,7 +28,7 @@ final class DirectoriesBootloader extends AbstractBootloader
     /**
      * @param Directories $directories
      */
-    public function boot(Directories $directories, Filesystem $filesystem): void
+    public function boot(Directories $directories): void
     {
         // Use default directories structure if needed.
         $directories->init(self::mapDirectories($this->paths));
@@ -36,11 +36,7 @@ final class DirectoriesBootloader extends AbstractBootloader
         //$directories->set('framework', Framework::path()); // TODO : pas vraiment utile, à virer !!!! // TODO : attention il faudrait pas plutot mettre un "@" devant "framework" ????
 
         // Some folders should be presents and writables.
-        //self::assertWritableDir($directories, ['@runtime', '@cache']); // TODO : il faudrait plutot faire un Filesystem->ensureDirectoryExist(xxxx) pour forcer la création du répertoire si il n'existe pas !!!!
-
-        // TODO : eventuellement lever une exception si on n'arrive pas à créer ces répertoires !!! cad faire un try/catch autour de ces 2 appels !!!
-        $filesystem->ensureDirectoryExists($directories->get('@runtime'));
-        $filesystem->ensureDirectoryExists($directories->get('@cache'));
+        self::assertWritableDir($directories, ['@runtime', '@cache']);
     }
 
     /**
