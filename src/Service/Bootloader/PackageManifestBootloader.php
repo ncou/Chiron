@@ -12,20 +12,20 @@ use Chiron\Service\ServiceManager;
 final class PackageManifestBootloader extends AbstractBootloader
 {
     /**
-     * Add the services providers & bootloaders found in the composer packages manifest.
+     * Add the services providers & bootloaders found in the composer file (extra section).
      *
-     * @param PackageManifest  $manifest
-     * @param ServiceManager      $services
+     * @param PackageManifest $manifest
+     * @param ServiceManager  $services
      */
     public function boot(PackageManifest $manifest, ServiceManager $services): void
     {
-        foreach ($manifest->getProviders() as $provider) {
+        foreach ($manifest->config('providers') as $provider) {
             if (class_exists($provider)) {
                 $services->addProvider($provider);
             }
         }
 
-        foreach ($manifest->getBootloaders() as $bootloader) {
+        foreach ($manifest->config('bootloaders') as $bootloader) {
             if (class_exists($bootloader)) {
                 $services->addBootloader($bootloader);
             }

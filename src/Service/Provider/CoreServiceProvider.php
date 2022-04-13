@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Chiron\Service\Provider;
 
 use Chiron\Container\Container;
+use Chiron\Injector\Injector;
 use Chiron\Core\Container\Bootloader\BootloaderInterface;
 use Chiron\Core\Container\Provider\ServiceProviderInterface;
 use Chiron\Container\BindingInterface;
@@ -17,6 +18,7 @@ use Chiron\Config\InjectableConfigInterface;
 use Chiron\Service\Mutation\InjectableConfigMutation;
 use Chiron\Service\Mutation\ContainerAwareMutation;
 use Chiron\Service\Mutation\EventDispatcherAwareMutation;
+use Chiron\Service\Mutation\InjectorAwareMutation;
 
 use Chiron\Publisher\Publisher;
 use Chiron\Config\Configure;
@@ -38,6 +40,8 @@ use Psr\EventDispatcher\ListenerProviderInterface;
 use Chiron\Core\Core;
 use Chiron\Config\SettingsConfig;
 
+use Chiron\Core\Memory;
+
 final class CoreServiceProvider implements ServiceProviderInterface
 {
     public function register(BindingInterface $binder): void
@@ -56,6 +60,8 @@ final class CoreServiceProvider implements ServiceProviderInterface
         $binder->singleton(ListenerProviderInterface::class, \Chiron\Container\Reference::to(ListenerProvider::class)); // TODO : remplacer cette ligne par un ->alias()
         $binder->singleton(EventDispatcher::class);
         $binder->singleton(EventDispatcherInterface::class, EventDispatcher::class);
+
+        $binder->singleton(Memory::class, Closure::fromCallable([static::class, 'registerMemory']));
     }
 
     private static function registerCore(SettingsConfig $config): Core
@@ -63,10 +69,12 @@ final class CoreServiceProvider implements ServiceProviderInterface
         return new Core($config->isDebug());
     }
 
-    private static function registerConsole(Container $container, ConsoleConfig $config): Console
+    private static function registerConsole(CommandLoader $loader, ConsoleConfig $config): Console
     {
+        //die(var_dump($loader));
+
         // TODO : éventuellement pour clarifier le code on pourrait insérer les commands directement dans le command loader et seulement ensuite faire le new Console($loader)
-        $loader = new CommandLoader($container);
+        //$loader = new CommandLoader($container);
         $console = new Console($loader);
 
         // Init the console with the configured values.
@@ -108,6 +116,7 @@ final class CoreServiceProvider implements ServiceProviderInterface
         return $configure;
     }
 
+    // TODO : faire plutot un Bootloader pour copier ces fichiers + intialiser les default value dans la classe Configure !!!!
     private static function registerPublisher(Directories $directories): Publisher
     {
         $publisher = new Publisher();
@@ -133,5 +142,12 @@ final class CoreServiceProvider implements ServiceProviderInterface
         }
 
         return $provider;
+    }
+
+    private static function registerMemory(Directories $directories): Memory
+    {
+        $memory = new Memory($directories->get('@cache'));
+
+        return $memory;
     }
 }

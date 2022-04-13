@@ -10,11 +10,11 @@ use Chiron\Config\Configure;
 
 final class InjectableConfigMutation
 {
-    public static function mutation(InjectableConfigInterface $config)
+    public static function mutation(InjectableConfigInterface $config): void
     {
         $section = $config->getConfigSectionName();
 
-        $configure = container(Configure::class);
+        $configure = (Container::$instance)->get(Configure::class);
 
         // TODO : il se passe quoi si le subset n'est pas valide ??? une exception est levée ????
 

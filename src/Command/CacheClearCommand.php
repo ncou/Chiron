@@ -9,6 +9,7 @@ use Chiron\Core\Command\AbstractCommand;
 use Chiron\Filesystem\Filesystem;
 
 //https://github.com/top-think/framework/blob/6.0/src/think/console/command/Clear.php
+//https://github.com/spiral/framework/blob/b8342cc00cdb2c8db5553f4475180c1c7f5caecc/src/Framework/Command/CleanCommand.php
 
 // TODO : passer les méthodes "perform" en protected pour chaque classe de type "Command"
 // TODO : utiliser le mot "clean" plutot que clear ????
@@ -32,6 +33,10 @@ final class CacheClearCommand extends AbstractCommand
 
             return self::SUCCESS;
         }
+
+
+        // TODO : il faudrait plutot effacer uniquement les fichiers et afficher une erreur si on n'arrive pas à supprimer un fichier + afficher le fichier supprimé si on est en mode verbose !!!
+        //https://github.com/spiral/framework/blob/b8342cc00cdb2c8db5553f4475180c1c7f5caecc/src/Framework/Command/CleanCommand.php#L41
 
         // TODO : afficher une question pour confirmer avec l'utilisateur qu'on supprime le répertoire XXXX, et lui afficher le chemin pour qu'on ait bien conscience de ce qui va être supprimé !!!!
         // TODO : ajouter un try catch des \Throwable et afficher une erreur si c'est le cas ????

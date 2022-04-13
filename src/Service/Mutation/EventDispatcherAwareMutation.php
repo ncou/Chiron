@@ -13,7 +13,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class EventDispatcherAwareMutation
 {
-    public static function mutation(EventDispatcherAwareInterface $eventized)
+    public static function mutation(EventDispatcherAwareInterface $eventized): void
     {
         // Inject the event dispatcher if not already present in the EventDispatcherAware instance object.
         if (! $eventized->hasEventDispatcher()) {

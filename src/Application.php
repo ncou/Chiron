@@ -61,11 +61,11 @@ use Chiron\Engine\ConsoleEngine;
 // Exemple : https://github.com/symfony/symfony/blob/master/src/Symfony/Bundle/FrameworkBundle/Console/Application.php#L112
 // Exemple : https://github.com/symfony/console/blob/master/Application.php#L595
 
-// TOD : au lieu d'avoir la variable de classe public il faudrait plutot avoir une méthode public getContainer() dans cette classe.
-final class Application
+// TODO : au lieu d'avoir la variable de classe public il faudrait plutot avoir une méthode public getContainer() dans cette classe.
+class Application
 {
     /** @var EngineInterface[] */
-    private $engines = [];
+    protected $engines = [];
     /** @var ServiceManager */
     public $services; // TODO : virer la notion de public car ce n'est pas utilisé dans les packages !!!!
 
@@ -104,6 +104,7 @@ final class Application
         $this->services->addBootloader(new PackageManifestBootloader());
         $this->services->addBootloader(new ServicesBootloader());
 
+        /** @psalm-var Container $container */
         $container = $this->services->container;
 
         // TODO : lever un évenement de type "InitEvent" en attachant l'application comme paramétre, et c'est à ce moment là que le listener ajouterai le ConsoleEngine !!!!
@@ -112,7 +113,22 @@ final class Application
         // TODO : il faudrait récupérer ici le eventdispatcher et faire un trigger sur l'événement InitApplicationEvent::class avec l'instance de l'application à stocker dans ce event. On ajoutera un listener dans les packages Sapi/Roadrunner/Workerman/ReactPHP pour injecter le EngineInterface pour ces différents packages.
 
         // Bind the application instance as singleton in the container.
-        $container->singleton(self::class, $this);
+        $container->singleton(self::class, $this); // TODO : attention comme on peut faire un extends de cette classe il faut s'assurer que la clés self::class est correcte, sinon il faudrait plutot utiliser static::class => Faire des tests pour s'assurer de ce qui fonctionne !!!!
+
+        $this->initialize($container);
+    }
+
+    /**
+     * Constructor hook method.
+     *
+     * Implement this method to avoid having to overwrite the constructor and call parent.
+     *
+     * @param Container $container The container instance provided to this application.
+     *
+     * @return void
+     */
+    public function initialize(Container $container): void
+    {
     }
 
     /**

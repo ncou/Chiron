@@ -12,7 +12,7 @@ use Chiron\Container\ContainerAwareTrait;
 
 final class ContainerAwareMutation
 {
-    public static function mutation(ContainerAwareInterface $containerized)
+    public static function mutation(ContainerAwareInterface $containerized): void
     {
         // Inject the container if not already present in the ContainerAware instance object.
         if (! $containerized->hasContainer()) {
